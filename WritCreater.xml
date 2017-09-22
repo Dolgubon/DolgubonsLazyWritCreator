@@ -1,0 +1,115 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl movable="true" mouseEnabled="true" name="DolgubonsWritsFeedback" hidden="true">
+			 <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="5" />
+      <Dimensions x="545" y="150" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Label name="$(parent)Title" font="ZoFontGame"   height="25" width="95" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Dolgubon's Lazy Writ Crafter">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="5" />
+        </Label>
+        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+          <OnClicked>
+            DolgubonsWritsFeedback:SetHidden(true)
+          </OnClicked>
+        </Button>
+        <Label name="$(parent)Note"  font="ZoFontGame"  horizontalAlignment="CENTER" color="FFFFFF" text="If you found a bug, have a request or a suggestion, or simply wish to donate, send me a mail.">
+          <Dimensions x="525" y="200" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50" />
+        </Label>
+        <Button name="$(parent)Feedback" inherits="ZO_DefaultButton" text="Send Note">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5" />
+          <Dimensions x="130" />
+          <OnClicked>
+            WritCreater.SendNote(0)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)Small" inherits="ZO_DefaultButton" text="Send 500">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Feedback" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+          <Dimensions x="130" />
+          <OnClicked>
+            WritCreater.SendNote(500)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)Large" inherits="ZO_DefaultButton" text="Send 50000">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+          <Dimensions x="130" />
+          <OnClicked>
+            WritCreater.SendNote(50000)
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)Medium" inherits="ZO_DefaultButton" text="Send 5000">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Large" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="0" />
+          <Dimensions x="130" />
+          <OnClicked>
+            WritCreater.SendNote(5000)
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+		<TopLevelControl name="DolgubonsWrits" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="470" y="200" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50"/>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000">
+					<Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="80"/>
+					<Dimensions x="500" y="400"/>
+					<Edge edgeSize="1"/>
+					<Center file="esoui/art/crafting/crafting_alchemy_slottingbg.dds"/>
+					<Controls>
+						<Label name="$(parent)Head" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
+							<Anchor  relativePoint="TOP" relativeTo="$(parent)" offsetY="55" offsetX="-85"/>
+						</Label>
+						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" width="400" height="400">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="80" offsetX="10"/>
+				        	<Dimensions x="450"/>
+					    </Label>
+					    <Label name="$(parent)QuestOutput" font="ZoFontGame" text="" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" width="400" height="400">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="130" offsetX="10"/>
+				        	<Dimensions x="450"/>
+					    </Label>
+						<Button name="$(parent)Craft" alpha="1" inherits="ZO_DefaultButton" text="Craft" clickSound="Book_Acquired" topmost="true">
+					    	<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-205" />
+					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
+		         			<Dimensions x="130"  />
+							<OnClicked>
+								WritCreater.craft()
+							</OnClicked>
+			    		</Button>
+			    		<Button name="$(parent)SettingOn" alpha="1" inherits="ZO_DefaultButton" text="On" clickSound="Book_Acquired" topmost="true" hidden="true">
+					    	<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-20" />
+					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
+		         			<Dimensions x="150"  />
+							<OnClicked>
+								WritCreater.on()
+							</OnClicked>
+			    		</Button>
+			    		<Button name="$(parent)SettingOff" alpha="1" inherits="ZO_DefaultButton" text="Off" clickSound="Book_Acquired" topmost="true" hidden="true">
+					    	<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-20" />
+					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
+		         			<Dimensions x="150"  />
+							<OnClicked>
+								WritCreater.off()
+							</OnClicked>
+			    		</Button>
+						<Button name="$(parent)FeedbackButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-50" offsetY="-40" />
+							<Dimensions x="34" y="34" />
+							<Textures normal="ESOUI/art/chatwindow/chat_mail_up.dds" mouseOver="ESOUI/art/chatwindow/chat_mail_over.dds" />
+							<OnClicked>
+								DolgubonsWritsFeedback:SetHidden(false)
+							</OnClicked>
+							<OnMouseExit>
+								ZO_Tooltips_HideTextTooltip()
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	
+	</Controls>
+</GuiXml>

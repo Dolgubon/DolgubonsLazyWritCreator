@@ -1,0 +1,48 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Dolgubon's Lazy Writ Creator v35.4
+## APIVersion: 100020
+## Author: Dolgubon
+## Version: 35.4
+## OptionalDependsOn: LibAddonMenu-2.0 pChat
+## SavedVariables: DolgubonsWritCrafterSavedVars
+
+Libs\LibStub\LibStub\LibStub.lua
+libs\LibCustomTitles\LibCustomTitles.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+
+libs\LibLazyCrafting\LibLazyCrafting.lua
+libs\LibLazyCrafting\Enchanting.lua
+libs\LibLazyCrafting\Smithing.lua
+
+libs\LibCustomMenu\LibCustomMenu.lua
+
+LootHandler.lua
+QuestHandler.lua
+
+WritCreater.xml
+WritCreater.lua
+MasterWrits.lua
+AlchGrab.lua
+
+Languages/default.lua
+Languages/$(language).lua
+OptionsTable.lua
+ResetTime.lua
+Tutorial.lua
