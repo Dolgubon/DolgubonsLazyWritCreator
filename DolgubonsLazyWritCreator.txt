@@ -27,6 +27,8 @@ libs\LibAddonMenu-2.0\controls\header.lua
 libs\LibAddonMenu-2.0\controls\slider.lua
 libs\LibAddonMenu-2.0\controls\texture.lua
 
+libs\LibMOTD\libMOTD.lua
+
 libs\LibLazyCrafting\LibLazyCrafting.lua
 libs\LibLazyCrafting\Enchanting.lua
 libs\LibLazyCrafting\Smithing.lua

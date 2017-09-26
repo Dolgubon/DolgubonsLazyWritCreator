@@ -28,6 +28,7 @@ local LAM2
 WritCreater.languageStrings = {}
 WritCreater.resetTime = true
 WritCreater.version = 19
+WritCreater.versionAccount = 20
 WritCreater.savedVars = {}
 WritCreater.default = 
 {
@@ -629,7 +630,8 @@ crafting = function(info,quest, craftItems)
 				
 				local needed = conditions["max"][i] - conditions["cur"][i]
 				for s = 1, needed do
-					addMats(info["names"][conditions["mats"][i]],numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
+					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], indexRanges[conditions["mats"][i]], 0)
+					addMats(matName,numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
 
 					--d("queueing "..info["pieces"][conditions["pattern"][i]].." "..info["match"][conditions["mats"][i]])
 					--d(conditions["pattern"][i] ,indexRanges[conditions["mats"][i]],numMats,style,1)
@@ -646,7 +648,7 @@ crafting = function(info,quest, craftItems)
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
 							if changeRequired then return true end
-							addMats(info["names"][conditions["mats"][i]], -numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
+							addMats(matName, -numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
 							createMatRequirementText(matsRequired)
 
 							return true
@@ -968,31 +970,51 @@ EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, WritCrea
 	
 EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, closeWindow)
 
-local newlyLoaded = true
-function WritCreater:Initialize()
-	DolgubonsWrits:SetHidden(true)
+local function initializeUI()
 	LAM = LibStub:GetLibrary("LibAddonMenu-2.0")
 	LAM:RegisterAddonPanel("DolgubonsWritCrafter", WritCreater.settings["panel"])
 	WritCreater.settings["options"] = WritCreater.Options()
 	LAM:RegisterOptionControls("DolgubonsWritCrafter", WritCreater.settings["options"])
-	craftInfo = WritCreater.languageInfo
-	WritCreater.craftInfo = WritCreater.languageInfo()
+	DolgubonsWrits:ClearAnchors()
+	DolgubonsWrits:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, WritCreater.savedVars.OffsetX-470, WritCreater.savedVars.OffsetY)
+		if false then --GetWorldName() ~= "NA Megaserver" then
+		DolgubonsWritsFeedbackSmall:SetHidden(true)
+		DolgubonsWritsFeedbackMedium:SetHidden(true)
+		DolgubonsWritsFeedbackLarge:SetHidden(true)
+		DolgubonsWritsFeedbackNote:SetText("If you found a bug, have a request or a suggestion, send me a mail. Note that mails with no attachments will expire within three days. Consider attaching 1g.")
+	end
+end
 
-	SLASH_COMMANDS['/dailyreset'] = WritCreater.resetTime
-
-
+local function initializeOtherStuff()
 	WritCreater.savedVars = ZO_SavedVars:NewCharacterIdSettings("DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.default)
-	WritCreater.savedVarsAccountWide = ZO_SavedVars:NewAccountWide("DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.defaultAccountWide)
-
-
+	WritCreater.savedVarsAccountWide = ZO_SavedVars:NewAccountWide("DolgubonsWritCrafterSavedVars", WritCreater.versionAccount, nil, WritCreater.defaultAccountWide)
+	SLASH_COMMANDS['/dailyreset'] = WritCreater.resetTime
 	WritCreater.setupAlchGrabEvents()
-
 	potencyNames = WritCreater.langPotencyNames()
 	essenceNames = WritCreater.langEssenceNames()
 
 	WritCreater.writNames = WritCreater.langWritNames()
-	DolgubonsWrits:ClearAnchors()
-	DolgubonsWrits:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, WritCreater.savedVars.OffsetX-470, WritCreater.savedVars.OffsetY)
+	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
+	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) end)	
+
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function(event, initial) if  newlyLoaded then  newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end end )
+	local LibMOTD = LibStub("LibMOTD")
+	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)
+	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
+	local original = AcceptOfferedQuest
+	AcceptOfferedQuest = function()
+	if string.find(GetOfferedQuestInfo(), "Rolis Hlaalu") and WritCreater.savedVars.preventMasterWritAccept then d("Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.")  else original() end end
+end
+
+local newlyLoaded = true
+function WritCreater:Initialize()
+	DolgubonsWrits:SetHidden(true)
+	
+	craftInfo = WritCreater.languageInfo
+	WritCreater.craftInfo = WritCreater.languageInfo()
+
+	initializeOtherStuff()
+	initializeUI()
 
 	local function ZO_AlertNoSuppression_Hook(category, soundId, message)
 		if message == SI_ENCHANT_NO_YIELD and craftingEnchantCurrently then
@@ -1003,25 +1025,9 @@ function WritCreater:Initialize()
 	end
 	ZO_PreHook("ZO_AlertNoSuppression", ZO_AlertNoSuppression_Hook)
 
-	if GetWorldName() ~= "NA Megaserver" then
-		DolgubonsWritsFeedbackSmall:SetHidden(true)
-		DolgubonsWritsFeedbackMedium:SetHidden(true)
-		DolgubonsWritsFeedbackLarge:SetHidden(true)
-		DolgubonsWritsFeedbackNote:SetText("If you found a bug, have a request or a suggestion, send me a mail. Note that mails with no attachments will expire within three days. Consider attaching 1g.")
-	end
-	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
-	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) end)	
 
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function(event, initial) if  newlyLoaded then  newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end end )
 	WritCreater.LootHandlerInitialize()
 	WritCreater.InitializeQuestHandling()
-
-	
-	
-	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
-	local original = AcceptOfferedQuest
-	AcceptOfferedQuest = function()
-	if string.find(GetOfferedQuestInfo(), "Rolis Hlaalu") and WritCreater.savedVars.preventMasterWritAccept then d("Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.")  else original() end end
 
 	--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
 	WritCreater.InitializeRightClick()

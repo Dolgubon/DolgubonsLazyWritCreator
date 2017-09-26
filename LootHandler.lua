@@ -19,32 +19,23 @@ end
 local function saveStats(loot, boxType, boxRank)
 	local vars = WritCreater.savedVarsAccountWide -- shortcut
 	local location = boxType
-	if boxType == 1 then end
+	d(boxType)
 
 	vars = vars["rewards"][location]
-	if vars["level"] > boxRank then
+	if vars["level"] > boxRank then -- If it's a higher level of writ, then wipe all the old saved data
 		WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] - vars["num"]
 		vars = WritCreater.defaultAccountWide["rewards"][location]
 		vars["level"] = boxRank
-	elseif vars["level"] == boxRank then
+	elseif vars["level"] == boxRank then -- otherwise, add one to total
 		WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] + 1
+		vars["num"] = vars["num"] + 1
 	else
 		WritCreater.savedVarsAccountWide["skipped"] = WritCreater.savedVarsAccountWide["skipped"] + 1
 		return
 	end
-	vars["num"] = vars["num"] + 1
+	
+	d(location)
 
-
-	for key, value in pairs(vars) do
-		if key == "num" or key == "level" or key == "gold" then
-		else
-			for i = 1, #loot do
-				if string.find(string.lower(loot[i]["name"]),string.lower(key)) then
-					vars[key] = vars[key] + loot[i]["quantity"]
-				end
-			end
-		end
-	end
 	WritCreater.savedVarsAccountWide["rewards"][location] = vars
 end
 
@@ -275,7 +266,7 @@ function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandl
 SLASH_COMMANDS['/outputwritstats'] = function()
 	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
 		if type(v) == "table" and WritCreater.writNames[k] then
-			d("---------------")
+			d("--------------------------------")
 			d(WritCreater.writNames[k].." Stats")
 			for statType, stats in pairs(v) do 
 				if stats==0 then
@@ -335,7 +326,12 @@ end
 
 
 SLASH_COMMANDS['/resetwritstatistics'] = function() 
-	WritCreater.savedVarsAccountWide = WritCreater.defaultAccountWide 
+	for k, v in pairs(WritCreater.defaultAccountWide) do
+		if k == "masterWrits" then
+		else
+			WritCreater.savedVarsAccountWide[k] = WritCreater.defaultAccountWide[k]
+		end
+	end
 	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp() 
 	d("Writ statistics reset.")
 end

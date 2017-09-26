@@ -98,29 +98,7 @@ local craftInfo =
 				[19]= "Shadowhide",
 				[20]= "Rubedo",
 			},
-			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
-			{
-				[1] = "Jute",
-				[2] = "Flax",
-				[3] = "Cotton",
-				[4] = "Spidersilk",
-				[5] = "Ebonthread",
-				[6] = "Kresh Fiber",
-				[7] = "Ironthread",
-				[8] = "Silverweave",
-				[9] = "Void Cloth",
-				[10]= "Ancestor Silk",
-				[11]= "Rawhide",
-				[12]= "Hide",
-				[13]= "Leather",
-				[14]= "Thick Leather",
-				[15]= "Fell Hide",
-				[16]= "Topgrain Hide",
-				[17]= "Iron Hide",
-				[18]= "Superb Hide",
-				[19]= "Shadowhide",
-				[20]= "Rubedo Leather",
-			}		
+	
 		},
 		[CRAFTING_TYPE_BLACKSMITHING] = 
 		{
@@ -154,19 +132,7 @@ local craftInfo =
 				[9] = "Voidsteel",
 				[10]= "Rubedite",
 			},
-			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
-			{
-				[1] = "Iron Ingots",
-				[2] = "Steel Ingots",
-				[3] = "Orichalc Ingots",
-				[4] = "Dwarven Ingots",
-				[5] = "Ebony Ingots",
-				[6] = "Calcinium Ingots",
-				[7] = "Galatite Ingots",
-				[8] = "Quicksilver Ingots",
-				[9] = "Voidstone Ingots",
-				[10]= "Rubedite Ingots",
-			}
+
 		},
 		[CRAFTING_TYPE_WOODWORKING] = 
 		{
@@ -192,19 +158,7 @@ local craftInfo =
 				[9] = "Nightwood",
 				[10] = "Ruby",
 			},
-			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
-			{
-				[1] = "Sanded Maple",
-				[2] = "Sanded Oak",
-				[3] = "Sanded Beech",
-				[4] = "Sanded Hickory",
-				[5] = "Sanded Yew",
-				[6] = "Sanded Birch",
-				[7] = "Sanded Ash",
-				[8] = "Sanded Mahogany",
-				[9] = "Sanded Nightwood",
-				[10]= "Sanded Ruby Ash",
-			}
+
 		},
 		[CRAFTING_TYPE_ENCHANTING] = 
 		{
