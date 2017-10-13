@@ -1,16 +1,15 @@
---[[
-Author: Dolgubon
-Filename: LibLazyCrafting.lua
-Version: 0.1
-
-This is a work in progress.
-]]--
-
-------------------
---NOTES
--- Should Legendary upgrading be attempted? Is the risk worth it?
--- How to structure requests, and internal tables
--- What would addon developers want, to be able to interact with the library?
+-----------------------------------------------------------------------------------
+-- Library Name: LibLazyCrafting (LLC)
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Library Ideal: Allow addons to craft anything, anywhere
+-- Library Creation Date: December, 2016
+-- Publication Date: Febuary 5, 2017
+--
+-- File Name: LibLazyCrafting.lua
+-- File Description: Contains the main functions of LLC, uncluding the queue and initialization functions
+-- Load Order Requirements: Before all other library files
+-- 
+-----------------------------------------------------------------------------------
 
 -- Initialize libraries
 

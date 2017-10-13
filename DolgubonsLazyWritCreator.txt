@@ -35,6 +35,7 @@ libs\LibLazyCrafting\Smithing.lua
 
 libs\LibCustomMenu\LibCustomMenu.lua
 
+HelperFunctions.lua
 LootHandler.lua
 QuestHandler.lua
 
@@ -45,6 +46,6 @@ AlchGrab.lua
 
 Languages/default.lua
 Languages/$(language).lua
-OptionsTable.lua
+SettingsMenu.lua
 SlashCommands.lua
 Tutorial.lua

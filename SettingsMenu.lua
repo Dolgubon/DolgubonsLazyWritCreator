@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: SettingsMenu.lua
+-- File Description: Contains the information for the settings menu
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 if WritCreater.lang ~= "none" then
 
 WritCreater.styleNames = {}

@@ -1,3 +1,16 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: WritCreater.lua
+-- File Description: Main file of the addon. Should contain only initialization functions, but it's a mess right now
+-- Load Order Requirements: After WritCreater.xml
+-- 
+-----------------------------------------------------------------------------------
+
+
 --Declarations
 --GetSkillAbilityInfo(number SkillType skillType, number skillIndex, number abilityIndex)
 --GetSkillLineInfo(number SkillType skillType, number skillIndex)

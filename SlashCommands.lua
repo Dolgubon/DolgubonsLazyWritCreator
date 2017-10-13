@@ -1,7 +1,20 @@
--- /abaondwrits removed
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: SlashCommands.lua
+-- File Description: This file contains all the slash commands in the addon
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
 
 
-local function date(stamp)
+-- date outputs a string teling the user how long until the daily reset.
+-- Note that English and Japanese have support for a slightly more 'fun' version :D
+local function date()
+	stamp = GetTimeStamp()
 	local date = {}
 	local day = 86400
 	local hour = 3600
@@ -18,13 +31,11 @@ local function date(stamp)
 		till["hour"] = 6- date["hour"] -1
 	end
 	till["minute"] = 60-date["minute"]
-	WritCreater.strings.dailyreset(till)
+	output = WritCreater.strings.dailyreset(till)
+	d(output)
 end
 
-local function resetTime()
-	date(GetTimeStamp())
-
-end
+-- countSurveys counts how many surveys the user has in their bank and inventory
 
 local function countSurveys()
     local a = 0
@@ -41,7 +52,7 @@ local function countSurveys()
     d("You have "..tostring(a).." surveys.")
 end
 
-
+-- countVouchers counts how many unearned vouchers the user has in sealed writs
 
 local function countVouchers()
     local total= 0
@@ -56,6 +67,8 @@ local function countVouchers()
     end
     d("You have "..tostring(total).." unearned Writ Vouchers.")
 end
+
+-- outputStats outputs the user's writ rewards in a (mildly) readable fashion
 
 local function outputStats()
 	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
@@ -87,6 +100,8 @@ local function outputStats()
 	d("Total Writs Completed: "..WritCreater.savedVarsAccountWide.total.." in the past "..tostring(daysSinceReset).." days")
 end
 
+-- Resets the user's writ reward statistics
+
 local function resetStats() 
 	for k, v in pairs(WritCreater.defaultAccountWide) do
 		if k == "masterWrits" then
@@ -98,17 +113,27 @@ local function resetStats()
 	d("Writ statistics reset.")
 end
 
+-- Resets the user's character specific settings
+
 local function resetSettings()
 	WritCreater.savedVars = WritCreater.default d("settings reset")
 end
+
+-- Activates the debug mode. Debug mode is not comprehensive. It mainly only works in the crafting functions of master writs
 
 local function activateDebug()
 	WritCreater.savedVars.debug = not WritCreater.savedVars.debug d(WritCreater.savedVars.debug) 
 end
 
+-- Abandons all writs
+
 local function abandonWrits()
 	local a = WritCreater.writSearch d("Abandon Ship!!!") for i = 1, 6 do AbandonQuest(a[i]) end
 end
+
+-- Outputs the indexes of all the writs the user has. This is another debug function. It has not been used in a while, but 
+-- I'm keeping it here just in case. Usecase is to have someone I'm working with to debug stuff use this function
+-- NOTE: Does not output locations of master writs.
 
 local function findWrits(params)
 	local locations = WritCreater.writSearch()

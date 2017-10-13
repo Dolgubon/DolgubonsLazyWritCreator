@@ -1,3 +1,14 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: Languages/en.lua
+-- File Description: English Localization
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
 
 
 -- If you are looking to translate this to something else, and run into problems, please contact Dolgubon on ESOUI.
@@ -400,27 +411,27 @@ end
 local function dailyResetFunction(till)
 	if till["hour"]==0 then
 		if till["minute"]==1 then
-			d("1 minute until daily server reset!")
+			return "1 minute until daily server reset!"
 		elseif till["minute"]==0 then
 			if stamp==1 then
-				d("Daily reset in "..stamp.." seconds!")
+				return "Daily reset in "..stamp.." seconds!"
 			else
-				d("Seriously... Stop asking. Are you that impatient??? It resets in one more second godammit. Stupid entitled MMO players. *grumble grumble*")
+				return "Seriously... Stop asking. Are you that impatient??? It resets in one more second godammit. Stupid entitled MMO players. *grumble grumble*"
 			end
 		else
-			d(till["minute"].." minutes until daily reset!")
+			return till["minute"].." minutes until daily reset!"
 		end
 	elseif till["hour"]==1 then
 		if till["minute"]==1 then
-			d(till["hour"].." hour and "..till["minute"].." minute until daily reset")
+			return till["hour"].." hour and "..till["minute"].." minute until daily reset"
 		else
-			d(till["hour"].." hour and "..till["minute"].." minutes until daily reset")
+			return till["hour"].." hour and "..till["minute"].." minutes until daily reset"
 		end
 	else
 		if till["minute"]==1 then
-			d(till["hour"].." hours and "..till["minute"].." minute until daily reset")
+			return till["hour"].." hours and "..till["minute"].." minute until daily reset"
 		else
-			d(till["hour"].." hours and "..till["minute"].." minutes until daily reset")
+			return till["hour"].." hours and "..till["minute"].." minutes until daily reset"
 		end
 	end 
 end

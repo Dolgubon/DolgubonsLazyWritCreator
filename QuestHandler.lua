@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: QuestHandler.lua
+-- File Description: Handles automatic acceptance and completion of quests
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 WritCreater = WritCreater or {}
 local completionStrings
 

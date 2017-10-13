@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: MasterWrits.lua
+-- File Description: Crafts Master Writs.
+-- Load Order Requirements: After WritCreater.lua
+-- 
+-----------------------------------------------------------------------------------
+
 local DolgubonDebugRunningDebugString = ""
 DolgubonGlobalDebugToggle = false
 local localDebugToggle = false

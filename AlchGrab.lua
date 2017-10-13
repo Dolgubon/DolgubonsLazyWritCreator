@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: AlchGrab.lua
+-- File Description: This file removes items required for writs from the bank
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 
 local function dbug(...)
 	DolgubonGlobalDebugOutput(...)

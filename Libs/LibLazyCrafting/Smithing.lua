@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- Library Name: LibLazyCrafting
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Library Ideal: Allow addons to craft anything, anywhere
+-- Library Creation Date: December, 2016
+-- Publication Date: Febuary 5, 2017
+--
+-- File Name: Smithing.lua
+-- File Description: Contains the functions for Smithing (Blacksmithing, Clothing, Woodworking)
+-- Load Order Requirements: After LibLazyCrafting.lua
+-- 
+-----------------------------------------------------------------------------------
+
+
 --GetLastCraftingResultItemLink(number resultIndex, number LinkStyle linkStyle)
 --/script d(GetLastCraftingResultItemInfo(1))
 
