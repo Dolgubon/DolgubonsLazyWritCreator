@@ -46,5 +46,5 @@ AlchGrab.lua
 Languages/default.lua
 Languages/$(language).lua
 OptionsTable.lua
-ResetTime.lua
+SlashCommands.lua
 Tutorial.lua

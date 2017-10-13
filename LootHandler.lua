@@ -15,6 +15,8 @@ local function toVoucherCount(item_link)
     return vc
 end
 
+WritCreater.toVoucherCount = toVoucherCount
+
 
 local function saveStats(loot, boxType, boxRank)
 	local vars = WritCreater.savedVarsAccountWide -- shortcut
@@ -263,81 +265,3 @@ end
 
 function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)) 
 	return ZO_LinkHandler_CreateLink(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) end
-
-SLASH_COMMANDS['/outputwritstats'] = function()
-	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
-		if type(v) == "table" and WritCreater.writNames[k] then
-			d("--------------------------------")
-			d(WritCreater.writNames[k].." Stats")
-			for statType, stats in pairs(v) do 
-				if stats==0 then
-				elseif type(stats)=="table" then
-					for quality, amount in pairs(stats) do
-						if amount~=0 then
-							d(quality.." recipes: "..amount)
-						end
-					end
-				else
-					if type(statType)=="number" then
-						d(getItemLinkFromItemId(statType)..": "..tostring(stats))
-					else
-						d(statType..": "..tostring(stats))
-					end
-				end
-			end
-		elseif type(v)=="function" then
-		else
-			d(k..": "..tostring(v))
-		end
-	end
-	local daysSinceReset = math.floor((GetTimeStamp() - WritCreater.savedVarsAccountWide.timeSinceReset)/86400*100)/100
-	d("Total Writs Completed: "..WritCreater.savedVarsAccountWide.total.." in the past "..tostring(daysSinceReset).." days")
-end
-
-
-SLASH_COMMANDS['/countunearnedvouchers'] = function()
-    local total= 0
-    local i, j, bankNum
-    for j, bankNum in ipairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
-        for i = 1, GetBagSize(bankNum) do
-            local itemType =  GetItemType(bankNum, i)
-            if itemType == ITEMTYPE_MASTER_WRIT then
-                total = total + toVoucherCount(GetItemLink(bankNum, i))
-            end
-        end
-    end
-    d("You have "..tostring(total).." unearned Writ Vouchers.")
-end
-
-
-local function CountSurveys()
-    local a = 0
-    local i, j, bankNum
-    for j, bankNum in ipairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
-        for i = 1, GetBagSize(bankNum) do
-            local _,special =  GetItemType(bankNum, i)
-            if special ==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
-                local _, count = GetItemInfo(bankNum,i)
-                a = a + count
-            end
-        end
-    end
-    d("You have "..tostring(a).." surveys.")
-end
-
-
-SLASH_COMMANDS['/resetwritstatistics'] = function() 
-	for k, v in pairs(WritCreater.defaultAccountWide) do
-		if k == "masterWrits" then
-		else
-			WritCreater.savedVarsAccountWide[k] = WritCreater.defaultAccountWide[k]
-		end
-	end
-	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp() 
-	d("Writ statistics reset.")
-end
-
---WritCreater.savedVars.useNewContainer
---WritCreater.savedVars.keepNewContainer
-
-

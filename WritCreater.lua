@@ -993,7 +993,7 @@ end
 local function initializeOtherStuff()
 	WritCreater.savedVars = ZO_SavedVars:NewCharacterIdSettings("DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.default)
 	WritCreater.savedVarsAccountWide = ZO_SavedVars:NewAccountWide("DolgubonsWritCrafterSavedVars", WritCreater.versionAccount, nil, WritCreater.defaultAccountWide)
-	SLASH_COMMANDS['/dailyreset'] = WritCreater.resetTime
+	
 	WritCreater.setupAlchGrabEvents()
 	potencyNames = WritCreater.langPotencyNames()
 	essenceNames = WritCreater.langEssenceNames()
@@ -1038,42 +1038,12 @@ function WritCreater:Initialize()
 	WritCreater.InitializeRightClick()
 end
 
-SLASH_COMMANDS['/resetwcsettings'] = function() WritCreater.savedVars = WritCreater.default d("settings reset") end
-SLASH_COMMANDS['/dlwcdebug'] = function() WritCreater.savedVars.debug = not WritCreater.savedVars.debug d(WritCreater.savedVars.debug) end
-SLASH_COMMANDS['/abaondwrits'] = function() local a = writSearch() d("Abandon Ship!!!") for i = 1, 6 do AbandonQuest(a[i]) end end
-SLASH_COMMANDS['/abandonwrits'] = function() local a = writSearch() d("Abandon Ship!!!") for i = 1, 6 do AbandonQuest(a[i]) end end
 
 --[[SLASH_COMMANDS['/wcbag'] = function (str)
 	t = parser (str)
 	d(GetItemLink(tostring(t[1]),tostring(t[2]),LINK_STYLE_DEFAULT))
-end]]
-
-SLASH_COMMANDS['/dlwcfindwrit'] = function (params)
-	for i=1 , GetNumJournalQuests() do
-		Qname=GetJournalQuestName(i)
-
-		if string.find (Qname, "Writ") then
-			if string.find(Qname, "Alchemist") then
-				d("Alchemist Writ = "..i)
-			end
-			if string.find(Qname, "Blacksmith") then
-				d("Blacksmith Writ = "..i)
-			end
-			if string.find(Qname, "Woodworker") then
-				d("Woodworker Writ = "..i)
-			end
-			if string.find(Qname, "Provisioner") then
-				d("Provisioner Writ = "..i)
-			end
-			if string.find(Qname, "Clothier") then
-				d("Clothier Writ = "..i)
-			end
-			if string.find(Qname, "Enchanter" )then
-				d("Enchanter Writ = "..i)
-			end
-		end
-	end
 end--]]
+
 
 function WritCreater.OnAddOnLoaded(event, addonName)
 

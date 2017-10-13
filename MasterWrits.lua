@@ -482,12 +482,6 @@ function WritCreater.scanAllQuests()
 	for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
 end
 
-SLASH_COMMANDS['/rerunmasterwrits'] = WritCreater.scanAllQuests
-
-
-
-SLASH_COMMANDS['/craftitems'] = function() WritCreater.LLCInteraction:CraftAllItems() end
---
 function WritCreater.InventorySlot_ShowContextMenu(rowControl,debugslot)
 	
 	local bag, slot, link, flavour, reference
