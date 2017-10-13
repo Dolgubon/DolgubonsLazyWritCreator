@@ -185,9 +185,10 @@ local function OnLootUpdated(event)
 				--SYSTEMS:GetObject("mainMenu"):ToggleCategory(MENU_CATEGORY_INVENTORY)
 				local timeToWait = 50
 				if IsInGamepadPreferredMode() then timeToWait = 200 end
-				zo_callLater(function() SCENE_MANAGER:Show(lastScene) 
-					if lastScene == "hudui" then zo_callLater(function() SetGameCameraUIMode(false)end , 50) end 
-					sceneDefault() end, timeToWait)
+				--[[zo_callLater(function() --SCENE_MANAGER:Show(lastScene) 
+													if lastScene == "hudui" then zo_callLater(function() --SetGameCameraUIMode(true)
+														end , 50) end 
+													sceneDefault() end, timeToWait)]]
 			end
 		end
 	end

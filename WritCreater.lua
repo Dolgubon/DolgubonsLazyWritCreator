@@ -54,6 +54,7 @@ WritCreater.default =
 	["keepNewContainer"] = true,
 	["lootContainerOnReceipt"] = true,	
 	["lootOutput"] = false,
+
 }
 WritCreater.defaultAccountWide = {
 	["masterWrits"] = true,
@@ -61,6 +62,7 @@ WritCreater.defaultAccountWide = {
 	["timeSinceReset"] = GetTimeStamp(),
 	["skipped"] = 0,
 	["total"] = 0,
+	[6697110] = false,
 	["rewards"] = 
 	{
 		[CRAFTING_TYPE_BLACKSMITHING] = 
@@ -394,6 +396,7 @@ end
 
 
 local function maxStyle (piece) -- Searches to find the style that the user has the most style stones for. Only searches basic styles. User must know style
+
 	local max = -1
 	for i, v in pairs(WritCreater.savedVars.styles) do
 		if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) and IsSmithingStyleKnown(i, piece) then 
@@ -604,6 +607,7 @@ end
 crafting = function(info,quest, craftItems)
 	--if #queue>0 then return end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
+	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
 	out("If you see this, something is wrong.\nCopy the quest conditions, and send to Dolgubon\non esoui")
 	queue = {}
 
@@ -742,6 +746,7 @@ end
 
 local function enchantCrafting(info, quest,add)
 	out("")
+	
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	ENCHANTING.potencySound = SOUNDS["NONE"]
 	ENCHANTING.potencyLength = 0

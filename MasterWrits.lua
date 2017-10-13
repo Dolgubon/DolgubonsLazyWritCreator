@@ -290,6 +290,7 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 		isQuest = false
 		condition, complete = sealedText, false
 	else
+	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
 	end
 	
 	--"Craft a Rubedite Greataxe with the following Properties:\n • Quality: Epic\n • Trait: Powered\n • Set: Oblivion's Foe\n • Style: Imperial\n • Progress: 0 / 1", false--
