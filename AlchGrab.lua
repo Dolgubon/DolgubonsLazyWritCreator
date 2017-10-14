@@ -19,6 +19,15 @@ end
 local function dbug(...)
 	DolgubonGlobalDebugOutput(...)
 end
+
+--local potionInfo = { ZO_LinkHandler_ParseLink(item_link) }
+-- 
+local function numPotEffects(link)
+	local traitInfo = potionInfo[24]
+	effect1 = math.floor(arg21 / 65536) % 256
+	effect2 = math.floor(arg21 / 256) % 256
+	effect3 = arg21 % 256
+end
 --helper functions
 
 local function hexConversion(IN)
