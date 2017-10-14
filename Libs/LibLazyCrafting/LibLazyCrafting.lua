@@ -552,8 +552,14 @@ local function CraftComplete(event, station)
 				zo_callLater(function() v["complete"](station) end, timetest)
 			else
 				--d("calling complete")
-				v["complete"](station)
-				v["function"](station) 
+				if WritCrafter and WritCrafter.savedVarsAccountWide.masterDebugDelay then
+					zo_callLater(function()
+					v["complete"](station)
+					v["function"](station) end, 500)
+				else
+					v["complete"](station)
+					v["function"](station) 
+				end
 			end
 		end
 	end

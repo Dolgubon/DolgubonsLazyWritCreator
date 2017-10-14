@@ -36,21 +36,55 @@ local function date()
 end
 
 -- countSurveys counts how many surveys the user has in their bank and inventory
+-- Breaks it down further into types of surveys
+
+local function determineSurveyType(bag, slot, names)
+	local name = GetItemName(bag, slot)
+	for i = 1, 6 do
+
+		if string.find(name,names[i]) then
+			return i
+		end
+	end
+	
+	return 7
+end
 
 local function countSurveys()
+	local names = WritCreater.langWritNames()
+	if WritCreater.lang == "fr" then
+		names[CRAFTING_TYPE_ALCHEMY] = "enchanteur"
+		names[CRAFTING_TYPE_ENCHANTING] = "alchimiste"
+	end
     local a = 0
     local i, j, bankNum
+    local detailedCount = 
+    {
+    	[CRAFTING_TYPE_ENCHANTING] = 0,
+		[CRAFTING_TYPE_BLACKSMITHING] = 0,
+		[CRAFTING_TYPE_CLOTHIER] = 0,
+		[CRAFTING_TYPE_PROVISIONING] = 0,
+		[CRAFTING_TYPE_WOODWORKING] = 0,
+		[CRAFTING_TYPE_ALCHEMY] = 0,
+		[7] = 0, -- This is for internal purposes, mainly to bypass if statements checking if a survey type was found. 
+	}
     for j, bankNum in ipairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
         for i = 1, GetBagSize(bankNum) do
             local _,special =  GetItemType(bankNum, i)
             if special ==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
                 local _, count = GetItemInfo(bankNum,i)
                 a = a + count
+                local surveyType = determineSurveyType(bankNum, i, names)
+                detailedCount[surveyType] = detailedCount[surveyType] + count
             end
         end
     end
     d(zo_strformat(WritCreater.strings.countSurveys,a))
-    
+    for i = 1, 6 do
+    	if detailedCount[i] >0 then
+    		d(names[i].." : "..detailedCount[i])
+    	end
+    end
 end
 
 -- countVouchers counts how many unearned vouchers the user has in sealed writs
@@ -127,6 +161,9 @@ local function activateDebug(str)
 	if string.lower(str) == "bank" then
 		WritCreater.savedVarsAccountWide.bankDebug = not WritCreater.savedVarsAccountWide.bankDebug 
 		d("Bank debug is "..tostring( WritCreater.savedVarsAccountWide.bankDebug) )
+	elseif string.lower(str) == "delay" then
+		WritCrafter.savedVarsAccountWide.masterDebugDelay = not WritCrafter.savedVarsAccountWide.masterDebugDelay
+		d("Delay debug is "..tostring( WritCreater.savedVarsAccountWide.bankDebug) )
 	else
 		
 		WritCreater.savedVars.debug = not WritCreater.savedVars.debug 

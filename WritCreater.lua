@@ -30,6 +30,7 @@ d("The winner is "..t[winner].."!")]]
 
 --- TO DO!!!
 --- Give priority to potions or poisons with only one trait!
+--DolgubonsWritsBackdropQuestOutput.SetText = function()end
 if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
 
 WritCreater = WritCreater or {}
