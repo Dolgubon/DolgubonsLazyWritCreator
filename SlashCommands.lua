@@ -126,11 +126,11 @@ end
 local function activateDebug(str)
 	if string.lower(str) == "bank" then
 		WritCreater.savedVarsAccountWide.bankDebug = not WritCreater.savedVarsAccountWide.bankDebug 
-		d("Bank debug is ".. WritCreater.savedVarsAccountWide.bankDebug) 
+		d("Bank debug is "..tostring( WritCreater.savedVarsAccountWide.bankDebug) )
 	else
 		
 		WritCreater.savedVars.debug = not WritCreater.savedVars.debug 
-		d("Craft Debug is ".. WritCreater.savedVars.debug)
+		d("Craft Debug is ".. tostring(WritCreater.savedVars.debug))
 	end
 end
 
