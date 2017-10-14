@@ -20,13 +20,16 @@ local function dbug(...)
 	DolgubonGlobalDebugOutput(...)
 end
 
---local potionInfo = { ZO_LinkHandler_ParseLink(item_link) }
+--
 -- 
-local function numPotEffects(link)
+function numPotEffects(link)
+	local potionInfo = { ZO_LinkHandler_ParseLink(link) }
 	local traitInfo = potionInfo[24]
-	effect1 = math.floor(arg21 / 65536) % 256
-	effect2 = math.floor(arg21 / 256) % 256
-	effect3 = arg21 % 256
+
+	count = math.floor(1/(math.floor(traitInfo / 65536) % 256 +1))
+	count =count +  math.floor(1/(math.floor(traitInfo / 256) % 256 +1))
+	count =count +  math.floor(1/(traitInfo % 256 + 1))
+	return 3 - count
 end
 --helper functions
 
@@ -124,6 +127,7 @@ local function isPotentialMatch(questCondition, validItemTypes, bag, slot)
 end
 
 local function filterMatches(matches)
+	local traits = 4
 	if #matches== 0 then
 		specialDebug("WC Debug No potential matches")
 		return nil, nil
@@ -135,9 +139,11 @@ local function filterMatches(matches)
 		local longest = 0
 		local position = 0
 		for i = 1, #matches do
-			if string.len(GetItemName(matches[i][1], matches[i][2]))>longest then
-				longest = string.len(GetItemName(matches[i][1], matches[i][2]))
-				position = i
+			if string.len(GetItemName(matches[i][1], matches[i][2]))>=longest then
+				if numPotEffects(GetItemLink(matches[i][1], matches[i][2])) <traits then
+					longest = string.len(GetItemName(matches[i][1], matches[i][2]))
+					position = i
+				end
 			end
 		end
 		specialDebug("WC Debug "..GetItemLink(matches[position][1], matches[position][2]).." had the longest name and will now be withdrawn")
