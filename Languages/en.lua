@@ -480,13 +480,15 @@ WritCreater.strings =
 	["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end,
 	["smithingReq2"] 				= function (amount,type, current) return zo_strformat( "\nAs well as <<1>> <<2>> (|c2dff00<<3>> available|r)"         ,amount, type, current) end,
 	["lootReceived"]				= "<<1>> was received",
+	["countSurveys"]				= "You have <<1>> surveys",
+	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
 }
-local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() return GetDate()==20170401 end
+local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() return GetDate()==20171031 end
 if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() then
-	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Jester Hats (|cf60000You need -<<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> High Elven Heart (|cf60000You need -<<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Sock Puppet (|cf60000You need -<<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Jolly Bean (|cf60000You need -<<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Vampire Heart (|cf60000You need <<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Ghost Eyes (|cf60000You need <<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Clowns (|cf60000You need <<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Werewolf Claws (|cf60000You need <<3>>|r)" ,amount, type, more) end
 end
 
 --Options table Strings

@@ -514,6 +514,8 @@ WritCreater.strings = {
 	["complete"] 								= "|c00FF00Der Schrieb ist fertig|r",
 	["craftingstopped"] 						= "Herstellung gestoppt. Bitte überprüfe, ob das AddOn den richtigen Gegenstand herstellt.",
 	["lootReceived"]							= "<<1>> erhalten",
+	["countSurveys"]							= "Du hast <<1>> Gutachten",
+	["countVouchers"]							= "Du hast <<1>> offene Schriebscheine",
 }
 
 WritCreater.optionStrings = {}
@@ -548,8 +550,8 @@ WritCreater.optionStrings["new container"]								= "Behalte neuen Status"
 WritCreater.optionStrings["new container tooltip"]						= "Behalte neuen Status für Schrieb-Belohnungs-Behälter"
 WritCreater.optionStrings["master"]										= "Meisterschriebe"
 WritCreater.optionStrings["master tooltip"]								= "Ein/Ausschalten ob Meisterschriebe automatisch hergestellt werden"
-WritCreater.optionStrings["right click to craft"]						= "Right Click to Craft"
-WritCreater.optionStrings["right click to craft tooltip"]				= "If this is ON the addon will craft Master Writs you tell it to craft after right clicking a sealed writ"
+WritCreater.optionStrings["right click to craft"]						= "Rechtsklick zum Craften"
+WritCreater.optionStrings["right click to craft tooltip"]				= "Wenn diese Einstellung aktiv ist, wird das AddOn Masterwrits craften, nachdem sie durch einen Rechtsklick aktiviert wurden"
 WritCreater.optionStrings["crafting submenu"]							= "Zu bearbeitende Handwerke"
 WritCreater.optionStrings["crafting submenu tooltip"]					= "Ein/Ausschalten von bestimmten Handwerken"
 WritCreater.optionStrings["timesavers submenu"]							= "Zeitsparer"

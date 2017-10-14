@@ -49,7 +49,8 @@ local function countSurveys()
             end
         end
     end
-    d("You have "..tostring(a).." surveys.")
+    d(zo_strformat(WritCreater.strings.countSurveys,a))
+    
 end
 
 -- countVouchers counts how many unearned vouchers the user has in sealed writs
@@ -65,7 +66,8 @@ local function countVouchers()
             end
         end
     end
-    d("You have "..tostring(total).." unearned Writ Vouchers.")
+    d(zo_strformat(WritCreater.strings.countVouchers,a))
+    
 end
 
 -- outputStats outputs the user's writ rewards in a (mildly) readable fashion
@@ -121,8 +123,15 @@ end
 
 -- Activates the debug mode. Debug mode is not comprehensive. It mainly only works in the crafting functions of master writs
 
-local function activateDebug()
-	WritCreater.savedVars.debug = not WritCreater.savedVars.debug d(WritCreater.savedVars.debug) 
+local function activateDebug(str)
+	if string.lower(str) == "bank" then
+		WritCreater.savedVarsAccountWide.bankDebug = not WritCreater.savedVarsAccountWide.bankDebug 
+		d("Bank debug is ".. WritCreater.savedVarsAccountWide.bankDebug) 
+	else
+		
+		WritCreater.savedVars.debug = not WritCreater.savedVars.debug 
+		d("Craft Debug is ".. WritCreater.savedVars.debug)
+	end
 end
 
 -- Abandons all writs
@@ -141,6 +150,7 @@ local function findWrits(params)
 		d(GetJournalQuestName(index).." has hournal index : "..index)
 	end
 end--]]
+
 
 --------------------------------------------------
 -- TIME TO RESET

@@ -486,7 +486,7 @@ end
 WritCreater.strings  = {
 	["runeReq"] 						= function (essence, potency) return "|c2dff00L'artisanat requiert 1 |rTa|c2dff00, 1 |cffcc66"..essence.."|c2dff00 et 1 |c0066ff"..potency.."|r" end,
 	["runeMissing"]						= runeMissingFunction,
-	["notEnoughSkill"]					= "You do not have a high enough crafting skill to make the required equipment",
+	["notEnoughSkill"]					= "Votre compétence d’artisanat n’est pas assez élevée pour fabriquer l’équipement requis",
 	["smithingMissing"] 				= "\n|cf60000Vous n'avez pas assez de matériaux|r",
 	["craftAnyway"] 					= "Crafter quand même",
 	["smithingEnough"] 					= "\n|c2dff00Vous avez suffisamment de matériaux|r",
@@ -501,7 +501,9 @@ WritCreater.strings  = {
 	["smithingReq"] 					= function (amount,type, current) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|c2dff00<<3>> disponible|r)"  ,amount, type, current) end,
 	["smithingReq2"] 					= function (amount,type, current) return zo_strformat( "\nMais aussi <<1>> <<2>> (|c2dff00<<3>> disponible|r)" ,amount, type, current) end,
 	["dailyreset"] 						= function (till) d(zo_strformat("<<1>> heures et <<2>> minutes avant le reset journalier.",till["hour"],till["minute"])) end,
-	["lootReceived"]					= "<<1>> was received",
+	["lootReceived"]					= "<<1>> a été reçu",
+	["countSurveys"]					= "Vous avez <<1>> repérages",
+	["countVouchers"]					= "Vous avez <<1>> Coupons de Commande non-acquis",
 }
 
 
@@ -528,30 +530,30 @@ WritCreater.optionStrings["ignore autoloot"]                          = "Outrepa
 WritCreater.optionStrings["ignore autoloot tooltip"]                  = "Ignorer le paramètre d'autoloot des paramètres de Gameplay mais utiliser le paramètre personnalisé ci-dessous pour les conteneurs d'artisanat"
 WritCreater.optionStrings["autoloot containters"]                     = "Conteneurs de quête d'artisanat"
 WritCreater.optionStrings["autoLoot containters tooltip"]             = "Looter automatiquement les conteneurs d'artisanat lorsqu'ils sont ouverts"
-WritCreater.optionStrings["style stone menu"]                         = "Utilisation des pierres de style"
+WritCreater.optionStrings["style stone menu"]                         = "Utilisation des matériaux de style"
 WritCreater.optionStrings["style stone menu tooltip"]                 = "Sélectionnez quelles pierres de style utiliser"
 WritCreater.optionStrings["exit when done"]							  = "Quitter l'atelier lorsque terminé"
 WritCreater.optionStrings["exit when done tooltip"]					  = "Quitter l'atelier automatiquement lorsque toutes les fabrications ont été réalisées"
 WritCreater.optionStrings["automatic complete"]						  = "Interactions automatiques de quêtes"
 WritCreater.optionStrings["automatic complete tooltip"]				  = "Accepte et valide automatiquement les quêtes en interagissant avec les panneaux et coffres d'artisanat."
-WritCreater.optionStrings["new container"]							  = "Keep new status"
+WritCreater.optionStrings["new container"]							  = "Conserver le statut nouveau"
 WritCreater.optionStrings["new container tooltip"]					  = "Keep the new status for writ reward containers"
-WritCreater.optionStrings["master"]									  = "Master Writs"
-WritCreater.optionStrings["master tooltip"]							  = "Turn the addon off for Master Writs"
-WritCreater.optionStrings["right click to craft"]						= "Right Click to Craft"
-WritCreater.optionStrings["right click to craft tooltip"]				= "If this is ON the addon will craft Master Writs you tell it to craft after right clicking a sealed writ"
-WritCreater.optionStrings["crafting submenu"]							= "Trades to Craft"
-WritCreater.optionStrings["crafting submenu tooltip"]					= "Turn the addon off for specific crafts"
-WritCreater.optionStrings["timesavers submenu"]							= "Timesavers"
-WritCreater.optionStrings["timesavers submenu tooltip"]					= "Various small timesavers"
-WritCreater.optionStrings["loot container"]						  		= "Loot container when received"
-WritCreater.optionStrings["loot container tooltip"]				  		= "Loot writ reward containers when you receive them"
-WritCreater.optionStrings["master writ saver"]							= "Save Master Writs"
-WritCreater.optionStrings["master writ saver tooltip"]					= "Prevents Master Writs from being accepted"
+WritCreater.optionStrings["master"]									  = "Commandes de maître"
+WritCreater.optionStrings["master tooltip"]							  = "Désactiver l’extension pour les Commandes de maître"
+WritCreater.optionStrings["right click to craft"]						= "Clic-Droit pour Fabriquer"
+WritCreater.optionStrings["right click to craft tooltip"]				= "Si cela est sur ON, l’extension fabriquera les commandes de maître que vous lui dites de faire après avoir clic-droit sur une commande scellée"
+WritCreater.optionStrings["crafting submenu"]							= "Fabrication des objets de commande"
+WritCreater.optionStrings["crafting submenu tooltip"]					= "Désactiver l’extension pour des commandes spécifiques"
+WritCreater.optionStrings["timesavers submenu"]							= "Économies de temps"
+WritCreater.optionStrings["timesavers submenu tooltip"]					= "Divers économies de temps"
+WritCreater.optionStrings["loot container"]						  		= "Ouvrir le conteneur quand reçu"
+WritCreater.optionStrings["loot container tooltip"]				  		= "Ouvrir le conteneur de récompenses de commande lorsque vous les recevez"
+WritCreater.optionStrings["master writ saver"]							= "Sauvegarder commande de maître"
+WritCreater.optionStrings["master writ saver tooltip"]					= "Empêcher l’acceptation de Commande de maître"
 WritCreater.optionStrings["loot output"]								= "Alerte sur les récompenses précieuses"
 WritCreater.optionStrings["loot output tooltip"]						= "Afficher un message lorsque des objets de grande valeur sont reçus d'une commande d'artisanat"
-WritCreater.optionStrings["writ grabbing"]								= "Grab writ items"
-WritCreater.optionStrings["writ grabbing tooltip"]						= "Grab items required for writs (e.g. nirnroot, Ta, etc.) from the bank"
+WritCreater.optionStrings["writ grabbing"]								= "Prendre les matériaux de commande"
+WritCreater.optionStrings["writ grabbing tooltip"]						= "Prendre les matériaux requis pour les commandes (ex. Nirnroot, Ta, etc.) de la banque" 
 
 
 
