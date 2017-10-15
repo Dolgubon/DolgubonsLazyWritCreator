@@ -15,21 +15,9 @@
 --GetSkillAbilityInfo(number SkillType skillType, number skillIndex, number abilityIndex)
 --GetSkillLineInfo(number SkillType skillType, number skillIndex)
 
---[[local t = {}
-for i =1, 500 do 
-	local name, note, rankIndex, playerStatus, secs = GetGuildMemberInfo(2, i)
-	if secs<604800 and rankIndex>3 then
-		t[#t + 1] = name
-	end
-end
-local winner = math.random(1,#t)
-d("The winner is "..t[winner].."!")]]
-
 --local d = function() for i = 1, #abc do end end
 --test
 
---- TO DO!!!
---- Give priority to potions or poisons with only one trait!
 --DolgubonsWritsBackdropQuestOutput.SetText = function()end
 if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
 

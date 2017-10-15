@@ -56,7 +56,7 @@ local function countSurveys()
 		names[CRAFTING_TYPE_ALCHEMY] = "enchanteur"
 		names[CRAFTING_TYPE_ENCHANTING] = "alchimiste"
 	end
-    local a = 0
+    local total = 0
     local i, j, bankNum
     local detailedCount = 
     {
@@ -73,13 +73,13 @@ local function countSurveys()
             local _,special =  GetItemType(bankNum, i)
             if special ==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
                 local _, count = GetItemInfo(bankNum,i)
-                a = a + count
+                total = total + count
                 local surveyType = determineSurveyType(bankNum, i, names)
                 detailedCount[surveyType] = detailedCount[surveyType] + count
             end
         end
     end
-    d(zo_strformat(WritCreater.strings.countSurveys,a))
+    d(zo_strformat(WritCreater.strings.countSurveys,total))
     for i = 1, 6 do
     	if detailedCount[i] >0 then
     		d(names[i].." : "..detailedCount[i])
@@ -100,7 +100,7 @@ local function countVouchers()
             end
         end
     end
-    d(zo_strformat(WritCreater.strings.countVouchers,a))
+    d(zo_strformat(WritCreater.strings.countVouchers,total))
     
 end
 
@@ -212,7 +212,8 @@ SLASH_COMMANDS['/rerunmasterwrits'] = WritCreater.scanAllQuests
 --------------------------------------------------
 -- GENERAL COMMANDS
 	-- Resets character specific settings settings
-SLASH_COMMANDS['/resetwritcraftersettings'] = resetSettings()
+SLASH_COMMANDS['/resetwritcraftersettings'] = resetSettings
+SLASH_COMMANDS['/resetwcsettings'] = resetSettings
 	-- Activates debug mode. Debug mode is not comprehensive.
 SLASH_COMMANDS['/dlwcdebug'] = activateDebug
 	-- Abandons all currently active writs.

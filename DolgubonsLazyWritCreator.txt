@@ -4,10 +4,10 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Writ Creator v35.5
-## APIVersion: 100020
+## Title: Dolgubon's Lazy Writ Creator v35.55
+## APIVersion: 100020 100021
 ## Author: Dolgubon
-## Version: 35.5
+## Version: 35.55
 ## OptionalDependsOn: LibAddonMenu-2.0 pChat
 ## SavedVariables: DolgubonsWritCrafterSavedVars
 
@@ -42,7 +42,7 @@ QuestHandler.lua
 WritCreater.xml
 WritCreater.lua
 MasterWrits.lua
-AlchGrab.lua
+BankWithdraw.lua
 
 Languages/default.lua
 Languages/$(language).lua
