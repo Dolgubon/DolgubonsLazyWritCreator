@@ -279,32 +279,21 @@ end
 --string.match(input,"([^"..seperater.."]*)"..seperater.."+(.*)")
 --takes in a string and returns a table with each word seperate
 local function parser(str)
-	local seperater = "%s+"
-	if WritCreater.lang ~= "jp" then 
-		str = string.gsub(str,":"," ")
-	else
-		seperater = ":"
+	if WritCreater.lang == "jp" then 
 		str = string.gsub(str,"の",":")
 		str = string.gsub(str,"を",":")
 		str = string.gsub(str,"な",":")
 	end
+	
+	str = string.gsub(str,":"," ")
 	local params = {}
 	local i = 1
-	local searchResult1, searchResult2  = string.find(str,seperater)
-	if searchResult1 == 1 then
-		str = string.sub(str, searchResult2+1)
-		searchResult1, searchResult2  = string.find(str,seperater)
+
+	for word in str:gmatch('([^ ]+)') do
+	    params[i] = word
+		i = i + 1 
 	end
-
-	while searchResult1 do
-
-		params[i] = string.sub(str, 1, searchResult1-1)
-		str = string.sub(str, searchResult2+1)
-	    searchResult1, searchResult2  = string.find(str,seperater)
-	    i=i+1
-	end 
-	params[i] = str
-	return params
+	return params 
 
 end
 

@@ -343,6 +343,8 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 		quality = smithingSearch(conditionStrings["quality"], {{"episch",4},{"legendär",5}})
 	elseif WritCreater.lang =="fr" then
 		quality = smithingSearch(conditionStrings["quality"], {{"épique",4},{"légendaire",5}})
+	elseif WritCreater.lang == "zh" then
+		quality = smithingSearch(conditionStrings["quality"], {{"史诗",4},{"传说",5}})
 	end
 
 	if foundAllRequirements(pattern, style, setIndex, trait, quality) then
