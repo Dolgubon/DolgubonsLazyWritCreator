@@ -148,6 +148,6 @@ end
 function WritCreater.InitializeQuestHandling()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CHATTER_BEGIN, HandleChatterBegin)
 	completionStrings = WritCreater.writCompleteStrings()
-
-
 end
+
+--/script JumpToSpecificHouse("@marcopolo184", 46)

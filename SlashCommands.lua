@@ -162,7 +162,7 @@ local function activateDebug(str)
 		WritCreater.savedVarsAccountWide.bankDebug = not WritCreater.savedVarsAccountWide.bankDebug 
 		d("Bank debug is "..tostring( WritCreater.savedVarsAccountWide.bankDebug) )
 	elseif string.lower(str) == "delay" then
-		WritCrafter.savedVarsAccountWide.masterDebugDelay = not WritCrafter.savedVarsAccountWide.masterDebugDelay
+		WritCreater.savedVarsAccountWide.masterDebugDelay = not WritCreater.savedVarsAccountWide.masterDebugDelay
 		d("Delay debug is "..tostring( WritCreater.savedVarsAccountWide.bankDebug) )
 	else
 		
@@ -220,3 +220,6 @@ SLASH_COMMANDS['/dlwcdebug'] = activateDebug
 SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function
 SLASH_COMMANDS['/dlwcfindwrit'] = findWrits
+
+
+

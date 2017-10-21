@@ -178,6 +178,7 @@ end
 sceneDefault()
 --If the box/loot item that is open is a writ container, loot it and open the inventory again
 local calledFromQuest = false
+
 local function OnLootUpdated(event)
 	local ignoreAuto = WritCreater.savedVars.ignoreAuto
 	local autoLoot 
@@ -193,15 +194,19 @@ local function OnLootUpdated(event)
 		for i = 1, 7 do
 			local a, b = string.find(lootInfo[1], writRewardNames[i])
 			if a then				
-				LOOT_SHARED:LootAllItems()
+				--LOOT_SHARED:LootAllItems()
+				local n = SCENE_MANAGER:GetCurrentScene().name
+
+				LootAll()
+				if n == 'hudui' or n=='interact' or n == 'hud' then SCENE_MANAGER:Show('hud') test() else SCENE_MANAGER:Show(n) end
 				--local boxRank = romanNumeral(string.sub(lootInfo[1], b + 2))
 				if shouldSaveStats(i,boxRank) then LootAllHook(i,boxRank) end
 				--SYSTEMS:GetObject("mainMenu"):ToggleCategory(MENU_CATEGORY_INVENTORY)
-				local timeToWait = 50
+				--[[local timeToWait = 50
 				if IsInGamepadPreferredMode() then timeToWait = 200 end
-				if lastScene ~= "hudui" then
-					zo_callLater(function() SCENE_MANAGER:Show(lastScene) sceneDefault() end , timeToWait)--]]
-				end
+					if lastScene =='hudui' then lastScene = 'hud' end
+					zo_callLater(function() if SCENE_MANAGER:GetCurrentScene().name~=lastScene then SCENE_MANAGER:Show(lastScene) sceneDefault() end end , timeToWait)--]]
+				
 			end
 		end
 	end
@@ -234,7 +239,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	if not isNew then return end
 	local link = GetItemLink(bag, slot)
 	local function attemptOpenContainer(bag, slot)
-		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() then
+		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' then
 			zo_callLater(function()attemptOpenContainer(bag, slot) end , GetSlotCooldownInfo( 1 ) + 100)
 		else
 			openContainer(bag, slot)
@@ -270,5 +275,13 @@ function WritCreater.LootHandlerInitialize()
 			oldfunc(self, bag, slot) 
 		end 
 	end
+	function test()
+    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
 end
 
+SCENE_MANAGER:RegisterTopLevel(DolgubonsWritsFeedback, false)
+end
+
+--/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
+--SCENE_MANAGER:GetCurrentScene().callbackRegistry.tester = function() d("hudui") end

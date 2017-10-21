@@ -12,6 +12,7 @@
 
 local function specialDebug(...)
 	if WritCreater.savedVarsAccountWide.bankDebug then
+		--df("[%s] " .. message, ADDON_NAME, ...)
 		d(...)
 	end
 end
@@ -234,8 +235,8 @@ end
 local validItemTypes = 
 {
 	[CRAFTING_TYPE_ALCHEMY] = {
-		[ITEMTYPE_POTION] = {true, function(link) return numPotEffects(link)>0 end},
-		[ITEMTYPE_POISON] = {true, function(link) return numPotEffects(link)>0 end},
+		[ITEMTYPE_POTION] = {true, function(link) return numPotEffects(link)==0 end},
+		[ITEMTYPE_POISON] = {true, function(link) return numPotEffects(link)==0 end},
 		[ITEMTYPE_POTION_BASE] = {true},
 		[ITEMTYPE_POTION_BASE] = {true},
 		[ITEMTYPE_REAGENT] = {true},
@@ -247,8 +248,8 @@ local validItemTypes =
 		[ITEMTYPE_GLYPH_ARMOR] = {true, function(link) return not IsItemLinkCrafted(link) end},
 	},
 	[CRAFTING_TYPE_PROVISIONING] = {
-		[ITEMTYPE_DRINK] = {true, function(link) return GetItemLinkQuality(link)==ITEM_QUALITY_MAGIC},
-		[ITEMTYPE_FOOD] = {true, function(link) return GetItemLinkQuality(link)==ITEM_QUALITY_MAGIC},
+		[ITEMTYPE_DRINK] = {true, function(link) return GetItemLinkQuality(link)~=ITEM_QUALITY_MAGIC end},
+		[ITEMTYPE_FOOD] = {true, function(link) return GetItemLinkQuality(link)~=ITEM_QUALITY_MAGIC end},
 	},
 	-- [[
 	[CRAFTING_TYPE_BLACKSMITHING] = {
