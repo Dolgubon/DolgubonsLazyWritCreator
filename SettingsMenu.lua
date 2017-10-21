@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: SettingsMenu.lua
+-- File Description: Contains the information for the settings menu
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 if WritCreater.lang ~= "none" then
 
 WritCreater.styleNames = {}
@@ -147,7 +159,7 @@ function WritCreater.Options() --Sentimental
 			tooltip = "Choose when the addon will autoloot writ reward containers",
 			choices = {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"},
 			choicesValues = {1,2,3},
-			getFunc = function() if WritCreater.savedVars.ignoreAuto then return 1 elseif WritCreater.savedVars.autoLoot then return 2 else return 3 end end,
+			getFunc = function() if not WritCreater.savedVars.ignoreAuto then return 1 elseif WritCreater.savedVars.autoLoot then return 2 else return 3 end end,
 			setFunc = function(value) 
 				if value == 1 then 
 					WritCreater.savedVars.ignoreAuto = false
@@ -162,17 +174,17 @@ function WritCreater.Options() --Sentimental
 		},
 		{
 			type = "checkbox",
-			name = WritCreater.optionStrings["new container"],--"Master Writs",
-			tooltip = WritCreater.optionStrings["new container tooltip"],--"Craft Master Writ Items",
+			name = WritCreater.optionStrings["new container"],
+			tooltip = WritCreater.optionStrings["new container tooltip"],
 			getFunc = function() return WritCreater.savedVars.keepNewContainer end,
 			setFunc = function(value) 
-			WritCreater.savedVars.keepNewContainer = value					
+			WritCreater.savedVars.keepNewContainer = value			
 			end,
 		},
 		{
 			type = "checkbox",
-			name = WritCreater.optionStrings["loot container"],--"Master Writs",
-			tooltip = WritCreater.optionStrings["loot container tooltip"],--"Craft Master Writ Items",
+			name = WritCreater.optionStrings["loot container"],
+			tooltip = WritCreater.optionStrings["loot container tooltip"],
 			getFunc = function() return WritCreater.savedVars.lootContainerOnReceipt end,
 			setFunc = function(value) 
 			WritCreater.savedVars.lootContainerOnReceipt = value					
@@ -180,8 +192,8 @@ function WritCreater.Options() --Sentimental
 		},
 		{
 			type = "checkbox",
-			name = WritCreater.optionStrings["master writ saver"],--"Master Writs",
-			tooltip = WritCreater.optionStrings["master writ saver tooltip"],--"Craft Master Writ Items",
+			name = WritCreater.optionStrings["master writ saver"],
+			tooltip = WritCreater.optionStrings["master writ saver tooltip"],
 			getFunc = function() return WritCreater.savedVars.preventMasterWritAccept end,
 			setFunc = function(value) 
 			WritCreater.savedVars.preventMasterWritAccept = value					

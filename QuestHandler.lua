@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: QuestHandler.lua
+-- File Description: Handles automatic acceptance and completion of quests
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 WritCreater = WritCreater or {}
 local completionStrings
 
@@ -14,7 +26,7 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 	local writComplete = false
 	local currentWritDialogue = 0
 	for i = 1, 6 do
-		if type(writs[i]) == "number" then
+		if writs[i] == journalIndex then -- determine which type of writ it is
 			writComplete = writComplete or GetJournalQuestIsComplete(writs[i])
 			currentWritDialogue= i
 		end
@@ -102,10 +114,11 @@ local function HandleChatterBegin(eventCode, optionCount)
 	       and (string.find(string.lower(optionString), string.lower(completionStrings.place)) ~= nil 
 	            or string.find(string.lower(optionString), string.lower(completionStrings.sign)) ~= nil)
 	    then
+
 	        -- Listen for the quest complete dialog
 	        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)
 	        -- Select the first option to place goods and/or sign the manifest
-	        --SelectChatterOption(1)
+	        SelectChatterOption(1)
 	    elseif ZO_InteractWindowTargetAreaTitle:GetText() =="-Rolis Hlaalu-" then
 
 		    if optionType == CHATTER_START_ADVANCE_COMPLETABLE_QUEST_CONDITIONS
@@ -135,6 +148,6 @@ end
 function WritCreater.InitializeQuestHandling()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CHATTER_BEGIN, HandleChatterBegin)
 	completionStrings = WritCreater.writCompleteStrings()
-
-
 end
+
+--/script JumpToSpecificHouse("@marcopolo184", 46)

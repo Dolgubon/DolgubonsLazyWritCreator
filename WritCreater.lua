@@ -1,22 +1,24 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: WritCreater.lua
+-- File Description: Main file of the addon. Should contain only initialization functions, but it's a mess right now
+-- Load Order Requirements: After WritCreater.xml
+-- 
+-----------------------------------------------------------------------------------
+
+
 --Declarations
 --GetSkillAbilityInfo(number SkillType skillType, number skillIndex, number abilityIndex)
 --GetSkillLineInfo(number SkillType skillType, number skillIndex)
 
---[[local t = {}
-for i =1, 500 do 
-	local name, note, rankIndex, playerStatus, secs = GetGuildMemberInfo(2, i)
-	if secs<604800 and rankIndex>3 then
-		t[#t + 1] = name
-	end
-end
-local winner = math.random(1,#t)
-d("The winner is "..t[winner].."!")]]
-
 --local d = function() for i = 1, #abc do end end
 --test
 
---- TO DO!!!
---- Give priority to potions or poisons with only one trait!
+--DolgubonsWritsBackdropQuestOutput.SetText = function()end
 if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
 
 WritCreater = WritCreater or {}
@@ -28,6 +30,7 @@ local LAM2
 WritCreater.languageStrings = {}
 WritCreater.resetTime = true
 WritCreater.version = 19
+WritCreater.versionAccount = 20
 WritCreater.savedVars = {}
 WritCreater.default = 
 {
@@ -53,6 +56,7 @@ WritCreater.default =
 	["keepNewContainer"] = true,
 	["lootContainerOnReceipt"] = true,	
 	["lootOutput"] = false,
+
 }
 WritCreater.defaultAccountWide = {
 	["masterWrits"] = true,
@@ -60,6 +64,7 @@ WritCreater.defaultAccountWide = {
 	["timeSinceReset"] = GetTimeStamp(),
 	["skipped"] = 0,
 	["total"] = 0,
+	[6697110] = false,
 	["rewards"] = 
 	{
 		[CRAFTING_TYPE_BLACKSMITHING] = 
@@ -393,6 +398,7 @@ end
 
 
 local function maxStyle (piece) -- Searches to find the style that the user has the most style stones for. Only searches basic styles. User must know style
+
 	local max = -1
 	for i, v in pairs(WritCreater.savedVars.styles) do
 		if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) and IsSmithingStyleKnown(i, piece) then 
@@ -603,6 +609,7 @@ end
 crafting = function(info,quest, craftItems)
 	--if #queue>0 then return end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
+	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
 	out("If you see this, something is wrong.\nCopy the quest conditions, and send to Dolgubon\non esoui")
 	queue = {}
 
@@ -629,7 +636,8 @@ crafting = function(info,quest, craftItems)
 				
 				local needed = conditions["max"][i] - conditions["cur"][i]
 				for s = 1, needed do
-					addMats(info["names"][conditions["mats"][i]],numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
+					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], indexRanges[conditions["mats"][i]], 0)
+					addMats(matName,numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
 
 					--d("queueing "..info["pieces"][conditions["pattern"][i]].." "..info["match"][conditions["mats"][i]])
 					--d(conditions["pattern"][i] ,indexRanges[conditions["mats"][i]],numMats,style,1)
@@ -646,7 +654,7 @@ crafting = function(info,quest, craftItems)
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
 							if changeRequired then return true end
-							addMats(info["names"][conditions["mats"][i]], -numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
+							addMats(matName, -numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
 							createMatRequirementText(matsRequired)
 
 							return true
@@ -740,6 +748,7 @@ end
 
 local function enchantCrafting(info, quest,add)
 	out("")
+	
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	ENCHANTING.potencySound = SOUNDS["NONE"]
 	ENCHANTING.potencyLength = 0
@@ -873,8 +882,8 @@ local tutorial1 = function () end
 local function temporarycraftcheckerjustbecause(eventcode, station)
 	
 	local currentAPIVersionOfAddon = 100020
-	if GetTimeStamp()>1494543600 then
-		--currentAPIVersionOfAddon = currentAPIVersionOfAddon + 1
+	if GetTimeStamp()>1508803199 then
+		currentAPIVersionOfAddon = currentAPIVersionOfAddon + 1
 	end
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		for i= 1, 10 do 
@@ -968,31 +977,51 @@ EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, WritCrea
 	
 EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, closeWindow)
 
-local newlyLoaded = true
-function WritCreater:Initialize()
-	DolgubonsWrits:SetHidden(true)
+local function initializeUI()
 	LAM = LibStub:GetLibrary("LibAddonMenu-2.0")
 	LAM:RegisterAddonPanel("DolgubonsWritCrafter", WritCreater.settings["panel"])
 	WritCreater.settings["options"] = WritCreater.Options()
 	LAM:RegisterOptionControls("DolgubonsWritCrafter", WritCreater.settings["options"])
-	craftInfo = WritCreater.languageInfo
-	WritCreater.craftInfo = WritCreater.languageInfo()
-
-	SLASH_COMMANDS['/dailyreset'] = WritCreater.resetTime
-
-
+	DolgubonsWrits:ClearAnchors()
+	DolgubonsWrits:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, WritCreater.savedVars.OffsetX-470, WritCreater.savedVars.OffsetY)
+		if false then --GetWorldName() ~= "NA Megaserver" then
+		DolgubonsWritsFeedbackSmall:SetHidden(true)
+		DolgubonsWritsFeedbackMedium:SetHidden(true)
+		DolgubonsWritsFeedbackLarge:SetHidden(true)
+		DolgubonsWritsFeedbackNote:SetText("If you found a bug, have a request or a suggestion, send me a mail. Note that mails with no attachments will expire within three days. Consider attaching 1g.")
+	end
+end
+local newlyLoaded = true
+local function initializeOtherStuff()
 	WritCreater.savedVars = ZO_SavedVars:NewCharacterIdSettings("DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.default)
-	WritCreater.savedVarsAccountWide = ZO_SavedVars:NewAccountWide("DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.defaultAccountWide)
-
-
+	WritCreater.savedVarsAccountWide = ZO_SavedVars:NewAccountWide("DolgubonsWritCrafterSavedVars", WritCreater.versionAccount, nil, WritCreater.defaultAccountWide)
+	
 	WritCreater.setupAlchGrabEvents()
-
 	potencyNames = WritCreater.langPotencyNames()
 	essenceNames = WritCreater.langEssenceNames()
 
 	WritCreater.writNames = WritCreater.langWritNames()
-	DolgubonsWrits:ClearAnchors()
-	DolgubonsWrits:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, WritCreater.savedVars.OffsetX-470, WritCreater.savedVars.OffsetY)
+	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
+	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) end)	
+
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function() if  newlyLoaded then  newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end end )
+	local LibMOTD = LibStub("LibMOTD")
+	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)
+	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
+	local original = AcceptOfferedQuest
+	AcceptOfferedQuest = function()
+	if string.find(GetOfferedQuestInfo(), "Rolis Hlaalu") and WritCreater.savedVars.preventMasterWritAccept then d("Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.")  else original() end end
+end
+
+
+function WritCreater:Initialize()
+	DolgubonsWrits:SetHidden(true)
+	
+	craftInfo = WritCreater.languageInfo
+	WritCreater.craftInfo = WritCreater.languageInfo()
+
+	initializeOtherStuff()
+	initializeUI()
 
 	local function ZO_AlertNoSuppression_Hook(category, soundId, message)
 		if message == SI_ENCHANT_NO_YIELD and craftingEnchantCurrently then
@@ -1003,66 +1032,20 @@ function WritCreater:Initialize()
 	end
 	ZO_PreHook("ZO_AlertNoSuppression", ZO_AlertNoSuppression_Hook)
 
-	if GetWorldName() ~= "NA Megaserver" then
-		DolgubonsWritsFeedbackSmall:SetHidden(true)
-		DolgubonsWritsFeedbackMedium:SetHidden(true)
-		DolgubonsWritsFeedbackLarge:SetHidden(true)
-		DolgubonsWritsFeedbackNote:SetText("If you found a bug, have a request or a suggestion, send me a mail. Note that mails with no attachments will expire within three days. Consider attaching 1g.")
-	end
-	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
-	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) end)	
 
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function(event, initial) if  newlyLoaded then  newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end end )
 	WritCreater.LootHandlerInitialize()
 	WritCreater.InitializeQuestHandling()
-
-	
-	
-	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
-	local original = AcceptOfferedQuest
-	AcceptOfferedQuest = function()
-	if string.find(GetOfferedQuestInfo(), "Rolis Hlaalu") and WritCreater.savedVars.preventMasterWritAccept then d("Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.")  else original() end end
 
 	--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
 	WritCreater.InitializeRightClick()
 end
 
-SLASH_COMMANDS['/resetwcsettings'] = function() WritCreater.savedVars = WritCreater.default d("settings reset") end
-SLASH_COMMANDS['/dlwcdebug'] = function() WritCreater.savedVars.debug = not WritCreater.savedVars.debug d(WritCreater.savedVars.debug) end
-SLASH_COMMANDS['/abaondwrits'] = function() local a = writSearch() d("Abandon Ship!!!") for i = 1, 6 do AbandonQuest(a[i]) end end
-SLASH_COMMANDS['/abandonwrits'] = function() local a = writSearch() d("Abandon Ship!!!") for i = 1, 6 do AbandonQuest(a[i]) end end
 
 --[[SLASH_COMMANDS['/wcbag'] = function (str)
 	t = parser (str)
 	d(GetItemLink(tostring(t[1]),tostring(t[2]),LINK_STYLE_DEFAULT))
-end]]
-
-SLASH_COMMANDS['/dlwcfindwrit'] = function (params)
-	for i=1 , GetNumJournalQuests() do
-		Qname=GetJournalQuestName(i)
-
-		if string.find (Qname, "Writ") then
-			if string.find(Qname, "Alchemist") then
-				d("Alchemist Writ = "..i)
-			end
-			if string.find(Qname, "Blacksmith") then
-				d("Blacksmith Writ = "..i)
-			end
-			if string.find(Qname, "Woodworker") then
-				d("Woodworker Writ = "..i)
-			end
-			if string.find(Qname, "Provisioner") then
-				d("Provisioner Writ = "..i)
-			end
-			if string.find(Qname, "Clothier") then
-				d("Clothier Writ = "..i)
-			end
-			if string.find(Qname, "Enchanter" )then
-				d("Enchanter Writ = "..i)
-			end
-		end
-	end
 end--]]
+
 
 function WritCreater.OnAddOnLoaded(event, addonName)
 

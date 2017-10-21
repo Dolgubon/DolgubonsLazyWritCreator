@@ -1,3 +1,16 @@
+-----------------------------------------------------------------------------------
+-- Library Name: LibLazyCrafting
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Library Ideal: Allow addons to craft anything, anywhere
+-- Library Creation Date: December, 2016
+-- Publication Date: Febuary 5, 2017
+--
+-- File Name: Enchanting.lua
+-- File Description: Contains the functions for Enchanting
+-- Load Order Requirements: After LibLazyCrafting.lua
+-- 
+-----------------------------------------------------------------------------------
+
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 

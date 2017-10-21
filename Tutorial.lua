@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: Tutorial.lua
+-- File Description: Shows the initial 'tutorial' on addon install
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 WritCreater = WritCreater or {}
 
 local function out(string)

@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: LootHandler.lua
+-- File Description: This file handles the loot received from Writs. It opens containers, and logs the rewards
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 WritCreater = WritCreater or {}
 
 --Saves what the user got from the writ rewards
@@ -15,36 +27,29 @@ local function toVoucherCount(item_link)
     return vc
 end
 
+WritCreater.toVoucherCount = toVoucherCount
+
 
 local function saveStats(loot, boxType, boxRank)
 	local vars = WritCreater.savedVarsAccountWide -- shortcut
 	local location = boxType
-	if boxType == 1 then end
+	d(boxType)
 
 	vars = vars["rewards"][location]
-	if vars["level"] > boxRank then
+	if vars["level"] > boxRank then -- If it's a higher level of writ, then wipe all the old saved data
 		WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] - vars["num"]
 		vars = WritCreater.defaultAccountWide["rewards"][location]
 		vars["level"] = boxRank
-	elseif vars["level"] == boxRank then
+	elseif vars["level"] == boxRank then -- otherwise, add one to total
 		WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] + 1
+		vars["num"] = vars["num"] + 1
 	else
 		WritCreater.savedVarsAccountWide["skipped"] = WritCreater.savedVarsAccountWide["skipped"] + 1
 		return
 	end
-	vars["num"] = vars["num"] + 1
+	
+	d(location)
 
-
-	for key, value in pairs(vars) do
-		if key == "num" or key == "level" or key == "gold" then
-		else
-			for i = 1, #loot do
-				if string.find(string.lower(loot[i]["name"]),string.lower(key)) then
-					vars[key] = vars[key] + loot[i]["quantity"]
-				end
-			end
-		end
-	end
 	WritCreater.savedVarsAccountWide["rewards"][location] = vars
 end
 
@@ -173,6 +178,7 @@ end
 sceneDefault()
 --If the box/loot item that is open is a writ container, loot it and open the inventory again
 local calledFromQuest = false
+
 local function OnLootUpdated(event)
 	local ignoreAuto = WritCreater.savedVars.ignoreAuto
 	local autoLoot 
@@ -188,15 +194,19 @@ local function OnLootUpdated(event)
 		for i = 1, 7 do
 			local a, b = string.find(lootInfo[1], writRewardNames[i])
 			if a then				
-				LOOT_SHARED:LootAllItems()
+				--LOOT_SHARED:LootAllItems()
+				local n = SCENE_MANAGER:GetCurrentScene().name
+
+				LootAll()
+				if n == 'hudui' or n=='interact' or n == 'hud' then SCENE_MANAGER:Show('hud') test() else SCENE_MANAGER:Show(n) end
 				--local boxRank = romanNumeral(string.sub(lootInfo[1], b + 2))
 				if shouldSaveStats(i,boxRank) then LootAllHook(i,boxRank) end
 				--SYSTEMS:GetObject("mainMenu"):ToggleCategory(MENU_CATEGORY_INVENTORY)
-				local timeToWait = 50
+				--[[local timeToWait = 50
 				if IsInGamepadPreferredMode() then timeToWait = 200 end
-				zo_callLater(function() SCENE_MANAGER:Show(lastScene) 
-					if lastScene == "hudui" then zo_callLater(function() SetGameCameraUIMode(false)end , 50) end 
-					sceneDefault() end, timeToWait)
+					if lastScene =='hudui' then lastScene = 'hud' end
+					zo_callLater(function() if SCENE_MANAGER:GetCurrentScene().name~=lastScene then SCENE_MANAGER:Show(lastScene) sceneDefault() end end , timeToWait)--]]
+				
 			end
 		end
 	end
@@ -229,7 +239,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	if not isNew then return end
 	local link = GetItemLink(bag, slot)
 	local function attemptOpenContainer(bag, slot)
-		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() then
+		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' then
 			zo_callLater(function()attemptOpenContainer(bag, slot) end , GetSlotCooldownInfo( 1 ) + 100)
 		else
 			openContainer(bag, slot)
@@ -265,82 +275,13 @@ function WritCreater.LootHandlerInitialize()
 			oldfunc(self, bag, slot) 
 		end 
 	end
+	function test()
+    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
 end
 
-
-
-function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)) 
-	return ZO_LinkHandler_CreateLink(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) end
-
-SLASH_COMMANDS['/outputwritstats'] = function()
-	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
-		if type(v) == "table" and WritCreater.writNames[k] then
-			d("---------------")
-			d(WritCreater.writNames[k].." Stats")
-			for statType, stats in pairs(v) do 
-				if stats==0 then
-				elseif type(stats)=="table" then
-					for quality, amount in pairs(stats) do
-						if amount~=0 then
-							d(quality.." recipes: "..amount)
-						end
-					end
-				else
-					if type(statType)=="number" then
-						d(getItemLinkFromItemId(statType)..": "..tostring(stats))
-					else
-						d(statType..": "..tostring(stats))
-					end
-				end
-			end
-		elseif type(v)=="function" then
-		else
-			d(k..": "..tostring(v))
-		end
-	end
-	local daysSinceReset = math.floor((GetTimeStamp() - WritCreater.savedVarsAccountWide.timeSinceReset)/86400*100)/100
-	d("Total Writs Completed: "..WritCreater.savedVarsAccountWide.total.." in the past "..tostring(daysSinceReset).." days")
+SCENE_MANAGER:RegisterTopLevel(DolgubonsWritsFeedback, false)
 end
 
-
-SLASH_COMMANDS['/countunearnedvouchers'] = function()
-    local total= 0
-    local i, j, bankNum
-    for j, bankNum in ipairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
-        for i = 1, GetBagSize(bankNum) do
-            local itemType =  GetItemType(bankNum, i)
-            if itemType == ITEMTYPE_MASTER_WRIT then
-                total = total + toVoucherCount(GetItemLink(bankNum, i))
-            end
-        end
-    end
-    d("You have "..tostring(total).." unearned Writ Vouchers.")
-end
-
-
-local function CountSurveys()
-    local a = 0
-    local i, j, bankNum
-    for j, bankNum in ipairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
-        for i = 1, GetBagSize(bankNum) do
-            local _,special =  GetItemType(bankNum, i)
-            if special ==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
-                local _, count = GetItemInfo(bankNum,i)
-                a = a + count
-            end
-        end
-    end
-    d("You have "..tostring(a).." surveys.")
-end
-
-
-SLASH_COMMANDS['/resetwritstatistics'] = function() 
-	WritCreater.savedVarsAccountWide = WritCreater.defaultAccountWide 
-	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp() 
-	d("Writ statistics reset.")
-end
-
---WritCreater.savedVars.useNewContainer
---WritCreater.savedVars.keepNewContainer
-
-
+--/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
+--SCENE_MANAGER:GetCurrentScene().callbackRegistry.tester = function() d("hudui") end

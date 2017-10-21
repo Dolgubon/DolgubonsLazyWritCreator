@@ -1,3 +1,18 @@
+-----------------------------------------------------------------------------------
+-- Library Name: LibLazyCrafting
+-- Creator: Dolgubon (Joseph Heinzle)
+-- File Creator: ziggr
+-- Library Ideal: Allow addons to craft anything, anywhere
+-- Library Creation Date: December, 2016
+-- Publication Date: Febuary 5, 2017
+--
+-- File Name: Provisioning.lua
+-- File Description: Contains the functions for Provisioning
+-- Load Order Requirements: After LibLazyCrafting.lua
+-- 
+-----------------------------------------------------------------------------------
+
+
 --Don't fail silently?
 
 local LibLazyCrafting = LibStub("LibLazyCrafting")

@@ -1,6 +1,36 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: AlchGrab.lua
+-- File Description: This file removes items required for writs from the bank
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
+local function specialDebug(...)
+	if WritCreater.savedVarsAccountWide.bankDebug then
+		--df("[%s] " .. message, ADDON_NAME, ...)
+		d(...)
+	end
+end
 
 local function dbug(...)
 	DolgubonGlobalDebugOutput(...)
+end
+
+--
+-- 
+function numPotEffects(link)
+	local potionInfo = { ZO_LinkHandler_ParseLink(link) }
+	local traitInfo = potionInfo[24]
+
+	count = math.floor(1/(math.floor(traitInfo / 65536) % 256 +1))
+	count =count +  math.floor(1/(math.floor(traitInfo / 256) % 256 +1))
+	count =count +  math.floor(1/(traitInfo % 256 + 1))
+	return 3 - count
 end
 --helper functions
 
@@ -28,6 +58,7 @@ DolgubonTest = false
 local emptySlots = {}
 
 local function findEmptySlots(location)
+	specialDebug("WC Debug Locating empty slots in backpack")
 	emptySlots = {}
 	for i = FindFirstEmptySlotInBag(location) or 250, GetBagSize(location) do
 		if GetItemName(location, i) == "" then
@@ -58,10 +89,12 @@ local function strFind(str, str2find, a, b, c)
 end
 
 local function moveItem( amountRequired, bag, slot)
+
 	local emptySlot = emptySlots[1]
 
 	if emptySlot then
 		table.remove(emptySlots,1)
+		specialDebug("WC Debug Moving item to bag")
 		if IsProtectedFunction("RequestMoveItem") then
 			CallSecureProtected("RequestMoveItem", bag, slot, BAG_BACKPACK,emptySlot,amountRequired)
 		else
@@ -79,9 +112,15 @@ local function isPotentialMatch(questCondition, validItemTypes, bag, slot)
 	if name == "" then return false end
 	if validItemTypes[itemType] then
 		local name = GetItemName(bag, slot)
-		local link = GetItemLink(bag, slot)		
-		if validItemTypes[itemType][2] and validItemTypes[itemType][2](link, bag, slot) then return false end
+		local link = GetItemLink(bag, slot)
+		specialDebug("WC Debug Item is correct type of item (e.g. food, weapon)")
+		specialDebug("WC Debug Item Link: "..link)
+		specialDebug("WC Debug condition: "..questCondition)
+		if validItemTypes[itemType][2] and validItemTypes[itemType][2](link, bag, slot) then 
+			specialDebug("WC Debug secondary itemType Check was failed (Was item Crafted? (potions, glyphs))")
+			return false end
 		if strFind(questCondition, " "..name.." ") then
+			specialDebug("WC Debug item was located inside the quest condition. Item is a potential match for the quest")
 			return true
 		end
 	end
@@ -89,25 +128,33 @@ local function isPotentialMatch(questCondition, validItemTypes, bag, slot)
 end
 
 local function filterMatches(matches)
+	local traits = 4
 	if #matches== 0 then
+		specialDebug("WC Debug No potential matches")
 		return nil, nil
 	elseif #matches==1 then
+		specialDebug("WC Debug Only one potential match. Item wins by default")
 		return matches[1][1], matches[1][2]
 	else
+		specialDebug("WC Debug Multiple matches. Longest item will be withdrawn")
 		local longest = 0
 		local position = 0
 		for i = 1, #matches do
-			if string.len(GetItemName(matches[i][1], matches[i][2]))>longest then
-				longest = string.len(GetItemName(matches[i][1], matches[i][2]))
-				position = i
+			if string.len(GetItemName(matches[i][1], matches[i][2]))>=longest then
+				if numPotEffects(GetItemLink(matches[i][1], matches[i][2])) <traits then
+					longest = string.len(GetItemName(matches[i][1], matches[i][2]))
+					position = i
+				end
 			end
 		end
+		specialDebug("WC Debug "..GetItemLink(matches[position][1], matches[position][2]).." had the longest name and will now be withdrawn")
 		return matches[position][1], matches[position][2]
 	end
 
 end
 
 local function potionGrabRefactored(questCondition, amountRequired, validItemTypes)
+	specialDebug("WC Debug Beggining Bank Withdrawal Sequence, T:0")
 	questCondition = string.gsub(questCondition, " ", " ") -- First is a NO-BREAK SPACE, 2nd a SPACE, copied from Ayantir's BMR just in case
 	local potentialMatches = {}
 	if IsESOPlusSubscriber() then -- check ESO+ bank
@@ -127,9 +174,11 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	if bag and slot then
 		local stackSize = GetSlotStackSize(bag, slot)
 		if stackSize < amountRequired then
+			specialDebug("WC Debug User does not have enough items for quest in the bank. Moving what is there, and checking again after")
 			moveItem(stackSize, bag, slot)
 			zo_callLater(function() potionGrabRefactored(questCondition, amountRequired -stackSize, validItemTypes ) end , 50)
 		else
+			specialDebug("WC Debug User has enough items for quest. Withdrawing items")
 			moveItem(amountRequired, bag, slot)
 		end
 
@@ -186,8 +235,8 @@ end
 local validItemTypes = 
 {
 	[CRAFTING_TYPE_ALCHEMY] = {
-		[ITEMTYPE_POTION] = {true, function(link) return not IsItemLinkCrafted(link) end},
-		[ITEMTYPE_POISON] = {true, function(link) return not IsItemLinkCrafted(link) end},
+		[ITEMTYPE_POTION] = {true, function(link) return numPotEffects(link)==0 end},
+		[ITEMTYPE_POISON] = {true, function(link) return numPotEffects(link)==0 end},
 		[ITEMTYPE_POTION_BASE] = {true},
 		[ITEMTYPE_POTION_BASE] = {true},
 		[ITEMTYPE_REAGENT] = {true},
@@ -199,8 +248,8 @@ local validItemTypes =
 		[ITEMTYPE_GLYPH_ARMOR] = {true, function(link) return not IsItemLinkCrafted(link) end},
 	},
 	[CRAFTING_TYPE_PROVISIONING] = {
-		[ITEMTYPE_DRINK] = {true, function(link) return not IsItemLinkCrafted(link) end},
-		[ITEMTYPE_FOOD] = {true, function(link) return not IsItemLinkCrafted(link) end},
+		[ITEMTYPE_DRINK] = {true, function(link) return GetItemLinkQuality(link)~=ITEM_QUALITY_MAGIC end},
+		[ITEMTYPE_FOOD] = {true, function(link) return GetItemLinkQuality(link)~=ITEM_QUALITY_MAGIC end},
 	},
 	-- [[
 	[CRAFTING_TYPE_BLACKSMITHING] = {

@@ -1,3 +1,15 @@
+<!-------------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: WritCreater.xml
+-- File Description: Contains all the XML GUI information for the addon
+-- Load Order Requirements: Before WritCreater.lua
+-- 
+------------------------------------------------------------------------------------->
+
 <GuiXml>
 	<Controls>
 		<TopLevelControl movable="true" mouseEnabled="true" name="DolgubonsWritsFeedback" hidden="true">

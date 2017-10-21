@@ -1,3 +1,18 @@
+-----------------------------------------------------------------------------------
+-- Library Name: LibLazyCrafting
+-- Creator: Dolgubon (Joseph Heinzle)
+-- File Creator: ziggr
+-- Library Ideal: Allow addons to craft anything, anywhere
+-- Library Creation Date: December, 2016
+-- Publication Date: Febuary 5, 2017
+--
+-- File Name: Alchemy.lua
+-- File Description: Contains the functions for Alchemy
+-- Load Order Requirements: After LibLazyCrafting.lua
+-- 
+-----------------------------------------------------------------------------------
+
+
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 

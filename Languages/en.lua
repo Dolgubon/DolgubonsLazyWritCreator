@@ -1,3 +1,14 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: Languages/en.lua
+-- File Description: English Localization
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
 
 
 -- If you are looking to translate this to something else, and run into problems, please contact Dolgubon on ESOUI.
@@ -98,29 +109,7 @@ local craftInfo =
 				[19]= "Shadowhide",
 				[20]= "Rubedo",
 			},
-			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
-			{
-				[1] = "Jute",
-				[2] = "Flax",
-				[3] = "Cotton",
-				[4] = "Spidersilk",
-				[5] = "Ebonthread",
-				[6] = "Kresh Fiber",
-				[7] = "Ironthread",
-				[8] = "Silverweave",
-				[9] = "Void Cloth",
-				[10]= "Ancestor Silk",
-				[11]= "Rawhide",
-				[12]= "Hide",
-				[13]= "Leather",
-				[14]= "Thick Leather",
-				[15]= "Fell Hide",
-				[16]= "Topgrain Hide",
-				[17]= "Iron Hide",
-				[18]= "Superb Hide",
-				[19]= "Shadowhide",
-				[20]= "Rubedo Leather",
-			}		
+	
 		},
 		[CRAFTING_TYPE_BLACKSMITHING] = 
 		{
@@ -154,19 +143,7 @@ local craftInfo =
 				[9] = "Voidsteel",
 				[10]= "Rubedite",
 			},
-			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
-			{
-				[1] = "Iron Ingots",
-				[2] = "Steel Ingots",
-				[3] = "Orichalc Ingots",
-				[4] = "Dwarven Ingots",
-				[5] = "Ebony Ingots",
-				[6] = "Calcinium Ingots",
-				[7] = "Galatite Ingots",
-				[8] = "Quicksilver Ingots",
-				[9] = "Voidstone Ingots",
-				[10]= "Rubedite Ingots",
-			}
+
 		},
 		[CRAFTING_TYPE_WOODWORKING] = 
 		{
@@ -192,19 +169,7 @@ local craftInfo =
 				[9] = "Nightwood",
 				[10] = "Ruby",
 			},
-			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
-			{
-				[1] = "Sanded Maple",
-				[2] = "Sanded Oak",
-				[3] = "Sanded Beech",
-				[4] = "Sanded Hickory",
-				[5] = "Sanded Yew",
-				[6] = "Sanded Birch",
-				[7] = "Sanded Ash",
-				[8] = "Sanded Mahogany",
-				[9] = "Sanded Nightwood",
-				[10]= "Sanded Ruby Ash",
-			}
+
 		},
 		[CRAFTING_TYPE_ENCHANTING] = 
 		{
@@ -446,27 +411,27 @@ end
 local function dailyResetFunction(till)
 	if till["hour"]==0 then
 		if till["minute"]==1 then
-			d("1 minute until daily server reset!")
+			return "1 minute until daily server reset!"
 		elseif till["minute"]==0 then
 			if stamp==1 then
-				d("Daily reset in "..stamp.." seconds!")
+				return "Daily reset in "..stamp.." seconds!"
 			else
-				d("Seriously... Stop asking. Are you that impatient??? It resets in one more second godammit. Stupid entitled MMO players. *grumble grumble*")
+				return "Seriously... Stop asking. Are you that impatient??? It resets in one more second godammit. Stupid entitled MMO players. *grumble grumble*"
 			end
 		else
-			d(till["minute"].." minutes until daily reset!")
+			return till["minute"].." minutes until daily reset!"
 		end
 	elseif till["hour"]==1 then
 		if till["minute"]==1 then
-			d(till["hour"].." hour and "..till["minute"].." minute until daily reset")
+			return till["hour"].." hour and "..till["minute"].." minute until daily reset"
 		else
-			d(till["hour"].." hour and "..till["minute"].." minutes until daily reset")
+			return till["hour"].." hour and "..till["minute"].." minutes until daily reset"
 		end
 	else
 		if till["minute"]==1 then
-			d(till["hour"].." hours and "..till["minute"].." minute until daily reset")
+			return till["hour"].." hours and "..till["minute"].." minute until daily reset"
 		else
-			d(till["hour"].." hours and "..till["minute"].." minutes until daily reset")
+			return till["hour"].." hours and "..till["minute"].." minutes until daily reset"
 		end
 	end 
 end
@@ -515,13 +480,15 @@ WritCreater.strings =
 	["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end,
 	["smithingReq2"] 				= function (amount,type, current) return zo_strformat( "\nAs well as <<1>> <<2>> (|c2dff00<<3>> available|r)"         ,amount, type, current) end,
 	["lootReceived"]				= "<<1>> was received",
+	["countSurveys"]				= "You have <<1>> surveys",
+	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
 }
-local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() return GetDate()==20170401 end
+local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() return GetDate()==20171031 end
 if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() then
-	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Jester Hats (|cf60000You need -<<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> High Elven Heart (|cf60000You need -<<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Sock Puppet (|cf60000You need -<<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Jolly Bean (|cf60000You need -<<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Vampire Heart (|cf60000You need <<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Ghost Eyes (|cf60000You need <<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Clowns (|cf60000You need <<3>>|r)" ,amount, type, more) end
+	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Werewolf Claws (|cf60000You need <<3>>|r)" ,amount, type, more) end
 end
 
 --Options table Strings

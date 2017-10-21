@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------------
+-- Addon Name: Dolgubon's Lazy Writ Crafter
+-- Creator: Dolgubon (Joseph Heinzle)
+-- Addon Ideal: Simplifies Crafting Writs as much as possible
+-- Addon Creation Date: March 14, 2016
+--
+-- File Name: MasterWrits.lua
+-- File Description: Crafts Master 
+-- Load Order Requirements: None
+-- 
+-----------------------------------------------------------------------------------
+
 local DolgubonDebugRunningDebugString = ""
 DolgubonGlobalDebugToggle = false
 local localDebugToggle = false
@@ -267,16 +279,17 @@ end
 
 local function splitCondition(condition, isQuest)
 	local seperator = "A"
-	if isQuest then seperator = "\n" else seperator = ";" end
+	if isQuest or WritCreater.lang=="de" then seperator = "\n" else seperator = ";" end
 	local a = 1
 	local t = {}
-	while strFind(condition , seperator) and a<100 do
+	while strFind(condition , seperator) and a<50 do
 		a = a+1
 		t[#t+1] = string.gsub(string.sub(condition, 1, strFind(condition, seperator)),"\n","")
 		condition = string.sub(condition, strFind(condition,seperator) + 1, string.len(condition) ) 
-		if t[#t]=="" then t[#t] = nil end
+		if string.len(t[#t])<5 then t[#t] = nil end
 	end
 	t[#t+1] = condition
+	if WritCreater.lang =="de" and not isQuest then table.remove(t, 1 ) end
 	return unpack(t)
 end
 
@@ -290,14 +303,17 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 		isQuest = false
 		condition, complete = sealedText, false
 	else
+	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
 	end
 	
 	--"Craft a Rubedite Greataxe with the following Properties:\n • Quality: Epic\n • Trait: Powered\n • Set: Oblivion's Foe\n • Style: Imperial\n • Progress: 0 / 1", false--
 	condition = string.gsub(condition, "-" , " ")
-	
+
 	if complete == 1 then return end
 	if condition =="" then return end
 	local conditionStrings = {}
+	local a= splitCondition(condition, isQuest)
+	
 	if WritCreater.lang =="de" then
 		conditionStrings["pattern"], conditionStrings["set"], conditionStrings["style"],
 		  conditionStrings["trait"], conditionStrings["quality"] = splitCondition(condition, isQuest)
@@ -311,10 +327,9 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 	--end
 	local pattern =  smithingSearch(conditionStrings["pattern"], info) --search pattern
 
-	if pattern[1] =="" and pattern[2]==0 then return end
+	
 	local trait
 	if isArmour then
-		
 		trait = smithingSearch(conditionStrings["trait"], armourTraits )
 	else
 		trait = smithingSearch(conditionStrings["trait"], weaponTraits)
@@ -351,6 +366,7 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 		WritCreater.LLCInteraction:cancelItemByReference(reference)
 
 		WritCreater.LLCInteraction:CraftSmithingItemByLevel( pattern[2], true , 150, style[2], trait[2], false, station, setIndex, quality[2], true, reference)
+		return true
 	else
 		dbug("ERROR:RequirementMissing")
 	end
@@ -382,15 +398,15 @@ local exceptions =
 {
 	[CRAFTING_TYPE_WOODWORKING] = 
 	{
-		[2] = {['en'] = "shield",['de'] = "schilden",['fr'] = "bouclier"},
+		[2] = {['en'] = "shield",['de'] = "schild",['fr'] = "bouclier"},
 		[4] = {['en'] = "frost",['de'] = "schilden",['fr'] = "bouclier"},
 		[6] = {['en'] = "healing",['de'] = "schilden",['fr'] = "bouclier"},
 	},
-	[CRAFTING_TYPE_BLACKSMITHING] = { [4] = {['en'] = "greataxe",['de'] = '',} ,},
+
 }
 
 function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
-	
+
 	if not WritCreater.langMasterWritNames or not WritCreater.savedVarsAccountWide.masterWrits then return end
 	local writNames = WritCreater.langMasterWritNames()
 	local isMasterWrit = false
@@ -422,7 +438,9 @@ function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 			table.insert(info, {"greataxe",4})
 			--local patternBlacksmithing =  smithingSearch(condition, info) --search pattern
 
-			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_BLACKSMITHING, false, "Rubedite",journalIndex)
+			if SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_BLACKSMITHING, false, "Rubedite",journalIndex) then
+				return
+			end
 
 			info = partialTable(langInfo[CRAFTING_TYPE_WOODWORKING]["pieces"] , 1, 6)
 			info[6] = "healing"
@@ -481,12 +499,6 @@ function WritCreater.scanAllQuests()
 	for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
 end
 
-SLASH_COMMANDS['/rerunmasterwrits'] = WritCreater.scanAllQuests
-
-
-
-SLASH_COMMANDS['/craftitems'] = function() WritCreater.LLCInteraction:CraftAllItems() end
---
 function WritCreater.InventorySlot_ShowContextMenu(rowControl,debugslot)
 	
 	local bag, slot, link, flavour, reference
