@@ -766,6 +766,7 @@ local function enchantCrafting(info, quest,add)
 		["glyph"] = {},
 		["type"] = {},
 	}
+
 	for i = 1, numConditions do
 		conditions["text"][i], conditions["cur"][i], conditions["max"][i],a,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
 		conditions["text"][i] = WritCreater.enchantExceptions(conditions["text"][i])
@@ -778,10 +779,13 @@ local function enchantCrafting(info, quest,add)
 			DolgubonsWritsBackdropCraft:SetHidden(true)
 			conditions["text"][i] = false
 			return
-		elseif string.find(myLower(conditions["text"][i]),"acquire") or string.find(myLower(conditions["text"][i]),"rune") then
+		elseif string.find(myLower(conditions["text"][i]),"acquire")  then
+
 			conditions["text"][i] = false
 		elseif conditions["text"][i] =="" then
+
 		else
+
 			DolgubonsWritsBackdropQuestOutput:AddText(conditions["text"][i])
 			conditions["text"][i] = parser(conditions["text"][i])
 			DolgubonsWritsBackdropCraft:SetHidden(false)
@@ -881,12 +885,10 @@ local tutorial1 = function () end
 
 local function temporarycraftcheckerjustbecause(eventcode, station)
 	
-	local currentAPIVersionOfAddon = 100020
-	if GetTimeStamp()>1508803199 then
-		currentAPIVersionOfAddon = currentAPIVersionOfAddon + 1
-	end
+	local currentAPIVersionOfAddon = 100021
+
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
-		for i= 1, 10 do 
+		for i= 1, 1 do 
 			d("Update your addons!") 
 		end 
 	end
