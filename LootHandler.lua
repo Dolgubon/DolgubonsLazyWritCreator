@@ -285,3 +285,14 @@ end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
 --SCENE_MANAGER:GetCurrentScene().callbackRegistry.tester = function() d("hudui") end
+
+local originalLoot = LootItemById
+function LootItemById(id)
+	--d(id)
+	originalLoot(id)
+end
+local originalLootAll = LootAll
+function LootAll(id)
+	--d("loot all")
+	originalLootAll()
+end

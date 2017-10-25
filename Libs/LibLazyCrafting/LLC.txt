@@ -1,4 +1,4 @@
-## Version: 1.3
+## Version: 1.4
 
 Smithing.lua
 LibLazyCrafting.lua
@@ -7,7 +7,7 @@ Provisioning.lua
 Anchanting.lua
 functions.lua
 ;
-;(Note, this does not cause this to be recognized as an addon by the game, and is only to satisfy the scripts I use to package the library)
+;(Note, this should not cause this to be recognized as an addon by the game, and is only to satisfy the scripts I use to package the library)
 
 ;This library allows addons to queue items to be crafted from anywhere. You shouldn't be limited by being at a craft station. If you want to make
 ;an item, then you can add it right away.
