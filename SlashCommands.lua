@@ -191,7 +191,7 @@ end--]]
 
 --------------------------------------------------
 -- TIME TO RESET
-SLASH_COMMANDS['/dailyreset'] = resetTime
+SLASH_COMMANDS['/dailyreset'] = date
 
 --------------------------------------------------
 -- COUNTING FUNCTIONS

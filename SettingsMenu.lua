@@ -155,9 +155,9 @@ function WritCreater.Options() --Sentimental
 		},
 		{
 			type = "dropdown",
-			name = "Autoloot Behaviour",
-			tooltip = "Choose when the addon will autoloot writ reward containers",
-			choices = {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"},
+			name = WritCreater.optionStrings["autoloot behaviour"]	,
+			tooltip = WritCreater.optionStrings["autoloot behaviour tooltip"],
+			choices = WritCreater.optionStrings["autoloot behaviour choices"],
 			choicesValues = {1,2,3},
 			getFunc = function() if not WritCreater.savedVars.ignoreAuto then return 1 elseif WritCreater.savedVars.autoLoot then return 2 else return 3 end end,
 			setFunc = function(value) 

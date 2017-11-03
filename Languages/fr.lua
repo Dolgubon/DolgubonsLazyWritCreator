@@ -26,10 +26,11 @@ end
 function WritCreater.writCompleteStrings()
 	local strings = {
 	["place"] = "Placer les produits dans la caisse",
-	["sing"] = "Signer le manifeste",
+	["sign"] = "Signer le manifeste",
 	["masterStart"] = "<Accepter le contrat>",
 	["masterSign"] = "<Finir le travail.>",
 	["masterPlace"] = "J'ai accompli la t",
+	["Rolis Hlaalu"] = "Rolis Hlaalu",
 	}
 	return strings
 end
@@ -507,6 +508,34 @@ WritCreater.strings  = {
 }
 
 
+local DivineMats =
+{
+	{"Ghost Eyes", "Vampire Hearts", "Werewolf Claws", "'Special' Candy", "Chopped Hands", "Zombie Guts", "Bat Livers", "Lizard Brains", "Witches Hats", "Distilled Boos", "Singing Toads"},
+	{"Sock Puppets", "Jester Hats", "Pure Laughter", "Tempering Alloys", "Red Herrings", "Rotten Tomatoes", "Pint Real Axe Links", "Crowned Imposters", "Mudpies"},
+	{"Fireworks", "Presents", "Crackers", "Reindeer Bells", "Elven Hats", "Pine Needles", "Essences of Time", "Ephemeral Lights"},
+
+}
+
+local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
+	if true then return false end
+	if GetDate()%10000 == 1031 then return 1 end
+	if GetDate()%10000 == 401 then return 2 end
+	if GetDate()%10000 == 1231 then return 3 end
+	return false
+end
+local function wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed() local a= math.random(1, #DivineMats ) return DivineMats[a] end
+local l = shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
+
+
+if l then
+	DivineMats = DivineMats[l]
+	local DivineMat = wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed()
+	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
+end
+
 
 WritCreater.optionStrings = {}
 WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses <<2>> to be used for crafting",styleName) end 
@@ -526,10 +555,7 @@ WritCreater.optionStrings["provisioning"]                             = "Cuisine
 WritCreater.optionStrings["provisioning tooltip"]                     = "Activer l'addon à la table cuisine"
 WritCreater.optionStrings["woodworking"]                              = "Trvail du Bois"
 WritCreater.optionStrings["woodworking tooltip"]                      = "Activer l'addon pour le travail du bois"
-WritCreater.optionStrings["ignore autoloot"]                          = "Outrepasser l'autoloot"
-WritCreater.optionStrings["ignore autoloot tooltip"]                  = "Ignorer le paramètre d'autoloot des paramètres de Gameplay mais utiliser le paramètre personnalisé ci-dessous pour les conteneurs d'artisanat"
-WritCreater.optionStrings["autoloot containters"]                     = "Conteneurs de quête d'artisanat"
-WritCreater.optionStrings["autoLoot containters tooltip"]             = "Looter automatiquement les conteneurs d'artisanat lorsqu'ils sont ouverts"
+
 WritCreater.optionStrings["style stone menu"]                         = "Utilisation des matériaux de style"
 WritCreater.optionStrings["style stone menu tooltip"]                 = "Sélectionnez quelles pierres de style utiliser"
 WritCreater.optionStrings["exit when done"]							  = "Quitter l'atelier lorsque terminé"
@@ -554,6 +580,9 @@ WritCreater.optionStrings["loot output"]								= "Alerte sur les récompenses p
 WritCreater.optionStrings["loot output tooltip"]						= "Afficher un message lorsque des objets de grande valeur sont reçus d'une commande d'artisanat"
 WritCreater.optionStrings["writ grabbing"]								= "Prendre les matériaux de commande"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Prendre les matériaux requis pour les commandes (ex. Nirnroot, Ta, etc.) de la banque" 
+WritCreater.optionStrings["autoloot"]									= "Autoloot Behaviour"
+WritCreater.optionStrings["autoloot tooltip"]							= "Choose when the addon will autoloot writ reward containers"
+WritCreater.optionStrings["autoloot choices"]							= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
 
 
 

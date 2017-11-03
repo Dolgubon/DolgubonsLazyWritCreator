@@ -280,14 +280,9 @@ end
 --takes in a string and returns a table with each word seperate
 local function parser(str)
 	local seperater = "%s+"
-	if WritCreater.lang ~= "jp" then 
-		str = string.gsub(str,":"," ")
-	else
-		seperater = ":"
-		str = string.gsub(str,"の",":")
-		str = string.gsub(str,"を",":")
-		str = string.gsub(str,"な",":")
-	end
+
+	str = string.gsub(str,":"," ")
+
 	local params = {}
 	local i = 1
 	local searchResult1, searchResult2  = string.find(str,seperater)
@@ -525,10 +520,12 @@ local function writCompleteUIHandle()
 end
 local function craftNextQueueItem(calledFromCrafting)
 	
+	if matSaver > 10 then return end
+	if  WritCreater.savedVars.tutorial then return end
 	if (not IsPerformingCraftProcess()) and (craftingWrits or WritCreater.savedVars.autoCraft ) then
 
 		if queue[1] then
-
+			
 			if queue[1](true) then
 
 				closeOnce = true
@@ -645,6 +642,7 @@ crafting = function(info,quest, craftItems)
 					
 					queue[#queue + 1]= 
 					function(changeRequired)
+						matSaver = matSaver + 1
 						local numMats = GetSmithingPatternNextMaterialQuantity(pattern, index,1,1)
 						local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
 						if numMats<=curMats then 
@@ -722,7 +720,7 @@ local function formatName(text)
 end
 
 
-function findItem(item)
+local function findItem(item)
 
 	for i=0, GetBagSize(BAG_BANK) do
 		if GetItemId(BAG_BANK,i)==item  then
@@ -951,6 +949,7 @@ end
 
 
 local function closeWindow(event, station)
+	matSaver = 0
 	DolgubonsWritsFeedback:SetHidden(true)
 	DolgubonsWrits:SetHidden(true)
 	craftingWrits = false
@@ -961,23 +960,6 @@ local function closeWindow(event, station)
 	closeOnce = false
 	
 end
-
-
-EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFTING_STATION_INTERACT, craftCheck)
-WritCreater.craftCompleteHandler = function(event, station) 
-		if station == CRAFTING_TYPE_ENCHANTING then
-			craftCheck(event, station)
-		elseif station ==CRAFTING_TYPE_PROVISIONING then
-		elseif station == CRAFTING_TYPE_ALCHEMY then
-		else
-			craftCheck(event, station) craftNextQueueItem() 
-		end
-		end
-
---EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, crafteventholder)
-EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, WritCreater.craftCompleteHandler)
-	
-EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, closeWindow)
 
 local function initializeUI()
 	LAM = LibStub:GetLibrary("LibAddonMenu-2.0")
@@ -993,38 +975,39 @@ local function initializeUI()
 		DolgubonsWritsFeedbackNote:SetText("If you found a bug, have a request or a suggestion, send me a mail. Note that mails with no attachments will expire within three days. Consider attaching 1g.")
 	end
 end
-local newlyLoaded = true
-local function initializeOtherStuff()
-	WritCreater.savedVars = ZO_SavedVars:NewCharacterIdSettings("DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.default)
-	WritCreater.savedVarsAccountWide = ZO_SavedVars:NewAccountWide("DolgubonsWritCrafterSavedVars", WritCreater.versionAccount, nil, WritCreater.defaultAccountWide)
-	
-	WritCreater.setupAlchGrabEvents()
-	potencyNames = WritCreater.langPotencyNames()
-	essenceNames = WritCreater.langEssenceNames()
 
-	WritCreater.writNames = WritCreater.langWritNames()
-	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
-	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) end)	
+local function initializeMainEvents()
 
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function() if  newlyLoaded then  newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end end )
-	local LibMOTD = LibStub("LibMOTD")
-	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)
-	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
-	local original = AcceptOfferedQuest
-	AcceptOfferedQuest = function()
-	if string.find(GetOfferedQuestInfo(), "Rolis Hlaalu") and WritCreater.savedVars.preventMasterWritAccept then d("Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.")  else original() end end
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFTING_STATION_INTERACT, craftCheck)
+	WritCreater.craftCompleteHandler = function(event, station) 
+		if station == CRAFTING_TYPE_ENCHANTING then
+			craftCheck(event, station)
+		elseif station ==CRAFTING_TYPE_PROVISIONING then
+		elseif station == CRAFTING_TYPE_ALCHEMY then
+		else
+			craftCheck(event, station) craftNextQueueItem() 
+		end
+		end
+
+	--EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, crafteventholder)
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, WritCreater.craftCompleteHandler)
+		
+EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, closeWindow)
 end
 
+local newlyLoaded = true
 
-function WritCreater:Initialize()
-	DolgubonsWrits:SetHidden(true)
+
+local function initializeOtherStuff()
+
+	WritCreater.savedVars = ZO_SavedVars:NewCharacterIdSettings("DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.default)
+	WritCreater.savedVarsAccountWide = ZO_SavedVars:NewAccountWide("DolgubonsWritCrafterSavedVars", WritCreater.versionAccount, nil, WritCreater.defaultAccountWide)
+
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function() if  newlyLoaded then  newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end end )
 	
-	craftInfo = WritCreater.languageInfo
-	WritCreater.craftInfo = WritCreater.languageInfo()
-
-	initializeOtherStuff()
-	initializeUI()
-
+	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, 
+		--function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
+	
 	local function ZO_AlertNoSuppression_Hook(category, soundId, message)
 		if message == SI_ENCHANT_NO_YIELD and craftingEnchantCurrently then
 			return true
@@ -1033,13 +1016,58 @@ function WritCreater:Initialize()
 		end
 	end
 	ZO_PreHook("ZO_AlertNoSuppression", ZO_AlertNoSuppression_Hook)
+end
+
+local function initializeLibraries()
+	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
+	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) end)
+
+	local LibMOTD = LibStub("LibMOTD")
+	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)
+
+end
+
+local function initializeLocalization()
+	-- Initializes Localizations 
+	craftInfo = WritCreater.languageInfo
+	WritCreater.craftInfo = WritCreater.languageInfo()
+	potencyNames = WritCreater.langPotencyNames()
+	essenceNames = WritCreater.langEssenceNames()
+	WritCreater.writNames = WritCreater.langWritNames()
+
+	if WritCreater.langParser then -- overwrite stock parser if a localized parser is available
+		parser = WritCreater.langParser
+		WritCreater.parser = WritCreater.langParser
+	end
+
+end
+
+function WritCreater:Initialize()
+	DolgubonsWrits:SetHidden(true)
+	
+	initializeLocalization()
+
+	initializeLibraries()
+
+	initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
+	initializeUI()
+	initializeMainEvents()
+	WritCreater.setupAlchGrabEvents()
+
 
 
 	WritCreater.LootHandlerInitialize()
 	WritCreater.InitializeQuestHandling()
 
+	
+
+
+	
+
 	--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
 	WritCreater.InitializeRightClick()
+
+
 end
 
 

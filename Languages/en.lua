@@ -10,8 +10,51 @@
 -- 
 -----------------------------------------------------------------------------------
 
+-----------------------------------------------------------------------------------
+--
+-- TRANSLATION NOTES - PLEASE READ
+--
+-- If you are not looking to translate the addon you can ignore this. :D
+--
+-- If you ARE looking to translate this to something else then anything with a comment of Vital beside it is 
+-- required for the addon to function properly. These strings MUST BE TRANSLATED EXACTLY!
+-- If only going for functionality, ctrl+f for Vital
+--
+-- For languages that do not use the Latin Alphabet, there is also an optional langParser() function. IF the language you are translating
+-- requires some changes to the WritCreater.parser() function then write the optional langParser() function here, and the addon
+-- will use that instead. Just below is a commented out langParser for English. Be sure to remove the comments if rewriting it. [[  ]]
+--
+-- If you run into problems, please feel free to contact me on ESOUI.
+--
+-----------------------------------------------------------------------------------
 
--- If you are looking to translate this to something else, and run into problems, please contact Dolgubon on ESOUI.
+--[[
+function WritCreater.langParser(str)  -- Optional overwrite function for language translations
+	local seperater = "%s+"
+
+	str = string.gsub(str,":"," ")
+
+	local params = {}
+	local i = 1
+	local searchResult1, searchResult2  = string.find(str,seperater)
+	if searchResult1 == 1 then
+		str = string.sub(str, searchResult2+1)
+		searchResult1, searchResult2  = string.find(str,seperater)
+	end
+
+	while searchResult1 do
+
+		params[i] = string.sub(str, 1, searchResult1-1)
+		str = string.sub(str, searchResult2+1)
+	    searchResult1, searchResult2  = string.find(str,seperater)
+	    i=i+1
+	end 
+	params[i] = str
+	return params
+
+end
+--]]
+
 local function proper(str)
 	if type(str)== "string" then
 		return zo_strformat("<<C:1>>",str)
@@ -20,7 +63,8 @@ local function proper(str)
 	end
 end
 
-function WritCreater.langWritNames() --Exact!!!  I know for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
+function WritCreater.langWritNames() -- Vital
+	-- Exact!!!  I know for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
 	local names = {
 	["G"] = "Writ",
 	[CRAFTING_TYPE_ENCHANTING] = "Enchanter",
@@ -33,7 +77,7 @@ function WritCreater.langWritNames() --Exact!!!  I know for german alchemy writ 
 	return names
 end
 
-function WritCreater.langMasterWritNames()
+function WritCreater.langMasterWritNames() -- Vital
 	local names = {
 	["M"] 							= "masterful",
 	["M1"]							= "master",
@@ -50,19 +94,20 @@ return names
 
 end
 
-function WritCreater.writCompleteStrings()
+function WritCreater.writCompleteStrings() -- Vital for translation
 	local strings = {
 	["place"] = "Place the goods",
 	["sign"] = "Sign the Manifest",
 	["masterPlace"] = "I've finished the ",
 	["masterSign"] = "<Finish the job.>",
 	["masterStart"] = "<Accept the contract.>",
+	["Rolis Hlaalu"] = "Rolis Hlaalu", -- This is the same in most languages but ofc chinese and japanese
 	}
 	return strings
 end
 
 
-function WritCreater.languageInfo() --exact!!!
+function WritCreater.languageInfo() -- Vital
 
 local craftInfo = 
 	{
@@ -252,7 +297,7 @@ end
 
 
 
-function WritCreater.langEssenceNames() --exact!
+function WritCreater.langEssenceNames() -- Vital
 
 local essenceNames =  
 	{
@@ -263,7 +308,8 @@ local essenceNames =
 	return essenceNames
 end
 
-function WritCreater.langPotencyNames() --exact!! Also, these are all the positive runestones - no negatives needed.
+function WritCreater.langPotencyNames() -- Vital
+	--exact!! Also, these are all the positive runestones - no negatives needed.
 	local potencyNames = 
 	{
 		[1] = "Jora", --Lowest potency stone lvl
@@ -373,7 +419,7 @@ function WritCreater.enchantExceptions(condition)
 end
 
 
-function WritCreater.langTutorial(i) --sentimental
+function WritCreater.langTutorial(i) 
 	local t = {
 		[5]="There's also a few things you should know.\nFirst, /dailyreset is a slash command that will tell you\nhow long until the next daily server reset.",
 		[4]="Finally, you can also choose to deactivate or\nactivate this addon for each profession.\nBy default, all applicable crafts are on.\nIf you wish to turn some off, please check the settings.",
@@ -384,7 +430,7 @@ function WritCreater.langTutorial(i) --sentimental
 	return t[i]
 end
 
-function WritCreater.langTutorialButton(i,onOrOff) --sentimental and short pls
+function WritCreater.langTutorialButton(i,onOrOff) -- sentimental and short please. These must fit on a small button
 	local tOn = 
 	{
 		[1]="Use Defaults",
@@ -408,7 +454,8 @@ end
 
 
 
-local function dailyResetFunction(till)
+local function dailyResetFunction(till) -- You can translate the following simple version instead.
+										-- function (till) d(zo_strformat("<<1>> hours and <<2>> minutes until the daily reset.",till["hour"],till["minute"])) end,
 	if till["hour"]==0 then
 		if till["minute"]==1 then
 			return "1 minute until daily server reset!"
@@ -483,14 +530,39 @@ WritCreater.strings =
 	["countSurveys"]				= "You have <<1>> surveys",
 	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
 }
-local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() return GetDate()==20171031 end
-if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() then
-	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Vampire Heart (|cf60000You need <<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Ghost Eyes (|cf60000You need <<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Clowns (|cf60000You need <<3>>|r)" ,amount, type, more) end
-	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> Werewolf Claws (|cf60000You need <<3>>|r)" ,amount, type, more) end
-end
 
+-- What is this??! This is just a fun 'easter egg' that is never activated on easter.
+-- Replaces mat names with a random DivineMats on Halloween, New Year's, and April Fools day. You don't need this many! :D
+-- Translate it or don't, completely up to you. But if you don't translate it, replace the body of 
+-- shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
+-- with just a return false. (This will prevent it from ever activating. Also, if you're a user and don't like this,
+-- you suck, and also that's how you can disable it. )
+local DivineMats =
+{
+	{"Ghost Eyes", "Vampire Hearts", "Werewolf Claws", "'Special' Candy", "Chopped Hands", "Zombie Guts", "Bat Livers", "Lizard Brains", "Witches Hats", "Distilled Boos", "Singing Toads"},
+	{"Sock Puppets", "Jester Hats", "Pure Laughter", "Tempering Alloys", "Red Herrings", "Rotten Tomatoes","Fake Oil of Life", "Crowned Imposters", "Mudpies"},
+	{"Fireworks", "Presents", "Crackers", "Reindeer Bells", "Elven Hats", "Pine Needles", "Essences of Time", "Ephemeral Lights"},
+}
+
+
+local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
+	if GetDate()%10000 == 1031 then return 1 end
+	if GetDate()%10000 == 401 then return 2 end
+	if GetDate()%10000 == 1231 then return 3 end
+	return false
+end
+local function wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed() local a= math.random(1, #DivineMats ) return DivineMats[a] end
+local l = shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
+
+if l then
+	DivineMats = DivineMats[l]
+	local DivineMat = wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed()
+
+	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
+end
 --Options table Strings
 WritCreater.optionStrings = {}
 WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 
@@ -514,10 +586,6 @@ WritCreater.optionStrings["writ grabbing"]								= "Grab writ items"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Grab items required for writs (e.g. nirnroot, Ta, etc.) from the bank"
 WritCreater.optionStrings["delay"]										= "Item Grab Delay"
 WritCreater.optionStrings["delay tooltip"]								= "How long to wait before grabbing items from the bank (milliseconds)"
-WritCreater.optionStrings["ignore autoloot"]							= "Ignore AutoLoot Setting"
-WritCreater.optionStrings["ignore autoloot tooltip"]					= "Ignore the Autoloot setting found in the gameplay menu, and use the custom setting below for writ containers"
-WritCreater.optionStrings["autoloot containters"]						= "Autoloot Writ Containers"
-WritCreater.optionStrings["autoLoot containters tooltip"]				= "Loot writ containers when they are opened"
 WritCreater.optionStrings["style stone menu"]							= "Style Stones Used"
 WritCreater.optionStrings["style stone menu tooltip"]					= "Choose which style stones the addon will use"
 WritCreater.optionStrings["send data"]									= "Send Writ Data"
@@ -542,8 +610,8 @@ WritCreater.optionStrings["master writ saver"]							= "Save Master Writs"
 WritCreater.optionStrings["master writ saver tooltip"]					= "Prevents Master Writs from being accepted"
 WritCreater.optionStrings["loot output"]								= "Valuable Reward Alert"
 WritCreater.optionStrings["loot output tooltip"]						= "Output a message when valuable items are received from a writ"
-WritCreater.optionStrings["autoloot behaviour"]							= "Autoloot Behaviour"
-WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Choose when the addon will autoloot writ reward containers"
+WritCreater.optionStrings["autoloot behaviour"]							= "Autoloot Behaviour" -- Note that the following three come early in the settings menu, but becuse they were changed
+WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Choose when the addon will autoloot writ reward containers" -- they are now down below (with untranslated stuff)
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
 
 function WritCreater.langWritRewardBoxes () return {
@@ -557,7 +625,6 @@ function WritCreater.langWritRewardBoxes () return {
 }
 end
 
---dual, lush, rich
 
 function WritCreater.getTaString()
 	return "ta"

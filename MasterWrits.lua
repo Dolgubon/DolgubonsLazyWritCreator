@@ -394,16 +394,6 @@ end
 --/script for 1, 25 do if GetJournalQuestName(i) == "A Masterful Weapon" then d(i, GetJournalQuestConditionInfo(i,1,1))  end end
 --QuestID: 1
 
-local exceptions = 
-{
-	[CRAFTING_TYPE_WOODWORKING] = 
-	{
-		[2] = {['en'] = "shield",['de'] = "schild",['fr'] = "bouclier"},
-		[4] = {['en'] = "frost",['de'] = "schilden",['fr'] = "bouclier"},
-		[6] = {['en'] = "healing",['de'] = "schilden",['fr'] = "bouclier"},
-	},
-
-}
 
 function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 
@@ -455,6 +445,7 @@ function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 		elseif writType == CRAFTING_TYPE_PROVISIONING then
 		elseif writType == "shield" then
 			local info = {{"shield",2}}
+			d(info[1][1])
 			if WritCreater.lang=="de" then info[1][1] ="schilden" end
 			if WritCreater.lang=="fr" then info[1][1] = "bouclier" end
 			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_WOODWORKING, true, "Ruby Ash",journalIndex)
