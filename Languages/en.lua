@@ -293,6 +293,9 @@ local craftInfo =
 
 end
 
+function WritCreater.masterWritQuality() -- Vital . This is probably not necessary, but it stays for now because it works
+	return {{"Epic",4},{"Legendary",5}}
+end
 
 
 

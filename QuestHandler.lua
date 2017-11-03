@@ -11,6 +11,7 @@
 -----------------------------------------------------------------------------------
 
 local function myLower(str)
+	str = string.gsub(str, "<", "")
 	return zo_strformat("<<z:1>>",str)
 end
 
@@ -91,13 +92,16 @@ local function HandleChatterBegin(eventCode, optionCount)
 	if not WritCreater.savedVars.autoAccept then return end
     -- Ignore interactions with no options
     if optionCount == 0 then return end
+
     for i = 1, optionCount do
 	    -- Get details of first option
 	    local optionString, optionType = GetChatterOption(i)
+
 	    -- If it is a writ quest option...
 	    if optionType == CHATTER_START_NEW_QUEST_BESTOWAL 
 	       and string.find(myLower(optionString), myLower(WritCreater.writNames["G"])) ~= nil 
 	    then
+
 	    	if isQuestTypeActive(optionString) then
 				-- Listen for the quest offering
 				EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_OFFERED, HandleEventQuestOffered)
@@ -109,6 +113,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 	    elseif optionType == CHATTER_START_ADVANCE_COMPLETABLE_QUEST_CONDITIONS
 	       and string.find(myLower(optionString), myLower(completionStrings.place)) ~= nil  
 	    then
+
 	        -- Listen for the quest complete dialog
 	        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)
 	        -- Select the first option to complete the quest

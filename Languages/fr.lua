@@ -247,6 +247,10 @@ local craftInfo =
 
 end
 
+function WritCreater.masterWritQuality()
+	return {{"épique",4},{"légendaire",5}}
+end
+
 
 function WritCreater.langEssenceNames() --exact!
 

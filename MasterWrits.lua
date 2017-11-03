@@ -337,13 +337,9 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 	local style = smithingSearch(conditionStrings["style"], styles)
 	local _,setIndex = smithingSearch(conditionStrings["set"], GetSetIndexes())
 	local quality
-	if WritCreater.lang =="en" then
-		quality = smithingSearch(conditionStrings["quality"], {{"Epic",4},{"Legendary",5}}) --search quality
-	elseif WritCreater.lang=="de" then
-		quality = smithingSearch(conditionStrings["quality"], {{"episch",4},{"legendär",5}})
-	elseif WritCreater.lang =="fr" then
-		quality = smithingSearch(conditionStrings["quality"], {{"épique",4},{"légendaire",5}})
-	end
+
+	quality = smithingSearch(conditionStrings["quality"],WritCreater.masterWritQuality()) --search quality
+
 
 	if foundAllRequirements(pattern, style, setIndex, trait, quality) then
 
