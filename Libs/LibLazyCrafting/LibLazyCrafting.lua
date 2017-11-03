@@ -20,6 +20,7 @@ local libLoaded
 local LIB_NAME, VERSION = "LibLazyCrafting", 1.4
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
+local LLC = LibLazyCrafting
 
 LibLazyCrafting.craftInteractionTables = 
 {
@@ -32,6 +33,26 @@ LibLazyCrafting.craftInteractionTables =
 	}
 }
 
+
+LLC.widgets = LLC.widgets or {}
+local widgets = LLC.widgets
+
+--METHOD: REGISTER WIDGET--
+--each widget has its version checked before loading,
+--so we only have the most recent one in memory
+--Usage:
+--	widgetType = "string"; the type of widget being registered
+--	widgetVersion = integer; the widget's version number
+--	From LibAddonMenu
+
+function LibLazyCrafting:RegisterWidget(widgetType, widgetVersion)
+	if widgets[widgetType] and widgets[widgetType] >= widgetVersion then
+		return false
+	else
+		widgets[widgetType] = widgetVersion
+		return true
+	end
+end
 
 
 -- Index starts at 0 because that's how many upgrades are needed.
@@ -125,6 +146,8 @@ craftingQueue =
 	},
 }
 craftingQueue["ExampleAddon"] = nil
+
+LibLazyCrafting.craftingQueue = craftingQueue
 
 local craftResultFunctions = {[""]=function() end}
 

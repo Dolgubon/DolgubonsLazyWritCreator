@@ -18,10 +18,16 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 
+local widgetType = 'provisioning'
+local widgetVersion = 1
+if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return false end
+
 local function dbug(...)
     if not DolgubonGlobalDebugOutput then return end
     DolgubonGlobalDebugOutput(...)
 end
+
+local craftingQueue = LibLazyCrafting.craftingQueue
 
 local function toRecipeLink(recipeId)
     return string.format("|H1:item:%s:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", tostring(recipeId))

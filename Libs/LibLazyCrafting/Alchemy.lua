@@ -16,10 +16,16 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 
+local widgetType = 'alchemy'
+local widgetVersion = 1
+if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return false end
+
 local function dbug(...)
 	if not DolgubonGlobalDebugOutput then return end
 	DolgubonGlobalDebugOutput(...)
 end
+
+local craftingQueue = LibLazyCrafting.craftingQueue
 
 local function LLC_CraftAlchemyItemByItemId(self, solventId, reagentId1, reagentId2, reagentId3, timesToMake, autocraft, reference)
 	dbug('FUNCTION:LLCCraftAlchemy')
@@ -27,7 +33,6 @@ local function LLC_CraftAlchemyItemByItemId(self, solventId, reagentId1, reagent
 	if not self then d("Please call with colon notation") end
 	if autocraft==nil then autocraft = self.autocraft end
 	if not solventId and reagentId1 and reagentId2 then return end -- reagentId3 optional, nil okay.
-	if timesToMake == nil then timesToMake = 1 end
 
 	table.insert(craftingQueue[self.addonName][CRAFTING_TYPE_ALCHEMY],
 	{
@@ -36,11 +41,11 @@ local function LLC_CraftAlchemyItemByItemId(self, solventId, reagentId1, reagent
 		["reagentId2"] = reagentId2,
 		["reagentId3"] = reagentId3,
 		["timestamp"] = GetTimeStamp(),
-		["autocraft"] = autocraft,
+		["autocraft"] = autocraft or self.autocraft,
 		["Requester"] = self.addonName,
-		["reference"] = reference,
+		["reference"] = reference or "",
 		["station"] = CRAFTING_TYPE_ALCHEMY,
-		["timesToMake"] = timesToMake,
+		["timesToMake"] = timesToMake or 1,
 	}
 	)
 

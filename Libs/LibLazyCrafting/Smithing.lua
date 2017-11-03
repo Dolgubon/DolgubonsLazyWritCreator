@@ -23,16 +23,26 @@
  --   user:/AddOns/DolgubonsLazySetCrafter/Libs/LibLazyCrafting/LibLazyCrafting.lua:523: in function 'CraftInteract'
 
 local LibLazyCrafting = LibStub("LibLazyCrafting")
-local sortCraftQueue = LibLazyCrafting.sortCraftQueue
-SetIndexes ={}
-local abc = 1
-local MaterialitemIDTable = {}
-local improvementChances = {}
+
+local widgetType = 'smithing'
+local widgetVersion = 1
+if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
+
 local function dbug(...)
 	if DolgubonGlobalDebugOutput then
 		DolgubonGlobalDebugOutput(...)
 	end
 end
+
+local craftingQueue = LibLazyCrafting.craftingQueue
+
+local SetIndexes
+
+local sortCraftQueue = LibLazyCrafting.sortCraftQueue
+SetIndexes ={}
+local abc = 1
+local MaterialitemIDTable = {}
+local improvementChances = {}
 
 -- This is filled out after crafting. It's so we can make sure that:
 -- A: The item was crafted and
@@ -702,6 +712,7 @@ SetIndexes =
 
 for i = 1,#SetIndexes do 
 	local _, a = GetItemLinkSetInfo(getItemLinkFromItemId(SetIndexes[i][1][1]),false)
+
 	table.insert(SetIndexes[i],1,a)
 end
 
@@ -712,7 +723,7 @@ function GetSetIndexes()
 end
 
 -- IDs for stuff like Sanded Ruby Ash, Iron Ingots, etc.
-MaterialitemIDTable = 
+local MaterialitemIDTable = 
 {
 	[CRAFTING_TYPE_BLACKSMITHING] = 
 	{
@@ -755,7 +766,7 @@ MaterialitemIDTable =
 	},
 }
 
-improvementChances = 
+local improvementChances = 
 {
 	[1] = {5, 7,10,20},
 	[2] = {4,5,7,14},

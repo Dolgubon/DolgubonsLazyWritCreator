@@ -14,10 +14,16 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 
+local widgetType = 'enchanting'
+local widgetVersion = 1
+if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return false end
+
 local function dbug(...)
 	if not DolgubonGlobalDebugOutput then return end
 	DolgubonGlobalDebugOutput(...)
 end
+
+local craftingQueue = LibLazyCrafting.craftingQueue
 
 --------------------------------------
 -- ENCHANTING HELPER FUNCTIONS
