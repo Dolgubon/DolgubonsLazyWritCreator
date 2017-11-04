@@ -13,7 +13,7 @@
 
 -- date outputs a string teling the user how long until the daily reset.
 -- Note that English and Japanese have support for a slightly more 'fun' version :D
-local function date()
+local function dailyReset()
 	stamp = GetTimeStamp()
 	local date = {}
 	local day = 86400
@@ -191,7 +191,7 @@ end--]]
 
 --------------------------------------------------
 -- TIME TO RESET
-SLASH_COMMANDS['/dailyreset'] = date
+SLASH_COMMANDS['/dailyreset'] = dailyReset
 
 --------------------------------------------------
 -- COUNTING FUNCTIONS

@@ -441,7 +441,7 @@ function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 		elseif writType == CRAFTING_TYPE_PROVISIONING then
 		elseif writType == "shield" then
 			local info = {{"shield",2}}
-			d(info[1][1])
+
 			if WritCreater.lang=="de" then info[1][1] ="schilden" end
 			if WritCreater.lang=="fr" then info[1][1] = "bouclier" end
 			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_WOODWORKING, true, "Ruby Ash",journalIndex)

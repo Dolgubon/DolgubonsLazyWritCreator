@@ -275,7 +275,7 @@ alchGrab = function (event)
 	if WritCreater.savedVars.shouldGrab then
 		local writs = WritCreater.writSearch()
 		for craft, validTYpes in pairs(validItemTypes) do
-			if writs[craft] then
+			if writs[craft] and  (WritCreater.savedVars[craft] or WritCreater.savedVars[craft]==nil) then
 				addToQueue(writs[craft], validTYpes)
 			end
 		end

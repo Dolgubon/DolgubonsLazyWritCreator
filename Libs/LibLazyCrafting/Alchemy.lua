@@ -9,7 +9,7 @@
 -- File Name: Alchemy.lua
 -- File Description: Contains the functions for Alchemy
 -- Load Order Requirements: After LibLazyCrafting.lua
--- 
+--
 -----------------------------------------------------------------------------------
 
 
@@ -118,7 +118,7 @@ local function LLC_AlchemyCraftInteraction(event, station)
 	currentCraftAttempt.position = position
 	currentCraftAttempt.timestamp = GetTimeStamp()
 	currentCraftAttempt.addon = addon
-	currentCraftAttempt.prevSlots = LibLazyCrafting.findSlotsContaining(currentCraftAttempt.link,true)
+	currentCraftAttempt.prevSlots = LibLazyCrafting.backpackInventory()
 end
 
 local function LLC_AlchemyCraftingComplete(event, station, lastCheck)

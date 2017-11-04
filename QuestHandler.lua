@@ -10,17 +10,13 @@
 -- 
 -----------------------------------------------------------------------------------
 
-local function myLower(str)
-	str = string.gsub(str, "<", "")
-	return zo_strformat("<<z:1>>",str)
-end
 
 WritCreater = WritCreater or {}
 local completionStrings
 
 local function completeMasterWrit(eventCode, journalIndex)
 	if not WritCreater.savedVars.autoAccept then return end
-	if string.find(myLower(GetJournalQuestName(journalIndex)),WritCreater.langMasterWritNames()["M"]) then
+	if string.find(string.lower(GetJournalQuestName(journalIndex)),WritCreater.langMasterWritNames()["M"]) then
 		--d("complete")
 		CompleteQuest()
 	end
@@ -64,7 +60,7 @@ local function isQuestTypeActive(optionString)
 
 	for i = 1, 6 do
 
-		if string.find(myLower(optionString), myLower(WritCreater.writNames[i])) and (WritCreater.savedVars[i] or WritCreater.savedVars[i]==nil) then 
+		if string.find(string.lower(optionString), string.lower(WritCreater.writNames[i])) and (WritCreater.savedVars[i] or WritCreater.savedVars[i]==nil) then 
 			return true
 		
 		end
@@ -95,11 +91,12 @@ local function HandleChatterBegin(eventCode, optionCount)
 
     for i = 1, optionCount do
 	    -- Get details of first option
+
 	    local optionString, optionType = GetChatterOption(i)
 
 	    -- If it is a writ quest option...
 	    if optionType == CHATTER_START_NEW_QUEST_BESTOWAL 
-	       and string.find(myLower(optionString), myLower(WritCreater.writNames["G"])) ~= nil 
+	       and string.find(string.lower(optionString), string.lower(WritCreater.writNames["G"])) ~= nil 
 	    then
 
 	    	if isQuestTypeActive(optionString) then
@@ -111,7 +108,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 			
 	    -- If it is a writ quest completion option
 	    elseif optionType == CHATTER_START_ADVANCE_COMPLETABLE_QUEST_CONDITIONS
-	       and string.find(myLower(optionString), myLower(completionStrings.place)) ~= nil  
+	       and string.find(string.lower(optionString), string.lower(completionStrings.place)) ~= nil  
 	    then
 
 	        -- Listen for the quest complete dialog
@@ -121,8 +118,8 @@ local function HandleChatterBegin(eventCode, optionCount)
 	    
 	    -- If the goods were already placed, then complete the quest
 	    elseif optionType == CHATTER_START_COMPLETE_QUEST
-	       and (string.find(myLower(optionString), myLower(completionStrings.place)) ~= nil 
-	            or string.find(myLower(optionString), myLower(completionStrings.sign)) ~= nil)
+	       and (string.find(string.lower(optionString), string.lower(completionStrings.place)) ~= nil 
+	            or string.find(string.lower(optionString), string.lower(completionStrings.sign)) ~= nil)
 	    then
 
 	        -- Listen for the quest complete dialog
@@ -132,7 +129,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 	    elseif ZO_InteractWindowTargetAreaTitle:GetText() =="-"..completionStrings["Rolis Hlaalu"].."-" then 
 
 		    if optionType == CHATTER_START_ADVANCE_COMPLETABLE_QUEST_CONDITIONS
-		       and string.find(myLower(optionString), myLower(completionStrings.masterPlace)) ~= nil  
+		       and string.find(string.lower(optionString), string.lower(completionStrings.masterPlace)) ~= nil  
 		    then
 		        -- Listen for the quest complete dialog
 		        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)
@@ -141,8 +138,8 @@ local function HandleChatterBegin(eventCode, optionCount)
 		        SelectChatterOption(1)
 		        -- If the goods were already placed, then complete the quest
 		    elseif optionType == CHATTER_START_COMPLETE_QUEST
-		       and (string.find(myLower(optionString), myLower(completionStrings.masterPlace)) ~= nil 
-		            or string.find(myLower(optionString), myLower(completionStrings.masterSign)) ~= nil)
+		       and (string.find(string.lower(optionString), string.lower(completionStrings.masterPlace)) ~= nil 
+		            or string.find(string.lower(optionString), string.lower(completionStrings.masterSign)) ~= nil)
 		    then
 		        -- Listen for the quest complete dialog
 		        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)

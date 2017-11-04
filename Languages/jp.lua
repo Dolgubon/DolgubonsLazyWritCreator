@@ -509,8 +509,6 @@ WritCreater.optionStrings["woodworking"]                              = "木工"
 WritCreater.optionStrings["woodworking tooltip"]                      = "木工のアドオンをオフにする"
 WritCreater.optionStrings["writ grabbing"]                            = "令状アイテムを取り込む"
 WritCreater.optionStrings["writ grabbing tooltip"]                    = "令状に必要なアイテム（ニルンルート、ターなど）銀行から取り込みます"
-WritCreater.optionStrings["delay"]                                    = "アイテム取り込み遅延"
-WritCreater.optionStrings["delay tooltip"]                            = "銀行からアイテムを取り込む前に待機する時間（ミリ秒）"
 
 WritCreater.optionStrings["style stone menu"]                         = "使用するスタイルストーン"
 WritCreater.optionStrings["style stone menu tooltip"]                 = "アドオンでどのスタイルストーンを使用するか選択する"
