@@ -593,9 +593,10 @@ WritCreater.optionStrings["loot output"]								= "Wertvolle Belohnung Hinweis"
 WritCreater.optionStrings["loot output tooltip"]						= "Gebe eine Nachricht aus sobald du wertvolle Gegenstände aus einem Schrieb erhälst"
 WritCreater.optionStrings["writ grabbing"]								= "Gegenstände entnehmen"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Entnimmt Gegenstände die für Schriebe benötigt werden (z.B. Nirnwurz, Ta, usw.) aus der Bank"
-WritCreater.optionStrings["autoloot"]									= "Autoloot Behaviour"
-WritCreater.optionStrings["autoloot tooltip"]							= "Choose when the addon will autoloot writ reward containers"
-WritCreater.optionStrings["autoloot choices"]							= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
+WritCreater.optionStrings["autoloot"]									= "Autoloot-Verhalten"
+WritCreater.optionStrings["autoloot tooltip"]							= "Wann soll das Add-On Container looten"
+WritCreater.optionStrings["autoloot choices"]							= {"Gameplay-Einstellung kopieren", "Automatisch looten", "Nie looten"}
+
 
 --"<<1>> erhalten"
 function WritCreater.langWritRewardBoxes () return {

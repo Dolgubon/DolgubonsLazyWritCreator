@@ -336,9 +336,9 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 	end
 	local style = smithingSearch(conditionStrings["style"], styles)
 	local _,setIndex = smithingSearch(conditionStrings["set"], GetSetIndexes())
-	local quality
-
-	quality = smithingSearch(conditionStrings["quality"],WritCreater.masterWritQuality()) --search quality
+	if masterWritQuality then
+		local quality = smithingSearch(conditionStrings["quality"],WritCreater.masterWritQuality()) --search quality
+	end
 
 
 	if foundAllRequirements(pattern, style, setIndex, trait, quality) then
