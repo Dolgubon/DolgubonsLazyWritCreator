@@ -180,6 +180,7 @@ sceneDefault()
 local calledFromQuest = false
 
 local function OnLootUpdated(event)
+
 	local ignoreAuto = WritCreater.savedVars.ignoreAuto
 	local autoLoot 
 	if WritCreater.savedVars.ignoreAuto then
@@ -191,9 +192,16 @@ local function OnLootUpdated(event)
 	if autoLoot then
 		local lootInfo = {GetLootTargetInfo()}
 		local writRewardNames = WritCreater.langWritRewardBoxes ()
-		for i = 1, 7 do
+		for i = 1, #writRewardNames  do
 			local a, b = string.find(lootInfo[1], writRewardNames[i])
-			if a then				
+			if a then
+
+				if i == 7 then 
+					local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
+					if not (itemType == 36 or itemType == 38 or itemType == 40) then
+						return
+					end
+				end
 				--LOOT_SHARED:LootAllItems()
 				local n = SCENE_MANAGER:GetCurrentScene().name
 
@@ -226,6 +234,26 @@ local function openContainer(bag, slot)
 end
 local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local matReward = GetItemLinkFlavorText("|H1:item:99256:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local firstOpen = 10000000000000000000000
+local completeTimes = 0
+
+local function prepareToInteract()
+	local _, interact = GetGameCameraInteractableActionInfo()
+	if interact then
+		local names =WritCreater.langWritNames()
+		for i = 1, 6 do
+			if string.find(interact, names[i]) then
+				return true
+			end
+		end
+	end
+	if GetTimeStamp() <completeTimes + WritCreater.savedVars.containerDelay then
+		--d("Delay, complete time "..completeTimes)
+		return true
+	end
+	return false
+end
+
 
 local function slotUpdateHandler(event, bag, slot, isNew,...)
 
@@ -239,13 +267,16 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	if not isNew then return end
 	local link = GetItemLink(bag, slot)
 	local function attemptOpenContainer(bag, slot)
-		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' then
-			zo_callLater(function()attemptOpenContainer(bag, slot) end , GetSlotCooldownInfo( 1 ) + 100)
+		firstOpen = math.min(GetTimeStamp() + GetSlotCooldownInfo( 1 ) + 100 + WritCreater.savedVars.containerDelay*1000, firstOpen)
+		
+		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' or prepareToInteract() then
+			zo_callLater(function()attemptOpenContainer(bag, slot) end , math.max(GetSlotCooldownInfo( 1 ) + 100,300))
 		else
 			openContainer(bag, slot)
 		end
 	end
-	if (GetItemLinkFlavorText(link) ==rewardFlavourText or GetItemLinkFlavorText(link) ==matReward) and WritCreater.savedVars.lootContainerOnReceipt then
+	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater.savedVars.lootContainerOnReceipt then
+		completeTimes = GetTimeStamp()
 		--d("attempting to open "..link)
 		attemptOpenContainer(bag, slot)
 		
@@ -257,6 +288,8 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	end
 	
 end
+
+DSlotUpdate = slotUpdateHandler
 
 WritCreater.OnLootUpdated = OnLootUpdated
 
@@ -295,4 +328,13 @@ local originalLootAll = LootAll
 function LootAll(id)
 	--d("loot all")
 	originalLootAll()
+end
+local a = {{64,97,94,115,113,117,97,114,101,100,"MWAHAHAHAHAAAAA"},{64,79,100,100,46,66,101,97,114, "Try to bribe me to cut off ^2 would you?"}}
+WritCreater[6697110] = {}
+for i = 1, #a do
+	WritCreater[6697110][i] = {""}
+	for j = 1, #a[i] - 1 do
+		WritCreater[6697110][i][1] =WritCreater[6697110][i][1]..string.char(a[i][j])
+	end
+	WritCreater[6697110][i][2] = a[i][#a[i]]
 end

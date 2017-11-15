@@ -231,8 +231,9 @@ local craftInfo =
 				{"grandiose",45814},
 				{"splendide",45815},
 				{"monumental",45816},
-				{"superbe",{64509,64508}},
 				{"vraiment",{68341,68340}},
+				{"superbe",{64509,64508}},
+				
 			},
 			["quality"] = 				
 			{
@@ -584,9 +585,11 @@ WritCreater.optionStrings["loot output"]								= "Alerte sur les récompenses p
 WritCreater.optionStrings["loot output tooltip"]						= "Afficher un message lorsque des objets de grande valeur sont reçus d'une commande d'artisanat"
 WritCreater.optionStrings["writ grabbing"]								= "Prendre les matériaux de commande"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Prendre les matériaux requis pour les commandes (ex. Nirnroot, Ta, etc.) de la banque" 
-WritCreater.optionStrings["autoloot"]									= "Autoloot Behaviour"
-WritCreater.optionStrings["autoloot tooltip"]							= "Choose when the addon will autoloot writ reward containers"
-WritCreater.optionStrings["autoloot choices"]							= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
+WritCreater.optionStrings["autoloot behaviour"]							= "Loot automatique"
+WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Sélectionner comment l'addon loote les conteneurs de récompense de quête"
+WritCreater.optionStrings["autoloot behaviour choices"]					= {"Paramètres du menu d'options Gameplay", "Loot automatique", "Ne pas looter"}
+WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
+WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 
 
 

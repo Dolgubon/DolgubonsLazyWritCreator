@@ -1,7 +1,7 @@
 --[[
 Author: Ayantir
 Filename: LibCustomTitles.lua
-Version: 18
+Version: 20
 ]]--
 
 --[[
@@ -30,7 +30,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 ]]--
 
 local libLoaded
-local LIB_NAME, VERSION = "LibCustomTitles", 18
+local LIB_NAME, VERSION = "LibCustomTitles", 20
 local LibCustomTitles, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibCustomTitles then return end
 
@@ -291,7 +291,6 @@ function LibCustomTitles:Init()
 				fr = "L'immortel",
 				de = "Undying",
 			},
-
 		},
 		
 		["@Sethize"] = { -- EU v12
@@ -461,6 +460,25 @@ function LibCustomTitles:Init()
 			["Yirel Virith"] = {
 				ov = true,
 				en = "Nightcaller",
+			},
+		},
+
+		["@Anceane"] = { -- v19
+			ov = true,
+			en = "Dark Emerald",
+			fr = "Emeraude Sombre",
+		},
+
+		["@Potato-Salad"] = { -- v19
+			ov = true,
+			en = "Seraphim of Azura",
+			fr = "Séraphin d'Azura",
+		},
+
+		["@blakeblox"] = { -- v19
+			["fyboba"] = {
+				ov = {en = "Tyro", fr = "Première classe", de = "Tyro"},
+				en = "Golden Lady",
 			},
 		},
 		

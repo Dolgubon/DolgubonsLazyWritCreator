@@ -170,7 +170,7 @@ local function enchantSearch(info,condition)
 end
 
 local function foundAllEnchantingRequirements(essence, potency, aspect)
-	if WritCreater.lang~="en" then return false end
+	if WritCreater.lang~="en" and WritCreater.lang~="de" then return false end
 	local foundAll = true
 	if not essence then
 		foundAll = false
@@ -198,6 +198,7 @@ local function EnchantingMasterWrit(journalIndex, sealedText, reference)
 	else
 		condition, complete, outOf = GetJournalQuestConditionInfo(journalIndex, 1)
 	end
+	
 	if complete == outOf then return end
 	if condition =="" then return end
 
@@ -295,7 +296,7 @@ end
 
 local function SmithingMasterWrit(journalIndex, info, station, isArmour, material, reference, sealedText)
 	dbug("FUNCTION:SmithingMasterHandler")
-
+	if not WritCreater.masterWritQuality then return end
 	if WritCreater.lang == "de" then for i = 1, #info do  info[i][1] = germanRemoveEN(info[i][1])   end end
 	local condition, complete =GetJournalQuestConditionInfo(journalIndex, 1)
 	local isQuest = true
@@ -336,9 +337,9 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 	end
 	local style = smithingSearch(conditionStrings["style"], styles)
 	local _,setIndex = smithingSearch(conditionStrings["set"], GetSetIndexes())
-	if masterWritQuality then
-		local quality = smithingSearch(conditionStrings["quality"],WritCreater.masterWritQuality()) --search quality
-	end
+	
+	local quality = smithingSearch(conditionStrings["quality"],WritCreater.masterWritQuality()) --search quality
+
 
 
 	if foundAllRequirements(pattern, style, setIndex, trait, quality) then

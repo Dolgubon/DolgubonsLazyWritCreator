@@ -616,6 +616,8 @@ WritCreater.optionStrings["loot output tooltip"]						= "Output a message when v
 WritCreater.optionStrings["autoloot behaviour"]							= "Autoloot Behaviour" -- Note that the following three come early in the settings menu, but becuse they were changed
 WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Choose when the addon will autoloot writ reward containers" -- they are now down below (with untranslated stuff)
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
+WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
+WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 
 function WritCreater.langWritRewardBoxes () return {
 	[CRAFTING_TYPE_ALCHEMY] = "Alchemist's Vessel",

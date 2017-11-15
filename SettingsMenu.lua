@@ -190,6 +190,18 @@ function WritCreater.Options() --Sentimental
 			WritCreater.savedVars.lootContainerOnReceipt = value					
 			end,
 		},
+		--[[{
+			type = "slider",
+			name = WritCreater.optionStrings["container delay"],
+			tooltip = WritCreater.optionStrings["container delay tooltip"]    ,
+			min = 0,
+			max = 5,
+			getFunc = function() return WritCreater.savedVars.containerDelay end,
+			setFunc = function(value)
+			WritCreater.savedVars.containerDelay = value
+			end,
+			disabled = function() return not WritCreater.savedVars.lootContainerOnReceipt end,
+		  },--]]
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["master writ saver"],

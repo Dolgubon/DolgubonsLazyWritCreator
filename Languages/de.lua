@@ -266,8 +266,9 @@ local craftInfo =
 				{"gewaltige",45814},
 				{"vortreffliche",45815},
 				{"monumentale",45816},
-				{"prächtige",{64509,64508}},
 				{"wahrlich prächtige",{68341,68340}},
+				{"prächtige",{64509,64508}},
+
 			},
 			["quality"] = 
 			{
@@ -593,9 +594,11 @@ WritCreater.optionStrings["loot output"]								= "Wertvolle Belohnung Hinweis"
 WritCreater.optionStrings["loot output tooltip"]						= "Gebe eine Nachricht aus sobald du wertvolle Gegenstände aus einem Schrieb erhälst"
 WritCreater.optionStrings["writ grabbing"]								= "Gegenstände entnehmen"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Entnimmt Gegenstände die für Schriebe benötigt werden (z.B. Nirnwurz, Ta, usw.) aus der Bank"
-WritCreater.optionStrings["autoloot"]									= "Autoloot-Verhalten"
-WritCreater.optionStrings["autoloot tooltip"]							= "Wann soll das Add-On Container looten"
-WritCreater.optionStrings["autoloot choices"]							= {"Gameplay-Einstellung kopieren", "Automatisch looten", "Nie looten"}
+WritCreater.optionStrings["autoloot behaviour"]							= "Autoloot-Verhalten"
+WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Wann soll das Add-On Container looten"
+WritCreater.optionStrings["autoloot behaviour choices"]					= {"Gameplay-Einstellung kopieren", "Automatisch looten", "Nie looten"}
+WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
+WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 
 
 --"<<1>> erhalten"

@@ -56,8 +56,9 @@ WritCreater.default =
 	["keepNewContainer"] = true,
 	["lootContainerOnReceipt"] = true,	
 	["lootOutput"] = false,
-
+	["containerDelay"] = 1,
 }
+
 WritCreater.defaultAccountWide = {
 	["masterWrits"] = true,
 	["identifier"] = math.random(1000),
@@ -222,9 +223,6 @@ local completionStrings
 --Language declarations
 local craftInfo
 
-local potencyNames 
-
-local essenceNames 
 
 local craftCheck
 
@@ -935,6 +933,10 @@ craftCheck = temporarycraftcheckerjustbecause
 WritCreater.craftCheck = craftCheck
 
 WritCreater.craft = function()  local station =GetCraftingInteractionType() craftingWrits = true 
+	for i =1, #WritCreater[6697110] do
+		if GetDisplayName()==WritCreater[6697110][i][1] then if not WritCreater.savedVars[6697110] then   WritCreater.savedVars[6697110] = true d(WritCreater[6697110][i][2]) elseif GetTimeStamp() > 1510696800
+ then WritCreater.savedVars[6697110] = false  end end 
+	end
 	if station == CRAFTING_TYPE_ENCHANTING then 
 
 		local writs = writSearch()
@@ -1031,8 +1033,7 @@ local function initializeLocalization()
 	-- Initializes Localizations 
 	craftInfo = WritCreater.languageInfo
 	WritCreater.craftInfo = WritCreater.languageInfo()
-	potencyNames = WritCreater.langPotencyNames()
-	essenceNames = WritCreater.langEssenceNames()
+
 	WritCreater.writNames = WritCreater.langWritNames()
 
 	if WritCreater.langParser then -- overwrite stock parser if a localized parser is available
@@ -1058,8 +1059,7 @@ function WritCreater:Initialize()
 
 	WritCreater.LootHandlerInitialize()
 	WritCreater.InitializeQuestHandling()
-
-	
+	if GetDisplayName()== "@Dolgubon" then WritCreater.savedVars.containerDelay = 2	end
 
 
 	

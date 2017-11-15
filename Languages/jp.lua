@@ -15,7 +15,7 @@ function WritCreater.langParser(str)
 	str = string.gsub(str,"の",":")
 	str = string.gsub(str,"を",":")
 	str = string.gsub(str,"な",":")
-	str = string.gsub(str, "（ノーマル）","")
+	str = string.gsub(str, "%(ノーマル%)","")
 
 	local params = {}
 	local i = 1
@@ -40,7 +40,7 @@ end
 
 function WritCreater.langWritNames() --Exacts!!!  I know for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
 	local names = {
-	["G"] = "令状",
+	["G"] = "依頼を調べる",
 	[CRAFTING_TYPE_ENCHANTING] = "付呪",
 	[CRAFTING_TYPE_BLACKSMITHING] = "鍛冶",
 	[CRAFTING_TYPE_CLOTHIER] = "仕立",
@@ -53,11 +53,11 @@ end
 
 function WritCreater.writCompleteStrings()
 	local strings = {
-	["place"] = "Place the goods",
+	["place"] = "品物を(.+)の中に置く",
 	["sign"] = "Sign the Manifest",
 	["masterPlace"] = "",
 	["masterSign"] = "",
-	["masterStart"] = "<契約を受諾する>",,
+	["masterStart"] = "<契約を受諾する>",
 	["Rolis Hlaalu"] = "ロリス・フラール",
 	}
 	return strings
@@ -258,8 +258,9 @@ local craftInfo =
 				{"至高,",45814},
 				{"伝説,",45815},
 				{"壮麗,",45816},
-				{"最上,",64509},
 				{"真に最上,",68341},
+				{"最上,",64509},
+				
 			},
 		},
 	}
@@ -268,7 +269,7 @@ local craftInfo =
 
 end
 
-function WritCreater.langEssenceNames() --exact!
+function WritCreater.langEssenceNames() --Vital!
 
 local essenceNames =  
 	{
@@ -279,7 +280,7 @@ local essenceNames =
 	return essenceNames
 end
 
-function WritCreater.langPotencyNames() --exact!! Also, these are all the positive runestones - no negatives needed.
+function WritCreater.langPotencyNames() --Vital!! Also, these are all the positive runestones - no negatives needed.
 	local potencyNames = 
 	{
 		[1] = "ジョラ", --Lowest potency stone lvl
@@ -345,9 +346,21 @@ local exceptions =
 	{
 		["original"] = "ルベダイトのヘルム",
 		["corrected"] = "ルベダイト",
+	},
+	[9] = 
+	{
+		["original"] = "届ける",
+		["corrected"] = "deliver",
 	}
 }
 
+local enExceptions = 
+{
+	{
+		["original"] = "届ける",
+		["corrected"] = "deliver",
+	}
+}
 
 local bankExceptions = 
 {
@@ -358,6 +371,7 @@ local bankExceptions =
 		
 	}
 }
+
 
 function WritCreater.bankExceptions(condition)
 	condition = string.gsub(condition, ":", " ")
@@ -387,6 +401,12 @@ end
 
 function WritCreater.enchantExceptions(condition)
 	condition = string.gsub(condition, "?"," ")
+		for i = 1, #exceptions do
+
+		if string.find(condition, exceptions[i]["original"]) then
+			condition = string.gsub(condition, exceptions[i]["original"],exceptions[i]["corrected"])
+		end
+	end
 	return condition
 end
 
@@ -496,45 +516,47 @@ WritCreater.optionStrings["show craft window tooltip"]                = "生産�
 WritCreater.optionStrings["autocraft"]                                = "自動生産"
 WritCreater.optionStrings["autocraft tooltip"]                        = "これを選択すると生産設備に入った時にアドオンが即時に生産を開始する。ウィンドウが非表示の場合でもこの機能は有効です。"
 WritCreater.optionStrings["blackmithing"]                             = "鍛冶"
-WritCreater.optionStrings["blacksmithing tooltip"]                    = "鍛冶のアドオンをオフにする"
+WritCreater.optionStrings["blacksmithing tooltip"]                    = "鍛冶の自動生産"
 WritCreater.optionStrings["clothing"]                                 = "縫製"
-WritCreater.optionStrings["clothing tooltip"]                         = "縫製のアドオンをオフにする"
+WritCreater.optionStrings["clothing tooltip"]                         = "縫製の自動生産"
 WritCreater.optionStrings["enchanting"]                               = "付呪"
-WritCreater.optionStrings["enchanting tooltip"]                       = "付呪のアドオンをオフにする"
-WritCreater.optionStrings["alchemy"]                                  = "Alchemy"
-WritCreater.optionStrings["alchemy tooltip"]   	                  	  = "Turn the addon off for Alchemy"
-WritCreater.optionStrings["provisioning"]                             = "Provisioning"
-WritCreater.optionStrings["provisioning tooltip"]                     = "Turn the addon off for Provisioning"
+WritCreater.optionStrings["enchanting tooltip"]                       = "付呪の自動生産"
+WritCreater.optionStrings["alchemy"]                                  = "錬金"
+WritCreater.optionStrings["alchemy tooltip"]   	                  	  = "錬金の自動生産"
+WritCreater.optionStrings["provisioning"]                             = "料理"
+WritCreater.optionStrings["provisioning tooltip"]                     = "料理の自動生産"
 WritCreater.optionStrings["woodworking"]                              = "木工"
-WritCreater.optionStrings["woodworking tooltip"]                      = "木工のアドオンをオフにする"
+WritCreater.optionStrings["woodworking tooltip"]                      = "木工の自動生産"
 WritCreater.optionStrings["writ grabbing"]                            = "令状アイテムを取り込む"
 WritCreater.optionStrings["writ grabbing tooltip"]                    = "令状に必要なアイテム（ニルンルート、ターなど）銀行から取り込みます"
 
 WritCreater.optionStrings["style stone menu"]                         = "使用するスタイルストーン"
-WritCreater.optionStrings["style stone menu tooltip"]                 = "アドオンでどのスタイルストーンを使用するか選択する"
-WritCreater.optionStrings["exit when done"]							  = "Exit crafting window"
-WritCreater.optionStrings["exit when done tooltip"]					  = "Exit crafting window when all crafting is completed"
-WritCreater.optionStrings["automatic complete"]						  = "Automatic quest dialog"
-WritCreater.optionStrings["automatic complete tooltip"]				  = "Automatically accepts and completes quests when at the required place"
-WritCreater.optionStrings["new container"]							  = "Keep new status"
-WritCreater.optionStrings["new container tooltip"]					  = "Keep the new status for writ reward containers"
-WritCreater.optionStrings["master"]									  = "Master Writs"
-WritCreater.optionStrings["master tooltip"]							  = "Turn the addon off for Master Writs"
-WritCreater.optionStrings["right click to craft"]						= "Right Click to Craft"
-WritCreater.optionStrings["right click to craft tooltip"]				= "If this is ON the addon will craft Master Writs you tell it to craft after right clicking a sealed writ"
-WritCreater.optionStrings["crafting submenu"]						  = "Trades to Craft"
-WritCreater.optionStrings["crafting submenu tooltip"]				  = "Turn the addon off for specific crafts"
-WritCreater.optionStrings["timesavers submenu"]						  = "Timesavers"
-WritCreater.optionStrings["timesavers submenu tooltip"]				  = "Various small timesavers"
-WritCreater.optionStrings["loot container"]						  		= "Loot container when received"
-WritCreater.optionStrings["loot container tooltip"]				  		= "Loot writ reward containers when you receive them"
-WritCreater.optionStrings["master writ saver"]							= "Save Master Writs"
-WritCreater.optionStrings["master writ saver tooltip"]					= "Prevents Master Writs from being accepted"
-WritCreater.optionStrings["loot output"]								= "Valuable Reward Alert"
-WritCreater.optionStrings["loot output tooltip"]						= "Output a message when valuable items are received from a writ"
-WritCreater.optionStrings["autoloot"]									= "Autoloot Behaviour"
-WritCreater.optionStrings["autoloot tooltip"]							= "Choose when the addon will autoloot writ reward containers"
-WritCreater.optionStrings["autoloot choices"]							= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
+WritCreater.optionStrings["style stone menu tooltip"]                 = "アドオンでどのスタイルストーンを使用するか選択します"
+WritCreater.optionStrings["exit when done"]							  = "クラフトメニューを自動的に閉じる"
+WritCreater.optionStrings["exit when done tooltip"]					  = "自動生産が終わると自動的に生産メニューを閉じる"
+WritCreater.optionStrings["automatic complete"]						  = "クエストダイアログの自動化"
+WritCreater.optionStrings["automatic complete tooltip"]				  = "クエストの受諾・完了するダイアログ画面を自動的に進める"
+WritCreater.optionStrings["new container"]							  = "「新しい」ステータスを保持"
+WritCreater.optionStrings["new container tooltip"]					  = "クラフト依頼完了の報酬コンテナから素材を自動的に取り出しても「新しい」ステータスを保持する"
+WritCreater.optionStrings["master"]									  = "マスター依頼"
+WritCreater.optionStrings["master tooltip"]							  = "マスター依頼でアドオンを動作させる"
+WritCreater.optionStrings["right click to craft"]						= "右クリックでクラフト"
+WritCreater.optionStrings["right click to craft tooltip"]				= "オンの場合、密封された依頼を右クリックして「自動生産」を選択すると、クラフト台をアクセスするだけで自動的にクラフトされるようになります"
+WritCreater.optionStrings["crafting submenu"]						  =  "自動生産"
+WritCreater.optionStrings["crafting submenu tooltip"]				  = "各自動生産の切り替え"
+WritCreater.optionStrings["timesavers submenu"]						  = "時間短縮"
+WritCreater.optionStrings["timesavers submenu tooltip"]				  = "色々な時間を短縮ための設定"
+WritCreater.optionStrings["loot container"]						  		= "報酬素材を取り出す"
+WritCreater.optionStrings["loot container tooltip"]				  		= "クラフト依頼完了の報酬コンテナから素材を自動的に取り出す"
+WritCreater.optionStrings["master writ saver"]							= "マスター依頼を保持"
+WritCreater.optionStrings["master writ saver tooltip"]					= "マスター依頼を誤って受諾できないようにする"
+WritCreater.optionStrings["loot output"]								= "価値の高い報酬を受けた時の通知"
+WritCreater.optionStrings["loot output tooltip"]						= "クラフト依頼完了の報酬として、価値の高いアイテムを受けた場合通知する"
+WritCreater.optionStrings["autoloot behaviour"]							= "自動取得設定"
+WritCreater.optionStrings["autoloot behaviour tooltip"]					= "自動取得の詳細設定"
+WritCreater.optionStrings["autoloot behaviour choices"]					= {"ゲームプレイメニュー内の設定に従う", "自動的に取得する", "自動的に取得しない"}
+WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
+WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 
 function WritCreater.langWritRewardBoxes () 
 local WritRewardNames = { -- these are the containers you receive as writ rewards
@@ -544,7 +566,7 @@ local WritRewardNames = { -- these are the containers you receive as writ reward
 	[4] = "鍛冶師の木枠箱",
 	[5] = "調理師のバック",
 	[6] = "木工師のケース",
-	[7] = "1111111111",
+	[7] = "箱",
 }
 
 
