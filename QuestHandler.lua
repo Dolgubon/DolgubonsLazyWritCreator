@@ -126,7 +126,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 	        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)
 	        -- Select the first option to place goods and/or sign the manifest
 	        SelectChatterOption(1)
-	    elseif ZO_InteractWindowTargetAreaTitle:GetText() =="-"..completionStrings["Rolis Hlaalu"].."-" then 
+	    elseif zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,completionStrings["Rolis Hlaalu"]) then 
 
 		    if optionType == CHATTER_START_ADVANCE_COMPLETABLE_QUEST_CONDITIONS
 		       and string.find(string.lower(optionString), string.lower(completionStrings.masterPlace)) ~= nil  

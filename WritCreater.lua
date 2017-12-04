@@ -646,7 +646,7 @@ crafting = function(info,quest, craftItems)
 						if numMats<=curMats then 
 							local style = maxStyle(pattern)
 							if style == -1 then out(WritCreater.strings.moreStyle) return false end
-							CraftSmithingItem(pattern, index,numMats,style,1)
+							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 1, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType())
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
 							if changeRequired then return true end
@@ -970,7 +970,7 @@ local function initializeUI()
 	LAM:RegisterOptionControls("DolgubonsWritCrafter", WritCreater.settings["options"])
 	DolgubonsWrits:ClearAnchors()
 	DolgubonsWrits:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, WritCreater.savedVars.OffsetX-470, WritCreater.savedVars.OffsetY)
-		if false then --GetWorldName() ~= "NA Megaserver" then
+	if false then --GetWorldName() ~= "NA Megaserver" then
 		DolgubonsWritsFeedbackSmall:SetHidden(true)
 		DolgubonsWritsFeedbackMedium:SetHidden(true)
 		DolgubonsWritsFeedbackLarge:SetHidden(true)
@@ -1020,9 +1020,15 @@ local function initializeOtherStuff()
 	ZO_PreHook("ZO_AlertNoSuppression", ZO_AlertNoSuppression_Hook)
 end
 
+WritCreater.masterWritCompletion = function(...) end -- Empty function, intended to be overwritten by other addons
+WritCreater.writItemCompletion = function(...) end -- also empty
+
 local function initializeLibraries()
 	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
-	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) end)
+	
+	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(...) WritCreater.masterWritCompletion() end)
+
+	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) WritCreater.writItemCompletion() end)
 
 	local LibMOTD = LibStub("LibMOTD")
 	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)

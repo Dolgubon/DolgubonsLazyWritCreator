@@ -216,7 +216,7 @@ local function EnchantingMasterWrit(journalIndex, sealedText, reference)
 			WritCreater.langMasterWritNames()["M1"],
 			WritCreater.langWritNames()["G"]))
 		dbug("CALL:LLCENchantCraft")
-		WritCreater.LLCInteraction:CraftEnchantingItemId(potency[2][essence[3]], essence[2], aspect[2], true, reference)
+		WritCreater.LLCInteractionMaster:CraftEnchantingItemId(potency[2][essence[3]], essence[2], aspect[2], true, reference)
 	else
 	end
 end
@@ -360,9 +360,9 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 			))
 
 		dbug("CALL:LLCCraftSmithing")
-		WritCreater.LLCInteraction:cancelItemByReference(reference)
+		WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
 
-		WritCreater.LLCInteraction:CraftSmithingItemByLevel( pattern[2], true , 150, style[2], trait[2], false, station, setIndex, quality[2], true, reference)
+		WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( pattern[2], true , 150, style[2], trait[2], false, station, setIndex, quality[2], true, reference)
 		return true
 	else
 		dbug("ERROR:RequirementMissing")
@@ -469,7 +469,7 @@ end
 local function QuestCounterChanged(event, journalIndex, questName, _, _, currConditionVal, newConditionVal, conditionMax)
 	dbug("EVENT:Quest Counter Change")
 
-	WritCreater.LLCInteraction:cancelItemByReference(journalIndex)
+	WritCreater.LLCInteractionMaster:cancelItemByReference(journalIndex)
 	if newConditionVal<conditionMax then
 		
 		WritCreater.MasterWritsQuestAdded(event, journalIndex, questName)
@@ -482,7 +482,7 @@ end
 EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_QUEST_CONDITION_COUNTER_CHANGED , QuestCounterChanged)
 
 function WritCreater.scanAllQuests()
-	WritCreater.LLCInteraction:cancelItem()
+	WritCreater.LLCInteractionMaster:cancelItem()
 	dbug("FUNCTION:scanAllQuests")
 	for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
 end
