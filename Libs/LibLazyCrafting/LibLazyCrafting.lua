@@ -33,7 +33,7 @@ LibLazyCrafting.craftInteractionTables =
 	}
 }
 
-
+LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
 LLC.widgets = LLC.widgets or {}
 local widgets = LLC.widgets
 
@@ -456,6 +456,11 @@ function LibLazyCrafting:Init()
 		return LLCAddonInteractionTable
 	end
 
+	-- Allows addons to see if the library is currently crafting anything, a quick overview of what it is making, and what addon is asking for it
+	function LibLazyCrafting:IsPerformingCraftProcess()
+		return unpack(LibLazyCrafting.isCurrentlyCrafting)
+	end
+
 	-- Same as the normal crafting function, with a few extra parameters.
 	-- However, doesn't craft it, just adds it to the queue. (TODO: Maybe change this? But do we want auto craft?)
 	-- StationOverride
@@ -492,23 +497,6 @@ function LibLazyCrafting:Init()
 		else
 			if IsPerformingCraftProcess() then d("Already Crafting") else d("Item cannot be crafted here") end
 		end
-	end
-
-
-	function LLC_CraftAlchemyItem(SolventNameOrIndex, IngredientNameOrIndexOne, IngredientNameOrIndexTwo, IngredientNameOrIndexThree)
-	end
-
-	function LLC_GetQueue(Station)
-	end
-
-	function LLC_RemoveQueueItem(index)
-	end
-
-	function LLC_ClearQueue()
-	end
-
-	--- Could be infeasible
-	function LLC_GetSmithingResultLink(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, useUniversalStyleItem, linkstyle, stationOverride, setIndex, quality)
 	end
 
 
@@ -563,6 +551,7 @@ end
 -- which bypasses the event Manager, so that it is called first.
 
 local function CraftComplete(event, station)
+	LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
 	--d("Event:completion")
 	local LLCResult = nil
 	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do

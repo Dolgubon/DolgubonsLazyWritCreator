@@ -470,6 +470,7 @@ local function LLC_SmithingCraftInteraction( station)
 			parameters[1] = parameters[1] + setPatternOffset[station]	
 		end
 			dbug("CALL:ZOCraftSmithing")
+			LibLazyCrafting.isCurrentlyCrafting = {true, "smithing", earliest["Requester"]}
 			CraftSmithingItem(unpack(parameters))
 
 			currentCraftAttempt = copy(earliest)
@@ -510,6 +511,7 @@ local function LLC_SmithingCraftInteraction( station)
 				d("Not enough improvement mats")
 				return end
 			dbug("CALL:ZOImprovement")
+			LibLazyCrafting.isCurrentlyCrafting = {true, "improve", earliest["Requester"]}
 			ImproveSmithingItem(earliest.ItemBagID,earliest.ItemSlotID, numBooster)
 			currentCraftAttempt = copy(earliest)
 			currentCraftAttempt.position = position
@@ -602,6 +604,8 @@ local function SmithingCraftCompleteFunction(station)
 	end
 end
 
+
+
 local function compileRequirements(request, station)-- Ingot/style mat/trait mat/improvement mat
 	local requirements = {}
 	requirements[MaterialitemIDTable[station][findMatTierByIndex(request.materialIndex)]] = request.materialQuantity
@@ -609,7 +613,6 @@ local function compileRequirements(request, station)-- Ingot/style mat/trait mat
 	requirements[GetItemIDFromLink( GetSmithingTraitItemLink(request.trait, 0))] = 1
 	if request.quality==1 then return requirements end
 	
-
 end
 
 LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_BLACKSMITHING] =

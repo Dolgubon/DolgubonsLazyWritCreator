@@ -1026,9 +1026,9 @@ WritCreater.writItemCompletion = function(...) end -- also empty
 local function initializeLibraries()
 	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
 	
-	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(...) WritCreater.masterWritCompletion() end)
+	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(...) WritCreater.masterWritCompletion(...) end)
 
-	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) WritCreater.writItemCompletion() end)
+	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) WritCreater.writItemCompletion(...) end)
 
 	local LibMOTD = LibStub("LibMOTD")
 	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)

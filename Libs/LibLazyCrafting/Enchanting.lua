@@ -119,6 +119,7 @@ local function LLC_EnchantingCraftinteraction(event, station)
 		}
 		if locations[1] and locations[5] and locations[3] then
 			dbug("CALL:ZOEnchantCraft")
+			LibLazyCrafting.isCurrentlyCrafting = {true, "enchanting", earliest["Requester"]}
 			CraftEnchantingItem(unpack(locations))
 			
 			currentCraftAttempt= copy(earliest)
