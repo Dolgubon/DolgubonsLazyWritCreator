@@ -1,10 +1,10 @@
-## Version: 1.5
+## Version: 1.9
 
 Smithing.lua
 LibLazyCrafting.lua
 Alchemy.lua
 Provisioning.lua
-Anchanting.lua
+Enchanting.lua
 functions.lua
 ;
 ;(Note, this should not cause this to be recognized as an addon by the game, and is only to satisfy the scripts I use to package the library)

@@ -452,7 +452,7 @@ local function sendNote(gold)
     zo_callLater(function()
     ZO_MailSendToField:SetText('@Dolgubon')
     ZO_MailSendSubjectField:SetText("Dolgubon's Lazy Writ Crafter")
-    if gold and GetWorldName() == "NA Megaserver" then
+    if gold then
     	QueueMoneyAttachment(gold)
     end
     ZO_MailSendBodyField:TakeFocus() end, 200)
@@ -764,10 +764,10 @@ local function enchantCrafting(info, quest,add)
 	}
 
 	for i = 1, numConditions do
-		conditions["text"][i], conditions["cur"][i], conditions["max"][i],a,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
+
+		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
 		conditions["text"][i] = WritCreater.enchantExceptions(conditions["text"][i])
 		if conditions["cur"][i]>0 then conditions["text"][i] = "" end
-
 		if string.find(myLower(conditions["text"][i]),"deliver") then
 			out(WritCreater.strings.complete)
 			if closeOnce and WritCreater.IsOkayToExitCraftStation() and WritCreater.savedVars.exitWhenDone then SCENE_MANAGER:ShowBaseScene()  end
@@ -960,7 +960,7 @@ local function closeWindow(event, station)
 	queue = {}
 	DolgubonsWritsBackdropCraft:SetHidden(false)
 	closeOnce = false
-	
+	WritCreater.LLCInteraction:cancelItem()
 end
 
 local function initializeUI()
@@ -1026,9 +1026,11 @@ WritCreater.writItemCompletion = function(...) end -- also empty
 local function initializeLibraries()
 	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
 	
-	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(...) WritCreater.masterWritCompletion(...) end)
+	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(event, ...)
+	if event == LLC_CRAFT_SUCCESS then  WritCreater.masterWritCompletion(event, ...)end end)
 
-	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(...) WritCreater.writItemCompletion(...) end)
+	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, ...)
+	if event == LLC_CRAFT_SUCCESS then  WritCreater.writItemCompletion(event, ...) end end)
 
 	local LibMOTD = LibStub("LibMOTD")
 	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)

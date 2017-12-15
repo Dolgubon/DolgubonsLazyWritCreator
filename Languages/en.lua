@@ -417,6 +417,7 @@ function WritCreater.questExceptions(condition)
 end
 
 function WritCreater.enchantExceptions(condition)
+
 	condition = string.gsub(condition, " "," ")
 	return condition
 end
