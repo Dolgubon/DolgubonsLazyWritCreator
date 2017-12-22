@@ -602,6 +602,7 @@ local function createMatRequirementText(matsRequired)
 end
 
 crafting = function(info,quest, craftItems)
+
 	--if #queue>0 then return end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
@@ -615,8 +616,9 @@ crafting = function(info,quest, craftItems)
 	local conditions  = setupConditionsTable(quest, info)
 
 	for i,value in pairs(conditions["text"]) do
-		
+
 		local pattern, index = conditions["pattern"][i], indexRanges[conditions["mats"][i]]
+
 		if pattern and index then
 
 			 -- pattern is are we making gloves, chest, etc. Index is level.

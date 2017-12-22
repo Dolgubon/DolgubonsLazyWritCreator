@@ -423,6 +423,7 @@ function WritCreater.exceptions(condition)
 		condition = string.gsub(condition,exceptions["original"][i],exceptions["corrected"][i])
 	end
 	condition = string.gsub(condition, " "," ")
+	condition = string.gsub(condition, "  "," ")
 	return condition
 end
 

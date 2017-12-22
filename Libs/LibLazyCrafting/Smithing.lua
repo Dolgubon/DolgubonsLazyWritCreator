@@ -25,7 +25,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 1.5
+local widgetVersion = 1.7
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -399,8 +399,8 @@ end
 
 local function isValidLevel(isCP, lvl)
 	if isCP then
-		if lvl %10 ~= 0 then return  false end
-		if lvl > 160 or lvl <10 then return false  end
+		if lvl %10 ~= 0 then  return  false end
+		if lvl > 160 or lvl <10 then  return false  end
 	else
 		if lvl % 2 ~=0 and lvl ~= 1 then return false end
 		if lvl <1 or lvl > 50 then return false end
@@ -639,6 +639,7 @@ local function removedRequest(station, timestamp)
 			end
 		end
 	end
+	d("Request to remove not found")
 	return nil, 0
 end
 
@@ -651,7 +652,6 @@ local function smithingCompleteNewItemHandler(station)
 	local removedRequest
 	if addonName then
 		removedRequest =  table.remove(craftingQueue[addonName][station],position )
-
 		if currentCraftAttempt.quality>1 then
 			--d("Improving #".. tostring(currentCraftAttempt.reference))
 			removedRequest.bag = BAG_BACKPACK
@@ -677,11 +677,9 @@ local function SmithingCraftCompleteFunction(station)
 
 	--d("complete at "..GetTimeStamp())
 	--d(GetItemLink(BAG_BACKPACK, currentCraftAttempt.slot))
-	
 	if currentCraftAttempt.type == "smithing" and hasNewItemBeenMade then 
 		hasNewItemBeenMade = false
 		if WasItemCrafted() then
-			
 			smithingCompleteNewItemHandler(station)
 		else
 			
@@ -723,7 +721,7 @@ local function SmithingCraftCompleteFunction(station)
 end
 
 local function slotUpdateHandler(event, bag, slot, isNew, itemSoundCategory, inventoryUpdateReason, stackCountChange)
-
+	
 	if not isNew then return end
 	
 
@@ -740,7 +738,7 @@ local function slotUpdateHandler(event, bag, slot, isNew, itemSoundCategory, inv
 		
 	end
 end
-
+EVENT_MANAGER:UnregisterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
 EVENT_MANAGER:RegisterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdateHandler)
 
 
