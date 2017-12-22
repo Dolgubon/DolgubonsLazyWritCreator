@@ -238,7 +238,7 @@ local validItemTypes =
 		[ITEMTYPE_POTION] = {true, function(link) return numPotEffects(link)==0 end},
 		[ITEMTYPE_POISON] = {true, function(link) return numPotEffects(link)==0 end},
 		[ITEMTYPE_POTION_BASE] = {true},
-		[ITEMTYPE_POTION_BASE] = {true},
+		[ITEMTYPE_POISON_BASE] = {true},
 		[ITEMTYPE_REAGENT] = {true},
 	},
 	[CRAFTING_TYPE_ENCHANTING] = {

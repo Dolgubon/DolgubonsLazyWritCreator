@@ -391,7 +391,7 @@ end
 --/script for 1, 25 do if GetJournalQuestName(i) == "A Masterful Weapon" then d(i, GetJournalQuestConditionInfo(i,1,1))  end end
 --QuestID: 1
 
-
+--btw the writ helper addon is yours right? you could isolate master writs with GetJournalQuestType(i) == QUEST_TYPE_CRAFTINGdw
 function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 
 	if not WritCreater.langMasterWritNames or not WritCreater.savedVarsAccountWide.masterWrits then return end
@@ -469,12 +469,13 @@ end
 local function QuestCounterChanged(event, journalIndex, questName, _, _, currConditionVal, newConditionVal, conditionMax)
 	dbug("EVENT:Quest Counter Change")
 
-	WritCreater.LLCInteractionMaster:cancelItemByReference(journalIndex)
-	if newConditionVal<conditionMax then
-		
-		WritCreater.MasterWritsQuestAdded(event, journalIndex, questName)
+	if #WritCreater.LLCInteractionMaster:findItemByReference(journalIndex) == 0 then
+		WritCreater.LLCInteractionMaster:cancelItemByReference(journalIndex)
+		if newConditionVal<conditionMax then
+			
+			WritCreater.MasterWritsQuestAdded(event, journalIndex, questName)
+		end
 	end
-
 end
 
 

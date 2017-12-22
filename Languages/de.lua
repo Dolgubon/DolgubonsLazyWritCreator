@@ -502,17 +502,17 @@ end
 
 
 WritCreater.strings = {
-	["runeReq"] 								= function (essence, potency) return "|c2dff00Benötigt 1 |rTa|c2dff00, 1 |cffcc66"..essence.."|c2dff00 und ein |c0066ff"..potency end,
+	["runeReq"] 								= function (essence, potency) return zo_strformat("|c2dff00Benötigt 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 und ein |c0066ff<<2>>",essence, potency) end,
 	["runeMissing"] 							= runeMissingFunction,
 	["notEnoughSkill"]							= "Du hast nicht genügend Fertigkeitspunkte im Handwerk, um den Gegenstand herzustellen.",
 	["smithingMissing"] 						= "\n|cf60000Nicht genügend Materialien|r",
 	["craftAnyway"] 							= "Trotzdem herstellen",
 	["smithingEnough"] 							= "\n|c2dff00Du hast genügend Materialien",
 	["craft"] 									= "|c00ff00Herstellen|r",
-	["smithingReqM"] 							= function(amount, type, more) return "Benötigt "..amount.." "..type.." (|cf60000"..more.." benötigt|r)" end,
-	["smithingReqM2"] 							= function (amount,type,more) return "\n"..amount.." "..type.." (|cf60000"..more.." benötigt|r)" end,
-	["smithingReq"] 							= function (amount,type, current) return "Benötigt "..amount.." "..type.." (|c2dff00"..current.." verfügbar|r)" end,
-	["smithingReq2"] 							= function (amount,type, current) return "\n"..amount.." "..type.." (|c2dff00"..current.." verfügbar|r)" end,
+	["smithingReqM"] 							= function(amount, type, more) return zo_strformat("Benötigt <<1>> <<2>> (|cf60000<<3>> benötigt|r)",amount,type,more) end,
+	["smithingReqM2"] 							= function (amount,type,more) return zo_strformat("\n<<1>> <<2>> (|cf60000<<3>> benötigt|r)" , amount, type,more )end,
+	["smithingReq"] 							= function (amount,type, current) return zo_strformat("Benötigt <<1>> <<2>> (|c2dff00<<3>> verfügbar|r)" , amount, type,current )end,
+	["smithingReq2"] 							= function (amount,type, current) return zo_strformat("\n<<1>> <<2>> (|c2dff00<<3>> verfügbar|r)" , amount, type,current )end,
 	["crafting"] 								= "|cffff00Herstellung...|r",
 	["craftIncomplete"] 						= "|cf60000Die Herstellung konnte nicht abgeschlossen werden.\nDu benötigst mehr Materialien.|r",
 	["moreStyle"] 								= "|cf60000Du hast keine der ausgewählten Stilsteine vorhanden|r",

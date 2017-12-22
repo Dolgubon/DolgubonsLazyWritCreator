@@ -167,7 +167,9 @@ function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d
 
 -- Mostly a queue function, but kind of a helper function too
 local function isItemCraftable(request, station)
+
 	if LibLazyCrafting.craftInteractionTables[station].isItemCraftable then
+
 		return LibLazyCrafting.craftInteractionTables[station]:isItemCraftable(station, request)
 	end
 
@@ -378,6 +380,7 @@ local function LLC_CancelItemByReference(self, reference)
 	for i = 1, #craftingQueue[self.addonName] do
 		for j = 1, #craftingQueue[self.addonName][i] do
 			if craftingQueue[self.addonName][i][j] and craftingQueue[self.addonName][i][j].reference==reference then
+				
 				table.remove(craftingQueue[self.addonName][i], j)
 
 			end
@@ -546,8 +549,9 @@ end
 -- Called when a crafting station is opened. Should then craft anything needed in the queue
 local function CraftInteract(event, station)
 	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do
+
+
 		if v:check( station) then
-			
 			v["function"]( station)
 		end
 	end

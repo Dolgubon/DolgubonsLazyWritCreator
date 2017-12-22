@@ -513,7 +513,7 @@ end
 --Various strings 
 WritCreater.strings = 
 {
-	["runeReq"] 					= function (essence, potency) return "|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66"..essence.."|c2dff00 and 1 |c0066ff"..potency.."|r" end,
+	["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end,
 	["runeMissing"] 				= runeMissingFunction ,
 	["notEnoughSkill"]				= "You do not have a high enough crafting skill to make the required equipment",
 	["smithingMissing"] 			= "\n|cf60000You do not have enough mats|r",

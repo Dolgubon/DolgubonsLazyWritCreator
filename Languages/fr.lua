@@ -490,7 +490,7 @@ end
 
 
 WritCreater.strings  = {
-	["runeReq"] 						= function (essence, potency) return "|c2dff00L'artisanat requiert 1 |rTa|c2dff00, 1 |cffcc66"..essence.."|c2dff00 et 1 |c0066ff"..potency.."|r" end,
+	["runeReq"] 						= function (essence, potency) return zo_strformat("|c2dff00L'artisanat requiert 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 et 1 |c0066ff<<2>>|r",essence ,potency) end,
 	["runeMissing"]						= runeMissingFunction,
 	["notEnoughSkill"]					= "Votre compétence d’artisanat n’est pas assez élevée pour fabriquer l’équipement requis",
 	["smithingMissing"] 				= "\n|cf60000Vous n'avez pas assez de matériaux|r",

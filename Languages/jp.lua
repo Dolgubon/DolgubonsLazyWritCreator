@@ -488,17 +488,17 @@ local function dailyResetFunction(till)
 end
 
 WritCreater.strings = {
-	["runeReq"] 								= function (essence, potency) return "|c2dff00生産には1個の|r ター |c2dff00と1個の |cffcc66"..essence.."|c2dff00 と\n1個の |c0066ff"..potency.."|r|c2dff00 が必要です。" end,
+	["runeReq"] 								= function (essence, potency) return zo_strformat("|c2dff00生産には1個の|r ター |c2dff00と1個の |cffcc66<<1>>|c2dff00 と\n1個の |c0066ff<<2>>|r|c2dff00 が必要です。",essence ,potency ) end,
 	["runeMissing"] 							= runeMissingFunction,
 	["notEnoughSkill"]							= "必要な装備を作るための十分に高い生産スキルを有していません。",
 	["smithingMissing"] 						= "\n|cf60000十分な材料を持っていません|r",
 	["craftAnyway"]								= "強制的に作成",
 	["smithingEnough"] 							= "\n|c2dff00十分な材料を持っています|r",
 	["craft"] 									= "|c00ff00作成|r",
-	["smithingReqM"] 							= function(amount, type, more) return "生産には" .. type .. "を" .. amount .. "個使用します\n (|cf60000あと" .. more .. "個必要|r)" end,
-	["smithingReqM2"] 							= function (amount,type,more) return "\n同様に" .. type .. "を" .. amount .. "個使用します\n (|cf60000あと" .. more .. "個必要|r)" end,
-	["smithingReq"] 							= function (amount,type, current) return "生産には" .. type .. "を" .. amount .. "個使用します\n (|c2dff00現在" .. current .. "個使用可能|r)" end,
-	["smithingReq2"] 							= function (amount,type, current) return "\n同様に" .. type .. "を" .. amount .."個使用します\n (|c2dff00現在" .. current .. "個使用可能|r)" end,
+	["smithingReqM"] 							= function(amount, type, more) return zo_strformat("生産には<<1>>を<<2>>個使用します\n (|cf60000あと<<3>>個必要|r)", type, amount,more ) end,
+	["smithingReqM2"] 							= function (amount,type,more) return zo_strformat("\n同様に<<1>>を<<2>>個使用します\n (|cf60000あと<<3>>個必要|r)", type, amount,more ) end,
+	["smithingReq"] 							= function (amount,type, current) return zo_strformat("生産には<<1>>を<<2>>個使用します\n (|c2dff00現在<<3>>個使用可能|r)", type, amount,current ) end,
+	["smithingReq2"] 							= function (amount,type, current) return zo_strformat("\n同様に<<1>>を<<2>>個使用します\n (|c2dff00現在<<3>>個使用可能|r)", type, amount,current ) end,
 	["crafting"] 								= "|c00ff00作成中...|r",
 	["craftIncomplete"] 						= "|cf60000生産が完全に終わりませんでした。\nさらに材料が必要です。|r",
 	["moreStyle"] 								= "|cf60000使用可能な9種類の基本種族（帝国は含まない）の\nスタイル素材がありません|r",
