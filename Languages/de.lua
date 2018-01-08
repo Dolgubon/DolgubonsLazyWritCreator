@@ -95,7 +95,7 @@ local craftInfo =
 				[15] = "Wildleder",
 				[16] = "Rauleder",
 				[17] = "Eisenleder",
-				[18] = "Prächtige",
+				[18] = "Prachtleder",
 				[19] = "Schattenleder",
 				[20] = "Rubedoleder",
 			},
@@ -372,6 +372,7 @@ local bankExceptions =
 		"gelnden",
 		"heiligen",
 		"atherischen",
+		"tränke",
 	},
 	["corrected"] = {
 		"essenz",
@@ -379,6 +380,7 @@ local bankExceptions =
 		"gelnder",
 		"Heiliger",
 		"atherischer",
+		"trank",
 	}
 }
 
@@ -517,6 +519,8 @@ WritCreater.strings = {
 	["crafting"] 								= "|cffff00Herstellung...|r",
 	["craftIncomplete"] 						= "|cf60000Die Herstellung konnte nicht abgeschlossen werden.\nDu benötigst mehr Materialien.|r",
 	["moreStyle"] 								= "|cf60000Du hast keine der ausgewählten Stilsteine vorhanden|r",
+	["moreStyleSettings"]						= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r",
+	["moreStyleKnowledge"]						= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r",
 	["dailyreset"] 								= function (till) d(till["hour"].." Stunden und "..till["minute"].." Minuten bis zum Daily Reset") end,
 	["complete"] 								= "|c00FF00Der Schrieb ist fertig|r",
 	["craftingstopped"] 						= "Herstellung gestoppt. Bitte überprüfe, ob das AddOn den richtigen Gegenstand herstellt.",

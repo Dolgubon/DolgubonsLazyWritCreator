@@ -393,11 +393,28 @@ end
 local function maxStyle (piece) -- Searches to find the style that the user has the most style stones for. Only searches basic styles. User must know style
 
 	local max = -1
+	local numKnown = 0
+	local numAllowed = 0
 	for i, v in pairs(WritCreater.savedVars.styles) do
-		if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) and IsSmithingStyleKnown(i, piece) then 
-			if GetCurrentSmithingStyleItemCount(i)>0 and v then
-				max = i
+		if v then 
+			numAllowed = numAllowed + 1
+		end
+		if IsSmithingStyleKnown(i, piece) then
+			numKnown = numKnown + 1
+
+			if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) then 
+				if GetCurrentSmithingStyleItemCount(i)>0 and v then
+					max = i
+				end
 			end
+		end
+	end
+	if max == -1 then
+		if numKnown <3 then 
+			return -2
+		end
+		if numAllowed < 3 then
+			return -3
 		end
 	end
 	return max
@@ -648,6 +665,8 @@ crafting = function(info,quest, craftItems)
 						if numMats<=curMats then 
 							local style = maxStyle(pattern)
 							if style == -1 then out(WritCreater.strings.moreStyle) return false end
+							if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
+							if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
 							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 1, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType())
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
