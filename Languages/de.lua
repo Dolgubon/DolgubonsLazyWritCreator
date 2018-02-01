@@ -43,7 +43,7 @@ function WritCreater.langMasterWritNames()
 	[CRAFTING_TYPE_ENCHANTING]		= "glyphe",
 	[CRAFTING_TYPE_PROVISIONING]	= "mahl",
 	["plate"]						= "rüstung",
-	["tailoring"]					= "nähkunst",
+	["tailoring"]					= "gewand",
 	["leatherwear"]					= "lederwaren",
 	["weapon"]						= "waffe",
 	["shield"]						= "schild",
@@ -519,8 +519,8 @@ WritCreater.strings = {
 	["crafting"] 								= "|cffff00Herstellung...|r",
 	["craftIncomplete"] 						= "|cf60000Die Herstellung konnte nicht abgeschlossen werden.\nDu benötigst mehr Materialien.|r",
 	["moreStyle"] 								= "|cf60000Du hast keine der ausgewählten Stilsteine vorhanden|r",
-	["moreStyleSettings"]						= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r",
-	["moreStyleKnowledge"]						= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r",
+	["moreStyleSettings"]            = "|cf60000Du hast keine verfügbaren Stylematerialien.\nWahrscheinlich musst du in den Settings weitere Handwerksstile aktivieren.|r",
+    ["moreStyleKnowledge"]            = "|cf600000Du hast keine verfügbaren Stylematerialien.\nVielleicht musst du mehr Handwerksstile lernen|r",
 	["dailyreset"] 								= function (till) d(till["hour"].." Stunden und "..till["minute"].." Minuten bis zum Daily Reset") end,
 	["complete"] 								= "|c00FF00Der Schrieb ist fertig|r",
 	["craftingstopped"] 						= "Herstellung gestoppt. Bitte überprüfe, ob das AddOn den richtigen Gegenstand herstellt.",
@@ -557,7 +557,7 @@ if l then
 end
 
 
-WritCreater.optionStrings = {}
+WritCreater.optionStrings = WritCreater.optionStrings or {}
 WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses <<2>> to be used for crafting",styleName) end  
 WritCreater.optionStrings["show craft window"]                        = "Zeige Writ Crafter Fenster"
 WritCreater.optionStrings["show craft window tooltip"]                = "Zeige das Writ Crafter Fenster während du an einer Handwerksstation bist"
@@ -604,6 +604,8 @@ WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Wann soll das Add
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Gameplay-Einstellung kopieren", "Automatisch looten", "Nie looten"}
 WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
 WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
+WritCreater.optionStrings["hide when done"]								= "Verstecke Fenster anschließend"
+WritCreater.optionStrings["hide when done tooltip"]						= "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
 
 
 --"<<1>> erhalten"

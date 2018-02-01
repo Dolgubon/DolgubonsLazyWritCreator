@@ -91,8 +91,8 @@ local function GetSmithingQueueOrder()
 end
 
 -- Returns an item link from the given itemId. 
-local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0)) 
-	return ZO_LinkHandler_CreateLink(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0) end
+local function getItemLinkFromItemId(itemId) 
+	return string.format("|H1:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", itemId, 0, ITEMSTYLE_NONE, 0, 10000) end
 
 
 local requirementJumps = { -- At these material indexes, the material required changes, and the amount required jumps down
@@ -179,7 +179,7 @@ function canCraftItem(craftRequestTable)
 	--CanSmithingStyleBeUsedOnPattern()
 	-- Check stylemats
 	local setPatternOffset = {}
-	if craftRequestTable["setIndex"] == 0 then
+	if craftRequestTable["setIndex"] == 1 then
 		setPatternOffset = {0,0,[6]=0}
 	else
 		setPatternOffset = {14, 15,[6]=6}
@@ -249,10 +249,12 @@ LibLazyCrafting.functionTable.GetCurrentSetInteractionIndex  = GetCurrentSetInte
 -- Can an item be crafted here, based on set and station indexes
 local function canCraftItemHere(station, setIndex)
 	
-	if not setIndex then setIndex = 0 end
+	if not setIndex then setIndex = 1 end
+	
 	if GetCraftingInteractionType()==station then
+		
 		if GetCurrentSetInteractionIndex()==setIndex or setIndex==1 then
-
+			
 			return true
 		end
 	end
@@ -326,6 +328,7 @@ end
 
 
 local function GetMatRequirements(pattern, index, station)
+	if station == nil then station = GetCraftingInteractionType() end
 	mats = baseRequirements[index] + additionalRequirements[station][pattern]
 	if station == CRAFTING_TYPE_WOODWORKING and pattern ~= 2 and index >=40 then
 		mats = mats + 1
@@ -344,6 +347,7 @@ local function GetMatRequirements(pattern, index, station)
 	return mats
 end
 
+LibLazyCrafting.functionTable.GetMatRequirements = GetMatRequirements
 
 local function LLC_CraftSmithingItem(self, patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft, reference)
 	dbug("FUNCTION:LLCSmithing")
@@ -720,10 +724,11 @@ local function SmithingCraftCompleteFunction(station)
 	end
 end
 
+
+
 local function slotUpdateHandler(event, bag, slot, isNew, itemSoundCategory, inventoryUpdateReason, stackCountChange)
 	
 	if not isNew then return end
-	
 
 	if stackCountChange ~= 1 then return end
 	local itemType = GetItemType(bag, slot)
@@ -740,6 +745,9 @@ local function slotUpdateHandler(event, bag, slot, isNew, itemSoundCategory, inv
 end
 EVENT_MANAGER:UnregisterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE)
 EVENT_MANAGER:RegisterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdateHandler)
+EVENT_MANAGER:AddFilterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
+EVENT_MANAGER:AddFilterForEvent(LibLazyCrafting.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM, true)
+
 
 
 local compileRequirements
@@ -836,9 +844,6 @@ SetIndexes =
 	{{130720 , 130740, [6] = 130727 },4},
 
 }
-
-
-
 
 for i = 1,#SetIndexes do 
 	local _, a = GetItemLinkSetInfo(getItemLinkFromItemId(SetIndexes[i][1][1]),false)
@@ -996,3 +1001,117 @@ function compileRequirements(request, station)-- Ingot/style mat/trait mat/impro
 	
 end
 -- /script LibStub("LibLazyCrafting"):craftInteractionTables[CRAFTING_TYPE_CLOTHIER]["materialRequirements"]()
+local itemSetIds ={ -- This table contains data on all the itemIds for crafted gear in the game! 
+-- The first number in each table is the starting itemId. Thereafter, each even indexed number (indexes in lua start at 1)
+-- denotes that the next x itemIds are part of the set. Each odd indexed number denotes the gap between an itemId of a set,
+-- and the next one.
+{43529, 6, 2, 23, 2, 2, 677, 0, 777, 260, 2, 17, 561, 0, 10168, 34, },
+{43803, 3, 2347, 127, 71, 154, 2, 18, 2, 4, 8098, 3, 1471, 34, },
+{43815, 1, 2, 0, 3097, 127, 71, 157, 2, 25, 8876, 34, },
+{43871, 2, 5340, 127, 71, 158, 2, 24, 6788, 34, },
+{43977, 2, 6379, 127, 71, 183, 5749, 34, },
+{43807, 3, 2722, 127, 71, 158, 2, 18, 2, 4, 9224, 34, },
+{43827, 3, 3851, 127, 71, 158, 2, 18, 2, 4, 8180, 34, },
+{43847, 3, 4597, 127, 71, 158, 2, 18, 2, 4, 7484, 34, },
+{43995, 5, 6740, 127, 71, 158, 2, 16, 2, 4, 5403, 34, },
+{43819, 3, 3476, 127, 71, 158, 2, 18, 2, 4, 8528, 34, },
+{43831, 3, 4230, 127, 71, 158, 2, 18, 2, 4, 7832, 34, },
+{44013, 3, 2, 0, 7865, 127, 71, 157, 2, 23, 4365, 34, },
+{44019, 5, 8240, 127, 71, 158, 2, 17, 2, 3, 4019, 34, },
+{43859, 2, 4969, 127, 71, 158, 2, 24, 7136, 34, },
+{44001, 5, 7115, 127, 71, 25, 2, 131, 2, 16, 2, 4, 2690, 0, 2367, 34, },
+{44007, 2, 2, 1, 7490, 62, 2, 63, 71, 176, 2, 4, 2310, 0, 2401, 34, },
+{44079, 5, 9323, 127, 71, 158, 2, 16, 2, 4, 2981, 34, },
+{44031, 3, 2, 0, 8609, 127, 71, 158, 2, 22, 3673, 34, },
+{44049, 5, 8972, 127, 71, 158, 2, 16, 2, 4, 3327, 34, },
+{44099, 3, 2, 0, 9684, 127, 71, 158, 2, 22, 2635, 34, },
+{43965, 4, 5627, 127, 71, 158, 2, 22, 6442, 34, },
+{43971, 5, 6001, 127, 71, 158, 2, 17, 2, 3, 6096, 34, },
+{54787, 35, 120, 34, 41, 243, 808, 34, },
+{58153, 349, },
+{59946, 349, },
+{60296, 349, },
+{60646, 349, },
+{69927, 349, },
+{69577, 349, },
+{70627, 349, },
+{71791, 349, },
+{72141, 349, },
+{72491, 349, },
+{75386, 349, },
+{75736, 349, },
+{76086, 349, },
+{121551, 349, },
+{122251, 349, },
+{121901, 349, },
+{131070, 349, },
+{130370, 349, },
+{130720, 349, },
+}
+
+local function getQualityValue()
+end
+
+local function findItemId()
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- This function takes the above table and returns a table of the item links.
+function createSetItemIdTable(setId)
+	local start = itemSetIds[setId][1]
+	local start = 0
+	local table = {}
+	local numRanges = #itemSetIds[setId]/2
+	for j = 1, numRanges do
+		start = start + itemSetIds[setId][j*2 - 1]
+		for i = 0, itemSetIds[setId][j*2] do
+			table[#table + 1] = start + i
+		end
+		start = start + itemSetIds[setId][j*2]
+	end
+	for i = 1, #table do
+		table[i] = getItemLinkFromItemId(table[i])
+	end
+	return table
+end
+-- Doubt these will ever again be needed but can't hurt to keep em
+
+function checkTable(table)
+	local _, set = GetItemLinkSetInfo(table[1])
+	local test = true
+	for i = 1, #table do
+		local _,info = GetItemLinkSetInfo(table[i])
+		if info ~= set then
+			test = false
+		end
+	end
+	d(test)
+end
+
+function checkItemIds()
+	for i = 1, #itemSetIds do
+		zo_callLater(function()checkTable(createSetItemIdTable(i)) end , 500*i)
+	end
+end

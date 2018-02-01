@@ -104,6 +104,11 @@ local function HandleChatterBegin(eventCode, optionCount)
 				EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_OFFERED, HandleEventQuestOffered)
 				-- Select the first writ
 				SelectChatterOption(i)
+				return
+			else
+				if i == optionCount then
+					EndInteraction( INTERACTION_CONVERSATION)
+				end
 			end
 			
 	    -- If it is a writ quest completion option

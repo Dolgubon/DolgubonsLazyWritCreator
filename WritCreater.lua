@@ -57,6 +57,7 @@ WritCreater.default =
 	["lootContainerOnReceipt"] = true,	
 	["lootOutput"] = false,
 	["containerDelay"] = 1,
+	["hideWhenDone"] = false,
 }
 
 WritCreater.defaultAccountWide = {
@@ -191,26 +192,26 @@ local crafting = function() end
 
 
 local indexRanges = { --the first tier is index 1-7, second is material index 8-12, etc
-	[1] = 7,
-	[2] = 12,
-	[3] = 17,
-	[4] = 22,
-	[5] = 25,
-	[6] = 28,
+	[1] = 1,
+	[2] = 8,
+	[3] = 13,
+	[4] = 18,
+	[5] = 23,
+	[6] = 26,
 	[7] = 29,
-	[8] = 32,
-	[9] = 39,
-	[10] = 41,
-	[11] = 7,
-	[12] = 12,
-	[13] = 17,
-	[14] = 22,
-	[15] = 25,
-	[16] = 28,
+	[8] = 30,
+	[9] = 33,
+	[10] = 40,
+	[11] = 1,
+	[12] = 8,
+	[13] = 13,
+	[14] = 18,
+	[15] = 23,
+	[16] = 26,
 	[17] = 29,
-	[18] = 32,
-	[19] = 39,
-	[20] = 41,
+	[18] = 30,
+	[19] = 33,
+	[20] = 40,
 }
 
 local backdrop = DolgubonsWrits
@@ -530,6 +531,7 @@ local function writCompleteUIHandle()
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	--if WritCreater.savedVars.exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
 	if closeOnce and WritCreater.IsOkayToExitCraftStation() and WritCreater.savedVars.exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
+	if WritCreater.savedVars.hideWhenDone then DolgubonsWrits:SetHidden(true) end
 	closeOnce = false
 	DolgubonsWritsBackdropCraft:SetHidden(true)
 end
@@ -639,7 +641,8 @@ crafting = function(info,quest, craftItems)
 		if pattern and index then
 
 			 -- pattern is are we making gloves, chest, etc. Index is level.
-			numMats = GetSmithingPatternNextMaterialQuantity(pattern, index,1,1)
+			--_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
+			_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index) --WritCreater.LLCInteraction.GetMatRequirements(pattern, index)
 			local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
 			
 			if not doesCharHaveSkill(pattern, index,1) then
@@ -650,8 +653,8 @@ crafting = function(info,quest, craftItems)
 				
 				local needed = conditions["max"][i] - conditions["cur"][i]
 				for s = 1, needed do
-					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], indexRanges[conditions["mats"][i]], 0)
-					addMats(matName,numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
+					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], index, 0)
+					addMats(matName,numMats ,matsRequired, conditions["pattern"][i], index )
 
 					--d("queueing "..info["pieces"][conditions["pattern"][i]].." "..info["match"][conditions["mats"][i]])
 					--d(conditions["pattern"][i] ,indexRanges[conditions["mats"][i]],numMats,style,1)
@@ -660,7 +663,7 @@ crafting = function(info,quest, craftItems)
 					queue[#queue + 1]= 
 					function(changeRequired)
 						matSaver = matSaver + 1
-						local numMats = GetSmithingPatternNextMaterialQuantity(pattern, index,1,1)
+						local _,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
 						local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
 						if numMats<=curMats then 
 							local style = maxStyle(pattern)
@@ -671,7 +674,7 @@ crafting = function(info,quest, craftItems)
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
 							if changeRequired then return true end
-							addMats(matName, -numMats ,matsRequired, conditions["pattern"][i], indexRanges[conditions["mats"][i]] )
+							addMats(matName, -numMats ,matsRequired, conditions["pattern"][i], index )
 							createMatRequirementText(matsRequired)
 
 							return true
@@ -902,7 +905,7 @@ local tutorial1 = function () end
 
 local function temporarycraftcheckerjustbecause(eventcode, station)
 	
-	local currentAPIVersionOfAddon = 100021
+	local currentAPIVersionOfAddon = 100022
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		for i= 1, 1 do 
@@ -1052,10 +1055,6 @@ local function initializeLibraries()
 
 	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, ...)
 	if event == LLC_CRAFT_SUCCESS then  WritCreater.writItemCompletion(event, ...) end end)
-
-	local LibMOTD = LibStub("LibMOTD")
-	LibMOTD:setMessage("DolgubonsWritCrafterSavedVars", "Dolgubon's Lazy Writ Crafter: Writ statistics have been reset as a result of this update.", 1)
-
 end
 
 local function initializeLocalization()

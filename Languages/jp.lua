@@ -544,7 +544,7 @@ WritCreater.strings = {
 
 
 
-WritCreater.optionStrings = {}
+WritCreater.optionStrings = WritCreater.optionStrings or {}
 WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses <<2>> to be used for crafting",styleName) end 
 WritCreater.optionStrings["show craft window"]                        = "生産ウィンドウを表示"
 WritCreater.optionStrings["show craft window tooltip"]                = "生産設備が開いたときに生産ウィンドウを表示する"

@@ -17,8 +17,8 @@
 -- If you are not looking to translate the addon you can ignore this. :D
 --
 -- If you ARE looking to translate this to something else then anything with a comment of Vital beside it is 
--- required for the addon to function properly. These strings MUST BE TRANSLATED EXACTLY!
--- If only going for functionality, ctrl+f for Vital
+-- REQUIRED for the addon to function properly. These strings MUST BE TRANSLATED EXACTLY!
+-- If only going for functionality, ctrl+f for Vital. Otherwise, you should just translate everything.
 --
 -- For languages that do not use the Latin Alphabet, there is also an optional langParser() function. IF the language you are translating
 -- requires some changes to the WritCreater.parser() function then write the optional langParser() function here, and the addon
@@ -27,7 +27,7 @@
 -- If you run into problems, please feel free to contact me on ESOUI.
 --
 -----------------------------------------------------------------------------------
-
+--
 --[[
 function WritCreater.langParser(str)  -- Optional overwrite function for language translations
 	local seperater = "%s+"
@@ -196,7 +196,7 @@ local craftInfo =
 			{
 				[1] = "bow",
 				[3] = "inferno",
-				[4] ="Ice",
+				[4] ="ice",
 				[5] ="lightning",
 				[6] ="restoration",
 				[2] ="shield",
@@ -570,7 +570,7 @@ if l then
 	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 end
 --Options table Strings
-WritCreater.optionStrings = {}
+WritCreater.optionStrings = WritCreater.optionStrings or {}
 WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 
 WritCreater.optionStrings["show craft window"]							= "Show Craft Window"
 WritCreater.optionStrings["show craft window tooltip"]					= "Shows the crafting window when a crafting station is open"
@@ -621,6 +621,11 @@ WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Choose when the a
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
 WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
 WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
+WritCreater.optionStrings["hide when done"]								= "Hide when done"
+WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon windonw when all items have been crafted"
+--Hide craft window when done
+--"Verstecke Fenster anschließend",
+-- [tooltip ] = "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
 
 function WritCreater.langWritRewardBoxes () return {
 	[CRAFTING_TYPE_ALCHEMY] = "Alchemist's Vessel",

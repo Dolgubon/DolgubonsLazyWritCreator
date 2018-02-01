@@ -13,6 +13,9 @@
 local DolgubonDebugRunningDebugString = ""
 DolgubonGlobalDebugToggle = false
 local localDebugToggle = false
+
+-- Debug function. Has the ability to save stuff and then later send it in a mail rather than outputting it in chat. Mail currently not enabled.
+
 function DolgubonGlobalDebugOutput(...)
 	if GetDisplayName()=="@Dolgubon" and (DolgubonGlobalDebugToggle or localDebugToggle) then
 		d(...)
@@ -29,7 +32,7 @@ function DolgubonGlobalDebugOutput(...)
 	end
 end
 
-
+-- Sends the saved debug lines
 local function sendDebug()
 	d("Sending mails")
 	local len = string.len(DolgubonDebugRunningDebugString)
@@ -65,32 +68,12 @@ end
 local trackedSealedWrits = {}
 --------------------------------------------------
 -- HACKING OF USEITEM
---[[
-local originalUseItem = UseItem
-
-local function newUseItem(bag, slot)
-	local itemtype, special = GetItemType(bag, slot)
-	if SPECIALIZED_ITEMTYPE_MASTER_WRIT ~=special then return end
-	local unique = GetItemUniqueId(bag, slot)
-	for i = 1, #trackedSealedWrits do
-		if trackedSealedWrits[i]==unique then return end
-	end
-	if IsProtectedFunction("originalUseItem") then
-		CallSecureProtected("originalUseItem",bag, slot)
-	else
-
-		originalUseItem(bag, slot)
-	end
-	originalUseItem()
-end
-UseItem = newUseItem]]
-
 
 ---------------------------------------------------
 -- MASTER WRITS PROPER
 
 
-
+-- Capitalize the first letter, lowercase for the rest
 local function proper(str)
 	if type(str)== "string" then
 		return zo_strformat("<<C:1>>",str)
@@ -99,10 +82,13 @@ local function proper(str)
 	end
 end
 
+-- Lowers everything. Uses the ZO function because theirs is more robust
 
 local function myLower(str)
 	return zo_strformat("<<z:1>>",str)-- "Rüstung der Verführung^f"
 end
+
+-- Remove various special characters, lowers the strings, and removes the dash which messes with string.find.
 
 local function standardizeString(str)
 	str = myLower(str)
@@ -114,6 +100,7 @@ local function standardizeString(str)
 end
 
 local function strFind(str, str2find, a, b, c)
+	
 	str = standardizeString(str)
 	str2find = standardizeString(str2find)
 	return string.find(str, str2find, a, b, c)
@@ -126,28 +113,29 @@ local armourTraits = {}
 ------------------------------------
 -- TRAIT DECLARATION
 
-function WritCreater.buildTraitTable()
-	armourTraits = {}
-	weaponTraits ={}
-	for i = 0, 8 do --create the weapon trait table
-		--Takes the strings starting at SI_ITEMTRAITTYPE0 == no trait, # 897 to SI_ITEMTRAITTYPE8 === Divines, #905
-		--Then saves the proper trait index used for crafting to it. The offset of 1 is due to ZOS; the offset of STURDY is so they start at 12
-		weaponTraits[i + 1] = {[2]  = i + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE0 + i)),}
-	end
+-- Run once on addon load. Grabs the name of traits and the trait constant
 
 
-	for i = 0, 7 do --create the armour trait table
-		--Takes the strings starting at SI_ITEMTRAITTYPE11 == Sturdy, # 908 to SI_ITEMTRAITTYPE18 === Divines, #915
-		--Then saves the proper trait index used for crafting to it. The offset of 1 is due to ZOS; the offset of STURDY is so they start at 12
-		armourTraits[i + 1] = {[2] = i + 1 + ITEM_TRAIT_TYPE_ARMOR_STURDY, [1] = myLower(GetString(SI_ITEMTRAITTYPE11 + i))}
-	end
-	--Add a few missing traits to the tables - i.e., nirnhoned, and no trait
-	armourTraits[#armourTraits + 1] = {[2] = ITEM_TRAIT_TYPE_NONE + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE0))} -- No Trait to armour traits
-	armourTraits[#armourTraits + 1] = {[2] = ITEM_TRAIT_TYPE_ARMOR_NIRNHONED + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE26))} -- Nirnhoned
-	weaponTraits[#weaponTraits + 1] = {[2] = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE25))}  -- Nirnhoned
+armourTraits = {}
+weaponTraits ={}
+for i = 0, 8 do --create the weapon trait table
+	--Takes the strings starting at SI_ITEMTRAITTYPE0 == no trait, # 897 to SI_ITEMTRAITTYPE8 === Divines, #905
+	--Then saves the proper trait index used for crafting to it. The offset of 1 is due to ZOS; the offset of STURDY is so they start at 12
+	weaponTraits[i + 1] = {[2]  = i + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE0 + i)),}
 end
 
-WritCreater.buildTraitTable()
+
+for i = 0, 7 do --create the armour trait table
+	--Takes the strings starting at SI_ITEMTRAITTYPE11 == Sturdy, # 908 to SI_ITEMTRAITTYPE18 === Divines, #915
+	--Then saves the proper trait index used for crafting to it. The offset of 1 is due to ZOS; the offset of STURDY is so they start at 12
+	armourTraits[i + 1] = {[2] = i + 1 + ITEM_TRAIT_TYPE_ARMOR_STURDY, [1] = myLower(GetString(SI_ITEMTRAITTYPE11 + i))}
+end
+--Add a few missing traits to the tables - i.e., nirnhoned, and no trait
+armourTraits[#armourTraits + 1] = {[2] = ITEM_TRAIT_TYPE_NONE + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE0))} -- No Trait to armour traits
+armourTraits[#armourTraits + 1] = {[2] = ITEM_TRAIT_TYPE_ARMOR_NIRNHONED + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE26))} -- Nirnhoned
+weaponTraits[#weaponTraits + 1] = {[2] = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE25))}  -- Nirnhoned
+
+-- Deals with styles and style constants
 
 styles = {}
 for i = 1, GetNumValidItemStyles() do
@@ -156,6 +144,11 @@ for i = 1, GetNumValidItemStyles() do
 	styles[#styles + 1] = {itemName,styleItemIndex }
 end
 
+-- Input:
+--	table: {{ string traitName, traitItemId }...}
+--	string journalQuestCondition
+-- Output:
+--	nilable table: {string matchingTraitName, matchingTraitItemId}
 
 local function enchantSearch(info,condition)
 	for i = 1, #info do
@@ -169,37 +162,44 @@ local function enchantSearch(info,condition)
 	return nil
 end
 
+-- Checks if all the traits of the glyph required were found. If one is not found, outputs an error message to chat.
+
 local function foundAllEnchantingRequirements(essence, potency, aspect)
 	if WritCreater.lang~="en" and WritCreater.lang~="de" then return false end
 	local foundAll = true
 	if not essence then
 		foundAll = false
-		d("Essence/Effect not found")
+		d("Error: Essence/Effect not found")
 	end
 	if not potency then
 		foundAll = false
-		d("Level not found")
+		d("Error: Level not found")
 	end
 	if not aspect or aspect[1]=="" then
 		foundAll = false
-		d("Quality not found")
+		d("Error: Quality not found")
 	end
 	return foundAll
 end
+
+-- Tells LLC to craft a glyph for the given master writ.
+-- Writs can be specified by the journal index or the text of the sealed writ
+-- Reference should be the journal index or the uniqueItemId of the sealed writ.
 
 local function EnchantingMasterWrit(journalIndex, sealedText, reference)
 	--d(journalIndex, sealedText, reference)
 	dbug("FUNCTION:EnchantingMasterHandler")
 	if not reference then reference = journalIndex end
-	-- "Superb Glyph of Health *Quality: Legendary *Progress:0/1"
+	
 	local condition, complete
 	if sealedText then
 		condition, complete = sealedText, false
 	else
 		condition, complete, outOf = GetJournalQuestConditionInfo(journalIndex, 1)
 	end
-	
+	-- If it's a journal quest and the quest is complete exit
 	if complete == outOf then return end
+	-- If the condition is empty exit
 	if condition =="" then return end
 
 	local craftInfo = WritCreater.craftInfo[CRAFTING_TYPE_ENCHANTING]
@@ -210,18 +210,31 @@ local function EnchantingMasterWrit(journalIndex, sealedText, reference)
 
 	if foundAllEnchantingRequirements(essence, potency, aspect) then
 		local lvl = potency[1]
+		-- Output what we're making.
 		if potency[1]=="truly" then lvl = "truly superb" end
 		d(zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality", lvl, essence[1], aspect[1],
 			WritCreater.langWritNames()[CRAFTING_TYPE_ENCHANTING],
 			WritCreater.langMasterWritNames()["M1"],
 			WritCreater.langWritNames()["G"]))
 		dbug("CALL:LLCENchantCraft")
+		-- Actually add the glyph to the queue
 		WritCreater.LLCInteractionMaster:CraftEnchantingItemId(potency[2][essence[3]], essence[2], aspect[2], true, reference)
 	else
 	end
 end
 
+-- Smithing Search function
+
+-- Input: string condition, table info {{itemName, itemValue}...}
+-- Outputs a table of {itemName, itemValue}. The output is the pair for the longest itemName found in the condition
+
+-- TODO: Change the function so that it finds the longest string in one pass only, without the if statements at the end.
+
+-- debug is used so that I can output a specific d() but only for one call of the function (e.g. when we're looking for quality)
 local function smithingSearch(condition, info, debug)
+
+	--if debug then d(info) end
+	-- Inital run through: Check to see if each itemName is found in the condition. Save it to a placeholder table
 	local matches = {}
 	for i = 1, #info do
 		local str = string.gsub(info[i][1], "-"," ")
@@ -229,6 +242,9 @@ local function smithingSearch(condition, info, debug)
 			matches[#matches+1] = {info[i] , i}
 		end
 	end
+	-- Check the matches. If no matches return a default value
+	-- If one match, return that.
+	-- If two or more matches, find the longest one.
 	if #matches== 0 then
 		return {"",0} , -1
 	elseif #matches==1 then
@@ -246,6 +262,8 @@ local function smithingSearch(condition, info, debug)
 	end
 
 end
+
+-- Checks to see if all the parameters are valid
 
 local function foundAllRequirements(pattern, style, setIndex, trait, quality)
 	local foundAllRequirements = true
@@ -273,11 +291,15 @@ local function foundAllRequirements(pattern, style, setIndex, trait, quality)
 end
 
 local function germanRemoveEN (str)
-
+	str = standardizeString(str)
 	return string.sub(str, 1 , string.len(str) - 2)
 
 end
 
+
+-- Split the quest condition up into parts, each of which contains one writ requirement.
+-- This will help to reduce false positives. Probably doesn't reduce it by much, but it gives me
+-- more peace of mind
 local function splitCondition(condition, isQuest)
 	local seperator = "A"
 	if isQuest or WritCreater.lang=="de" then seperator = "\n" else seperator = ";" end
@@ -294,19 +316,31 @@ local function splitCondition(condition, isQuest)
 	return unpack(t)
 end
 
+-- Adds a master writ crafting request to the LLC queue
+-- Either journalIndex, or sealedText and reference must be passed. The reference should be 
+-- either the journalquestindex or the unique itemid of the sealed writ.
+-- table info is {{itemName, itemValue}...}
+-- station is the station that the writ is associated with (or a best guess for woodworking/blacksmithing weapons)
+-- isArmour is a boolean
+-- material is the string name of the material used. Not necessary; will be used for output only
+
+
 local function SmithingMasterWrit(journalIndex, info, station, isArmour, material, reference, sealedText)
 	dbug("FUNCTION:SmithingMasterHandler")
-	if not WritCreater.masterWritQuality then return end
+	-- If this is nil, then the language the game is currently in is not supported.
+	if not WritCreater.masterWritQuality then d("Language not supported for Master Writs") return end 
 	if WritCreater.lang == "de" then for i = 1, #info do  info[i][1] = germanRemoveEN(info[i][1])   end end
 	local condition, complete =GetJournalQuestConditionInfo(journalIndex, 1)
+	condition = standardizeString(condition)
 	local isQuest = true
+	-- if the sealedText was passed then it's not a journal quest
 	if sealedText then
 		isQuest = false
 		condition, complete = sealedText, false
 	else
-	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
+	if WritCreater.savedVarsAccountWide[6697110] then return -1 end -- no comment
 	end
-	
+	-- Text condition value
 	--"Craft a Rubedite Greataxe with the following Properties:\n • Quality: Epic\n • Trait: Powered\n • Set: Oblivion's Foe\n • Style: Imperial\n • Progress: 0 / 1", false--
 	condition = string.gsub(condition, "-" , " ")
 
@@ -314,7 +348,7 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 	if condition =="" then return end
 	local conditionStrings = {}
 	local a= splitCondition(condition, isQuest)
-	
+	-- The order of the conditions are different in German for some reason.
 	if WritCreater.lang =="de" then
 		conditionStrings["pattern"], conditionStrings["set"], conditionStrings["style"],
 		  conditionStrings["trait"], conditionStrings["quality"] = splitCondition(condition, isQuest)
@@ -326,9 +360,10 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 	--for k, v in pairs(conditionStrings) do
 	--	d(k, v)
 	--end
+	--d(conditionStrings["pattern"])
 	local pattern =  smithingSearch(conditionStrings["pattern"], info) --search pattern
 
-	
+	-- If armour, uses one trait table, otherwise uses the weapont trait table
 	local trait
 	if isArmour then
 		trait = smithingSearch(conditionStrings["trait"], armourTraits )
@@ -340,10 +375,8 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 	
 	local quality = smithingSearch(conditionStrings["quality"],WritCreater.masterWritQuality()) --search quality
 
-
-
 	if foundAllRequirements(pattern, style, setIndex, trait, quality) then
-
+		-- too many variable stuff so need to do multiple calls to zo_strformat
 		local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and style <<t:4>> at <<t:5>> quality"
 			,pattern[1], 
 			GetSetIndexes()[setIndex][1],
@@ -360,14 +393,21 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 			))
 
 		dbug("CALL:LLCCraftSmithing")
+		-- Cancel any previously added items with the same reference so we don't craft twice
 		WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
-
+		-- Add to queue
 		WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( pattern[2], true , 150, style[2], trait[2], false, station, setIndex, quality[2], true, reference)
 		return true
 	else
 		dbug("ERROR:RequirementMissing")
 	end
 end
+
+-- Since some of the info tables are not in the proper format, this changes it so that they are:
+-- Input table:
+--{  [itemTraitValue] = "itemtraitString"}
+-- output:
+-- { [1] = {"itemTraitString", itemTraitValue}}
 
 local function keyValueTable(t)
 	local temp = {}
@@ -378,6 +418,9 @@ local function keyValueTable(t)
 	end
 	return temp
 end
+
+-- Cuts a table, from start to ending
+-- start inclusive
 
 local function partialTable(t, start, ending)
 
@@ -391,9 +434,10 @@ end
 --/script for 1, 25 do if GetJournalQuestName(i) == "A Masterful Weapon" then d(i, GetJournalQuestConditionInfo(i,1,1))  end end
 --QuestID: 1
 
---btw the writ helper addon is yours right? you could isolate master writs with GetJournalQuestType(i) == QUEST_TYPE_CRAFTINGdw
-function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
+-- Called when the player receives a new quest. Determines if the quest is a master writ, and if so, which craft and if it is a weapon or armour or glyph.
 
+
+function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 	if not WritCreater.langMasterWritNames or not WritCreater.savedVarsAccountWide.masterWrits then return end
 	local writNames = WritCreater.langMasterWritNames()
 	local isMasterWrit = false
@@ -430,8 +474,6 @@ function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 			end
 
 			info = partialTable(langInfo[CRAFTING_TYPE_WOODWORKING]["pieces"] , 1, 6)
-			info[6] = "healing"
-			info[4] = "frost"
 			info = keyValueTable(info)
 
 			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_WOODWORKING, false, "Ruby Ash",journalIndex)
