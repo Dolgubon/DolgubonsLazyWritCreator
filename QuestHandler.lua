@@ -14,6 +14,7 @@
 WritCreater = WritCreater or {}
 local completionStrings
 
+
 local function completeMasterWrit(eventCode, journalIndex)
 	if not WritCreater.savedVars.autoAccept then return end
 	if string.find(string.lower(GetJournalQuestName(journalIndex)),WritCreater.langMasterWritNames()["M"]) then
@@ -45,12 +46,14 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 
 end
 
+local wasQuestAccepted
+
 -- Handles the dialogue where we actually accept the quest
 local function HandleEventQuestOffered(eventCode)
     -- Stop listening for quest offering
     EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_QUEST_OFFERED)
     -- Accept the writ quest
-    
+    wasQuestAccepted = true
     AcceptOfferedQuest()
 end
 
@@ -106,8 +109,9 @@ local function HandleChatterBegin(eventCode, optionCount)
 				SelectChatterOption(i)
 				return
 			else
-				if i == optionCount then
+				if i == optionCount and wasQuestAccepted then
 					EndInteraction( INTERACTION_CONVERSATION)
+					wasQuestAccepted = nil
 				end
 			end
 			

@@ -37,6 +37,8 @@ local function sendDebug()
 	d("Sending mails")
 	local len = string.len(DolgubonDebugRunningDebugString)
 	local t = {}
+	-- Is this a good way to do it? well no ofc not but it was quickest at the time
+	-- At the moment, this function is restricted from use, so I'll keep it as is for now.
 	if len<700 then
 		RequestOpenMailbox()
 		zo_callLater(function() SendMail("@Dolgubon", "WRIT DEBUG OUTPUT", DolgubonDebugRunningDebugString)end , 500)

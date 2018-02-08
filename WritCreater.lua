@@ -190,7 +190,8 @@ local crafting = function() end
         SendMail("@sylviermoone", "Testing 1", "with requestopen, then closemailbox after") d("sent test")
         CloseMailbox()]]
 
-
+-- Use this script to determine the index numbers:
+-- /script for i = 1, 42 do local _,_,n = GetSmithingPatternMaterialItemInfo( 1, i) d(GetSmithingPatternResultLink(1, i, n, 1, 1, 1).. " : ".. i) end
 local indexRanges = { --the first tier is index 1-7, second is material index 8-12, etc
 	[1] = 1,
 	[2] = 8,
@@ -199,8 +200,8 @@ local indexRanges = { --the first tier is index 1-7, second is material index 8-
 	[5] = 23,
 	[6] = 26,
 	[7] = 29,
-	[8] = 30,
-	[9] = 33,
+	[8] = 32,
+	[9] = 34,
 	[10] = 40,
 	[11] = 1,
 	[12] = 8,
@@ -209,8 +210,8 @@ local indexRanges = { --the first tier is index 1-7, second is material index 8-
 	[15] = 23,
 	[16] = 26,
 	[17] = 29,
-	[18] = 30,
-	[19] = 33,
+	[18] = 32,
+	[19] = 34,
 	[20] = 40,
 }
 
