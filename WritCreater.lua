@@ -67,6 +67,7 @@ WritCreater.defaultAccountWide = {
 	["skipped"] = 0,
 	["total"] = 0,
 	[6697110] = false,
+	["alternateUniverse"] = true,
 	["rewards"] = 
 	{
 		[CRAFTING_TYPE_BLACKSMITHING] = 
@@ -766,7 +767,7 @@ end
 function DolgubonsWritsBackdropQuestOutput.AddText(self,text)
 	self:SetText(self:GetText()..tostring(text))
 end
-
+local originalAlertSuppression = ZO_AlertNoSuppression
 local function enchantCrafting(info, quest,add)
 	out("")
 	
@@ -853,6 +854,13 @@ local function enchantCrafting(info, quest,add)
 
 						closeOnce = true
 
+						ZO_AlertNoSuppression = function(a, b, text, ...)
+							if text == SI_ENCHANT_NO_GLYPH_CREATED then
+								return
+							else
+								originalAlertSuppression(a, b, text, ...)
+							end
+						end
 						CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"])					
 
 						zo_callLater(function() craftingEnchantCurrently = false end,4000) 
@@ -986,9 +994,12 @@ local function closeWindow(event, station)
 	DolgubonsWritsBackdropCraft:SetHidden(false)
 	closeOnce = false
 	WritCreater.LLCInteraction:cancelItem()
+
+	ZO_AlertNoSuppression = originalAlertSuppression
 end
 
 local function initializeUI()
+	
 	LAM = LibStub:GetLibrary("LibAddonMenu-2.0")
 	LAM:RegisterAddonPanel("DolgubonsWritCrafter", WritCreater.settings["panel"])
 	WritCreater.settings["options"] = WritCreater.Options()
@@ -1034,15 +1045,6 @@ local function initializeOtherStuff()
 	
 	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, 
 		--function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
-	
-	local function ZO_AlertNoSuppression_Hook(category, soundId, message)
-		if message == SI_ENCHANT_NO_YIELD and craftingEnchantCurrently then
-			return true
-		else
-			return false
-		end
-	end
-	ZO_PreHook("ZO_AlertNoSuppression", ZO_AlertNoSuppression_Hook)
 end
 
 WritCreater.masterWritCompletion = function(...) end -- Empty function, intended to be overwritten by other addons

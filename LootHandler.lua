@@ -220,6 +220,32 @@ local function OnLootUpdated(event)
 	end
 	calledFromQuest = false
 end
+
+local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local matReward = GetItemLinkFlavorText("|H1:item:99256:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local firstOpen = 10000000000000000000000
+local completeTimes = 0
+local slotUpdateHandler
+
+local function shouldOpenContainer(bag, slot)
+	local link = GetItemLink(bag, slot)
+	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater.savedVars.lootContainerOnReceipt then
+		return true
+	elseif matReward == GetItemLinkFlavorText(link) then
+		if not autoLoot or not WritCreater.savedVars.lootContainerOnReceipt then return false end
+		return true
+	end
+	return (GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater.savedVars.lootContainerOnReceipt) or matReward == GetItemLinkFlavorText(link)
+end
+
+local function scanBagForUnopenedContainers( ... )
+	for i = 0, GetBagSize(BAG_BACKPACK) do 
+		if shouldOpenContainer(BAG_BACKPACK, i) then
+			slotUpdateHandler(1, bag, slot, true)
+		end
+	end
+end
+
 local function openContainer(bag, slot)
 	lastScene = SCENE_MANAGER:GetCurrentScene():GetName()
 	if lastScene == "interact" then lastScene = "hudui" end
@@ -230,14 +256,14 @@ local function openContainer(bag, slot)
 		UseItem(bag, slot)
 	end 
 	calledFromQuest = true
-	
+	zo_callLater(scanBagForUnopenedContainers, 1000)
 end
-local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-local matReward = GetItemLinkFlavorText("|H1:item:99256:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-local firstOpen = 10000000000000000000000
-local completeTimes = 0
+
+
 
 local function prepareToInteract()
+	if IsUnitSwimming("player") then return true end
+	if IsUnitInCombat("player") then return true end
 	local _, interact = GetGameCameraInteractableActionInfo()
 	if interact then
 		local names =WritCreater.langWritNames()
@@ -254,8 +280,7 @@ local function prepareToInteract()
 	return false
 end
 
-
-local function slotUpdateHandler(event, bag, slot, isNew,...)
+function slotUpdateHandler(event, bag, slot, isNew,...)
 
 	if WritCreater.checkIfMasterWritWasStarted then WritCreater.checkIfMasterWritWasStarted(event, bag, slot, isNew,...) end
 	local autoLoot
@@ -284,9 +309,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 		if not autoLoot or not WritCreater.savedVars.lootContainerOnReceipt then return end
 		--d("attempting to open "..link)
 		attemptOpenContainer(bag, slot)
-		
 	end
-	
 end
 
 DSlotUpdate = slotUpdateHandler

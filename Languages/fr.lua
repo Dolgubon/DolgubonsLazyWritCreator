@@ -560,7 +560,7 @@ WritCreater.optionStrings["alchemy"]                                  = "Alchimi
 WritCreater.optionStrings["alchemy tooltip"]   	                  	  = "Activer l'addon à la table d'alchimie"
 WritCreater.optionStrings["provisioning"]                             = "Cuisine"
 WritCreater.optionStrings["provisioning tooltip"]                     = "Activer l'addon à la table cuisine"
-WritCreater.optionStrings["woodworking"]                              = "Trvail du Bois"
+WritCreater.optionStrings["woodworking"]                              = "Travail du Bois"
 WritCreater.optionStrings["woodworking tooltip"]                      = "Activer l'addon pour le travail du bois"
 
 WritCreater.optionStrings["style stone menu"]                         = "Utilisation des matériaux de style"

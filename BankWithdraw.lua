@@ -157,17 +157,16 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	specialDebug("WC Debug Beggining Bank Withdrawal Sequence, T:0")
 	questCondition = string.gsub(questCondition, " ", " ") -- First is a NO-BREAK SPACE, 2nd a SPACE, copied from Ayantir's BMR just in case
 	local potentialMatches = {}
-	if IsESOPlusSubscriber() then -- check ESO+ bank
-		for i = 0, GetBagSize(BAG_BANK) do
-			if isPotentialMatch(questCondition, validItemTypes, BAG_SUBSCRIBER_BANK, i) then 
-				table.insert(potentialMatches, {BAG_SUBSCRIBER_BANK, i})
+
+	local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR ,
+	BAG_HOUSE_BANK_NINE ,BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX ,BAG_HOUSE_BANK_TEN ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
+	for i = 1, #bags do
+		local bagId = bags[i]
+		for i=0, GetBagSize(bagId) do -- check the rest of the bank
+			if isPotentialMatch(questCondition, validItemTypes, bagId, i) then 
+				-- Add to match list
+				table.insert(potentialMatches, {bagId, i})
 			end
-		end
-	end
-	for i=0, GetBagSize(BAG_BANK) do -- check the rest of the bank
-		if isPotentialMatch(questCondition, validItemTypes, BAG_BANK, i) then 
-			-- Add to match list
-			table.insert(potentialMatches, {BAG_BANK, i})
 		end
 	end
 	local bag, slot = filterMatches(potentialMatches)
@@ -269,7 +268,8 @@ local validItemTypes =
 }
 
 
-alchGrab = function (event) 
+alchGrab = function (event, bag) 
+	
 	findEmptySlots(BAG_BACKPACK)
 	if WritCreater.lang =="jp" then return end
 	if WritCreater.savedVars.shouldGrab then
@@ -288,7 +288,7 @@ alchGrab = function (event)
 
 end
 
-
+SLASH_COMMANDS["/testrun"] = alchGrab
 
 WritCreater.alchGrab = alchGrab
 
@@ -303,6 +303,8 @@ function WritCreater.setupAlchGrabEvents()
 	WritCreater.MasterWritsQuestAdded(event, journalIndex,name) end) 
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_OPEN_BANK, alchGrab)
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.." Withdraw", EVENT_PLAYER_ACTIVATED, function() if GetCurrentZoneHouseId() >0 then  alchGrab() end end)
+	
 	--I use SCENE_MANAGER:IsShowing("bank")
 
 end

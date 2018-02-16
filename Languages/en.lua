@@ -542,14 +542,17 @@ WritCreater.strings =
 -- Translate it or don't, completely up to you. But if you don't translate it, replace the body of 
 -- shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
 -- with just a return false. (This will prevent it from ever activating. Also, if you're a user and don't like this,
--- you suck, and also that's how you can disable it. )
+-- you're boring, and also that's how you can disable it. )
 local DivineMats =
 {
 	{"Ghost Eyes", "Vampire Hearts", "Werewolf Claws", "'Special' Candy", "Chopped Hands", "Zombie Guts", "Bat Livers", "Lizard Brains", "Witches Hats", "Distilled Boos", "Singing Toads"},
-	{"Sock Puppets", "Jester Hats", "Pure Laughter", "Tempering Alloys", "Red Herrings", "Rotten Tomatoes","Fake Oil of Life", "Crowned Imposters", "Mudpies"},
+	{"Sock Puppets", "Jester Hats","Otter Noses",  "|cFFC300Tempering Alloys|r", "Red Herrings", "Rotten Tomatoes","Fake Oil of Life", "Crowned Imposters", "Mudpies"},
 	{"Fireworks", "Presents", "Crackers", "Reindeer Bells", "Elven Hats", "Pine Needles", "Essences of Time", "Ephemeral Lights"},
 }
 
+-- confetti?
+-- random sounds?
+-- 
 
 local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
 	if GetDate()%10000 == 1031 then return 1 end
@@ -569,6 +572,28 @@ if l then
 	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 end
+
+if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 1 then
+--if true then
+	function WritCreater.alternateUniverse()
+		local stations = 
+			{"Blacksmithing Station", "Clothing Station", "Woodworking Station", "Cooking Fire", 
+			"Enchanting Table", "Alchemy Station", "Outfit Station", "Transmute Station", "Wayshrine"}
+			local stationNames =  -- in the comments are other names that were also considered, though not all were considered seriously
+			{"Heavy Metal 112.3 FM", -- Popcorn Machine , Skyforge, Heavy Metal Station
+			 "Sock Knitting Station", -- Sock Distribution Center, Soul-Shriven Sock Station, Grandma's Sock Knitting Station, Knits and Pieces
+			 "Splinter Removal Station", -- Chainsaw Massace, Saw Station, Shield Corp, IKEA Assembly Station, Wood Splinter Removal Station
+			 "McSheo's Food Co.", 
+			 "Tetris Station", -- Mahjong Station
+			 "Poison Control Centre", -- Chemical Laboratory , Drugstore, White's Garage, Cocktail Bar, Med-Tek Pharmaceutical Company, Med-Tek Laboratories
+			 "Thalmor Spy Agency", -- Jester Dressing Room Loincloth Shop, Khajit Walk, Khajit Fashion Show, Mummy Maker, Thalmor Spy Agency, Morag Tong Information Hub, Tamriel Spy HQ, 
+			 "Department of Corrections",-- Heisenberg's Station Correction Facility, Time Machine, Probability Redistributor, Slot Machine Rigger, RNG Countermeasure, Lootcifer Shrine, Whack-a-mole
+			 -- Anti Salt Machine, Department of Corrections
+			 "Warp Gate" } -- Transporter, Molecular Discombobulator, Beamer, Warp Tunnel, Portal, Stargate, Cannon!, Warp Gate
+		return stations, stationNames
+	end
+end
+
 --Options table Strings
 WritCreater.optionStrings = WritCreater.optionStrings or {}
 WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 
@@ -623,6 +648,8 @@ WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
 WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 WritCreater.optionStrings["hide when done"]								= "Hide when done"
 WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon windonw when all items have been crafted"
+WritCreater.optionStrings["alternate universe"]							= "Alternate Universe"
+WritCreater.optionStrings["alternate universe tooltip"] 				= "Disable the Alternate Universe April Fools joke."
 --Hide craft window when done
 --"Verstecke Fenster anschließend",
 -- [tooltip ] = "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"

@@ -34,6 +34,11 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 			currentWritDialogue= i
 		end
 	end
+	if zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,completionStrings["Rolis Hlaalu"]) then
+		writComplete = GetJournalQuestIsComplete(journalIndex)
+		CompleteQuest()
+		return 
+	end
 	EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG)
 	completeMasterWrit(eventCode, journalIndex)
 	if not writComplete then return end
@@ -170,4 +175,4 @@ function WritCreater.InitializeQuestHandling()
 		d("Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.")  else original() end end
 end
 
---/script JumpToSpecificHouse("@marcopolo184", 46)
+-- /script JumpToSpecificHouse("@marcopolo184", 46)
