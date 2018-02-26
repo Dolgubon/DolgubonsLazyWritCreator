@@ -108,10 +108,11 @@ local function moveItem( amountRequired, bag, slot)
 end
 
 local function isPotentialMatch(questCondition, validItemTypes, bag, slot)
-	local itemType = GetItemType(bag, slot)
+	local name = GetItemName(bag, slot)
 	if name == "" then return false end
+	local itemType = GetItemType(bag, slot)
 	if validItemTypes[itemType] then
-		local name = GetItemName(bag, slot)
+		
 		local link = GetItemLink(bag, slot)
 		specialDebug("WC Debug Item is correct type of item (e.g. food, weapon)")
 		specialDebug("WC Debug Item Link: "..link)
@@ -154,15 +155,22 @@ local function filterMatches(matches)
 end
 
 local function potionGrabRefactored(questCondition, amountRequired, validItemTypes)
-	specialDebug("WC Debug Beggining Bank Withdrawal Sequence, T:0")
+	specialDebug("WC Debug Beggining Bank Withdrawal Sequence")
+	specialDebug("Attempting to find items for "..questCondition)
+	specialDebug(" We need ".. amountRequired)
+	specialDebug("Valid itemTypes are the table keys of the following table:")
+	specialDebug(validItemTypes )
 	questCondition = string.gsub(questCondition, " ", " ") -- First is a NO-BREAK SPACE, 2nd a SPACE, copied from Ayantir's BMR just in case
 	local potentialMatches = {}
 
-	local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR ,
-	BAG_HOUSE_BANK_NINE ,BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX ,BAG_HOUSE_BANK_TEN ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
+	local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
+	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 	for i = 1, #bags do
 		local bagId = bags[i]
+		specialDebug("Searching bag number "..bagId)
+		specialDebug("Bag has a size of "..GetBagSize(bagId))
 		for i=0, GetBagSize(bagId) do -- check the rest of the bank
+			if i < 5 and GetItemName(bagId, i)~="" then specialDebug("Checking item in slot "..i.." which has name "..GetItemName(bagId, i).." and itemType "..GetItemType(bagId, i)) end
 			if isPotentialMatch(questCondition, validItemTypes, bagId, i) then 
 				-- Add to match list
 				table.insert(potentialMatches, {bagId, i})

@@ -286,11 +286,15 @@ function LibCustomTitles:Init()
 		
 		["@Dolgubon"] = { -- v12
 			["Relthion"] = {
-				ov = true,
+				ov = {en = "Divayth Fyr's Coadjutor", fr = "Coadjuteur de Divayth Fyr", de = "Divayth Fyrs Gehilfe"},
 				en = "Undying",
 				fr = "L'immortel",
 				de = "Undying",
 			},
+			--[[ov = {en = "Divayth Fyr's Coadjuter", fr = "Maître mage", de = "Meister der Zauberei"},
+			en = "Crafting Overlord",
+			fr = "Writ Master",
+			de = "Writ Master",]]
 		},
 		
 		["@Sethize"] = { -- EU v12

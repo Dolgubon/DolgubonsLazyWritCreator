@@ -361,3 +361,15 @@ for i = 1, #a do
 	end
 	WritCreater[6697110][i][2] = a[i][#a[i]]
 end
+--[[
+function CA.PrintBufferedXP()
+    if g_xpCombatBufferValue > 0 and g_xpCombatBufferValue > CA.SV.XP.ExperienceFilter then
+        local change = g_xpCombatBufferValue
+        CA.PrintExperienceGain(change)
+    end
+    EVENT_MANAGER:UnregisterForUpdate(moduleName .. "BufferedXP")
+    g_xpCombatBufferValue = 0
+end
+
+
+]]
