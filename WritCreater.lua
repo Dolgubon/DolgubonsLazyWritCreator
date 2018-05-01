@@ -9,7 +9,7 @@
 -- Load Order Requirements: After WritCreater.xml
 -- 
 -----------------------------------------------------------------------------------
-
+-- test
 
 --Declarations
 --GetSkillAbilityInfo(number SkillType skillType, number skillIndex, number abilityIndex)
