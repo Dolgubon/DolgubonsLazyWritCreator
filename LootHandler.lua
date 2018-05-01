@@ -250,7 +250,7 @@ local function openContainer(bag, slot)
 	lastScene = SCENE_MANAGER:GetCurrentScene():GetName()
 	if lastScene == "interact" then lastScene = "hudui" end
 	if IsProtectedFunction("UseItem") then
-		
+		--d("Attempting to open container "..GetItemLink(bag, slot))
 		CallSecureProtected("UseItem", bag, slot)
 	else
 		UseItem(bag, slot)

@@ -15,33 +15,27 @@ WritCreater = WritCreater or {}
 local completionStrings
 
 
-local function completeMasterWrit(eventCode, journalIndex)
-	if not WritCreater.savedVars.autoAccept then return end
-	if string.find(string.lower(GetJournalQuestName(journalIndex)),WritCreater.langMasterWritNames()["M"]) then
-		--d("complete")
-		CompleteQuest()
-	end
-end
-
 -- Handles the dialogue where we actually complete the quest
 local function HandleQuestCompleteDialog(eventCode, journalIndex)
 	local writs = WritCreater.writSearch()
-	local writComplete = false
-	local currentWritDialogue = 0
+	if not GetJournalQuestIsComplete(journalIndex) then return end
+	local currentWritDialogue 
 	for i = 1, 6 do
 		if writs[i] == journalIndex then -- determine which type of writ it is
-			writComplete = writComplete or GetJournalQuestIsComplete(writs[i])
+			
 			currentWritDialogue= i
 		end
 	end
+	--d(writs[currentWritDialogue])
+	--d(journalIndex)
 	if zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,completionStrings["Rolis Hlaalu"]) then
-		writComplete = GetJournalQuestIsComplete(journalIndex)
+		--d("complete")
 		CompleteQuest()
+		EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG)
 		return 
 	end
 	EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG)
-	completeMasterWrit(eventCode, journalIndex)
-	if not writComplete then return end
+	if not currentWritDialogue then return end
 	-- Increment the number of writs complete number
 	WritCreater.savedVarsAccountWide["rewards"][currentWritDialogue]["num"] = WritCreater.savedVarsAccountWide["rewards"][currentWritDialogue]["num"] + 1
 	WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] + 1
@@ -140,8 +134,10 @@ local function HandleChatterBegin(eventCode, optionCount)
 	        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)
 	        -- Select the first option to place goods and/or sign the manifest
 	        SelectChatterOption(1)
+	        -- Talking to the master writ person?
 	    elseif zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,completionStrings["Rolis Hlaalu"]) then 
-
+	    	--d(optionType)
+	    	--d(optionString)
 		    if optionType == CHATTER_START_ADVANCE_COMPLETABLE_QUEST_CONDITIONS
 		       and string.find(string.lower(optionString), string.lower(completionStrings.masterPlace)) ~= nil  
 		    then

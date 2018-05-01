@@ -28,7 +28,7 @@
             DolgubonsWritsFeedback:SetHidden(true)
           </OnClicked>
         </Button>
-        <Label name="$(parent)Note"  font="ZoFontGame"  horizontalAlignment="CENTER" color="FFFFFF" text="If you found a bug, have a request or a suggestion, or simply wish to donate, send me a mail.">
+        <Label name="$(parent)Note"  font="ZoFontGame"  horizontalAlignment="CENTER" color="FFFFFF" text="If you found a bug, have a request, suggestion, or wish to donate gold, send me a mail, or even send me some money on Paypal.">
           <Dimensions x="525" y="200" />
           <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50" />
         </Label>
@@ -39,25 +39,28 @@
             WritCreater.SendNote(0)
           </OnClicked>
         </Button>
-        <Button name="$(parent)Small" inherits="ZO_DefaultButton" text="Send 500">
-          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Feedback" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+        <Button name="$(parent)Medium" inherits="ZO_DefaultButton" text="Send 5000">
+		<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Feedback" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+          
           <Dimensions x="130" />
           <OnClicked>
-            WritCreater.SendNote(500)
+            WritCreater.SendNote(5000)
           </OnClicked>
         </Button>
+        
         <Button name="$(parent)Large" inherits="ZO_DefaultButton" text="Send 50000">
-          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+		<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Medium" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+          
           <Dimensions x="130" />
           <OnClicked>
             WritCreater.SendNote(50000)
           </OnClicked>
         </Button>
-        <Button name="$(parent)Medium" inherits="ZO_DefaultButton" text="Send 5000">
-          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Large" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="0" />
+        <Button name="$(parent)Small" inherits="ZO_DefaultButton" text="Send $$">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
           <Dimensions x="130" />
           <OnClicked>
-            WritCreater.SendNote(5000)
+             RequestOpenUnsafeURL("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU")
           </OnClicked>
         </Button>
       </Controls>
@@ -75,7 +78,7 @@
 						<Label name="$(parent)Head" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
 							<Anchor  relativePoint="TOP" relativeTo="$(parent)" offsetY="55" offsetX="-85"/>
 						</Label>
-						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" width="400" height="400">
+						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" width="400" height="400" mouseEnabled="true">
 							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="80" offsetX="10"/>
 				        	<Dimensions x="450"/>
 					    </Label>

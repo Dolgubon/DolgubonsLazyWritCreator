@@ -65,7 +65,7 @@ local function styleCompiler()
 			tooltip = optionStrings["style tooltip"](v[2], v[3]),
 			getFunc = function() return WritCreater.savedVars.styles[v[1]] end,
 			setFunc = function(value)
-				WritCreater.savedVars.styles[v[1]] = value or nil
+				WritCreater.savedVars.styles[v[1]] = value  --- DO NOT CHANGE THIS! If you have 'or nil' then the ZO_SavedVars will set it to true.
 				end,
 		}
 		submenuTable[#submenuTable + 1] = option
@@ -75,62 +75,6 @@ end
 
 
 function WritCreater.Options() --Sentimental
-	local function WipeThatFrownOffYourFace(override)
-		if WritCreater.alternateUniverse and (override or WritCreater.savedVarsAccountWide.alternateUniverse) then
-			local stations, stationNames = WritCreater.alternateUniverse()
-			
-			local function setupReplacement(object, functionName, positionOfText, types)
-				local stationsToCheck = {}
-				if types then
-					stationsToCheck = stations
-				else
-					for i = 1, #types do 
-						stationsToCheck[types] = stations[types]
-					end
-				end
-				local original = object[functionName]
-				object[functionName] = function(self, ...)
-				local parameters = {...}
-					local text = parameters[positionOfText]
-					for i, stationOriginalName in pairs(stationsToCheck) do 
-						if string.find(text, stations[i]) then
-							local newText = string.gsub(text, stations[i], stationNames[i] or text or "")
-							parameters[positionOfText] = newText
-							original(self, unpack(parameters))
-							return
-						end
-					end
-					original(self, ...)
-				end
-			end
-			-- unstuck yourself prompts do use the string overwrite functions
-			SafeAddString(SI_CUSTOMER_SERVICE_UNSTUCK_COST_PROMPT,string.gsub(GetString(SI_CUSTOMER_SERVICE_UNSTUCK_COST_PROMPT_TELVAR), stations[9], stationNames[9]), 2)
-			SafeAddString(SI_CUSTOMER_SERVICE_UNSTUCK_COST_PROMPT_TELVAR, string.gsub(GetString(SI_CUSTOMER_SERVICE_UNSTUCK_COST_PROMPT_TELVAR), stations[9], stationNames[9]), 2)
-
-			setupReplacement(ZO_ReticleContainerInteractContext, "SetText", 1, true) -- reticle
-			setupReplacement(InformationTooltip, "AddLine", 1, true) -- tooltips
-			setupReplacement(ZO_CompassCenterOverPinLabel, "SetText", 1, {9}) -- compass words
-			setupReplacement(ZO_Dialog1Text, "SetText", 1, {9}) -- dialog porting box
-			setupReplacement(_G, "ZO_Alert", 2, {9}) -- location change notification (top right of screen)
-			setupReplacement(ZO_DeathReleaseOnlyButton1NameLabel, "SetText", 1, {9}) -- when you only have one port option on death
-			setupReplacement(ZO_DeathTwoOptionButton2NameLabel, "SetText", 1, {9}) -- when you can revive here or go to wayshrine
-			-- checkboxes to show wayshrines on map. This one needs to be delayed because the map is not initialized at first
-			local runOnce = {}
-			SCENE_MANAGER.scenes['worldMap']:RegisterCallback("StateChange", function(old, new) 
-				if new ~= "shown" then return end
-				if not runOnce['worldMap'] then 
-					runOnce['worldMap'] = true
-					setupReplacement(ZO_WorldMapFiltersPvECheckBox2Label, "SetText", 1, {9})
-					ZO_WorldMapFiltersPvECheckBox2Label:SetText(ZO_WorldMapFiltersPvECheckBox2Label:GetText()) 
-				end  
-			end)
-		end
-	end
-	WipeThatFrownOffYourFace()
-	local g = getmetatable(WritCreater) or {}
-	g.__index = g.__index or {}
-	g.__index.WipeThatFrownOffYourFace = WipeThatFrownOffYourFace
-	g.__metatable = "No Looky!"
 	
 
 	local options =  {
@@ -398,8 +342,10 @@ function WritCreater.Options() --Sentimental
 				name = WritCreater.optionStrings["alternate universe"],
 				tooltip =WritCreater.optionStrings["alternate universe tooltip"] ,
 				getFunc = function() return WritCreater.savedVarsAccountWide.alternateUniverse end,
-				setFunc = function(value) WritCreater.savedVarsAccountWide.alternateUniverse = value  end,
-				requiresReload = true
+				setFunc = function(value) 
+					WritCreater.savedVarsAccountWide.alternateUniverse = value 
+					WritCreater.savedVarsAccountWide.completeImmunity = not value end,
+				
 			})
 	end
 

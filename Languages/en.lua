@@ -1,4 +1,4 @@
------------------------------------------------------------------------------------
+﻿-----------------------------------------------------------------------------------
 -- Addon Name: Dolgubon's Lazy Writ Crafter
 -- Creator: Dolgubon (Joseph Heinzle)
 -- Addon Ideal: Simplifies Crafting Writs as much as possible
@@ -54,6 +54,7 @@ function WritCreater.langParser(str)  -- Optional overwrite function for languag
 
 end
 --]]
+
 
 local function proper(str)
 	if type(str)== "string" then
@@ -560,6 +561,13 @@ local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutw
 	if GetDate()%10000 == 1231 then return 3 end
 	return false
 end
+
+local function hasMadnessEngulfedNirn()
+	local t = GetTimeString() local c = string.sub(t, 1,string.find(t, ":") - 1)
+	return tonumber(c) > 11
+end
+
+
 local function wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed() local a= math.random(1, #DivineMats ) return DivineMats[a] end
 local l = shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
 
@@ -572,50 +580,8 @@ if l then
 	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 end
--- [[ /script local writcreater = {} local c = {a = 1} local g = {__index = c} setmetatable(writ, g) d(a.a) local e = {__index = {Z = 2}} setmetatable(c, e) d(a.Z)
-local h = {__index = {}}
-local t = {}
-local g = {["__index"] = t}
-setmetatable(t, h)
-setmetatable(WritCreater, g) --]]
 
-local function enableAlternateUniverse(override)
-	if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 1 or override then
-	--if true then
-		local t = {["__index"] = {}}
-		function h.__index.alternateUniverse()
-			local stations = 
-				{"Blacksmithing Station", "Clothing Station", "Woodworking Station", "Cooking Fire", 
-				"Enchanting Table", "Alchemy Station", "Outfit Station", "Transmute Station", "Wayshrine"}
-				local stationNames =  -- in the comments are other names that were also considered, though not all were considered seriously
-				{"Heavy Metal 112.3 FM", -- Popcorn Machine , Skyforge, Heavy Metal Station
-				 "Sock Knitting Station", -- Sock Distribution Center, Soul-Shriven Sock Station, Grandma's Sock Knitting Station, Knits and Pieces
-				 "Splinter Removal Station", -- Chainsaw Massace, Saw Station, Shield Corp, IKEA Assembly Station, Wood Splinter Removal Station
-				 "McSheo's Food Co.", 
-				 "Tetris Station", -- Mahjong Station
-				 "Poison Control Centre", -- Chemical Laboratory , Drugstore, White's Garage, Cocktail Bar, Med-Tek Pharmaceutical Company, Med-Tek Laboratories
-				 "Thalmor Spy Agency", -- Jester Dressing Room Loincloth Shop, Khajit Walk, Khajit Fashion Show, Mummy Maker, Thalmor Spy Agency, Morag Tong Information Hub, Tamriel Spy HQ, 
-				 "Department of Corrections",-- Heisenberg's Station Correction Facility, Time Machine, Probability Redistributor, Slot Machine Rigger, RNG Countermeasure, Lootcifer Shrine, Whack-a-mole
-				 -- Anti Salt Machine, Department of Corrections
-				 "Warp Gate" } -- Transporter, Molecular Discombobulator, Beamer, Warp Tunnel, Portal, Stargate, Cannon!, Warp Gate
-			return stations, stationNames
-		end
-		h.__metatable = "No looky!"
-		--setmetatable(WritCreater, t)
-	end
-end
 
-enableAlternateUniverse()
-
-local function alternateListener(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
-	if fromDisplayName == "@Dolgubon" or fromDisplayName == "@Dolgubonn" and text == "Let the Isles bleed into Nirn!" then
-		d("And you thought you could escape!")
-		enableAlternateUniverse(true)
-		WritCreater.WipeThatFrownOffYourFace(true)
-	end
-end
-
-EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_CHAT_MESSAGE_CHANNEL, alternateListener)
 --Options table Strings
 WritCreater.optionStrings = WritCreater.optionStrings or {}
 WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 

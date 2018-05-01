@@ -9,7 +9,7 @@
 -- Load Order Requirements: After WritCreater.xml
 -- 
 -----------------------------------------------------------------------------------
--- test
+
 
 --Declarations
 --GetSkillAbilityInfo(number SkillType skillType, number skillIndex, number abilityIndex)
@@ -48,7 +48,7 @@ WritCreater.default =
 	["shouldGrab"] = true,
 	["OffsetX"] = 1150,
 	["OffsetY"] = 0,
-	["styles"] = {true,true,true,true,true,true,true,true,true,true,},
+	["styles"] = {true,true,true,true,true,true,true,true,true,true,[34] = true},
 	["debug"] = false,
 	["autoLoot"] = true,
 	["exitWhenDone"] = true,
@@ -67,7 +67,6 @@ WritCreater.defaultAccountWide = {
 	["skipped"] = 0,
 	["total"] = 0,
 	[6697110] = false,
-	["alternateUniverse"] = true,
 	["rewards"] = 
 	{
 		[CRAFTING_TYPE_BLACKSMITHING] = 
@@ -170,10 +169,11 @@ WritCreater.defaultAccountWide = {
 WritCreater.settings["panel"] =  
 {
      type = "panel",
-     name = "Dolgubon's Lazy Writ Crafter",
+     name = "Lazy Writ Crafter",
      registerForRefresh = true,
      displayName = "|c8080FF Dolgubon's Lazy Writ Crafter|r",
-     author = "@Dolgubon"
+     author = "@Dolgubon",
+     registerForRefresh = true
 }
 WritCreater.settings["options"] =  {} 
 local LibLazyCrafting  
@@ -390,6 +390,7 @@ end
 
 
 --Crafting helper functions
+
 
 
 
