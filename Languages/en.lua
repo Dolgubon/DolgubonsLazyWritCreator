@@ -643,8 +643,7 @@ WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
 WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 WritCreater.optionStrings["hide when done"]								= "Hide when done"
 WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon windonw when all items have been crafted"
-WritCreater.optionStrings["alternate universe"]							= "Alternate Universe"
-WritCreater.optionStrings["alternate universe tooltip"] 				= "Disable the Alternate Universe April Fools joke."
+
 --Hide craft window when done
 --"Verstecke Fenster anschließend",
 -- [tooltip ] = "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"

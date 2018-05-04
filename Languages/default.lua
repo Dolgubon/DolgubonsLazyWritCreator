@@ -21,6 +21,11 @@ WritCreater.lang = "none"
 -- and the addon instead uses the English option strings for any that are missing.
 
 WritCreater.optionStrings = {}
+WritCreater.optionStrings.nowEditing                   = "You are changing %s settings"
+WritCreater.optionStrings.accountWide                  = "Account Wide"
+WritCreater.optionStrings.characterSpecific            = "Character Specific"
+WritCreater.optionStrings.useCharacterSettings         = "Use character settings" 
+WritCreater.optionStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
 WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 
 WritCreater.optionStrings["show craft window"]							= "Show Craft Window"
 WritCreater.optionStrings["show craft window tooltip"]					= "Shows the crafting window when a crafting station is open"
