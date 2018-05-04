@@ -10,8 +10,8 @@
 -- 
 -----------------------------------------------------------------------------------
 
--- This adds a new function to the global table, due to its wide utility.
+-- This adds a new function to the global table, due to its wide utility. -- NOTE: In Summerset, this will be an API function provided by the game
 
-local function getItemLinkFromItemId(itemId) 
+function getItemLinkFromItemId(itemId) 
 	return string.format("|H1:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", itemId, 0, ITEMSTYLE_NONE, 0, 10000) 
-end
+end 

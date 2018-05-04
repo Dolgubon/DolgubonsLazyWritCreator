@@ -11,19 +11,20 @@
 --
 -----------------------------------------------------------------------------------
 
--- Initialize libraries
-
 local function dbug(...)
 	--DolgubonDebugRunningDebugString(...)
 end
+
+-- Initialize libraries
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 1.9
+local LIB_NAME, VERSION = "LibLazyCrafting", 2.0
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
 local LLC = LibLazyCrafting
 
 LLC.name, LLC.version = LIB_NAME, VERSION
 
+local CRAFTING_TYPE_JEWELRY = CRAFTING_TYPE_JEWELRY or 7
 
 LibLazyCrafting.craftInteractionTables =
 {
@@ -81,6 +82,7 @@ craftingQueue =
 	{
 		["autocraft"] = false, -- if true, then timestamps will be applied when the addon calls LLC_craft()
 		[CRAFTING_TYPE_CLOTHIER] = {},
+		[CRAFTING_TYPE_JEWELRY] = {},
 		[CRAFTING_TYPE_WOODWORKING] =
 		{
 			{["type"] = "smithing",
@@ -260,7 +262,7 @@ function LibLazyCrafting.stackableCraftingComplete(event, station, lastCheck, cr
 		dbug("RESULT:StackableMade")
 		if currentCraftAttempt["timesToMake"] < 2 then
 			dbug("ACTION:RemoveQueueItem")
-			table.remove( craftingQueue[currentCraftAttempt.addon][craftingType] , currentCraftAttempt.position ) 
+			table.remove( craftingQueue[currentCraftAttempt.addon][craftingType] , currentCraftAttempt.position )
 			--LibLazyCrafting.sortCraftQueue()
 			local resultTable =
 			{
@@ -290,6 +292,31 @@ function LibLazyCrafting.stackableCraftingComplete(event, station, lastCheck, cr
 	end
 end
 
+local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0))
+    return ZO_LinkHandler_CreateLink(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+end
+
+function LibLazyCrafting.HaveMaterials(materialList)
+    for _, mat in ipairs(materialList) do
+        local itemLink = mat.itemLink
+        if (not itemLink) and mat.itemId then
+            itemLink = getItemLinkFromItemId(mat.itemId)
+        end
+        if itemLink then
+            local bagCt, bankCt, craftBagCt = GetItemLinkStacks(itemLink)
+            local haveCt = bagCt + bankCt + craftBagCt
+            if haveCt < mat.requiredCt then
+            			-- Zig: What's the correct way to report "skipping this
+            			-- request beccause you're out of Perfect Roe"?
+                d("LibLazyCrafting: insufficient materials: "..tostring(itemLink)
+                    ..": require "..tostring(mat.requiredCt)
+                    .."  have "..tostring(haveCt))
+                return false
+            end
+        end
+    end
+    return true
+end
 
 -------------------------------------
 -- QUEUE FUNCTIONS
@@ -380,7 +407,7 @@ local function LLC_CancelItemByReference(self, reference)
 	for i = 1, #craftingQueue[self.addonName] do
 		for j = 1, #craftingQueue[self.addonName][i] do
 			if craftingQueue[self.addonName][i][j] and craftingQueue[self.addonName][i][j].reference==reference then
-				
+
 				table.remove(craftingQueue[self.addonName][i], j)
 
 			end
@@ -412,8 +439,8 @@ LibLazyCrafting.functionTable.findItemByReference =  LLC_FindItemByReference
 
 
 local function LLC_GetMatRequirements(self, requestTable)
-	
-	if requestTable.station then 
+
+	if requestTable.station then
 		return LibLazyCrafting.craftInteractionTables[requestTable.station]:materialRequirements( requestTable)
 	end
 end
@@ -423,7 +450,7 @@ LibLazyCrafting.functionTable.getMatRequirements =  LLC_GetMatRequirements
 function LibLazyCrafting.SendCraftEvent( event,  station, requester, returnTable )
 	if event == LLC_NO_FURTHER_CRAFT_POSSIBLE then
 		for requester, callbackFunction in pairs(LibLazyCrafting.craftResultFunctions) do
-			if requester ~= "LLC_Global" then 
+			if requester ~= "LLC_Global" then
 				local errorFound, err =  pcall(function() callbackFunction(event, station )end)
 				if not errorFound then
 					d("Callback to LLC resulted in an error. Please contact the author of "..requester)
@@ -432,7 +459,7 @@ function LibLazyCrafting.SendCraftEvent( event,  station, requester, returnTable
 			end
 		end
 	else
-		local errorFound, err =  pcall(function()LibLazyCrafting.craftResultFunctions[requester](event, station, 
+		local errorFound, err =  pcall(function()LibLazyCrafting.craftResultFunctions[requester](event, station,
 			returnTable )end)
 		if not errorFound then
 			d("Callback to LLC resulted in an error. Please contact the author of "..requester)
@@ -455,7 +482,7 @@ function LibLazyCrafting:Init()
 		if LLCAddonInteractionTable[addonName] then
 			d("LibLazyCrafting:AddRequestingAddon has been called twice, or the chosen addon name has already been used")
 		end
-		craftingQueue[addonName] = { {}, {}, {}, {}, {}, {},} -- Initialize the addon's personal queue. The tables are empty, station specific queues.
+		craftingQueue[addonName] = { {}, {}, {}, {}, {}, {}, {}} -- Initialize the addon's personal queue. The tables are empty, station specific queues.
 
 		-- Ensures that any request will have an addon name attached to it, if needed.
 		LLCAddonInteractionTable["addonName"] = addonName
@@ -575,7 +602,7 @@ end
 -- which bypasses the event Manager, so that it is called first.
 
 local function CraftComplete(event, station)
-	
+
 	--d("Event:completion")
 	local LLCResult = nil
 	for k,v in pairs(LibLazyCrafting.craftInteractionTables) do
@@ -585,7 +612,7 @@ local function CraftComplete(event, station)
 				endInteraction(EVENT_END_CRAFTING_STATION_INTERACT, station)
 				zo_callLater(function() v["complete"]( station) LibLazyCrafting.isCurrentlyCrafting = {false, "", ""} end, timetest)
 			else
-				
+
 				v["complete"]( station)
 				LibLazyCrafting.isCurrentlyCrafting = {false, "", ""}
 				v["function"]( station)
@@ -602,7 +629,7 @@ local function OnAddonLoaded()
 		EVENT_MANAGER:UnregisterForEvent(LIB_NAME, EVENT_ADD_ON_LOADED)
 		EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_CRAFTING_STATION_INTERACT,CraftInteract)
 		EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_CRAFT_COMPLETED, CraftComplete)
-		
+
 	end
 end
 

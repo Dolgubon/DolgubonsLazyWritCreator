@@ -280,17 +280,17 @@ alchGrab = function (event, bag)
 	
 	findEmptySlots(BAG_BACKPACK)
 	if WritCreater.lang =="jp" then return end
-	if WritCreater.savedVars.shouldGrab then
+	if WritCreater:GetSettings().shouldGrab then
 		local writs = WritCreater.writSearch()
 		for craft, validTYpes in pairs(validItemTypes) do
-			if writs[craft] and  (WritCreater.savedVars[craft] or WritCreater.savedVars[craft]==nil) then
+			if writs[craft] and  (WritCreater:GetSettings()[craft] or WritCreater:GetSettings()[craft]==nil) then
 				addToQueue(writs[craft], validTYpes)
 			end
 		end
 		if #queue>0 then
 
 			--queueRun()
-			zo_callLater(queueRun,WritCreater.savedVars.delay)
+			zo_callLater(queueRun,WritCreater:GetSettings().delay)
 		end
 	end
 

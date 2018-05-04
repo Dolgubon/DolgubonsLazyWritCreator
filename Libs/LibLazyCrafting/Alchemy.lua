@@ -17,7 +17,7 @@ local LibLazyCrafting = LibStub("LibLazyCrafting")
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
 
 local widgetType = 'alchemy'
-local widgetVersion = 1.5
+local widgetVersion = 1.6
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return false end
 
 local function dbug(...)
@@ -26,6 +26,10 @@ local function dbug(...)
 end
 
 local craftingQueue = LibLazyCrafting.craftingQueue
+
+local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0))
+    return ZO_LinkHandler_CreateLink(zo_strformat("<<t:1>>",name), nil, ITEM_LINK_TYPE,itemId, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+end
 
 local function LLC_CraftAlchemyItemByItemId(self, solventId, reagentId1, reagentId2, reagentId3, timesToMake, autocraft, reference)
 	dbug('FUNCTION:LLCCraftAlchemy')
@@ -129,14 +133,26 @@ local function LLC_AlchemyCraftingComplete(event, station, lastCheck)
 
 end
 
+local function LLC_AlchemyIsItemCraftable(station, request)
+    if station ~= CRAFTING_TYPE_ALCHEMY then return false end
+
+    local materialList
+      = { { itemLink = getItemLinkFromItemId(request.solventId ) , requiredCt = request.timesToMake }
+        , { itemLink = getItemLinkFromItemId(request.reagentId1) , requiredCt = request.timesToMake }
+        , { itemLink = getItemLinkFromItemId(request.reagentId2) , requiredCt = request.timesToMake }
+        , { itemLink = getItemLinkFromItemId(request.reagentId3) , requiredCt = request.timesToMake }
+        }
+    return LibLazyCrafting.HaveMaterials(materialList)
+end
+
 LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_ALCHEMY] =
 {
 	["station"] = CRAFTING_TYPE_ALCHEMY,
 	["check"] = function(self, station) return station == self.station end,
 	['function'] = LLC_AlchemyCraftInteraction,
 	["complete"] = LLC_AlchemyCraftingComplete,
-	["endInteraction"] = function(self, station) --[[endInteraction()]] end,
-	["isItemCraftable"] = function(self, station) if station == CRAFTING_TYPE_ALCHEMY then return true else return false end end,
+	["endInteraction"] = function(station) --[[endInteraction()]] end,
+	["isItemCraftable"] = LLC_AlchemyIsItemCraftable
 }
 
 LibLazyCrafting.functionTable.CraftAlchemyPotion = LLC_CraftAlchemyPotion

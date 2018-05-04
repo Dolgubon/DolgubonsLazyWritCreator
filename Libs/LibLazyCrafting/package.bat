@@ -10,7 +10,7 @@ for %%* in (.) do set name=%%~nx*
 
 if not exist %name%.txt (
   echo * Please enter the name of your add-on:
-  set /P name=^>
+  set name=LibLazyCrafting
 )
 
 for /F "tokens=3" %%i in ('findstr /C:"## Version:" %name%.txt') do set version=%%i

@@ -20,7 +20,7 @@ end
 local currentTutorialStep = 0
 
 local function tutorial5()
-	WritCreater.savedVars.tutorial = false
+	WritCreater:GetSettings().tutorial = false
 
 	currentTutorialStep = 5
 	out(WritCreater.langTutorial(5))
@@ -87,19 +87,19 @@ local function onButton()
 	if currentTutorialStep ==5 then
 		DolgubonsWrits:SetHidden(true)
 		
-		WritCreater.savedVars.tutorial = false
+		WritCreater:GetSettings().tutorial = false
 		DolgubonsWritsBackdropSettingOn:SetHidden(true)
 		resetWindowElements()
 	elseif currentTutorialStep ==4 then
 		tutorial5()
 	elseif currentTutorialStep ==3 then
-		WritCreater.savedVars.showWindow=true
+		WritCreater:GetSettings().showWindow=true
 		tutorial4()
 	elseif currentTutorialStep ==2 then
-		WritCreater.savedVars.autoCraft=true
+		WritCreater:GetSettings().autoCraft=true
 		tutorial3()
 	elseif currentTutorialStep ==1 then
-		WritCreater.savedVars.tutorial = false
+		WritCreater:GetSettings().tutorial = false
 		DolgubonsWrits:SetHidden(true)
 
 		DolgubonsWritsBackdropSettingOn:SetHidden(true)
@@ -113,12 +113,12 @@ end
 local function offButton()
 
 	if currentTutorialStep ==3 then
-		WritCreater.savedVars.showWindow=false
+		WritCreater:GetSettings().showWindow=false
 		tutorial4()
 	end
 	if currentTutorialStep ==2 then
-		WritCreater.savedVars.autoCraft=false
-		WritCreater.savedVars.showWindow=true
+		WritCreater:GetSettings().autoCraft=false
+		WritCreater:GetSettings().showWindow=true
 		tutorial4()
 	end
 	if currentTutorialStep ==1 then

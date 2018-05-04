@@ -152,7 +152,13 @@ end
 -- Resets the user's character specific settings
 
 local function resetSettings()
-	WritCreater.savedVars = WritCreater.default d("settings reset")
+	if WritCreater.savedVars.useCharacterSettings then
+		WritCreater.savedVars = WritCreater.default 
+	else
+		WritCreater.savedVarsAccountWide.accountWideProfile = WritCreater.default
+	end
+
+	d("settings reset")
 end
 
 -- Activates the debug mode. Debug mode is not comprehensive. It mainly only works in the crafting functions of master writs
@@ -166,8 +172,8 @@ local function activateDebug(str)
 		d("Delay debug is "..tostring( WritCreater.savedVarsAccountWide.bankDebug) )
 	else
 		
-		WritCreater.savedVars.debug = not WritCreater.savedVars.debug 
-		d("Craft Debug is ".. tostring(WritCreater.savedVars.debug))
+		WritCreater:GetSettings().debug = not WritCreater:GetSettings().debug 
+		d("Craft Debug is ".. tostring(WritCreater:GetSettings().debug))
 	end
 end
 

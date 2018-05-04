@@ -20,7 +20,14 @@ for i = 1, GetNumValidItemStyles() do
 	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
 
 	table.insert(WritCreater.styleNames,{styleItemIndex,itemName, styleItem})
+end
 
+function WritCreater:GetSettings()
+	if self.savedVars.useCharacterSettings then
+		return self.savedVars
+	else
+		return self.savedVarsAccountWide.accountWideProfile
+	end
 end
 
 --[[{
@@ -29,16 +36,16 @@ end
 			tooltip = "Choose when the addon will autoloot writ reward containers",
 			choices = {"Copy the", "Autoloot", "Never Autoloot"},
 			choicesValues = {1,2,3},
-			getFunc = function() if WritCreater.savedVars.ignoreAuto then return 1 elseif WritCreater.savedVars.autoLoot then return 2 else return 3 end end,
+			getFunc = function() if WritCreater:GetSettings().ignoreAuto then return 1 elseif WritCreater:GetSettings().autoLoot then return 2 else return 3 end end,
 			setFunc = function(value) 
 				if value == 1 then 
-					WritCreater.savedVars.ignoreAuto = false
+					WritCreater:GetSettings().ignoreAuto = false
 				elseif value == 2 then  
-					WritCreater.savedVars.autoLoot = true
-					WritCreater.savedVars.ignoreAuto = true
+					WritCreater:GetSettings().autoLoot = true
+					WritCreater:GetSettings().ignoreAuto = true
 				elseif value == 3 then
-					WritCreater.savedVars.ignoreAuto = true
-					WritCreater.savedVars.autoLoot = false
+					WritCreater:GetSettings().ignoreAuto = true
+					WritCreater:GetSettings().autoLoot = false
 				end
 			end,
 		},]]
@@ -63,9 +70,9 @@ local function styleCompiler()
 			type = "checkbox",
 			name = zo_strformat("<<1>>", v[2]),
 			tooltip = optionStrings["style tooltip"](v[2], v[3]),
-			getFunc = function() return WritCreater.savedVars.styles[v[1]] end,
+			getFunc = function() return WritCreater:GetSettings().styles[v[1]] end,
 			setFunc = function(value)
-				WritCreater.savedVars.styles[v[1]] = value  --- DO NOT CHANGE THIS! If you have 'or nil' then the ZO_SavedVars will set it to true.
+				WritCreater:GetSettings().styles[v[1]] = value  --- DO NOT CHANGE THIS! If you have 'or nil' then the ZO_SavedVars will set it to true.
 				end,
 		}
 		submenuTable[#submenuTable + 1] = option
@@ -78,62 +85,88 @@ function WritCreater.Options() --Sentimental
 	
 
 	local options =  {
-			{
-				type = "checkbox",
-				name = optionStrings["show craft window"],
-				tooltip =WritCreater.optionStrings["show craft window tooltip"],
-				getFunc = function() return WritCreater.savedVars.showWindow end,
-				setFunc = function(value) 
-					WritCreater.savedVars.showWindow = value
-					if value == false then
-						WritCreater.savedVars.autoCraft = true
-					end
-				end,
-			},
-			{
-				type = "checkbox",
-				name = WritCreater.optionStrings["autocraft"]  ,
-				tooltip = WritCreater.optionStrings["autocraft tooltip"] ,
-				getFunc = function() return WritCreater.savedVars.autoCraft end,
-				disabled = function() return not WritCreater.savedVars.showWindow end,
-				setFunc = function(value) 
-					WritCreater.savedVars.autoCraft = value 
-				end,
-			},
-			
-			
-			{
-				type = "checkbox",
-				name = WritCreater.optionStrings["master"],--"Master Writs",
-				tooltip = WritCreater.optionStrings["master tooltip"],--"Craft Master Writ Items",
-				getFunc = function() return WritCreater.savedVarsAccountWide.masterWrits end,
-				setFunc = function(value) 
-				WritCreater.savedVarsAccountWide.masterWrits = value
-				WritCreater.savedVarsAccountWide.rightClick = not value
-				WritCreater.LLCInteraction:cancelItem()
-					if value  then
-						
-						for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
-					end
+		{
+			type = "header",
+			name = function() 
+				local profile = WritCreater.optionStrings.accountWide
+				if WritCreater.savedVars.useCharacterSettings then
+					profile = WritCreater.optionStrings.characterSpecific
+				end
+				return  string.format(WritCreater.optionStrings.nowEditing, profile)  
+			end, -- or string id or function returning a string
+		},
+
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings.useCharacterSettings,
+			tooltip = WritCreater.optionStrings.useCharacterSettingsTooltip,
+			getFunc = function() return WritCreater.savedVars.useCharacterSettings end,
+			setFunc = function(value) 
+				WritCreater.savedVars.useCharacterSettings = value
+			end,
+		},
+		{
+			type = "divider",
+			height = 15,
+			alpha = 0.5,
+			width = "full"
+		},
+		{
+			type = "checkbox",
+			name = optionStrings["show craft window"],
+			tooltip =WritCreater.optionStrings["show craft window tooltip"],
+			getFunc = function() return WritCreater:GetSettings().showWindow end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().showWindow = value
+				if value == false then
+					WritCreater:GetSettings().autoCraft = true
+				end
+			end,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings["autocraft"]  ,
+			tooltip = WritCreater.optionStrings["autocraft tooltip"] ,
+			getFunc = function() return WritCreater:GetSettings().autoCraft end,
+			disabled = function() return not WritCreater:GetSettings().showWindow end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().autoCraft = value 
+			end,
+		},
+		
+		
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings["master"],--"Master Writs",
+			tooltip = WritCreater.optionStrings["master tooltip"],--"Craft Master Writ Items",
+			getFunc = function() return WritCreater.savedVarsAccountWide.masterWrits end,
+			setFunc = function(value) 
+			WritCreater.savedVarsAccountWide.masterWrits = value
+			WritCreater.savedVarsAccountWide.rightClick = not value
+			WritCreater.LLCInteraction:cancelItem()
+				if value  then
 					
+					for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
+				end
+				
+				
+			end,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings["right click to craft"],--"Master Writs",
+			tooltip = WritCreater.optionStrings["right click to craft tooltip"],--"Craft Master Writ Items",
+			getFunc = function() return WritCreater.savedVarsAccountWide.rightClick end,
+			setFunc = function(value) 
+			WritCreater.savedVarsAccountWide.masterWrits = not value
+			WritCreater.savedVarsAccountWide.rightClick = value
+			WritCreater.LLCInteraction:cancelItem()
+				if not value  then
 					
-				end,
-			},
-			{
-				type = "checkbox",
-				name = WritCreater.optionStrings["right click to craft"],--"Master Writs",
-				tooltip = WritCreater.optionStrings["right click to craft tooltip"],--"Craft Master Writ Items",
-				getFunc = function() return WritCreater.savedVarsAccountWide.rightClick end,
-				setFunc = function(value) 
-				WritCreater.savedVarsAccountWide.masterWrits = not value
-				WritCreater.savedVarsAccountWide.rightClick = value
-				WritCreater.LLCInteraction:cancelItem()
-					if not value  then
-						
-						for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
-					end
-				end,
-			},
+					for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
+				end
+			end,
+		},
 			
 	}
 ----------------------------------------------------
@@ -145,15 +178,15 @@ function WritCreater.Options() --Sentimental
 			type = "checkbox",
 			name = WritCreater.optionStrings["automatic complete"],
 			tooltip = WritCreater.optionStrings["automatic complete tooltip"],
-			getFunc = function() return WritCreater.savedVars.autoAccept end,
-			setFunc = function(value) WritCreater.savedVars.autoAccept = value end,
+			getFunc = function() return WritCreater:GetSettings().autoAccept end,
+			setFunc = function(value) WritCreater:GetSettings().autoAccept = value end,
 		},		
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["exit when done"],
 			tooltip = WritCreater.optionStrings["exit when done tooltip"],
-			getFunc = function() return WritCreater.savedVars.exitWhenDone end,
-			setFunc = function(value) WritCreater.savedVars.exitWhenDone = value end,
+			getFunc = function() return WritCreater:GetSettings().exitWhenDone end,
+			setFunc = function(value) WritCreater:GetSettings().exitWhenDone = value end,
 		},
 		{
 			type = "dropdown",
@@ -161,16 +194,16 @@ function WritCreater.Options() --Sentimental
 			tooltip = WritCreater.optionStrings["autoloot behaviour tooltip"],
 			choices = WritCreater.optionStrings["autoloot behaviour choices"],
 			choicesValues = {1,2,3},
-			getFunc = function() if not WritCreater.savedVars.ignoreAuto then return 1 elseif WritCreater.savedVars.autoLoot then return 2 else return 3 end end,
+			getFunc = function() if not WritCreater:GetSettings().ignoreAuto then return 1 elseif WritCreater:GetSettings().autoLoot then return 2 else return 3 end end,
 			setFunc = function(value) 
 				if value == 1 then 
-					WritCreater.savedVars.ignoreAuto = false
+					WritCreater:GetSettings().ignoreAuto = false
 				elseif value == 2 then  
-					WritCreater.savedVars.autoLoot = true
-					WritCreater.savedVars.ignoreAuto = true
+					WritCreater:GetSettings().autoLoot = true
+					WritCreater:GetSettings().ignoreAuto = true
 				elseif value == 3 then
-					WritCreater.savedVars.ignoreAuto = true
-					WritCreater.savedVars.autoLoot = false
+					WritCreater:GetSettings().ignoreAuto = true
+					WritCreater:GetSettings().autoLoot = false
 				end
 			end,
 		},
@@ -178,18 +211,18 @@ function WritCreater.Options() --Sentimental
 			type = "checkbox",
 			name = WritCreater.optionStrings["new container"],
 			tooltip = WritCreater.optionStrings["new container tooltip"],
-			getFunc = function() return WritCreater.savedVars.keepNewContainer end,
+			getFunc = function() return WritCreater:GetSettings().keepNewContainer end,
 			setFunc = function(value) 
-			WritCreater.savedVars.keepNewContainer = value			
+			WritCreater:GetSettings().keepNewContainer = value			
 			end,
 		},
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["loot container"],
 			tooltip = WritCreater.optionStrings["loot container tooltip"],
-			getFunc = function() return WritCreater.savedVars.lootContainerOnReceipt end,
+			getFunc = function() return WritCreater:GetSettings().lootContainerOnReceipt end,
 			setFunc = function(value) 
-			WritCreater.savedVars.lootContainerOnReceipt = value					
+			WritCreater:GetSettings().lootContainerOnReceipt = value					
 			end,
 		},
 		--[[{
@@ -198,28 +231,28 @@ function WritCreater.Options() --Sentimental
 			tooltip = WritCreater.optionStrings["container delay tooltip"]    ,
 			min = 0,
 			max = 5,
-			getFunc = function() return WritCreater.savedVars.containerDelay end,
+			getFunc = function() return WritCreater:GetSettings().containerDelay end,
 			setFunc = function(value)
-			WritCreater.savedVars.containerDelay = value
+			WritCreater:GetSettings().containerDelay = value
 			end,
-			disabled = function() return not WritCreater.savedVars.lootContainerOnReceipt end,
+			disabled = function() return not WritCreater:GetSettings().lootContainerOnReceipt end,
 		  },--]]
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["master writ saver"],
 			tooltip = WritCreater.optionStrings["master writ saver tooltip"],
-			getFunc = function() return WritCreater.savedVars.preventMasterWritAccept end,
+			getFunc = function() return WritCreater:GetSettings().preventMasterWritAccept end,
 			setFunc = function(value) 
-			WritCreater.savedVars.preventMasterWritAccept = value					
+			WritCreater:GetSettings().preventMasterWritAccept = value					
 			end,
 		},
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["loot output"],--"Master Writs",
 			tooltip = WritCreater.optionStrings["loot output tooltip"],--"Craft Master Writ Items",
-			getFunc = function() return WritCreater.savedVars.lootOutput end,
+			getFunc = function() return WritCreater:GetSettings().lootOutput end,
 			setFunc = function(value) 
-			WritCreater.savedVars.lootOutput = value					
+			WritCreater:GetSettings().lootOutput = value					
 			end,
 		},
 		
@@ -232,54 +265,54 @@ function WritCreater.Options() --Sentimental
 		type = "checkbox",
 		name = WritCreater.optionStrings["blackmithing"]   ,
 		tooltip = WritCreater.optionStrings["blacksmithing tooltip"] ,
-		getFunc = function() return WritCreater.savedVars[CRAFTING_TYPE_BLACKSMITHING] end,
+		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_BLACKSMITHING] end,
 		setFunc = function(value) 
-			WritCreater.savedVars[CRAFTING_TYPE_BLACKSMITHING] = value 
+			WritCreater:GetSettings()[CRAFTING_TYPE_BLACKSMITHING] = value 
 		end,
 	},
 	{
 		type = "checkbox",
 		name = WritCreater.optionStrings["clothing"]  ,
 		tooltip = WritCreater.optionStrings["clothing tooltip"] ,
-		getFunc = function() return WritCreater.savedVars[CRAFTING_TYPE_CLOTHIER] end,
+		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_CLOTHIER] end,
 		setFunc = function(value) 
-			WritCreater.savedVars[CRAFTING_TYPE_CLOTHIER] = value 
+			WritCreater:GetSettings()[CRAFTING_TYPE_CLOTHIER] = value 
 		end,
 	},
 	{
 	  type = "checkbox",
 	  name = WritCreater.optionStrings["woodworking"]    ,
 	  tooltip = WritCreater.optionStrings["woodworking tooltip"],
-	  getFunc = function() return WritCreater.savedVars[CRAFTING_TYPE_WOODWORKING] end,
+	  getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_WOODWORKING] end,
 	  setFunc = function(value) 
-		WritCreater.savedVars[CRAFTING_TYPE_WOODWORKING] = value 
+		WritCreater:GetSettings()[CRAFTING_TYPE_WOODWORKING] = value 
 	  end,
 	},
 	{
 		type = "checkbox",
 		name = WritCreater.optionStrings["enchanting"],
 		tooltip = WritCreater.optionStrings["enchanting tooltip"]  ,
-		getFunc = function() return WritCreater.savedVars[CRAFTING_TYPE_ENCHANTING] end,
+		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_ENCHANTING] end,
 		setFunc = function(value) 
-			WritCreater.savedVars[CRAFTING_TYPE_ENCHANTING] = value 
+			WritCreater:GetSettings()[CRAFTING_TYPE_ENCHANTING] = value 
 		end,
 	},
 	{
 		type = "checkbox",
 		name = WritCreater.optionStrings["provisioning"],
 		tooltip = WritCreater.optionStrings["provisioning tooltip"]  ,
-		getFunc = function() return WritCreater.savedVars[CRAFTING_TYPE_PROVISIONING] end,
+		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] end,
 		setFunc = function(value) 
-			WritCreater.savedVars[CRAFTING_TYPE_PROVISIONING] = value 
+			WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] = value 
 		end,
 	},
 	{
 		type = "checkbox",
 		name = WritCreater.optionStrings["alchemy"],
 		tooltip = WritCreater.optionStrings["alchemy tooltip"]  ,
-		getFunc = function() return WritCreater.savedVars[CRAFTING_TYPE_ALCHEMY] end,
+		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] end,
 		setFunc = function(value) 
-			WritCreater.savedVars[CRAFTING_TYPE_ALCHEMY] = value 
+			WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] = value 
 		end,
 	},}
 
@@ -288,8 +321,8 @@ function WritCreater.Options() --Sentimental
 	type = "checkbox",
 	name = WritCreater.optionStrings["writ grabbing"] ,
 	tooltip = WritCreater.optionStrings["writ grabbing tooltip"] ,
-	getFunc = function() return WritCreater.savedVars.shouldGrab end,
-	setFunc = function(value) WritCreater.savedVars.shouldGrab = value end,
+	getFunc = function() return WritCreater:GetSettings().shouldGrab end,
+	setFunc = function(value) WritCreater:GetSettings().shouldGrab = value end,
   })
   --[[table.insert(options,{
 	type = "slider",
@@ -297,11 +330,11 @@ function WritCreater.Options() --Sentimental
 	tooltip = WritCreater.optionStrings["delay tooltip"]    ,
 	min = 10,
 	max = 2000,
-	getFunc = function() return WritCreater.savedVars.delay end,
+	getFunc = function() return WritCreater:GetSettings().delay end,
 	setFunc = function(value)
-	WritCreater.savedVars.delay = value
+	WritCreater:GetSettings().delay = value
 	end,
-	disabled = function() return not WritCreater.savedVars.shouldGrab end,
+	disabled = function() return not WritCreater:GetSettings().shouldGrab end,
   })]]
   end
 

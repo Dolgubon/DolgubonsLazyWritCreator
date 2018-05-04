@@ -85,7 +85,7 @@ local function updateSavedVars(vars, location, quantity)
 end
 
 local function lootOutput(itemLink, itemType)
-	if WritCreater.savedVars.lootOutput then
+	if WritCreater:GetSettings().lootOutput then
 		if itemType then 
 			d(zo_strformat( WritCreater.strings.lootReceived.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink))
 		else
@@ -181,10 +181,10 @@ local calledFromQuest = false
 
 local function OnLootUpdated(event)
 
-	local ignoreAuto = WritCreater.savedVars.ignoreAuto
+	local ignoreAuto = WritCreater:GetSettings().ignoreAuto
 	local autoLoot 
-	if WritCreater.savedVars.ignoreAuto then
-		autoLoot = WritCreater.savedVars.autoLoot
+	if WritCreater:GetSettings().ignoreAuto then
+		autoLoot = WritCreater:GetSettings().autoLoot
 	else
 		autoLoot = GetSetting(SETTING_TYPE_LOOT,LOOT_SETTING_AUTO_LOOT) == "1"
 	end
@@ -229,13 +229,13 @@ local slotUpdateHandler
 
 local function shouldOpenContainer(bag, slot)
 	local link = GetItemLink(bag, slot)
-	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater.savedVars.lootContainerOnReceipt then
+	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater:GetSettings().lootContainerOnReceipt then
 		return true
 	elseif matReward == GetItemLinkFlavorText(link) then
-		if not autoLoot or not WritCreater.savedVars.lootContainerOnReceipt then return false end
+		if not autoLoot or not WritCreater:GetSettings().lootContainerOnReceipt then return false end
 		return true
 	end
-	return (GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater.savedVars.lootContainerOnReceipt) or matReward == GetItemLinkFlavorText(link)
+	return (GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater:GetSettings().lootContainerOnReceipt) or matReward == GetItemLinkFlavorText(link)
 end
 
 local function scanBagForUnopenedContainers( ... )
@@ -273,7 +273,7 @@ local function prepareToInteract()
 			end
 		end
 	end
-	if GetTimeStamp() <completeTimes + WritCreater.savedVars.containerDelay then
+	if GetTimeStamp() <completeTimes + WritCreater:GetSettings().containerDelay then
 		--d("Delay, complete time "..completeTimes)
 		return true
 	end
@@ -284,15 +284,15 @@ function slotUpdateHandler(event, bag, slot, isNew,...)
 
 	if WritCreater.checkIfMasterWritWasStarted then WritCreater.checkIfMasterWritWasStarted(event, bag, slot, isNew,...) end
 	local autoLoot
-	if WritCreater.savedVars.ignoreAuto then
-		autoLoot = WritCreater.savedVars.autoLoot
+	if WritCreater:GetSettings().ignoreAuto then
+		autoLoot = WritCreater:GetSettings().autoLoot
 	else
 		autoLoot = GetSetting(SETTING_TYPE_LOOT,LOOT_SETTING_AUTO_LOOT) == "1"
 	end
 	if not isNew then return end
 	local link = GetItemLink(bag, slot)
 	local function attemptOpenContainer(bag, slot)
-		firstOpen = math.min(GetTimeStamp() + GetSlotCooldownInfo( 1 ) + 100 + WritCreater.savedVars.containerDelay*1000, firstOpen)
+		firstOpen = math.min(GetTimeStamp() + GetSlotCooldownInfo( 1 ) + 100 + WritCreater:GetSettings().containerDelay*1000, firstOpen)
 		
 		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' or prepareToInteract() then
 			zo_callLater(function()attemptOpenContainer(bag, slot) end , math.max(GetSlotCooldownInfo( 1 ) + 100,300))
@@ -300,13 +300,13 @@ function slotUpdateHandler(event, bag, slot, isNew,...)
 			openContainer(bag, slot)
 		end
 	end
-	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater.savedVars.lootContainerOnReceipt then
+	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater:GetSettings().lootContainerOnReceipt then
 		completeTimes = GetTimeStamp()
 		--d("attempting to open "..link)
 		attemptOpenContainer(bag, slot)
 		
 	elseif matReward == GetItemLinkFlavorText(link) then
-		if not autoLoot or not WritCreater.savedVars.lootContainerOnReceipt then return end
+		if not autoLoot or not WritCreater:GetSettings().lootContainerOnReceipt then return end
 		--d("attempting to open "..link)
 		attemptOpenContainer(bag, slot)
 	end
@@ -325,7 +325,7 @@ function WritCreater.LootHandlerInitialize()
 	ZO_SharedInventoryManager.ClearNewStatus = function(self, bag, slot) 
 		local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 
-		if WritCreater.savedVars.keepNewContainer and GetItemLinkFlavorText(GetItemLink(bag,slot)) ==rewardFlavourText then
+		if WritCreater:GetSettings().keepNewContainer and GetItemLinkFlavorText(GetItemLink(bag,slot)) ==rewardFlavourText then
 
 		else
 			oldfunc(self, bag, slot) 
