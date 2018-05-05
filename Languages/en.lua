@@ -74,6 +74,7 @@ function WritCreater.langWritNames() -- Vital
 	[CRAFTING_TYPE_PROVISIONING] = "Provisioner",
 	[CRAFTING_TYPE_WOODWORKING] = "Woodworker",
 	[CRAFTING_TYPE_ALCHEMY] = "Alchemist",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry",
 	}
 	return names
 end
@@ -137,7 +138,7 @@ local craftInfo =
 				[1] = "Homespun", --lvtier one of mats
 				[2] = "Linen",	--l
 				[3] = "Cotton",
-				[4] =  "Spidersilk",
+				[4] = "Spidersilk",
 				[5] = "Ebonthread",
 				[6] = "Kresh",
 				[7] = "Ironthread",
@@ -214,6 +215,24 @@ local craftInfo =
 				[8] = "Mahogany",
 				[9] = "Nightwood",
 				[10] = "Ruby",
+			},
+
+		},
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = 
+		{
+			["pieces"] = --Exact!!!
+			{
+				[1] = "ring",
+				[2] = "necklace",
+
+			},
+			["match"] = --exact!!! This is not the material, but rather the prefix the material gives to equipment. e.g. Maple Bow. Oak Bow.
+			{
+				[1] = "Pewter", -- 1
+				[2] = "Copper", -- 26
+				[3] = "Silver", -- CP10
+				[4] = "Electrum", --CP80
+				[5] = "Platinum", -- CP150
 			},
 
 		},
@@ -374,7 +393,15 @@ local exceptions =
 	{
 		["original"] = "epaulets",
 		["corrected"] = "epaulet",
-	}
+	},
+	{
+		["original"] = "rings",
+		["corrected"] = "ring",
+	},
+	{
+		["original"] = "necklaces",
+		["corrected"] = "necklace",
+	},
 }
 
 
@@ -655,7 +682,8 @@ function WritCreater.langWritRewardBoxes () return {
 	[CRAFTING_TYPE_BLACKSMITHING] = "Blacksmith's Crate",
 	[CRAFTING_TYPE_CLOTHIER] = "Clothier's Satchel",
 	[CRAFTING_TYPE_WOODWORKING] = "Woodworker's Case",
-	[7] = "Shipment",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry Crafter's Coffer",
+	[8] = "Shipment",
 }
 end
 

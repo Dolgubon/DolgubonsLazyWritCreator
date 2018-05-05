@@ -109,7 +109,7 @@ function WritCreater.Options() --Sentimental
 			type = "divider",
 			height = 15,
 			alpha = 0.5,
-			width = "full"
+			width = "full",
 		},
 		{
 			type = "checkbox",

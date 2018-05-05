@@ -17,7 +17,8 @@
 
 --local d = function() for i = 1, #abc do end end
 --test
-
+local d= function() end
+CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
 --DolgubonsWritsBackdropQuestOutput.SetText = function()end
 if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
 
@@ -44,6 +45,7 @@ WritCreater.default =
 	[4]	= true,
 	[5]	= true,
 	[6]	= true,
+	[7] = true,
 	["delay"] = 100,
 	["shouldGrab"] = true,
 	["OffsetX"] = 1150,
@@ -62,6 +64,7 @@ WritCreater.default =
 }
 
 WritCreater.defaultAccountWide = {
+	["notifyWiped"] = true,
 	["accountWideProfile"] = WritCreater.default,
 	["masterWrits"] = true,
 	["identifier"] = math.random(1000),
@@ -166,6 +169,8 @@ WritCreater.defaultAccountWide = {
 			["repair"] = 0,
 			["master"] = 0,
 		},
+		[CRAFTING_TYPE_JEWELRYCRAFTING] =
+		{["num"] = 0},
 	},
 }
 WritCreater.settings["panel"] =  
@@ -216,6 +221,14 @@ local indexRanges = { --the first tier is index 1-7, second is material index 8-
 	[18] = 32,
 	[19] = 34,
 	[20] = 40,
+}
+local jewelryIndexRanges =
+{
+	[1] = 1,
+	[2] = 13,
+	[3] = 26,
+	[4] = 33,
+	[5] = 40,
 }
 
 local backdrop = DolgubonsWrits
@@ -547,14 +560,13 @@ local function craftNextQueueItem(calledFromCrafting)
 	if (not IsPerformingCraftProcess()) and (craftingWrits or WritCreater:GetSettings().autoCraft ) then
 
 		if queue[1] then
-			
+
 			if queue[1](true) then
 
 				closeOnce = true
 
 				out(getOut().."\n"..WritCreater.strings.crafting)
 				table.remove(queue, 1)
-
 			end
 		else
 			writCompleteUIHandle()			
@@ -640,8 +652,12 @@ crafting = function(info,quest, craftItems)
 	local conditions  = setupConditionsTable(quest, info)
 
 	for i,value in pairs(conditions["text"]) do
-
-		local pattern, index = conditions["pattern"][i], indexRanges[conditions["mats"][i]]
+		local pattern, index
+		if GetCraftingInteractionType() == CRAFTING_TYPE_JEWELRYCRAFTING then
+			pattern, index = conditions["pattern"][i], jewelryIndexRanges[conditions["mats"][i]]
+		else
+			pattern, index = conditions["pattern"][i], indexRanges[conditions["mats"][i]]
+		end
 
 		if pattern and index then
 
@@ -649,13 +665,10 @@ crafting = function(info,quest, craftItems)
 			--_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
 			_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index) --WritCreater.LLCInteraction.GetMatRequirements(pattern, index)
 			local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
-			
 			if not doesCharHaveSkill(pattern, index,1) then
 				out(WritCreater.strings.notEnoughSkill)
 				return
 			else
-				if style == -1 then out(WritCreater.strings.moreStyle) return false end
-				
 				local needed = conditions["max"][i] - conditions["cur"][i]
 				for s = 1, needed do
 					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], index, 0)
@@ -664,17 +677,21 @@ crafting = function(info,quest, craftItems)
 					--d("queueing "..info["pieces"][conditions["pattern"][i]].." "..info["match"][conditions["mats"][i]])
 					--d(conditions["pattern"][i] ,indexRanges[conditions["mats"][i]],numMats,style,1)
 					--d("initial check"..(not IsPerformingCraftProcess()))
-					
 					queue[#queue + 1]= 
 					function(changeRequired)
+
+						local station = GetCraftingInteractionType()
+						if station == 0 then return end
 						matSaver = matSaver + 1
 						local _,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
 						local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
 						if numMats<=curMats then 
 							local style = maxStyle(pattern)
-							if style == -1 then out(WritCreater.strings.moreStyle) return false end
-							if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
-							if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
+							if station ~= CRAFTING_TYPE_JEWELRYCRAFTING then
+								if style == -1 then out(WritCreater.strings.moreStyle) return false end
+								if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
+								if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
+							end
 							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 1, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType())
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
@@ -902,7 +919,7 @@ local function writSearch()
 		local Qname=GetJournalQuestName(i)
 		Qname=WritCreater.questExceptions(Qname)
 		if (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING or string.find(Qname, WritCreater.writNames["G"])) and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY then
-			for j = 1, 6 do 
+			for j = 1, 7 do 
 				if string.find(myLower(Qname),myLower(WritCreater.writNames[j])) then
 					W[j] = i
 				end
@@ -917,7 +934,7 @@ local tutorial1 = function () end
 
 local function temporarycraftcheckerjustbecause(eventcode, station)
 	
-	local currentAPIVersionOfAddon = 100022
+	local currentAPIVersionOfAddon = 100023
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		for i= 1, 1 do 
@@ -925,7 +942,7 @@ local function temporarycraftcheckerjustbecause(eventcode, station)
 		end 
 	end
 
-	if GetAPIVersion() > currentAPIVersionOfAddon+1 and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
+	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
 		for i = 1 , 20 do 
 			d("Set a reminder to change the API version of addon in function temporarycraftcheckerjustbecause when the game update comes out.") 
 		end
@@ -1048,7 +1065,14 @@ local function initializeOtherStuff()
 
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function() if  newlyLoaded then  newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end end )
-	
+	if WritCreater.savedVarsAccountWide.notifyWiped then 
+	EVENT_MANAGER:RegisterForEvent("WipedSettingsNotifyWritCreater", EVENT_PLAYER_ACTIVATED, function() 
+		 
+			d("Dolgubon's Lazy Writ Crafter settings have been wiped with this update.") 
+			WritCreater.savedVarsAccountWide.notifyWiped = false
+			EVENT_MANAGER:UnregisterForEvent("WipedSettingsNotifyWritCreater", EVENT_PLAYER_ACTIVATED)
+		end)
+	end
 	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, 
 		--function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
 end
@@ -1061,6 +1085,7 @@ local function initializeLibraries()
 	
 	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(event, ...)
 	if event == LLC_CRAFT_SUCCESS then  WritCreater.masterWritCompletion(event, ...)end end)
+
 
 	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, ...)
 	if event == LLC_CRAFT_SUCCESS then  WritCreater.writItemCompletion(event, ...) end end)

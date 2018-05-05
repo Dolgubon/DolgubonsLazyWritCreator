@@ -21,7 +21,6 @@ local wm = WINDOW_MANAGER
 local cm = CALLBACK_MANAGER
 
 local function RefreshPanel(control)
-    --d("Refreshing panel")
     local panel = LAM.util.GetTopPanel(control) --callback can be fired by a single control, by the panel showing or by a nested submenu
     local panelControls = panel.controlsToRefresh
 

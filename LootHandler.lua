@@ -33,7 +33,6 @@ WritCreater.toVoucherCount = toVoucherCount
 local function saveStats(loot, boxType, boxRank)
 	local vars = WritCreater.savedVarsAccountWide -- shortcut
 	local location = boxType
-	d(boxType)
 
 	vars = vars["rewards"][location]
 	if vars["level"] > boxRank then -- If it's a higher level of writ, then wipe all the old saved data
@@ -47,8 +46,6 @@ local function saveStats(loot, boxType, boxRank)
 		WritCreater.savedVarsAccountWide["skipped"] = WritCreater.savedVarsAccountWide["skipped"] + 1
 		return
 	end
-	
-	d(location)
 
 	WritCreater.savedVarsAccountWide["rewards"][location] = vars
 end
@@ -189,16 +186,19 @@ local function OnLootUpdated(event)
 		autoLoot = GetSetting(SETTING_TYPE_LOOT,LOOT_SETTING_AUTO_LOOT) == "1"
 	end
 	if calledFromQuest then autoLoot = true end
+
 	if autoLoot then
 		local lootInfo = {GetLootTargetInfo()}
 		local writRewardNames = WritCreater.langWritRewardBoxes ()
 		for i = 1, #writRewardNames  do
+
 			local a, b = string.find(lootInfo[1], writRewardNames[i])
+
 			if a then
 
-				if i == 7 then 
+				if i == 8 then 
 					local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
-					if not (itemType == 36 or itemType == 38 or itemType == 40) then
+					if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
 						return
 					end
 				end
@@ -267,7 +267,7 @@ local function prepareToInteract()
 	local _, interact = GetGameCameraInteractableActionInfo()
 	if interact then
 		local names =WritCreater.langWritNames()
-		for i = 1, 6 do
+		for i = 1, 7 do
 			if string.find(interact, names[i]) then
 				return true
 			end
