@@ -394,11 +394,11 @@ local exceptions =
 		["original"] = "epaulets",
 		["corrected"] = "epaulet",
 	},
-	{
+	[8] = {
 		["original"] = "rings",
 		["corrected"] = "ring",
 	},
-	{
+	[9] = {
 		["original"] = "necklaces",
 		["corrected"] = "necklace",
 	},
