@@ -20,7 +20,7 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 	local writs = WritCreater.writSearch()
 	if not GetJournalQuestIsComplete(journalIndex) then return end
 	local currentWritDialogue 
-	for i = 1, 6 do
+	for i = 1, 7 do
 		if writs[i] == journalIndex then -- determine which type of writ it is
 			
 			currentWritDialogue= i
@@ -36,6 +36,7 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 	end
 	EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG)
 	if not currentWritDialogue then return end
+	
 	-- Increment the number of writs complete number
 	WritCreater.savedVarsAccountWide["rewards"][currentWritDialogue]["num"] = WritCreater.savedVarsAccountWide["rewards"][currentWritDialogue]["num"] + 1
 	WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] + 1
@@ -60,7 +61,7 @@ end
 local function isQuestTypeActive(optionString)
 	optionString = string.gsub(optionString, "couture","tailleur")
 
-	for i = 1, 6 do
+	for i = 1, 7 do
 
 		if string.find(string.lower(optionString), string.lower(WritCreater.writNames[i])) and (WritCreater:GetSettings()[i] or WritCreater:GetSettings()[i]==nil) then 
 			return true

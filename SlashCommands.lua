@@ -180,7 +180,7 @@ end
 -- Abandons all writs
 
 local function abandonWrits()
-	local a = WritCreater.writSearch d("Abandon Ship!!!") for i = 1, 6 do AbandonQuest(a[i]) end
+	local a = WritCreater.writSearch() d("Abandon Ship!!!") for i = 1, 7 do AbandonQuest(a[i]) end
 end
 
 -- Outputs the indexes of all the writs the user has. This is another debug function. It has not been used in a while, but 
@@ -190,7 +190,7 @@ end
 local function findWrits(params)
 	local locations = WritCreater.writSearch()
 	for key, index in pairs(locations) do
-		d(GetJournalQuestName(index).." has hournal index : "..index)
+		d(GetJournalQuestName(index).." has journal index : "..index)
 	end
 end--]]
 

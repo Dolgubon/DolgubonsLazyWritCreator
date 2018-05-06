@@ -1,4 +1,5 @@
 # DolgubonsLazyWritCreator
+Optional, because let's face it, you're not going to read this
 
 Dolgubon's Lazy Writ Crafter is an addon for the Elder Scrolls Online (ESO). 
 The main purpose is to automate Crafting Writs, which are a daily quest in ESO.
