@@ -83,10 +83,12 @@ end
 
 local function lootOutput(itemLink, itemType)
 	if WritCreater:GetSettings().lootOutput then
+		local amountBag, amountBank, amountCraft = GetItemLinkStacks( itemLink)
+		local amount = amountCraft + amountBank + amountBag + 1
 		if itemType then 
 			d(zo_strformat( WritCreater.strings.lootReceived.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink))
 		else
-			d(zo_strformat( WritCreater.strings.lootReceived, itemLink))
+			d(zo_strformat( WritCreater.strings.lootReceived.." (You have ".. amount.. ")", itemLink))
 		end
 		
 		
@@ -267,7 +269,7 @@ local function prepareToInteract()
 	local _, interact = GetGameCameraInteractableActionInfo()
 	if interact then
 		local names =WritCreater.langWritNames()
-		for i = 1, 7 do
+		for i = 1, #WritCreater.langWritNames() do
 			if string.find(interact, names[i]) then
 				return true
 			end

@@ -19,6 +19,7 @@ function WritCreater.langWritNames() --Exacts!!!  I know for german alchemy writ
 	[CRAFTING_TYPE_PROVISIONING] = "cuisine",
 	[CRAFTING_TYPE_WOODWORKING] = "bois",
 	[CRAFTING_TYPE_ALCHEMY] = "d'alchimie",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "joaillerie",
 	}
 	return names
 end
@@ -31,6 +32,7 @@ function WritCreater.writCompleteStrings()
 	["masterSign"] = "<Finir le travail.>",
 	["masterPlace"] = "J'ai accompli la t",
 	["Rolis Hlaalu"] = "Rolis Hlaalu",
+	["Deliver"] = "Livrez",
 	}
 	return strings
 end
@@ -206,6 +208,24 @@ local craftInfo =
 				[9] = "Sanded Nightwood",
 				[10]= "Sanded Ruby Ash",
 			}
+		},
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = 
+		{
+			["pieces"] = --Exact!!!
+			{
+				[1] = "anneau",
+				[2] = "collier",
+
+			},
+			["match"] = --exact!!! This is not the material, but rather the prefix the material gives to equipment. e.g. Maple Bow. Oak Bow.
+			{
+				[1] = "étain", -- 1
+				[2] = "cuivre", -- 26
+				[3] = "argent", -- CP10
+				[4] = "électrum", --CP80
+				[5] = "platine", -- CP150
+			},
+
 		},
 		[CRAFTING_TYPE_ENCHANTING] = 
 		{
@@ -488,31 +508,34 @@ local function runeMissingFunction (ta,essence,potency)
 
 end
 
+WritCreater.strings = WritCreater.strings or {}
 
-WritCreater.strings  = {
-	["runeReq"] 						= function (essence, potency) return zo_strformat("|c2dff00L'artisanat requiert 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 et 1 |c0066ff<<2>>|r",essence ,potency) end,
-	["runeMissing"]						= runeMissingFunction,
-	["notEnoughSkill"]					= "Votre compétence d’artisanat n’est pas assez élevée pour fabriquer l’équipement requis",
-	["smithingMissing"] 				= "\n|cf60000Vous n'avez pas assez de matériaux|r",
-	["craftAnyway"] 					= "Crafter quand même",
-	["smithingEnough"] 					= "\n|c2dff00Vous avez suffisamment de matériaux|r",
-	["craft"] 							= "|c00ff00Fabriquer|r",
-	["complete"] 						= "|c00FF00Commande réalisée.|r",
-	["craftingstopped"] 				= "Crat interrompu. Veuillez vérifier que l'addon a crafté le bon objet.",
-	["crafting"] 						= "|c00ff00Fabrication ...|r",
-	["craftIncomplete"] 				= "|cf60000La fabrication ne peux être réalisée.\nMatériaux insuffisants.|r",
-	["moreStyle"] 						= "|cf60000Vous n'avez aucune pierre de style utilisable de définie|r",
-	["moreStyleSettings"]				= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r",
-	["moreStyleKnowledge"]				= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r",
-	["smithingReqM"] 					= function (amount, type, more) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|cf60000Vous en avez besoin de <<3>>|r)"    ,amount, type, more) end,
-	["smithingReqM2"] 					= function (amount,type,more)     return zo_strformat( "\nMais aussi <<1>> <<2>> (|cf60000Vous en avez besoin de <<3>>|r)" ,amount, type, more) end,
-	["smithingReq"] 					= function (amount,type, current) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|c2dff00<<3>> disponible|r)"  ,amount, type, current) end,
-	["smithingReq2"] 					= function (amount,type, current) return zo_strformat( "\nMais aussi <<1>> <<2>> (|c2dff00<<3>> disponible|r)" ,amount, type, current) end,
-	["dailyreset"] 						= function (till) d(zo_strformat("<<1>> heures et <<2>> minutes avant le reset journalier.",till["hour"],till["minute"])) end,
-	["lootReceived"]					= "<<1>> a été reçu",
-	["countSurveys"]					= "Vous avez <<1>> repérages",
-	["countVouchers"]					= "Vous avez <<1>> Coupons de Commande non-acquis",
-}
+WritCreater.strings["runeReq"] 						= function (essence, potency) return zo_strformat("|c2dff00L'artisanat requiert 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 et 1 |c0066ff<<2>>|r",essence ,potency) end
+WritCreater.strings["runeMissing"]						= runeMissingFunction
+WritCreater.strings["notEnoughSkill"]					= "Votre compétence d’artisanat n’est pas assez élevée pour fabriquer l’équipement requis"
+WritCreater.strings["smithingMissing"] 				= "\n|cf60000Vous n'avez pas assez de matériaux|r"
+WritCreater.strings["craftAnyway"] 					= "Crafter quand même"
+WritCreater.strings["smithingEnough"] 					= "\n|c2dff00Vous avez suffisamment de matériaux|r"
+WritCreater.strings["craft"] 							= "|c00ff00Fabriquer|r"
+WritCreater.strings["complete"] 						= "|c00FF00Commande réalisée.|r"
+WritCreater.strings["craftingstopped"] 				= "Crat interrompu. Veuillez vérifier que l'addon a crafté le bon objet."
+WritCreater.strings["crafting"] 						= "|c00ff00Fabrication ...|r"
+WritCreater.strings["craftIncomplete"] 				= "|cf60000La fabrication ne peux être réalisée.\nMatériaux insuffisants.|r"
+WritCreater.strings["moreStyle"] 						= "|cf60000Vous n'avez aucune pierre de style utilisable de définie|r"
+WritCreater.strings["moreStyleSettings"]				= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r"
+WritCreater.strings["moreStyleKnowledge"]				= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r"
+WritCreater.strings["smithingReqM"] 					= function (amount, type, more) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|cf60000Vous en avez besoin de <<3>>|r)"    ,amount, type, more) end
+WritCreater.strings["smithingReqM2"] 					= function (amount,type,more)     return zo_strformat( "\nMais aussi <<1>> <<2>> (|cf60000Vous en avez besoin de <<3>>|r)" ,amount, type, more) end
+WritCreater.strings["smithingReq"] 					= function (amount,type, current) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|c2dff00<<3>> disponible|r)"  ,amount, type, current) end
+WritCreater.strings["smithingReq2"] 					= function (amount,type, current) return zo_strformat( "\nMais aussi <<1>> <<2>> (|c2dff00<<3>> disponible|r)" ,amount, type, current) end
+WritCreater.strings["dailyreset"] 						= function (till) d(zo_strformat("<<1>> heures et <<2>> minutes avant le reset journalier.",till["hour"],till["minute"])) end
+WritCreater.strings["lootReceived"]					= "<<1>> a été reçu"
+WritCreater.strings["countSurveys"]					= "Vous avez <<1>> repérages"
+WritCreater.strings["countVouchers"]					= "Vous avez <<1>> Coupons de Commande non-acquis"
+WritCreater.strings["includesStorage"]				= "Le total inclus <<1>> qui sont dans les coffres de domicile"
+WritCreater.strings["surveys"]						= "Crafting Surveys"
+WritCreater.strings["sealedWrits"]					= "Sealed Writs"
+
 
 
 local DivineMats =
@@ -545,6 +568,12 @@ end
 
 
 WritCreater.optionStrings = WritCreater.optionStrings or {}
+
+DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "Vous modifier le réglage de %s"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Configuration Globale"
+DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = " Configuration Specifique par personnage"
+
+
 WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses <<2>> to be used for crafting",styleName) end 
 WritCreater.optionStrings["show craft window"]                        = "Afficher la fenêtre de craft"
 WritCreater.optionStrings["show craft window tooltip"]                = "Afficher la fenêtre de craft automatique lorsque la station d'artisanat est ouverte"
@@ -562,7 +591,8 @@ WritCreater.optionStrings["provisioning"]                             = "Cuisine
 WritCreater.optionStrings["provisioning tooltip"]                     = "Activer l'addon à la table cuisine"
 WritCreater.optionStrings["woodworking"]                              = "Travail du Bois"
 WritCreater.optionStrings["woodworking tooltip"]                      = "Activer l'addon pour le travail du bois"
-
+WritCreater.optionStrings["jewelry crafting"]							= "Joaillerie"
+WritCreater.optionStrings["jewelry crafting tooltip"]					= "Activer l'addon pour Joaillerie"
 WritCreater.optionStrings["style stone menu"]                         = "Utilisation des matériaux de style"
 WritCreater.optionStrings["style stone menu tooltip"]                 = "Sélectionnez quelles pierres de style utiliser"
 WritCreater.optionStrings["exit when done"]							  = "Quitter l'atelier lorsque terminé"
@@ -590,10 +620,15 @@ WritCreater.optionStrings["writ grabbing tooltip"]						= "Prendre les matériau
 WritCreater.optionStrings["autoloot behaviour"]							= "Loot automatique"
 WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Sélectionner comment l'addon loote les conteneurs de récompense de quête"
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Paramètres du menu d'options Gameplay", "Loot automatique", "Ne pas looter"}
-WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
-WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
+WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Autoriser le style <<1>> , qui utilise <<2>> lors de la création",styleName) end 
+WritCreater.optionStrings["hide when done"]								= "Faire disparaitre lorsque terminé"
+WritCreater.optionStrings["hide when done tooltip"]						= "Faire disparaitre la fenêtre lorsque tous les items sont fabriqués"
 
-
+function WritCreater.langStationNames()
+	return
+	{["Atelier de forge"] = 1, ["Atelier de couture"] = 2, 
+	 ["Table d'enchantement"] = 3,["Établi d'alchimie"] = 4, ["Feu de cuisine"] = 5, ["Atelier de travail du bois"] = 6, ["Atelier de joaillerie"] = 7, }
+end
 
 function WritCreater.langWritRewardBoxes () return {
 	[1] = "Récipient d'alchimiste",

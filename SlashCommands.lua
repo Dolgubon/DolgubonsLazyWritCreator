@@ -50,6 +50,10 @@ local function determineSurveyType(bag, slot, names)
 	return 7
 end
 
+local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
+	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
+
+
 local function countSurveys()
 	local names = WritCreater.langWritNames()
 	if WritCreater.lang == "fr" then
@@ -68,16 +72,24 @@ local function countSurveys()
 		[CRAFTING_TYPE_ALCHEMY] = 0,
 		[7] = 0, -- This is for internal purposes, mainly to bypass if statements checking if a survey type was found. 
 	}
-    for j, bankNum in ipairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
+	local storageIncluded = false
+
+    for j, bankNum in ipairs(bags) do
         for i = 1, GetBagSize(bankNum) do
             local _,special =  GetItemType(bankNum, i)
             if special ==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
+            	if j > 3 then
+            		storageIncluded = true
+            	end
                 local _, count = GetItemInfo(bankNum,i)
                 total = total + count
                 local surveyType = determineSurveyType(bankNum, i, names)
                 detailedCount[surveyType] = detailedCount[surveyType] + count
             end
         end
+    end
+    if storageIncluded then
+    	d(WritCreater.strings.includesStorage)
     end
     d(zo_strformat(WritCreater.strings.countSurveys,total))
     for i = 1, 6 do
@@ -92,13 +104,20 @@ end
 local function countVouchers()
     local total= 0
     local i, j, bankNum
-    for j, bankNum in ipairs({BAG_BACKPACK, BAG_BANK, BAG_SUBSCRIBER_BANK}) do
+  
+    for j, bankNum in ipairs(bags) do
         for i = 1, GetBagSize(bankNum) do
             local itemType =  GetItemType(bankNum, i)
             if itemType == ITEMTYPE_MASTER_WRIT then
+            	if j > 3 then
+            		storageIncluded = true
+            	end
                 total = total + WritCreater.toVoucherCount(GetItemLink(bankNum, i))
             end
         end
+    end
+    if storageIncluded then
+    	d(WritCreater.strings.includesStorage)
     end
     d(zo_strformat(WritCreater.strings.countVouchers,total))
     

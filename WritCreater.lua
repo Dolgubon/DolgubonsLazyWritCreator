@@ -60,6 +60,8 @@ WritCreater.default =
 	["lootOutput"] = false,
 	["containerDelay"] = 1,
 	["hideWhenDone"] = false,
+	['changeReticle'] = true,
+	['reticleAntiSteal'] = true,
 	["useCharacterSettings"] = false
 }
 
@@ -919,7 +921,7 @@ local function writSearch()
 		local Qname=GetJournalQuestName(i)
 		Qname=WritCreater.questExceptions(Qname)
 		if (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING or string.find(Qname, WritCreater.writNames["G"])) and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY then
-			for j = 1, 7 do 
+			for j = 1, #WritCreater.writNames do 
 				if string.find(myLower(Qname),myLower(WritCreater.writNames[j])) then
 					W[j] = i
 				end
@@ -933,7 +935,7 @@ WritCreater.writSearch = writSearch
 local tutorial1 = function () end
 
 local function temporarycraftcheckerjustbecause(eventcode, station)
-	
+
 	local currentAPIVersionOfAddon = 100023
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
@@ -1102,10 +1104,12 @@ local function initializeLocalization()
 		parser = WritCreater.langParser
 		WritCreater.parser = WritCreater.langParser
 	end
-
 end
 
+
+
 function WritCreater:Initialize()
+
 	DolgubonsWrits:SetHidden(true)
 	
 	initializeLocalization()

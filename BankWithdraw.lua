@@ -162,7 +162,7 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	specialDebug(validItemTypes )
 	questCondition = string.gsub(questCondition, " ", " ") -- First is a NO-BREAK SPACE, 2nd a SPACE, copied from Ayantir's BMR just in case
 	local potentialMatches = {}
-
+	local storageIncluded = false
 	local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 	for i = 1, #bags do

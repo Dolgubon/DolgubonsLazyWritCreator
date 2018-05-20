@@ -12,7 +12,7 @@
 
 <GuiXml>
 	<Controls>
-		<TopLevelControl movable="true" mouseEnabled="true" name="DolgubonsWritsFeedback" hidden="true">
+		<TopLevelControl movable="true" mouseEnabled="true" name="DolgubonsWritsFeedback" hidden="true" tier="HIGH">
 			 <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="5" />
       <Dimensions x="545" y="150" />
       <Controls>

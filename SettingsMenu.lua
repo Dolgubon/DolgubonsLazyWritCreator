@@ -10,16 +10,48 @@
 -- 
 -----------------------------------------------------------------------------------
 
-if WritCreater.lang ~= "none" then
+local checks = {}
+local validLanguages = 
+{
+	["en"]=true,["de"] = true,["fr"] = true,["jp"] = true, ["ru"] = false, ["zh"] = false, ["pl"] = false,
+}
+if false then
+EVENT_MANAGER:RegisterForEvent("WritCrafterLocalizationError", EVENT_PLAYER_ACTIVATED, function()
+
+	if not WritCreater.languageInfo then 
+
+		local language = GetCVar("language.2")
+		if validLanguages[language] == nil then
+			d("Dolgubon's Lazy Writ Crafter: Your language is not supported for this addon. If you are looking to translate the addon, check the lang/en.lua file for more instructions.")
+		elseif validLanguages[language] == false then
+			d("Dolgubon's Lazy Writ Crafter: The Localization file could not be loaded.")
+			d("Troubleshooting:")
+			d("1. Your language is supported by a patch for the Writ Crafter. Please make sure you have downloaded the appropriate patch")
+			d("2. Uninstall and then reinstall the Writ Crafter, and the patch")
+			d("3. If you still have issues, contact the author of the patch")
+		else
+			d("Dolgubon's Lazy Writ Crafter: The Localization file could not be loaded.")
+			d("Troubleshooting:")
+			d("1. Try to uninstall and then reinstall the addon")
+			d("2. If the error persists, contact @Dolgubon in-game or at tinyurl.com/WritCrafter")
+		end
+		
+	end
+	EVENT_MANAGER:UnregisterForEvent("WritCrafterLocalizationError", EVENT_PLAYER_ACTIVATED)
+end)
+
+end
 
 WritCreater.styleNames = {}
 
 for i = 1, GetNumValidItemStyles() do
+
 	local styleItemIndex = GetValidItemStyleId(i)
 	local  itemName = GetItemStyleName(styleItemIndex)
 	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
-
-	table.insert(WritCreater.styleNames,{styleItemIndex,itemName, styleItem})
+	if styleItemIndex ~=33 then
+		table.insert(WritCreater.styleNames,{styleItemIndex,itemName, styleItem})
+	end
 end
 
 function WritCreater:GetSettings()
@@ -77,13 +109,14 @@ local function styleCompiler()
 		}
 		submenuTable[#submenuTable + 1] = option
 	end
+	local imperial = table.remove(submenuTable, 34)
+	table.insert(submenuTable, 10, imperial)
 	return submenuTable
 end
 
 
 function WritCreater.Options() --Sentimental
 	
-
 	local options =  {
 		{
 			type = "header",
@@ -255,6 +288,15 @@ function WritCreater.Options() --Sentimental
 			WritCreater:GetSettings().lootOutput = value					
 			end,
 		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['reticleColour'],--"Master Writs",
+			tooltip = WritCreater.optionStrings['reticleColourTooltip'],--"Craft Master Writ Items",
+			getFunc = function() return  WritCreater:GetSettings().changeReticle end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().changeReticle = value
+			end,
+		},
 		
 	}
 	
@@ -288,6 +330,16 @@ function WritCreater.Options() --Sentimental
 		WritCreater:GetSettings()[CRAFTING_TYPE_WOODWORKING] = value 
 	  end,
 	},
+	{
+	  type = "checkbox",
+	  name = WritCreater.optionStrings["jewelry crafting"]    ,
+	  tooltip = WritCreater.optionStrings["jewelry crafting tooltip"],
+	  getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_JEWELRYCRAFTING] end,
+	  setFunc = function(value) 
+		WritCreater:GetSettings()[CRAFTING_TYPE_JEWELRYCRAFTING] = value 
+	  end,
+	},
+
 	{
 		type = "checkbox",
 		name = WritCreater.optionStrings["enchanting"],
@@ -384,8 +436,4 @@ function WritCreater.Options() --Sentimental
 
 
 	return options
-end
-
-else
-	d("Language not supported")
 end

@@ -18,7 +18,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 1.9
+local widgetVersion = 2.2
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -30,10 +30,17 @@ end
 
 local craftingQueue = LibLazyCrafting.craftingQueue
 
-local SetIndexes
+-- initialize data tables
+local dataTables = -- Might move all data tables over to this in the future
+{
+	["SetIndexes"] = {},
+	["materialItemIDs"] = {},
+}
+local SetIndexes = {}
+local materialItemIDs = {}
 
 local sortCraftQueue = LibLazyCrafting.sortCraftQueue
-SetIndexes ={}
+
 local abc = 1
 local improvementChances = {}
 
@@ -122,48 +129,48 @@ additionalRequirements = -- Seperated by station. The additional amount of mats 
 -- pattern as BS/CL/WW.
 local JEWELY_MAT_REQUIREMENT = {
 --mat                          char
---tier = { ring, necklace} -- level
-  [ 1] = {    2,        3} --     1 pewter
-, [ 2] = {    3,        5} --     4
-, [ 3] = {    4,        6} --     6
-, [ 4] = {    5,        8} --     8
-, [ 5] = {    6,        9} --    10
-, [ 6] = {    7,       11} --    12
-, [ 7] = {    8,       12} --    14
-, [ 8] = {    9,       14} --    16
-, [ 9] = {   10,       15} --    18
-, [10] = {   11,       17} --    20
-, [11] = {   12,       19} --    22
-, [12] = {   13,       20} --    24
-, [13] = {    3,        5} --    26 copper
-, [14] = {    4,        6} --    28
-, [15] = {    5,        8} --    30
-, [16] = {    6,        9} --    32
-, [17] = {    7,       11} --    34
-, [18] = {    8,       12} --    36
-, [19] = {    9,       14} --    38
-, [20] = {   10,       15} --    40
-, [21] = {   11,       17} --    42
-, [22] = {   12,       18} --    44
-, [23] = {   13,       20} --    46
-, [24] = {   14,       21} --    48
-, [25] = {   15,       23} --    50
-, [26] = {    4,        6} --  CP10 silver
-, [27] = {    6,        9} --  CP20
-, [28] = {    8,       12} --  CP30
-, [29] = {   10,       15} --  CP40
-, [30] = {   12,       18} --  CP50
-, [31] = {   14,       21} --  CP60
-, [32] = {   16,       24} --  CP70
-, [33] = {    6,        8} --  CP80 electrum
-, [34] = {    8,       12} --  CP90
-, [35] = {   10,       16} -- CP100
-, [36] = {   12,       20} -- CP110
-, [37] = {   14,       24} -- CP120
-, [38] = {   16,       28} -- CP130
-, [39] = {   18,       32} -- CP140
-, [40] = {   10,       15} -- CP150 platinum
-, [41] = {  100,      150} -- CP160
+--tier = { ring, necklace,  material tier} -- level
+  [ 1] = {    2,        3,				1} --     1 pewter
+, [ 2] = {    3,        5,				1} --     4
+, [ 3] = {    4,        6,				1} --     6
+, [ 4] = {    5,        8,				1} --     8
+, [ 5] = {    6,        9,				1} --    10
+, [ 6] = {    7,       11,				1} --    12
+, [ 7] = {    8,       12,				1} --    14
+, [ 8] = {    9,       14,				1} --    16
+, [ 9] = {   10,       15,				1} --    18
+, [10] = {   11,       17,				1} --    20
+, [11] = {   12,       19,				1} --    22
+, [12] = {   13,       20,				1} --    24
+, [13] = {    3,        5,				2} --    26 copper
+, [14] = {    4,        6,				2} --    28
+, [15] = {    5,        8,				2} --    30
+, [16] = {    6,        9,				2} --    32
+, [17] = {    7,       11,				2} --    34
+, [18] = {    8,       12,				2} --    36
+, [19] = {    9,       14,				2} --    38
+, [20] = {   10,       15,				2} --    40
+, [21] = {   11,       17,				2} --    42
+, [22] = {   12,       18,				2} --    44
+, [23] = {   13,       20,				2} --    46
+, [24] = {   14,       21,				2} --    48
+, [25] = {   15,       23,				2} --    50
+, [26] = {    4,        6,				3} --  CP10 silver
+, [27] = {    6,        9,				3} --  CP20
+, [28] = {    8,       12,				3} --  CP30
+, [29] = {   10,       15,				3} --  CP40
+, [30] = {   12,       18,				3} --  CP50
+, [31] = {   14,       21,				3} --  CP60
+, [32] = {   16,       24,				3} --  CP70
+, [33] = {    6,        8,				4} --  CP80 electrum
+, [34] = {    8,       12,				4} --  CP90
+, [35] = {   10,       16,				4} -- CP100
+, [36] = {   12,       20,				4} -- CP110
+, [37] = {   14,       24,				4} -- CP120
+, [38] = {   16,       28,				4} -- CP130
+, [39] = {   18,       32,				4} -- CP140
+, [40] = {   10,       15,				5} -- CP150 platinum
+, [41] = {  100,      150,				5} -- CP160
 }
 
 local currentStep = 1
@@ -190,7 +197,7 @@ function enoughMaterials(craftRequestTable)
 	}
 	local missingSomething = false
 
-	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0 then
+	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0 and craftRequestTable['station']~= CRAFTING_TYPE_JEWELRYCRAFTING then
 			missing.materials["style"] = true
 			missingSomething = true
 	end
@@ -215,11 +222,54 @@ function enoughMaterials(craftRequestTable)
 	end
 end
 
--- ZZ Jewelry Patterns for GetSmithingPatternInfo(n)
--- 1  plain ring
--- 2  plain necklace
--- 3  set bonus ring
--- 4  set bonus necklace
+local function findMatTierByIndex(index)
+	local a = {	[1] = 7,
+	[2] = 12,
+	[3] = 17,
+	[4] = 22,
+	[5] = 25,
+	[6] = 28,
+	[7] = 29,
+	[8] = 32,
+	[9] = 39,
+	[10] = 41,}
+	for i = 1, #a do
+		if index  > a[i] then
+		else
+
+			return i
+		end
+	end
+	return 10
+end
+
+
+local function getCraftLevel(station)
+	local SkillTextures = 
+	{
+		[CRAFTING_TYPE_BLACKSMITHING] = "/esoui/art/icons/ability_smith_007.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
+		[CRAFTING_TYPE_CLOTHIER] = "/esoui/art/icons/ability_tradecraft_008.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
+		[CRAFTING_TYPE_WOODWORKING] = "/esoui/art/icons/ability_tradecraft_009.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = "/esoui/art/icons/passive_jewelerengraver.dds" -- jw, platings expertise /esoui/art/icons/passive_platingexpertise.dds
+	}
+	local skillType, skillIndex = GetCraftingSkillLineIndices(station)
+	local abilityIndex = nil
+	for i = 1, GetNumSkillAbilities(skillType, skillIndex) do
+		local _, texture = GetSkillAbilityInfo(skillType, skillIndex, i)
+		if texture == SkillTextures[station] then
+			abilityIndex = i
+		end
+	end
+	if abilityIndex then
+
+		local currentSkill, maxSkill = GetSkillAbilityUpgradeInfo(skillType,skillIndex,abilityIndex)
+
+		return currentSkill , maxSkill
+	else
+		return 0,1
+	end
+end
+
 
 function canCraftItem(craftRequestTable)
 	local missing =
@@ -238,24 +288,40 @@ function canCraftItem(craftRequestTable)
 
 	local _,_,_,_,traitsRequired, traitsKnown = GetSmithingPatternInfo(craftRequestTable["pattern"] + setPatternOffset[craftRequestTable["station"]])
 
-	if traitsRequired<= traitsKnown then
+	local level, max =  getCraftLevel(craftRequestTable['station'])
+	-- check if level is high enough
+	local matIndex
+	if craftRequestTable['station'] == CRAFTING_TYPE_JEWELRYCRAFTING then
+		matIndex = JEWELY_MAT_REQUIREMENT[craftRequestTable['materialIndex']][3]
+	else
+		matIndex = findMatTierByIndex(craftRequestTable['materialIndex'])
+	end
+	
+	if level >= matIndex then
+		
+	
 
-		-- Check if the specific trait is known
-		if IsSmithingTraitKnownForResult(craftRequestTable["pattern"], craftRequestTable["materialIndex"], craftRequestTable["materialQuantity"],craftRequestTable["style"], craftRequestTable["trait"]) then
-			-- Check if the style is known for that piece
-			if (craftRequestTable["station"] == CRAFTING_TYPE_JEWELRYCRAFTING) or IsSmithingStyleKnown(craftRequestTable["style"], craftRequestTable["pattern"]) then
-				return true
+		if traitsRequired<= traitsKnown then
+
+			-- Check if the specific trait is known
+			if IsSmithingTraitKnownForResult(craftRequestTable["pattern"], craftRequestTable["materialIndex"], craftRequestTable["materialQuantity"],craftRequestTable["style"], craftRequestTable["trait"]) then
+				-- Check if the style is known for that piece
+				if (craftRequestTable["station"] == CRAFTING_TYPE_JEWELRYCRAFTING) or IsSmithingStyleKnown(craftRequestTable["style"], craftRequestTable["pattern"]) then
+					return true
+				else
+
+					missing.knowledge["style"] = true
+				end
+
 			else
 
-				missing.knowledge["style"] = true
+				missing.knowledge["trait"] = true
 			end
-
 		else
-
-			missing.knowledge["trait"] = true
+			missing.knowledge["traitNumber"] = true
 		end
 	else
-		missing.knowledge["traitNumber"] = true
+		missing['craftSkill'] = true
 	end
 
 	return false, missing
@@ -354,26 +420,7 @@ local function findMatIndex(level, champion)
 	return index
 end
 
-local function findMatTierByIndex(index)
-	local a = {	[1] = 7,
-	[2] = 12,
-	[3] = 17,
-	[4] = 22,
-	[5] = 25,
-	[6] = 28,
-	[7] = 29,
-	[8] = 32,
-	[9] = 39,
-	[10] = 41,}
-	for i = 1, #a do
-		if index  > a[i] then
-		else
 
-			return i
-		end
-	end
-	return 10
-end
 
 
 local function GetMatRequirements(pattern, index, station)
@@ -404,12 +451,12 @@ end
 LibLazyCrafting.functionTable.GetMatRequirements = GetMatRequirements
 
 local function getImprovementLevel(station)
-	local SKILL_INDEX = 
+	local SkillTextures = 
 	{
-		[CRAFTING_TYPE_BLACKSMITHING] = "esoui/art/icons/ability_smith_004.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
-		[CRAFTING_TYPE_CLOTHIER] = "esoui/art/icons/ability_tradecraft_004.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
-		[CRAFTING_TYPE_WOODWORKING] = "esoui/art/icons/ability_tradecraft_001.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
-		--[CRAFTING_TYPE_JEWELRYCRAFTING] = {5,5} -- jw, platings expertise Jewelry is currently using WW textures
+		[CRAFTING_TYPE_BLACKSMITHING] = "/esoui/art/icons/ability_smith_004.dds", -- bs, temper expertise esoui/art/icons/ability_smith_004.dds
+		[CRAFTING_TYPE_CLOTHIER] = "/esoui/art/icons/ability_tradecraft_004.dds", -- cl, tannin expertise esoui/art/icons/ability_tradecraft_004.dds
+		[CRAFTING_TYPE_WOODWORKING] = "/esoui/art/icons/ability_tradecraft_001.dds", -- ww, rosin experise esoui/art/icons/ability_tradecraft_001.dds
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = "/esoui/art/icons/passive_platingexpertise.dds" -- jw, platings expertise /esoui/art/icons/passive_platingexpertise.dds
 	}
 	local skillType, skillIndex = GetCraftingSkillLineIndices(station)
 	local abilityIndex = nil
@@ -425,7 +472,7 @@ local function getImprovementLevel(station)
 
 		return currentSkill , maxSkill
 	else
-		return 3,3
+		return 0,1
 	end
 end
 
@@ -522,6 +569,7 @@ end
 LibLazyCrafting.functionTable.isSmithingLevelValid = isValidLevel
 
 local function LLC_CraftSmithingItemByLevel(self, patternIndex, isCP , level, styleIndex, traitIndex, useUniversalStyleItem, stationOverride, setIndex, quality, autocraft, reference)
+
 	if isValidLevel( isCP ,level) then
 		local materialIndex = findMatIndex(level, isCP)
 
@@ -1028,6 +1076,14 @@ local materialItemIDs =
 		46142,
 		64502,
 	},
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = 
+	{
+		135138,
+		135140,
+		135142,
+		135144,
+		135146,
+	}
 }
 
 -- Improvement mats
@@ -1056,14 +1112,6 @@ local improvementChances =
 	[3] = {2,3,4,8},
 }
 
-local abilityTextures =
-{
-	[1] = "/esoui/art/icons/ability_smith_004.dds",
-	[2] = "/esoui/art/icons/ability_tradecraft_004.dds",
-	[6] = "/esoui/art/icons/ability_tradecraft_001.dds",
-}
-
-
 local function compileImprovementRequirements(request, station)
 	local requirements = {}
 	local currentQuality = GetItemQuality(request.ItemBagID, request.ItemSlotID)
@@ -1083,9 +1131,18 @@ function compileRequirements(request, station)-- Ingot/style mat/trait mat/impro
 		if station == CRAFTING_TYPE_CLOTHIER and request.pattern > 8 then
 			matId = materialItemIDs[3][findMatTierByIndex(request.materialIndex)]
 		end
+		if station == CRAFTING_TYPE_JEWELRYCRAFTING then
+			local matindex = JEWELY_MAT_REQUIREMENT[request.materialIndex][3]
+			matId = materialItemIDs[station][matindex]
+		end
 		requirements[matId] = request.materialQuantity
-
-		requirements[ GetItemLinkItemId( GetItemStyleMaterialLink(request.style , 0))] = 1
+		if station ~= 7 then
+			if request.useUniversalStyleItem then
+				requirements[ 71668] = 1 -- mimic stone ID
+			else
+				requirements[ GetItemLinkItemId( GetItemStyleMaterialLink(request.style , 0))] = 1
+			end
+		end
 
 		local traitLink = GetSmithingTraitItemLink(request.trait, 0)
 		if traitLink~="" then

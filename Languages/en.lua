@@ -18,7 +18,7 @@
 --
 -- If you ARE looking to translate this to something else then anything with a comment of Vital beside it is 
 -- REQUIRED for the addon to function properly. These strings MUST BE TRANSLATED EXACTLY!
--- If only going for functionality, ctrl+f for Vital. Otherwise, you should just translate everything.
+-- If only going for functionality, ctrl+f for Vital. Otherwise, you should just translate everything. Note that some strings 
 --
 -- For languages that do not use the Latin Alphabet, there is also an optional langParser() function. IF the language you are translating
 -- requires some changes to the WritCreater.parser() function then write the optional langParser() function here, and the addon
@@ -54,7 +54,6 @@ function WritCreater.langParser(str)  -- Optional overwrite function for languag
 
 end
 --]]
-
 
 local function proper(str)
 	if type(str)== "string" then
@@ -104,6 +103,7 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	["masterSign"] = "<Finish the job.>",
 	["masterStart"] = "<Accept the contract.>",
 	["Rolis Hlaalu"] = "Rolis Hlaalu", -- This is the same in most languages but ofc chinese and japanese
+	["Deliver"] = "Deliver",
 	}
 	return strings
 end
@@ -537,34 +537,6 @@ local function runeMissingFunction (ta,essence,potency)
 	return text
 end
 
-
---Various strings 
-WritCreater.strings = 
-{
-	["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end,
-	["runeMissing"] 				= runeMissingFunction ,
-	["notEnoughSkill"]				= "You do not have a high enough crafting skill to make the required equipment",
-	["smithingMissing"] 			= "\n|cf60000You do not have enough mats|r",
-	["craftAnyway"] 				= "Craft anyway",
-	["smithingEnough"] 				= "\n|c2dff00You have enough mats|r",
-	["craft"] 						= "|c00ff00Craft|r",
-	["crafting"] 					= "|c00ff00Crafting...|r",
-	["craftIncomplete"] 			= "|cf60000Crafting could not be completed.\nYou need more mats.|r",
-	["moreStyle"] 					= "|cf60000You do not have any usable style stones.\nCheck your inventory, achievements, and settings|r",
-	["moreStyleSettings"]			= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r",
-	["moreStyleKnowledge"]			= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r",
-	["dailyreset"] 					= dailyResetFunction,
-	["complete"] 					= "|c00FF00Writ complete.|r",
-	["craftingstopped"]				= "Crafting stopped. Please check to make sure the addon is crafting the correct item.",
-	["smithingReqM"] 				= function (amount, type, more) return zo_strformat( "Crafting will use <<1>> <<2>> (|cf60000You need <<3>>|r)" ,amount, type, more) end,
-	["smithingReqM2"] 				= function (amount,type,more)     return zo_strformat( "\nAs well as <<1>> <<2>> (|cf60000You need <<3>>|r)"          ,amount, type, more) end,
-	["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end,
-	["smithingReq2"] 				= function (amount,type, current) return zo_strformat( "\nAs well as <<1>> <<2>> (|c2dff00<<3>> available|r)"         ,amount, type, current) end,
-	["lootReceived"]				= "<<1>> was received",
-	["countSurveys"]				= "You have <<1>> surveys",
-	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
-}
-
 -- What is this??! This is just a fun 'easter egg' that is never activated on easter.
 -- Replaces mat names with a random DivineMats on Halloween, New Year's, and April Fools day. You don't need this many! :D
 -- Translate it or don't, completely up to you. But if you don't translate it, replace the body of 
@@ -608,69 +580,6 @@ if l then
 	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 end
 
-
---Options table Strings
-WritCreater.optionStrings = WritCreater.optionStrings or {}
-WritCreater.optionStrings.nowEditing                   = "You are changing %s settings"
-WritCreater.optionStrings.accountWide                  = "Account Wide"
-WritCreater.optionStrings.characterSpecific            = "Character Specific"
-WritCreater.optionStrings.useCharacterSettings         = "Use character settings" 
-WritCreater.optionStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
-
-
-WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 
-WritCreater.optionStrings["show craft window"]							= "Show Craft Window"
-WritCreater.optionStrings["show craft window tooltip"]					= "Shows the crafting window when a crafting station is open"
-WritCreater.optionStrings["autocraft"]									= "AutoCraft"
-WritCreater.optionStrings["autocraft tooltip"]							= "Selecting this will cause the addon to begin crafting immediately upon entering a crafting station. If the window is not shown, this will be on."
-WritCreater.optionStrings["blackmithing"]								= "Blacksmithing"
-WritCreater.optionStrings["blacksmithing tooltip"]						= "Turn the addon on for Blacksmithing"
-WritCreater.optionStrings["clothing"]									= "Clothing"
-WritCreater.optionStrings["clothing tooltip"]							= "Turn the addon on for Clothing"
-WritCreater.optionStrings["enchanting"]									= "Enchanting"
-WritCreater.optionStrings["enchanting tooltip"]							= "Turn the addon on for Enchanting"
-WritCreater.optionStrings["alchemy"]									= "Alchemy"
-WritCreater.optionStrings["alchemy tooltip"]							= "Turn the addon on for Alchemy (Bank Withdrawal only)"
-WritCreater.optionStrings["provisioning"]								= "Provisioning"
-WritCreater.optionStrings["provisioning tooltip"]						= "Turn the addon on for Provisioning (Bank Withdrawal only)"
-WritCreater.optionStrings["woodworking"]								= "Woodworking"
-WritCreater.optionStrings["woodworking tooltip"]						= "Turn the addon on for Woodworking"
-WritCreater.optionStrings["writ grabbing"]								= "Grab writ items"
-WritCreater.optionStrings["writ grabbing tooltip"]						= "Grab items required for writs (e.g. nirnroot, Ta, etc.) from the bank"
-WritCreater.optionStrings["delay"]										= "Item Grab Delay"
-WritCreater.optionStrings["delay tooltip"]								= "How long to wait before grabbing items from the bank (milliseconds)"
-WritCreater.optionStrings["style stone menu"]							= "Style Stones Used"
-WritCreater.optionStrings["style stone menu tooltip"]					= "Choose which style stones the addon will use"
-WritCreater.optionStrings["send data"]									= "Send Writ Data"
-WritCreater.optionStrings["send data tooltip"]							= "Send information on the rewards received from your writ boxes. No other information is sent."
-WritCreater.optionStrings["exit when done"]								= "Exit crafting window"
-WritCreater.optionStrings["exit when done tooltip"]						= "Exit crafting window when all crafting is completed"
-WritCreater.optionStrings["automatic complete"]							= "Automatic quest dialog"
-WritCreater.optionStrings["automatic complete tooltip"]					= "Automatically accepts and completes quests when at the required place"
-WritCreater.optionStrings["new container"]								= "Keep new status"
-WritCreater.optionStrings["new container tooltip"]						= "Keep the new status for writ reward containers"
-WritCreater.optionStrings["master"]										= "Master Writs"
-WritCreater.optionStrings["master tooltip"]								= "If this is ON the addon will craft Master Writs you have active"
-WritCreater.optionStrings["right click to craft"]						= "Right Click to Craft"
-WritCreater.optionStrings["right click to craft tooltip"]				= "If this is ON the addon will craft Master Writs you tell it to craft after right clicking a sealed writ"
-WritCreater.optionStrings["crafting submenu"]							= "Trades to Craft"
-WritCreater.optionStrings["crafting submenu tooltip"]					= "Turn the addon off for specific crafts"
-WritCreater.optionStrings["timesavers submenu"]							= "Timesavers"
-WritCreater.optionStrings["timesavers submenu tooltip"]					= "Various small timesavers"
-WritCreater.optionStrings["loot container"]								= "Loot container when received"
-WritCreater.optionStrings["loot container tooltip"]						= "Loot writ reward containers when you receive them"
-WritCreater.optionStrings["master writ saver"]							= "Save Master Writs"
-WritCreater.optionStrings["master writ saver tooltip"]					= "Prevents Master Writs from being accepted"
-WritCreater.optionStrings["loot output"]								= "Valuable Reward Alert"
-WritCreater.optionStrings["loot output tooltip"]						= "Output a message when valuable items are received from a writ"
-WritCreater.optionStrings["autoloot behaviour"]							= "Autoloot Behaviour" -- Note that the following three come early in the settings menu, but becuse they were changed
-WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Choose when the addon will autoloot writ reward containers" -- they are now down below (with untranslated stuff)
-WritCreater.optionStrings["autoloot behaviour choices"]					= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
-WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
-WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
-WritCreater.optionStrings["hide when done"]								= "Hide when done"
-WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon windonw when all items have been crafted"
-
 --Hide craft window when done
 --"Verstecke Fenster anschließend",
 -- [tooltip ] = "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
@@ -685,6 +594,12 @@ function WritCreater.langWritRewardBoxes () return {
 	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry Crafter's Coffer",
 	[8] = "Shipment",
 }
+end
+
+function WritCreater.langStationNames()
+	return
+	{["Blacksmithing Station"] = 1, ["Clothing Station"] = 2, 
+	 ["Enchanting Table"] = 3,["Alchemy Station"] = 4, ["Cooking Fire"] = 5, ["Woodworking Station"] = 6, ["Jewelry Crafting Station"] = 7, }
 end
 
 

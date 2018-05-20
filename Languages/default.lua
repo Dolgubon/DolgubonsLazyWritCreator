@@ -20,12 +20,43 @@ WritCreater.lang = "none"
 -- This is in the default, so that if a new setting is added an error is not thrown, 
 -- and the addon instead uses the English option strings for any that are missing.
 
+WritCreater.strings = 
+{
+	["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end,
+	["runeMissing"] 				= runeMissingFunction ,
+	["notEnoughSkill"]				= "You do not have a high enough crafting skill to make the required equipment",
+	["smithingMissing"] 			= "\n|cf60000You do not have enough mats|r",
+	["craftAnyway"] 				= "Craft anyway",
+	["smithingEnough"] 				= "\n|c2dff00You have enough mats|r",
+	["craft"] 						= "|c00ff00Craft|r",
+	["crafting"] 					= "|c00ff00Crafting...|r",
+	["craftIncomplete"] 			= "|cf60000Crafting could not be completed.\nYou need more mats.|r",
+	["moreStyle"] 					= "|cf60000You do not have any usable style stones.\nCheck your inventory, achievements, and settings|r",
+	["moreStyleSettings"]			= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r",
+	["moreStyleKnowledge"]			= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r",
+	["dailyreset"] 					= dailyResetFunction,
+	["complete"] 					= "|c00FF00Writ complete.|r",
+	["craftingstopped"]				= "Crafting stopped. Please check to make sure the addon is crafting the correct item.",
+	["smithingReqM"] 				= function (amount, type, more) return zo_strformat( "Crafting will use <<1>> <<2>> (|cf60000You need <<3>>|r)" ,amount, type, more) end,
+	["smithingReqM2"] 				= function (amount,type,more)     return zo_strformat( "\nAs well as <<1>> <<2>> (|cf60000You need <<3>>|r)"          ,amount, type, more) end,
+	["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end,
+	["smithingReq2"] 				= function (amount,type, current) return zo_strformat( "\nAs well as <<1>> <<2>> (|c2dff00<<3>> available|r)"         ,amount, type, current) end,
+	["lootReceived"]				= "<<1>> was received",
+	["countSurveys"]				= "You have <<1>> surveys",
+	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
+	["includesStorage"]				= "Count includes <<1>> in house storage",
+	["surveys"]						= "Crafting Surveys",
+	["sealedWrits"]					= "Sealed Writs",
+
+}
+
+
 WritCreater.optionStrings = {}
 WritCreater.optionStrings.nowEditing                   = "You are changing %s settings"
 WritCreater.optionStrings.accountWide                  = "Account Wide"
 WritCreater.optionStrings.characterSpecific            = "Character Specific"
-WritCreater.optionStrings.useCharacterSettings         = "Use character settings" 
-WritCreater.optionStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only"
+WritCreater.optionStrings.useCharacterSettings         = "Use character settings" -- de
+WritCreater.optionStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only" --de
 WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 
 WritCreater.optionStrings["show craft window"]							= "Show Craft Window"
 WritCreater.optionStrings["show craft window tooltip"]					= "Shows the crafting window when a crafting station is open"
@@ -43,6 +74,8 @@ WritCreater.optionStrings["provisioning"]								= "Provisioning"
 WritCreater.optionStrings["provisioning tooltip"]						= "Turn the addon on for Provisioning (Bank Withdrawal only)"
 WritCreater.optionStrings["woodworking"]								= "Woodworking"
 WritCreater.optionStrings["woodworking tooltip"]						= "Turn the addon on for Woodworking"
+WritCreater.optionStrings["jewelry crafting"]							= "Jewelry Crafting"
+WritCreater.optionStrings["jewelry crafting tooltip"]					= "Turn the addon on for Jewelry Crafting"
 WritCreater.optionStrings["writ grabbing"]								= "Grab writ items"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Grab items required for writs (e.g. nirnroot, Ta, etc.) from the bank"
 WritCreater.optionStrings["delay"]										= "Item Grab Delay"
@@ -76,3 +109,7 @@ WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Choose when the a
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
 WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
 WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
+WritCreater.optionStrings["hide when done"]								= "Hide when done"
+WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon window when all items have been crafted"
+WritCreater.optionStrings['reticleColour']								= "Change Reticle Colour"
+WritCreater.optionStrings['reticleColourTooltip']						= "Changes the Reticle colour if you have an uncompleted or completed writ at the station"

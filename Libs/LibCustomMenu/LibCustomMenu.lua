@@ -2,7 +2,7 @@
 -- thanks to: baertram & circonian
 
 -- Register with LibStub
-local MAJOR, MINOR = "LibCustomMenu", 4.2
+local MAJOR, MINOR = "LibCustomMenu", 6.5
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end -- the same or newer version of this lib is already loaded into memory
 
@@ -18,12 +18,18 @@ local function SetupDivider(pool, control)
 
 	local label = wm:CreateControlFromVirtual("$(parent)Name", control, "ZO_BaseTooltipDivider")
 	label:ClearAnchors()
-	label:SetAnchor(TOPLEFT, nil, TOPLEFT, 0, 2)
-	label:SetAnchor(TOPRIGHT, nil, TOPRIGHT, 0, 2)
+	label:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 2)
+	label:SetAnchor(TOPRIGHT, control, TOPRIGHT, 0, 2)
+	-- First and last time the anchors are set
+	label.ClearAnchors = Noop
+	label.SetAnchor = Noop
+
 	label.SetText = Noop
 	label.SetFont = Noop
 	label.GetTextDimensions = GetTextDimensions
+	label.SetHorizontalAlignment = Noop
 	label:SetHidden(false)
+	control.nameLabel = label
 
 	control:SetMouseEnabled(false)
 end
@@ -108,25 +114,34 @@ function Submenu:Initialize(name)
 	self.control = submenuControl
 
 	local upInside = false
+	local function MouseEnter(control)
+		upInside = true
+		ClearTimeout()
+		self:SetSelectedIndex(control.index)
+	end
+	local function MouseExit(control)
+		upInside = false
+		if (self.selectedIndex == control.index) then
+			self:SetSelectedIndex(nil)
+		end
+	end
+	local function MouseUp(control, button)
+		if upInside == true and button == MOUSE_BUTTON_INDEX_LEFT then
+			ZO_Menu_SetLastCommandWasFromMenu(true)
+			if control.checkbox then
+				-- The checkbox click handler will handle it
+				ZO_CheckButton_OnClicked(control.checkbox, button)
+			else
+				if not control.OnSelect() then
+					ClearMenu()
+				end
+			end
+		end
+	end
+
 	local function ItemFactory(pool)
 		local control = CreateControlFromVirtual("ZO_SubMenuItem", submenuControl, "ZO_MenuItem", pool:GetNextControlId())
-		local function MouseEnter(control)
-			upInside = true
-			ClearTimeout()
-			self:SetSelectedIndex(control.index)
-		end
-		local function MouseExit(control)
-			upInside = false
-			if (self.selectedIndex == control.index) then
-				self:SetSelectedIndex(nil)
-			end
-		end
-		local function MouseUp(control)
-			if upInside == true then
-				ZO_Menu_ClickItem(control, 1)
-				self:Clear()
-			end
-		end
+		control.nameLabel = GetControl(control, "Name")
 
 		control:SetHandler("OnMouseEnter", MouseEnter)
 		control:SetHandler("OnMouseExit", MouseExit)
@@ -149,8 +164,37 @@ function Submenu:Initialize(name)
 		return control
 	end
 
+	local function ResetCheckbox(checkbox)
+		ResetFunction(checkbox)
+	end
+
+	local function CheckBoxMouseEnter(control)
+		MouseEnter(control:GetParent())
+	end
+	local function CheckBoxMouseExit(control)
+		MouseExit(control:GetParent())
+	end
+	local function CheckBoxMouseUp(control)
+		self.refCount =(self.refCount or 0) + 1
+		local parent = control:GetParent()
+		parent.OnSelect(ZO_CheckButton_IsChecked(control))
+	end
+	local function CheckBoxFactory(pool)
+		local control = CreateControlFromVirtual("ZO_CustomSubMenuItemCheckButton", submenuControl, "ZO_CheckButton", pool:GetNextControlId())
+		control.nameLabel = control
+
+		control:SetHandler("OnMouseEnter", CheckBoxMouseEnter)
+		control:SetHandler("OnMouseExit", CheckBoxMouseExit)
+
+		ZO_CheckButton_SetToggleFunction(control, CheckBoxMouseUp)
+
+		return control
+	end
+
+
 	self.itemPool = ZO_ObjectPool:New(ItemFactory, ResetFunction)
 	self.dividerPool = ZO_ObjectPool:New(DividerFactory, ResetFunction)
+	self.checkBoxPool = ZO_ObjectPool:New(CheckBoxFactory, ResetCheckbox)
 	self.items = { }
 
 	EVENT_MANAGER:RegisterForEvent(name .. "_OnGlobalMouseUp", EVENT_GLOBAL_MOUSE_UP, function()
@@ -181,7 +225,7 @@ function Submenu:UnselectItem(index)
 	local item = self.items[index]
 	if item then
 		self.highlight:SetHidden(true)
-		local nameControl = GetControl(item, "Name")
+		local nameControl = item.nameLabel
 		nameControl:SetColor(nameControl.normalColor:UnpackRGBA())
 
 		self.selectedIndex = nil
@@ -200,7 +244,7 @@ function Submenu:SelectItem(index)
 
 		highlight:SetHidden(false)
 
-		local nameControl = GetControl(item, "Name")
+		local nameControl = item.nameLabel
 		nameControl:SetColor(nameControl.highlightColor:UnpackRGBA())
 
 		self.selectedIndex = index
@@ -216,7 +260,7 @@ function Submenu:UpdateAnchors()
 
 	for i = 1, #items do
 		local item = items[i]
-		local textWidth, textHeight = GetControl(item, "Name"):GetTextDimensions()
+		local textWidth, textHeight = item.nameLabel:GetTextDimensions()
 		width = math.max(textWidth + padding * 2, width)
 		height = height + textHeight
 		item:ClearAnchors()
@@ -241,6 +285,7 @@ function Submenu:Clear()
 	self.items = { }
 	self.itemPool:ReleaseAllObjects()
 	self.dividerPool:ReleaseAllObjects()
+	self.checkBoxPool:ReleaseAllObjects()
 	self.control:SetHidden(true)
 	self.refCount = nil
 end
@@ -253,12 +298,21 @@ function Submenu:AddItem(entry, myfont, normalColor, highlightColor, itemYPad)
 	if entry.visible ~= nil then visible = entry.visible else visible = true end
 	if not GetValueOrCallback(visible, ZO_Menu) then return end
 
-	local item, key = entry.label ~= lib.DIVIDER and self.itemPool:AcquireObject() or self.dividerPool:AcquireObject()
+	local item, key
+	local itemType = entry.itemType or MENU_ADD_OPTION_LABEL
+	if itemType == MENU_ADD_OPTION_LABEL then
+		item, key = entry.label ~= lib.DIVIDER and self.itemPool:AcquireObject() or self.dividerPool:AcquireObject()
+	elseif itemType == MENU_ADD_OPTION_CHECKBOX then
+		item, key = self.itemPool:AcquireObject()
+	else
+		error(string.format("Unknown menu entry itemType: %s", itemType))
+	end
+
 	item.OnSelect = entry.callback
 	item.index = #self.items + 1
 	self.items[item.index] = item
 
-	local nameControl = GetControl(item, "Name")
+	local nameControl = item.nameLabel
 
 	local entryFont = GetValueOrCallback(entry.myfont, ZO_Menu, item) or myfont
 	local normColor = GetValueOrCallback(entry.normalColor, ZO_Menu, item) or normalColor
@@ -268,7 +322,24 @@ function Submenu:AddItem(entry, myfont, normalColor, highlightColor, itemYPad)
 	nameControl.highlightColor = highColor or DEFAULT_TEXT_HIGHLIGHT
 
 	nameControl:SetFont(myfont)
-	nameControl:SetText(GetValueOrCallback(entry.label, ZO_Menu, item))
+
+	local text = GetValueOrCallback(entry.label, ZO_Menu, item)
+
+	local checkboxItemControl = nil
+	if itemType == MENU_ADD_OPTION_CHECKBOX then
+		checkboxItemControl = self.checkBoxPool:AcquireObject()
+		checkboxItemControl:SetParent(item)
+		checkboxItemControl.menuIndex = item.index
+		checkboxItemControl:ClearAnchors()
+		checkboxItemControl:SetHidden(false)
+		checkboxItemControl:SetAnchor(LEFT, nil, LEFT, 2, -1)
+		text = string.format(" |u18:0::|u%s", text)
+		ZO_CheckButton_SetCheckState(checkboxItemControl, GetValueOrCallback(entry.checked, ZO_Menu, item) or false)
+	end
+	item.checkbox = checkboxItemControl
+
+	nameControl:SetText(text)
+
 	local enabled = not GetValueOrCallback(entry.disabled or false, ZO_Menu, item)
 	nameControl:SetColor((enabled and nameControl.normalColor or ZO_DEFAULT_DISABLED_COLOR):UnpackRGBA())
 	item:SetMouseEnabled(enabled)
@@ -332,6 +403,7 @@ local function SubMenuItemFactory(pool)
 
 	local label = wm:CreateControl("$(parent)Name", control, CT_LABEL)
 	label:SetAnchor(TOPLEFT)
+	control.nameLabel = label
 
 	control:SetHandler("OnMouseEnter", MouseEnter)
 	control:SetHandler("OnMouseExit", MouseExit)
@@ -374,6 +446,7 @@ local function MenuItemFactory(pool)
 
 	local label = wm:CreateControl("$(parent)Name", control, CT_LABEL)
 	label:SetAnchor(TOPLEFT)
+	control.nameLabel = label
 
 	control:SetHandler("OnMouseEnter", MouseEnter)
 	control:SetHandler("OnMouseExit", MouseExit)
@@ -385,6 +458,8 @@ end
 
 local function CheckBoxFactory(pool)
 	local control = CreateControlFromVirtual("ZO_CustomMenuItemCheckButton", ZO_Menu, "ZO_CheckButton", pool:GetNextControlId())
+	control.nameLabel = control
+
 	local function MouseEnter()
 		ZO_Menu_EnterItem(control)
 	end
@@ -402,16 +477,86 @@ local function DividerFactory(pool)
 	return control
 end
 
+---- Hook points for context menu -----
+local function PreHook(objectTable, existingFunctionName, hookFunction)
+	if type(objectTable) == "string" then
+		hookFunction = existingFunctionName
+		existingFunctionName = objectTable
+		objectTable = _G
+	end
+
+	local existingFn = objectTable[existingFunctionName]
+	local newFn
+	if existingFn and type(existingFn) == "function" then
+		newFn = function(...)
+			hookFunction(...)
+			return existingFn(...)
+		end
+	else
+		newFn = hookFunction
+	end
+	objectTable[existingFunctionName] = newFn
+end
+
+local function HookContextMenu()
+	local category, registry, inventorySlot, slotActions, entered
+	local function Reset()
+		category, registry, inventorySlot, slotActions = 0, nil, nil, nil
+	end
+	local function RemoveMouseOverKeybinds()
+		if entered then
+			entered = false
+			lib.keybindRegistry:FireCallbacks("Exit")
+		end
+		Reset()
+	end
+	local function addCategory()
+		category = category + 1
+		registry:FireCallbacks(category, inventorySlot, slotActions)
+	end
+	local function AddSlots(...)
+		Reset()
+		inventorySlot, slotActions = ...
+		if slotActions.m_contextMenuMode then
+			registry = lib.contextMenuRegistry
+		else
+			entered = true
+			registry = lib.keybindRegistry
+		end
+	end
+	local function InsertToMenu()
+		if category < 4 and inventorySlot then
+			addCategory()
+		end
+	end
+	local function AppendToMenu()
+		if registry then
+			if inventorySlot then
+				while category <= 6 do addCategory() end
+			end
+			Reset()
+		end
+	end
+	Reset()
+
+	PreHook("ZO_InventorySlot_RemoveMouseOverKeybinds", RemoveMouseOverKeybinds)
+	PreHook("ZO_InventorySlot_OnMouseExit", RemoveMouseOverKeybinds)
+	PreHook("ZO_InventorySlot_DiscoverSlotActionsFromActionList", AddSlots)
+	PreHook(ZO_InventorySlotActions, "AddSlotAction", InsertToMenu)
+	PreHook(ZO_InventorySlotActions, "Show", AppendToMenu)
+	PreHook(ZO_InventorySlotActions, "GetPrimaryActionName", AppendToMenu)
+end
+
 ----- Public API -----
 
-function AddCustomMenuItem(mytext, myfunction, itemType, myfont, normalColor, highlightColor, itemYPad)
+function AddCustomMenuItem(mytext, myfunction, itemType, myFont, normalColor, highlightColor, itemYPad, horizontalAlignment)
 	local orgItemPool = ZO_Menu.itemPool
 	local orgCheckboxItemPool = ZO_Menu.checkBoxPool
 
 	ZO_Menu.itemPool = mytext ~= lib.DIVIDER and lib.itemPool or lib.dividerPool
 	ZO_Menu.checkBoxPool = lib.checkBoxPool
 
-	local index = AddMenuItem(mytext, myfunction, itemType, myfont, normalColor, highlightColor, itemYPad)
+	local index = AddMenuItem(mytext, myfunction, itemType, myFont, normalColor, highlightColor, itemYPad, horizontalAlignment)
 
 	ZO_Menu.itemPool = orgItemPool
 	ZO_Menu.checkBoxPool = orgCheckboxItemPool
@@ -476,23 +621,20 @@ local function HookAddSlotAction()
 		ZO_Menu.checkBoxPool = orgCheckboxItemPool
 	end
 end
---[[
--- uncomment this, if you want to see where and when "insecure" controls get re-used.
-function AddCustomMenuItem(mytext, myfunction, itemType, myfont, normalColor, highlightColor, itemYPad)
-	local lastCount = ZO_Menu.itemPool and ZO_Menu.itemPool:GetTotalObjectCount() or 0
-	local index = AddMenuItem(mytext, myfunction, itemType, myfont, normalColor, highlightColor, itemYPad)
 
-	local control = ZO_Menu.items[index].item
-	if ZO_Menu.itemPool:GetTotalObjectCount() > lastCount and control:GetNamedChild("Bad") == nil then
-		local bad = wm:CreateControl("$(parent)Bad", control, CT_TEXTURE)
-		bad:SetTexture("esoui/art/icons/poi/poi_groupboss_complete.dds")
-		bad:SetDimensions(23, 23)
-		bad:SetAnchor(RIGHT, control, RIGHT)
-	end
-
-	return index
+function lib:RegisterContextMenu(func, category, ...)
+	category = zo_clamp(category or self.CATEGORY_LATE, self.CATEGORY_EARLY, self.CATEGORY_LATE)
+	self.contextMenuRegistry:RegisterCallback(category, func, ...)
 end
-]]--
+
+function lib:RegisterKeyStripEnter(func, category, ...)
+	category = zo_clamp(category or self.CATEGORY_LATE, self.CATEGORY_EARLY, self.CATEGORY_LATE)
+	self.keybindRegistry:RegisterCallback(category, func, ...)
+end
+
+function lib:RegisterKeyStripExit(func, ...)
+	self.keybindRegistry:RegisterCallback("Exit", func, ...)
+end
 
 ---- Init -----
 
@@ -506,7 +648,18 @@ local function OnAddonLoaded(event, name)
 	lib.submenu = Submenu:New("LibCustomMenuSubmenu")
 	HookClearMenu()
 	HookAddSlotAction()
+	HookContextMenu()
 end
+
+lib.contextMenuRegistry = lib.contextMenuRegistry or ZO_CallbackObject:New()
+lib.keybindRegistry = lib.keybindRegistry or ZO_CallbackObject:New()
+
+lib.CATEGORY_EARLY = 1
+lib.CATEGORY_PRIMARY = 2
+lib.CATEGORY_SECONDARY = 3
+lib.CATEGORY_TERTIARY = 4
+lib.CATEGORY_QUATERNARY = 5
+lib.CATEGORY_LATE = 6
 
 EVENT_MANAGER:UnregisterForEvent(MAJOR, EVENT_ADD_ON_LOADED)
 EVENT_MANAGER:RegisterForEvent(MAJOR, EVENT_ADD_ON_LOADED, OnAddonLoaded)
