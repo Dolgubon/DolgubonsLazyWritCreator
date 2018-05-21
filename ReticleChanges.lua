@@ -36,9 +36,9 @@ local function setupReplacement(object, functionName)
 
 			-- we have a writ. Do we need the reticle green or red
 			if isQuestComplete(writs[craftingType]) or GetJournalQuestIsComplete(writs[craftingType]) then
-				text = "|c00ff00"..text.."|r"
+				text = "|c66ff66"..text.."|r"
 			else
-				text = "|cff0000"..text.."|r"
+				text = "|cff6666"..text.."|r"
 			end
 
 			original(self, text)

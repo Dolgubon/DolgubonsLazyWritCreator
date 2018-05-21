@@ -515,27 +515,7 @@ local function dailyResetFunction(till) -- You can translate the following simpl
 	end 
 end
 
-local function runeMissingFunction (ta,essence,potency)
-	local missing = {}
-	if not ta["bag"] then
-		missing[#missing + 1] = "|rTa|cf60000"
-	end
-	if not essence["bag"] then
-		missing[#missing + 1] =  "|cffcc66"..essence["slot"].."|cf60000"
-	end
-	if not potency["bag"] then
-		missing[#missing + 1] = "|c0066ff"..potency["slot"].."|r"
-	end
-	local text = ""
-	for i = 1, #missing do
-		if i ==1 then
-			text = "|cf60000Glyph could not be crafted. You do not have any "..proper(missing[i])
-		else
-			text = text.." or "..proper(missing[i])
-		end
-	end
-	return text
-end
+
 
 -- What is this??! This is just a fun 'easter egg' that is never activated on easter.
 -- Replaces mat names with a random DivineMats on Halloween, New Year's, and April Fools day. You don't need this many! :D

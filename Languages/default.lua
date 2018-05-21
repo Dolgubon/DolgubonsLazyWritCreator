@@ -15,10 +15,71 @@ function WritCreater.language()
 	return false
 
 end
+
+local function proper(str)
+	if type(str)== "string" then
+		return zo_strformat("<<C:1>>",str)
+	else
+		return str
+	end
+end
+
 WritCreater.lang = "none"
 
 -- This is in the default, so that if a new setting is added an error is not thrown, 
 -- and the addon instead uses the English option strings for any that are missing.
+
+local function runeMissingFunction (ta,essence,potency)
+	local missing = {}
+	if not ta["bag"] then
+		missing[#missing + 1] = "|rTa|cf60000"
+	end
+	if not essence["bag"] then
+		missing[#missing + 1] =  "|cffcc66"..essence["slot"].."|cf60000"
+	end
+	if not potency["bag"] then
+		missing[#missing + 1] = "|c0066ff"..potency["slot"].."|r"
+	end
+	local text = ""
+	for i = 1, #missing do
+		if i ==1 then
+			text = "|cf60000Glyph could not be crafted. You do not have any "..proper(missing[i])
+		else
+			text = text.." or "..proper(missing[i])
+		end
+	end
+	return text
+end
+
+
+local function dailyResetFunction(till) -- You can translate the following simple version instead.
+										-- function (till) d(zo_strformat("<<1>> hours and <<2>> minutes until the daily reset.",till["hour"],till["minute"])) end,
+	if till["hour"]==0 then
+		if till["minute"]==1 then
+			return "1 minute until daily server reset!"
+		elseif till["minute"]==0 then
+			if stamp==1 then
+				return "Daily reset in "..stamp.." seconds!"
+			else
+				return "Seriously... Stop asking. Are you that impatient??? It resets in one more second godammit. Stupid entitled MMO players. *grumble grumble*"
+			end
+		else
+			return till["minute"].." minutes until daily reset!"
+		end
+	elseif till["hour"]==1 then
+		if till["minute"]==1 then
+			return till["hour"].." hour and "..till["minute"].." minute until daily reset"
+		else
+			return till["hour"].." hour and "..till["minute"].." minutes until daily reset"
+		end
+	else
+		if till["minute"]==1 then
+			return till["hour"].." hours and "..till["minute"].." minute until daily reset"
+		else
+			return till["hour"].." hours and "..till["minute"].." minutes until daily reset"
+		end
+	end 
+end
 
 WritCreater.strings = 
 {
@@ -44,7 +105,7 @@ WritCreater.strings =
 	["lootReceived"]				= "<<1>> was received",
 	["countSurveys"]				= "You have <<1>> surveys",
 	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
-	["includesStorage"]				= "Count includes <<1>> in house storage",
+	["includesStorage"]				= function(type) local a= {"Surveys", "Master Writs"} a = a[type] return zo_strformat("Count includes <<1>> in house storage", a) end,
 	["surveys"]						= "Crafting Surveys",
 	["sealedWrits"]					= "Sealed Writs",
 

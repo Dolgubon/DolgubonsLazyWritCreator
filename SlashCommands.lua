@@ -89,7 +89,7 @@ local function countSurveys()
         end
     end
     if storageIncluded then
-    	d(WritCreater.strings.includesStorage)
+    	d(WritCreater.strings.includesStorage(1))
     end
     d(zo_strformat(WritCreater.strings.countSurveys,total))
     for i = 1, 6 do
@@ -117,7 +117,7 @@ local function countVouchers()
         end
     end
     if storageIncluded then
-    	d(WritCreater.strings.includesStorage)
+    	d(WritCreater.strings.includesStorage(2))
     end
     d(zo_strformat(WritCreater.strings.countVouchers,total))
     
