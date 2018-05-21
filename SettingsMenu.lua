@@ -49,7 +49,7 @@ for i = 1, GetNumValidItemStyles() do
 	local styleItemIndex = GetValidItemStyleId(i)
 	local  itemName = GetItemStyleName(styleItemIndex)
 	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
-	if styleItemIndex ~=33 then
+	if styleItemIndex ~=36 then
 		table.insert(WritCreater.styleNames,{styleItemIndex,itemName, styleItem})
 	end
 end

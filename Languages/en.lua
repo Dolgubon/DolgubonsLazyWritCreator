@@ -486,34 +486,6 @@ end
 
 
 
-local function dailyResetFunction(till) -- You can translate the following simple version instead.
-										-- function (till) d(zo_strformat("<<1>> hours and <<2>> minutes until the daily reset.",till["hour"],till["minute"])) end,
-	if till["hour"]==0 then
-		if till["minute"]==1 then
-			return "1 minute until daily server reset!"
-		elseif till["minute"]==0 then
-			if stamp==1 then
-				return "Daily reset in "..stamp.." seconds!"
-			else
-				return "Seriously... Stop asking. Are you that impatient??? It resets in one more second godammit. Stupid entitled MMO players. *grumble grumble*"
-			end
-		else
-			return till["minute"].." minutes until daily reset!"
-		end
-	elseif till["hour"]==1 then
-		if till["minute"]==1 then
-			return till["hour"].." hour and "..till["minute"].." minute until daily reset"
-		else
-			return till["hour"].." hour and "..till["minute"].." minutes until daily reset"
-		end
-	else
-		if till["minute"]==1 then
-			return till["hour"].." hours and "..till["minute"].." minute until daily reset"
-		else
-			return till["hour"].." hours and "..till["minute"].." minutes until daily reset"
-		end
-	end 
-end
 
 
 
