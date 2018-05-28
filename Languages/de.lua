@@ -366,11 +366,15 @@ local exceptions = -- This is a slight misnomer. Not all are corrections - some 
 	{
 		[1] = "beliefert",
 		[2] = "bögen",
+		[3] = "ringe",
+		[4] = "ketten",
 	},
 	["corrected"] = 
 	{
 		[1] = "deliver",
 		[2] = "bogen",
+		[3] = "ring",
+		[4] = "kette",
 	},
 }
 
@@ -645,7 +649,7 @@ WritCreater.optionStrings['reticleColour'] 								= "Fadenkreuzfarbe ändern"
 WritCreater.optionStrings['reticleColourTooltip'] 						= "Ändert die Farbe des Fadenkreuzes, falls es an der Station einen unvollständigen oder abgeschlossenen Schrieb gibt"
 function WritCreater.langStationNames()
 	return
-	{["Schmeidestell"] = 1, ["Schneidertisch"] = 2, 
+	{["Schmeidestelle"] = 1, ["Schneidertisch"] = 2, 
 	 ["Verzauberungstisch"] = 3,["Alchemietisch"] = 4, ["Feuerstelle"] = 5, ["Schreinerbank"] = 6, ["Schmuckhandwerkstisch"] = 7, }
 end
 
@@ -658,7 +662,8 @@ function WritCreater.langWritRewardBoxes () return {
 	[4] = "Schmiedetruhe",
 	[5] = "Schneidertasche",
 	[6] = "Schreinerkästchen",
-	[7] = "Lieferung",
+	[7] = "Schmuckhandwerkerkassete",
+	[8] = "Lieferung",
 }
 end
 

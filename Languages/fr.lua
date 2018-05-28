@@ -343,6 +343,8 @@ local exceptions = -- This is a slight misnomer. Not all are corrections - some 
 	[30]= "néant",
 	[31]= "gantelets",
 	[32]= "déchu",
+	[33]= "anneaux",
+	[34]= "colliers",
 
 
 	},
@@ -379,6 +381,8 @@ local exceptions = -- This is a slight misnomer. Not all are corrections - some 
 	[30]= "vide",
 	[31]= "gantelet",
 	[32]= "déchue",
+	[33] = "anneau",
+	[34]= "collier",
 	}
 
 }
@@ -400,11 +404,11 @@ local bankExceptions =
 {
 	["original"] = {
 		"dégâts",
-		
+		"ätherischen",
 	},
 	["corrected"] = {
 		"ravage",
-		
+		"ätherischer",
 	}
 }
 
@@ -569,9 +573,9 @@ end
 
 WritCreater.optionStrings = WritCreater.optionStrings or {}
 
-DolgubonSetCrafter.localizedStrings.SettingsStrings.nowEditing                   = "Vous modifier le réglage de %s"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.accountWide                  = "Configuration Globale"
-DolgubonSetCrafter.localizedStrings.SettingsStrings.characterSpecific            = " Configuration Specifique par personnage"
+WritCreater.optionStrings.nowEditing                   = "Vous modifier le réglage de %s"
+WritCreater.optionStrings.accountWide                  = "Configuration Globale"
+WritCreater.optionStrings.characterSpecific            = " Configuration Specifique par personnage"
 
 
 WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses <<2>> to be used for crafting",styleName) end 
@@ -633,7 +637,7 @@ end
 function WritCreater.langWritRewardBoxes () return {
 	[1] = "Récipient d'alchimiste",
 	[2] = "coffre d'enchanteur",
-	[3] = "paquet de cuisinier",
+	[3] = "paquet de cuisiner",
 	[4] = "caisse de forgeron",
 	[5] = "sacoche de tailleur",
 	[6] = "caisse de travailleur du bois",
