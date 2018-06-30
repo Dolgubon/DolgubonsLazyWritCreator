@@ -34,6 +34,11 @@ local LIB_NAME, VERSION = "LibCustomTitles", 20
 local LibCustomTitles, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibCustomTitles then return end
 
+local titleReplacementOptions = 
+{
+	
+}
+
 function LibCustomTitles:Init()
 	
 	local CT_NO_TITLE = 0

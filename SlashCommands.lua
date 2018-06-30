@@ -40,17 +40,20 @@ end
 
 local function determineSurveyType(bag, slot, names)
 	local name = GetItemName(bag, slot)
-	for i = 1, 6 do
+	for i = 1, 7 do
 
 		if string.find(name,names[i]) then
 			return i
 		end
 	end
-	
-	return 7
+	if string.find(name, "Jewelry Crafting") then
+		return 7
+	end
+
+	return 8
 end
 
-local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
+local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 
 
@@ -70,7 +73,8 @@ local function countSurveys()
 		[CRAFTING_TYPE_PROVISIONING] = 0,
 		[CRAFTING_TYPE_WOODWORKING] = 0,
 		[CRAFTING_TYPE_ALCHEMY] = 0,
-		[7] = 0, -- This is for internal purposes, mainly to bypass if statements checking if a survey type was found. 
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = 0,
+		[8] = 0, -- This is for internal purposes, mainly to bypass if statements checking if a survey type was found. 
 	}
 	local storageIncluded = false
 
@@ -92,7 +96,7 @@ local function countSurveys()
     	d(WritCreater.strings.includesStorage(1))
     end
     d(zo_strformat(WritCreater.strings.countSurveys,total))
-    for i = 1, 6 do
+    for i = 1, 7 do
     	if detailedCount[i] >0 then
     		d(names[i].." : "..detailedCount[i])
     	end

@@ -10,7 +10,7 @@
 -- 
 -----------------------------------------------------------------------------------
 
-
+-- Check out copper
 --Declarations
 --GetSkillAbilityInfo(number SkillType skillType, number skillIndex, number abilityIndex)
 --GetSkillLineInfo(number SkillType skillType, number skillIndex)

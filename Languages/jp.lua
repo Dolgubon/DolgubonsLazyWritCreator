@@ -40,13 +40,14 @@ end
 
 function WritCreater.langWritNames() --Exacts!!!  I know for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
 	local names = {
-	["G"] = "依頼を調べる",
+	["G"] = "依頼",
 	[CRAFTING_TYPE_ENCHANTING] = "付呪",
 	[CRAFTING_TYPE_BLACKSMITHING] = "鍛冶",
 	[CRAFTING_TYPE_CLOTHIER] = "仕立",
 	[CRAFTING_TYPE_PROVISIONING] = "調理",
 	[CRAFTING_TYPE_WOODWORKING] = "木工",
 	[CRAFTING_TYPE_ALCHEMY] = "錬金術",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "宝飾",
 	}
 	return names
 end
@@ -234,6 +235,31 @@ local craftInfo =
 				[10]= "上質なルビーアッシュ材",
 			}
 		},
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = 
+		{
+			["pieces"] = --Exact!!!
+			{
+				[1] = "指輪",
+				[2] = "ネックレス",
+
+			},
+			["match"] = --exact!!! This is not the material, but rather the prefix the material gives to equipment. e.g. Maple Bow. Oak Bow.
+			{
+				[1] = "ピューター", -- 1
+				[2] = "銅", -- 26
+				[3] = "銀", -- CP10
+				[4] = "琥珀金", --CP80
+				[5] = "プラチナ", -- CP150
+			},
+			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
+			{
+				[1] = "ピューターのオンス",
+				[2] = "銅のオンス",
+				[3] = "銀のオンス",
+				[4] = "琥珀金のオンス",
+				[5] = "プラチナのオンス",
+			}
+		},
 		[CRAFTING_TYPE_ENCHANTING] = 
 		{
 			["pieces"] = --exact!!
@@ -289,10 +315,10 @@ local craftInfo =
 				{"優秀,",45812},
 				{"希少,",45813},
 				{"至高,",45814},
-				{"伝説,",45815},
-				{"壮麗,",45816},
-				{"真に最上,",68341},
-				{"最上,",64509},
+				{"究極,",45815},
+				{"伝説,",45816},
+				{"真に最上,",{68341,68340,},},
+				{"最上,",{64509,64508,},},
 				
 			},
 		},
@@ -563,6 +589,8 @@ WritCreater.optionStrings["provisioning"]                             = "料理"
 WritCreater.optionStrings["provisioning tooltip"]                     = "料理の自動生産"
 WritCreater.optionStrings["woodworking"]                              = "木工"
 WritCreater.optionStrings["woodworking tooltip"]                      = "木工の自動生産"
+WritCreater.optionStrings["jewelry crafting"]						  = "宝飾"
+WritCreater.optionStrings["jewelry crafting tooltip"]				  = "宝飾の自動生産"
 WritCreater.optionStrings["writ grabbing"]                            = "令状アイテムを取り込む"
 WritCreater.optionStrings["writ grabbing tooltip"]                    = "令状に必要なアイテム（ニルンルート、ターなど）銀行から取り込みます"
 
@@ -600,9 +628,10 @@ local WritRewardNames = { -- these are the containers you receive as writ reward
 	[2] = "付呪師の貴品箱",
 	[3] = "仕立師のかばん",
 	[4] = "鍛冶師の木枠箱",
-	[5] = "調理師のバック",
+	[5] = "調理師のパック",
 	[6] = "木工師のケース",
-	[7] = "箱",
+	[7] = "宝飾師の貴品箱",
+	[8] = "箱",
 }
 
 

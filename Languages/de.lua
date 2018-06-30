@@ -368,6 +368,8 @@ local exceptions = -- This is a slight misnomer. Not all are corrections - some 
 		[2] = "bögen",
 		[3] = "ringe",
 		[4] = "ketten",
+		[5] = "halskette",
+		[6] = "halsketten",
 	},
 	["corrected"] = 
 	{
@@ -375,6 +377,8 @@ local exceptions = -- This is a slight misnomer. Not all are corrections - some 
 		[2] = "bogen",
 		[3] = "ring",
 		[4] = "kette",
+		[5] = "kette",
+		[6] = "kette",
 	},
 }
 
