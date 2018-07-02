@@ -392,38 +392,6 @@ local function temporaryCheck(condition,info)
 	return true
 end
 
-local bankExceptions = 
-{
-	["original"] = {
-		"essenzen",
-		"arenthischen",
-		"gelnden",
-		"heiligen",
-		"atherischen",
-		"tränke",
-	},
-	["corrected"] = {
-		"essenz",
-		"arenthischer",
-		"gelnder",
-		"Heiliger",
-		"atherischer",
-		"trank",
-	}
-}
-
-function WritCreater.bankExceptions(condition)
-	
-	if string.find(condition, "beliefert") then
-		return ""
-	end
-	condition = string.gsub(condition, ":", " ")
-	for i = 1, #bankExceptions["original"] do
-		condition = string.gsub(condition,bankExceptions["original"][i],bankExceptions["corrected"][i])
-	end
-	return condition
-end
-
 function WritCreater.exceptions(condition)
 	local location = GetCraftingInteractionType()
 	if location == 0 then return condition end
@@ -552,7 +520,8 @@ WritCreater.strings["moreStyleKnowledge"]						= "|cf600000Du hast keine verfüg
 WritCreater.strings["dailyreset"] 								= function (till) d(till["hour"].." Stunden und "..till["minute"].." Minuten bis zum Daily Reset") end
 WritCreater.strings["complete"] 								= "|c00FF00Der Schrieb ist fertig|r"
 WritCreater.strings["craftingstopped"] 							= "Herstellung gestoppt. Bitte überprüfe, ob das AddOn den richtigen Gegenstand herstellt."
-WritCreater.strings["lootReceived"]								= "<<1>> erhalten"
+WritCreater.strings["lootReceived"]								= "<<1>> erhalten (Du hast <<2>>)"
+WritCreater.strings["lootReceivedM"]							= "<<1>> erhalten"
 WritCreater.strings["countSurveys"]								= "Du hast <<1>> Gutachten"
 WritCreater.strings["countVouchers"]							= "Du hast <<1>> offene Schriebscheine"
 WritCreater.strings["includesStorage"] 							= "Zähle <<1>> in deinen Lagertruhen mit" -- <- I'm not sure if Lagertruhe is correct, i have to check crownstore first in the afternoon when i'm home
@@ -653,7 +622,7 @@ WritCreater.optionStrings['reticleColour'] 								= "Fadenkreuzfarbe ändern"
 WritCreater.optionStrings['reticleColourTooltip'] 						= "Ändert die Farbe des Fadenkreuzes, falls es an der Station einen unvollständigen oder abgeschlossenen Schrieb gibt"
 function WritCreater.langStationNames()
 	return
-	{["Schmeidestelle"] = 1, ["Schneidertisch"] = 2, 
+	{["Schmiedestelle"] = 1, ["Schneidertisch"] = 2, 
 	 ["Verzauberungstisch"] = 3,["Alchemietisch"] = 4, ["Feuerstelle"] = 5, ["Schreinerbank"] = 6, ["Schmuckhandwerkstisch"] = 7, }
 end
 
@@ -666,7 +635,7 @@ function WritCreater.langWritRewardBoxes () return {
 	[4] = "Schmiedetruhe",
 	[5] = "Schneidertasche",
 	[6] = "Schreinerkästchen",
-	[7] = "Schmuckhandwerkerkassete",
+	[7] = "Schmuckhandwerkerkassette",
 	[8] = "Lieferung",
 }
 end

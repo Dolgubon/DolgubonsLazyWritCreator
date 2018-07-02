@@ -405,27 +405,6 @@ local exceptions =
 }
 
 
-local bankExceptions = 
-{
-	["original"] = {
-		
-	},
-	["corrected"] = {
-		
-	}
-}
-
-function WritCreater.bankExceptions(condition)
-	if string.find(condition, "deliver") then
-		return ""
-	end
-	condition = string.gsub(condition, ":", " ")
-	for i = 1, #bankExceptions["original"] do
-		condition = string.gsub(condition,bankExceptions["original"][i],bankExceptions["corrected"][i])
-	end
-	return condition
-end
-
 function WritCreater.exceptions(condition)
 	condition = string.gsub(condition, " "," ")
 	condition = string.lower(condition)

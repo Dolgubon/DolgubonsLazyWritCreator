@@ -400,18 +400,6 @@ local enExceptions = {
 }
 
 
-local bankExceptions = 
-{
-	["original"] = {
-		"dégâts",
-		"ätherischen",
-	},
-	["corrected"] = {
-		"ravage",
-		"ätherischer",
-	}
-}
-
 function WritCreater.bankExceptions(condition)
 	if string.find(condition, "livrez") then
 		return ""
@@ -533,7 +521,8 @@ WritCreater.strings["smithingReqM2"] 					= function (amount,type,more)     retu
 WritCreater.strings["smithingReq"] 					= function (amount,type, current) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|c2dff00<<3>> disponible|r)"  ,amount, type, current) end
 WritCreater.strings["smithingReq2"] 					= function (amount,type, current) return zo_strformat( "\nMais aussi <<1>> <<2>> (|c2dff00<<3>> disponible|r)" ,amount, type, current) end
 WritCreater.strings["dailyreset"] 						= function (till) d(zo_strformat("<<1>> heures et <<2>> minutes avant le reset journalier.",till["hour"],till["minute"])) end
-WritCreater.strings["lootReceived"]					= "<<1>> a été reçu"
+WritCreater.strings["lootReceived"]					= "<<1>> a été reçu (You have <<2>>)"
+WritCreater.strings["lootReceivedM"]					= "<<1>> a été reçu"
 WritCreater.strings["countSurveys"]					= "Vous avez <<1>> repérages"
 WritCreater.strings["countVouchers"]					= "Vous avez <<1>> Coupons de Commande non-acquis"
 WritCreater.strings["includesStorage"]				= "Le total inclus <<1>> qui sont dans les coffres de domicile"

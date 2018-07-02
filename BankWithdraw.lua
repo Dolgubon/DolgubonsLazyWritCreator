@@ -109,7 +109,7 @@ local function moveItem( amountRequired, bag, slot)
 
 end
 
-local function isPotentialMatch(questCondition, validItemTypes, bag, slot, quest, stepindex, conditionindex)
+local function isPotentialMatch(validItemTypes, bag, slot, quest, stepindex, conditionindex)
 	local name = GetItemName(bag, slot)
 	if name == "" then return false end
 	local itemType = GetItemType(bag, slot)
@@ -118,7 +118,7 @@ local function isPotentialMatch(questCondition, validItemTypes, bag, slot, quest
 		local link = GetItemLink(bag, slot)
 		specialDebug("WC Debug Item is correct type of item (e.g. food, weapon)")
 		specialDebug("WC Debug Item Link: "..link)
-		specialDebug("WC Debug condition: "..questCondition)
+		
 		
 		if DoesItemLinkFulfillJournalQuestCondition(link, quest, stepindex, conditionindex) then 
 			
@@ -159,7 +159,6 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	specialDebug(" We need ".. amountRequired)
 	specialDebug("Valid itemTypes are the table keys of the following table:")
 	specialDebug(validItemTypes )
-	questCondition = string.gsub(questCondition, " ", " ") -- First is a NO-BREAK SPACE, 2nd a SPACE, copied from Ayantir's BMR just in case
 	local potentialMatches = {}
 	local storageIncluded = false
 	local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
@@ -170,7 +169,7 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 		specialDebug("Bag has a size of "..GetBagSize(bagId))
 		for i=0, GetBagSize(bagId) do -- check the rest of the bank
 			if i < 5 and GetItemName(bagId, i)~="" then specialDebug("Checking item in slot "..i.." which has name "..GetItemName(bagId, i).." and itemType "..GetItemType(bagId, i)) end
-			if isPotentialMatch(questCondition, validItemTypes, bagId, i, quest, stepindex, conditionindex) then 
+			if isPotentialMatch(validItemTypes, bagId, i, quest, stepindex, conditionindex) then 
 				-- Add to match list
 				table.insert(potentialMatches, {bagId, i})
 			end
@@ -195,7 +194,7 @@ end
 
 local function exceptions(condition)
 	
-	condition = WritCreater.bankExceptions(condition)
+	
 	return condition
 end
 

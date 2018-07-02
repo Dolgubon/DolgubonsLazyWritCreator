@@ -175,6 +175,17 @@ WritCreater.defaultAccountWide = {
 		{["num"] = 0},
 	},
 }
+
+function WritCreater.resetSettings()
+	if WritCreater.savedVars.useCharacterSettings then
+		WritCreater.savedVars = WritCreater.default 
+	else
+		WritCreater.savedVarsAccountWide.accountWideProfile = WritCreater.default
+	end
+
+	d("settings reset")
+end
+
 WritCreater.settings["panel"] =  
 {
      type = "panel",
@@ -182,7 +193,9 @@ WritCreater.settings["panel"] =
      registerForRefresh = true,
      displayName = "|c8080FF Dolgubon's Lazy Writ Crafter|r",
      author = "@Dolgubon",
-     registerForRefresh = true
+     registerForRefresh = true,
+     registerForDefaults = true,
+     resetFunc = WritCreater.resetSettings,
 }
 WritCreater.settings["options"] =  {} 
 local LibLazyCrafting  

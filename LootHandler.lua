@@ -86,9 +86,9 @@ local function lootOutput(itemLink, itemType)
 		local amountBag, amountBank, amountCraft = GetItemLinkStacks( itemLink)
 		local amount = amountCraft + amountBank + amountBag + 1
 		if itemType then 
-			d(zo_strformat( WritCreater.strings.lootReceived.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink))
+			d(zo_strformat( WritCreater.strings.lootReceivedM.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink))
 		else
-			d(zo_strformat( WritCreater.strings.lootReceived.." (You have ".. amount.. ")", itemLink))
+			d(zo_strformat( WritCreater.strings.lootReceived, itemLink, amount))
 		end
 		
 		
@@ -224,29 +224,27 @@ local function OnLootUpdated(event)
 end
 
 local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local jewelryMatFlavourText = GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local matReward = GetItemLinkFlavorText("|H1:item:99256:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local firstOpen = 10000000000000000000000
 local completeTimes = 0
 local slotUpdateHandler
 
 local function shouldOpenContainer(bag, slot)
-	local link = GetItemLink(bag, slot)
-	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater:GetSettings().lootContainerOnReceipt then
+	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
+
+	local flavour = GetItemLinkFlavorText(GetItemLink(bag, slot))
+	if flavour ==rewardFlavourText then
 		return true
-	elseif matReward == GetItemLinkFlavorText(link) then
-		if not autoLoot or not WritCreater:GetSettings().lootContainerOnReceipt then return false end
+	elseif flavour == jewelryMatFlavourText then
+		return true
+	elseif matReward == flavour then
 		return true
 	end
-	return (GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater:GetSettings().lootContainerOnReceipt) or matReward == GetItemLinkFlavorText(link)
+	return false
 end
 
-local function scanBagForUnopenedContainers( ... )
-	for i = 0, GetBagSize(BAG_BACKPACK) do 
-		if shouldOpenContainer(BAG_BACKPACK, i) then
-			slotUpdateHandler(1, bag, slot, true)
-		end
-	end
-end
+local scanBagForUnopenedContainers
 
 local function openContainer(bag, slot)
 	lastScene = SCENE_MANAGER:GetCurrentScene():GetName()
@@ -282,7 +280,7 @@ local function prepareToInteract()
 	return false
 end
 
-function slotUpdateHandler(event, bag, slot, isNew,...)
+local function slotUpdateHandler(event, bag, slot, isNew,...)
 
 	if WritCreater.checkIfMasterWritWasStarted then WritCreater.checkIfMasterWritWasStarted(event, bag, slot, isNew,...) end
 	local autoLoot
@@ -302,15 +300,18 @@ function slotUpdateHandler(event, bag, slot, isNew,...)
 			openContainer(bag, slot)
 		end
 	end
-	if GetItemLinkFlavorText(link) ==rewardFlavourText and WritCreater:GetSettings().lootContainerOnReceipt then
-		completeTimes = GetTimeStamp()
-		--d("attempting to open "..link)
+	if not WritCreater:GetSettings().lootContainerOnReceipt then return end
+	if shouldOpenContainer(bag, slot) then
 		attemptOpenContainer(bag, slot)
-		
-	elseif matReward == GetItemLinkFlavorText(link) then
-		if not autoLoot or not WritCreater:GetSettings().lootContainerOnReceipt then return end
-		--d("attempting to open "..link)
-		attemptOpenContainer(bag, slot)
+		if not autoLoot then return end
+	end
+end
+
+function scanBagForUnopenedContainers( ... )
+	for i = 0, GetBagSize(BAG_BACKPACK) do 
+		if shouldOpenContainer(BAG_BACKPACK, i) then
+			slotUpdateHandler(1, bag, slot, true)
+		end
 	end
 end
 

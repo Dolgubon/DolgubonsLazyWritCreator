@@ -241,8 +241,7 @@ SLASH_COMMANDS['/rerunmasterwrits'] = WritCreater.scanAllQuests
 --------------------------------------------------
 -- GENERAL COMMANDS
 	-- Resets character specific settings settings
-SLASH_COMMANDS['/resetwritcraftersettings'] = resetSettings
-SLASH_COMMANDS['/resetwcsettings'] = resetSettings
+SLASH_COMMANDS['/resetwritcraftersettings'] = WritCreater.resetSettings
 	-- Activates debug mode. Debug mode is not comprehensive.
 SLASH_COMMANDS['/dlwcdebug'] = activateDebug
 	-- Abandons all currently active writs.
