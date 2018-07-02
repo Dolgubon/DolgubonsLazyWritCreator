@@ -24,6 +24,8 @@ end
 --
 -- 
 function numPotEffects(link)
+	local typei= GetItemLinkItemType(link)
+	if typei == ITEMTYPE_POTION or typei == ITEMTYPE_POISON then else return 0 end
 	local potionInfo = { ZO_LinkHandler_ParseLink(link) }
 	local traitInfo = potionInfo[24]
 
@@ -107,7 +109,7 @@ local function moveItem( amountRequired, bag, slot)
 
 end
 
-local function isPotentialMatch(questCondition, validItemTypes, bag, slot)
+local function isPotentialMatch(questCondition, validItemTypes, bag, slot, quest, stepindex, conditionindex)
 	local name = GetItemName(bag, slot)
 	if name == "" then return false end
 	local itemType = GetItemType(bag, slot)
@@ -117,12 +119,10 @@ local function isPotentialMatch(questCondition, validItemTypes, bag, slot)
 		specialDebug("WC Debug Item is correct type of item (e.g. food, weapon)")
 		specialDebug("WC Debug Item Link: "..link)
 		specialDebug("WC Debug condition: "..questCondition)
-		if validItemTypes[itemType][2] and validItemTypes[itemType][2](link, bag, slot) then 
-			specialDebug("WC Debug secondary itemType Check was failed (Was item Crafted? (potions, glyphs))")
-			return false end
-		if strFind(questCondition, " "..name.." ") then
-			specialDebug("WC Debug item was located inside the quest condition. Item is a potential match for the quest")
-			return true
+		
+		if DoesItemLinkFulfillJournalQuestCondition(link, quest, stepindex, conditionindex) then 
+			
+			return true 
 		end
 	end
 	return false
@@ -141,11 +141,10 @@ local function filterMatches(matches)
 		local longest = 0
 		local position = 0
 		for i = 1, #matches do
-			if string.len(GetItemName(matches[i][1], matches[i][2]))>=longest then
-				if numPotEffects(GetItemLink(matches[i][1], matches[i][2])) <traits then
-					longest = string.len(GetItemName(matches[i][1], matches[i][2]))
-					position = i
-				end
+			local traitAmount = numPotEffects(GetItemLink(matches[i][1], matches[i][2])) 
+			if traitAmount<traits then
+				position = i
+				traits=traitAmount
 			end
 		end
 		specialDebug("WC Debug "..GetItemLink(matches[position][1], matches[position][2]).." had the longest name and will now be withdrawn")
@@ -154,7 +153,7 @@ local function filterMatches(matches)
 
 end
 
-local function potionGrabRefactored(questCondition, amountRequired, validItemTypes)
+local function potionGrabRefactored(questCondition, amountRequired, validItemTypes, quest, stepindex, conditionindex)
 	specialDebug("WC Debug Beggining Bank Withdrawal Sequence")
 	specialDebug("Attempting to find items for "..questCondition)
 	specialDebug(" We need ".. amountRequired)
@@ -171,7 +170,7 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 		specialDebug("Bag has a size of "..GetBagSize(bagId))
 		for i=0, GetBagSize(bagId) do -- check the rest of the bank
 			if i < 5 and GetItemName(bagId, i)~="" then specialDebug("Checking item in slot "..i.." which has name "..GetItemName(bagId, i).." and itemType "..GetItemType(bagId, i)) end
-			if isPotentialMatch(questCondition, validItemTypes, bagId, i) then 
+			if isPotentialMatch(questCondition, validItemTypes, bagId, i, quest, stepindex, conditionindex) then 
 				-- Add to match list
 				table.insert(potentialMatches, {bagId, i})
 			end
@@ -225,7 +224,7 @@ local function addToQueue(questIndex, validItemTypes)
 		a = string.gsub(a, " ", " ") -- First is a NO-BREAK SPACE, 2nd a SPACE, copied from Ayantir's BMR just in case
 		if cur < max and a~="" then 
 
-			queue[#queue + 1] = function() potionGrabRefactored(a, max - cur, validItemTypes) end
+			queue[#queue + 1] = function() potionGrabRefactored(a, max - cur, validItemTypes, questIndex, 1, j) end
 
 			
 		end

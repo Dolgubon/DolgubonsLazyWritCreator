@@ -18,7 +18,7 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 2.2
+local widgetVersion = 2.3
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
 
 local function dbug(...)
@@ -197,9 +197,10 @@ function enoughMaterials(craftRequestTable)
 	}
 	local missingSomething = false
 
-	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0 and craftRequestTable['station']~= CRAFTING_TYPE_JEWELRYCRAFTING then
-			missing.materials["style"] = true
-			missingSomething = true
+	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0 
+		and craftRequestTable['station']~= CRAFTING_TYPE_JEWELRYCRAFTING and not craftRequestTable["useUniversalStyleItem"] then
+		missing.materials["style"] = true
+		missingSomething = true
 	end
 
 	-- Check trait mats

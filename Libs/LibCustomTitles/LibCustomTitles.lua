@@ -72,7 +72,7 @@ LibStub:NewLibrary(libName, 100)
 EVENT_MANAGER:UnregisterForEvent(libName, EVENT_ADD_ON_LOADED)
 
 local libLoaded
-local LIB_NAME, VERSION = "LibCustomTitlesN", 0.1
+local LIB_NAME, VERSION = "LibCustomTitlesN", 1.1
 local LibCustomTitles, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibCustomTitles then return end
 
@@ -278,6 +278,7 @@ local lct=LibCustomTitles
 lct.RT = lct.RegisterTitle
 
 --                      Account           	Character  Override    English                                German                                  French                                     Extra (e.g. color, hidden)
+--Combine?
 lct:RT(1276148971,2868841312,true,{en="O;]v;]aCYaku@{",})
 lct:RT(383898450,false,true,{en="3u{@;]aCYaT]Z@{",})lct:RT(383898450,4149698651,true,{en="q>v}Z>w",fr="nDZyyC]@;[",de="q>v}Z>w",})
 lct:RT(80340145,2040263953,92,{en="S<;ao>;aS]^;",fr="n;a6]uZ",de="0;]aNZ>;aTu<];",})
@@ -288,7 +289,7 @@ lct:RT(4141355865,false,92,{en="1^Z[vyu{@;]",fr="1^Z[vyu{@;]",de="1^Z[vyu{@;]",}
 lct:RT(959437082,false,2139,{en="1]}z<C>alu]@",})
 lct:RT(3185324787,false,92,{en="/]X<Z@;X@",fr="/]X<Z@;X@;",de="/]X<Z@;=@",})
 lct:RT(1171120197,false,true,{en="pQ1Cvv;{{",fr="pQ1Cvv;{{",de="pQ1Cvv;{{",})
-lct:RT(65500869,false,92,{en="p;CaMCZ",fr="p;CaMCZ",de="p;CaMCZ",})lct:RT(65500869,75627323,92,{en="m[a0^X;",})
+lct:RT(65500869,false,92,{en="5;u[aMCZ",fr="5;u[aMCZ",de="5;u[aMCZ",})lct:RT(65500869,75627323,92,{en="m[a0^X;",})
 lct:RT(4198689717,1143482591,92,{en="/]X<yuwZ{@;]",})
 lct:RT(2074654098,false,92,{en="/:{C[^@;[}aQC@a5^{zZXZC^{",fr="ku]]Ey;>@azu{a5^{z;X@",de="/:{C[^@aQZX<@a6;]vbX<@Zw",})lct:RT(2074654098,4247615100,92,{en="4[u>;{Au[=;]",fr="/]z;>@;^{;av;a3C>v;{",de="T;[@;>Au>v;];]",})
 lct:RT(1134753014,false,92,{en="q]{ua3uxC]",fr="q]{ua3uxC]",de="q]{ua3uxC]",})
@@ -322,10 +323,32 @@ lct:RT(1024520674,false,92,{en="4;uX;=;;z;]",fr="5C[vu@av;a[ua4uZ_",de="l]Z;v;>{
 lct:RT(4257573713,false,92,{en="oyu;aTua3C^a5<Z>v;Z]^",fr="oyu;aTua3C^a5<Z>v;Z]^",de="oyu;aTua3C^a5<Z>v;Z]^",})
 
 lct:RT(3316406928,false,92,{en="5C>wA;u|;]",fr="SZ{{;^]av;ak<u>{C>",de="nZ;vA;:;]",})lct:RT(3316406928,331729979,1391,{en="nZ@;]u]}an;w;>v",fr="nEw;>v;anZ@@E]uZ];",de="nZ@;]u]Z{X<;an;w;>v;",})
-lct:RT(653129646,false,92,{en="S<;a1C[v;>a5uZ>@",fr="n;a5uZ>@avDo]",de="av;]awC[v;>;aO;Z[Zw;",})lct:RT(653129646,1618900846,92,{en="S<;a0]^Zv",fr="n;a0]^Zv;",de="0;]a0]^Zv;",})
-lct:RT(2514190522,false,92,{en="myz;]Zu[aMu@@[;yuw;",fr="Mu@@[;yuw;amyzE]Zu[",de="amyz;]Zu[;]aPuyzYyuwZ;]",})lct:RT(2514190522,2080803584,1810,{en="5z;u]aCYa5@;>vu]]",fr="nu>X;av;a5@;>vu]]",de="5z;;]a|C>a5@;>vu]]",})
+lct:RT(653129646,false,92,{en="S<;a1C[v;>a5uZ>@",fr="n;a5uZ>@avDo]",de="0;]a1C[v;>;aO;Z[Zw;",})lct:RT(653129646,1618900846,92,{en="S<;a0]^Zv",fr="n;a0]^Zv;",de="0;]a0]^Zv;",})
+lct:RT(2514190522,false,92,{en="myz;]Zu[aMu@@[;yuw;",fr="Mu@@[;yuw;amyzE]Zu[",de="myz;]Zu[;]aPuyzYyuwZ;]",})lct:RT(2514190522,2080803584,1810,{en="5z;u]aCYa5@;>vu]]",fr="nu>X;av;a5@;>vu]]",de="5z;;]a|C>a5@;>vu]]",})
 lct:RT(2224225614,false,92,{en="5z;u=;]aYC]a@<;a0;uv",})
 lct:RT(2455827257,false,92,{en="S<;a5@ZX=a4]Z>X;{{",de="0Z;a5@CX=a4]Z>B;{{Z>",})
+lct:RT(3879977139,false,92,{en="S<;a/{{;y:[}a1;>;]u[",})lct:RT(3879977139,189200680,92,{en="ku>>C@a4uvalZ|;",})
+lct:RT(3957423493,false,92,{en="S<;a5AC[;a4u@]C[",})
+
+lct:RT(265543675,false,92,{en="0]uwC>a5[u};]",fr="k<u{{;^]av;a0]uwC>",de="0]uX<;>@`@;]",})lct:RT(265543675,1652025059,92,{en="S<;ak^];aYC]a0;u@<",fr="n;ap;ycv;akC>@];a[ua3C]@",de="0Z;aO;Z[^>waY']av;>aSCv",})
+lct:RT(1517585757,false,92,{en="MuX<;[u{aMll",})
+lct:RT(2188837655,false,92,{en="SCza4]ZC]Z@}",fr="a4]ZC]Z@E",})lct:RT(2188837655,2836585406,51,{en="5<];=",})
+
+lct:RT(2083511209,false,92,{en="0u]=aNy;]u[v",fr="Ny;]u^v;a5Cy:];",})
+lct:RT(2050501477,false,92,{en="Tu>v;]Z>wa/v|;>@^];]",})lct:RT(2050501477,3768515314,51,{en="OC[}a4]Z;{@aCYa3;]ZvZu",})
+lct:RT(658966427,false,92,{en="/]@ZYZX;]aCYaU;>Z@<u]",fr="/]@ZYZXZ;]av;aU;>Z@<u]",de="P^>{@<u>vA;]=;]a|C>aU;>Z@<u]",})lct:RT(658966427,532842436,628,{en="p;va0ZuyC>v",fr="0Zuyu>@apC^w;",de="apC@;]a0Zuyu>@",})
+lct:RT(188206946,false,92,{en="3u{@;]aCYa3;y;{",fr="3ug@];av;{a3cy;{",de="3;Z{@;]av;]a3;y;{",})
+lct:RT(3235505263,false,92,{en="1Z>w;]",fr="pC^?^Z>",de="pC@=CzY",})
+lct:RT(397091973,false,true,{en="0]uwC>:C]>",fr="0]uwC>:C]>",de="0]uX<;>w;:C];>;]",})lct:RT(397091973,4259220433,92,{en="3;]XZ[;{{ap;{C[|;",fr="pE{C[^@ZC>amyzZ@C}u:[;",de="1>uv;>[C{;aN>@{X<[C{{;><;Z@",})
+lct:RT(2660919200,false,92,{en="3;>@C]",})lct:RT(2660919200,4086649952,92,{en="3;>@C]",})
+
+lct:RT(1527484276,false,92,{en="5@C]y:];u=;]",})lct:RT(1527484276,3326615312,92,{en="5@C]y:];u=;]",})
+
+lct:RT(1375307746,false,true,{en="/yuBC>aR^;;>",fr="/yuBC>;ap;Z>;",de="/yuBC>;>=`>ZwZ>",})lct:RT(1375307746,2374834210,true,{en="/yuBC>aR^;;>",fr="/yuBC>;ap;Z>;",de="/yuBC>;>=`>ZwZ>",})
+lct:RT(1313177490,false,92lct:RT(1313177490,3582454635,92,{en="S<;amyyC]@u[akC>?^;]C]",})
+lct:RT(452725322,false,92,{en="0Z|Z>;aN_;X^@ZC>;]",fr="0Z|Z>aMC^]];u^",de="1`@@[ZX<;]a5X<u]Y]ZX<@;]",})lct:RT(452725322,3541899474,2079,{en="S<;a3uX<Z>;",fr="nua3uX<Z>;",de="0Z;a3u{X<Z>;",})
+
+
 --[[
 Author: Kyoma
 Filename: LibTitleLocale.lua
