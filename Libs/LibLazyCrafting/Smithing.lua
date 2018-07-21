@@ -45,7 +45,7 @@ local abc = 1
 local improvementChances = {}
 
 local CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
-GetItemLinkItemId = GetItemLinkItemId or GetItemIDFromLink
+
 
 -- This is filled out after crafting. It's so we can make sure that:
 -- A: The item was crafted and
@@ -111,7 +111,7 @@ local requirementJumps = { -- At these material indexes, the material required c
 
 }
 
-additionalRequirements = -- Seperated by station. The additional amount of mats added to the base amount.
+local additionalRequirements = -- Seperated by station. The additional amount of mats added to the base amount.
 {
 	[CRAFTING_TYPE_BLACKSMITHING] =
 	{ 2, 2, 2, 4, 4, 4, 1, 6, 4, 4, 4, 5, 4, 4,
@@ -174,7 +174,7 @@ local JEWELY_MAT_REQUIREMENT = {
 }
 
 local currentStep = 1
-baseRequirements = {}
+local baseRequirements = {}
 for i = 1, 41 do
 	if i == 41 then
 		baseRequirements[i] = baseRequirements[40]
@@ -272,7 +272,7 @@ local function getCraftLevel(station)
 end
 
 
-function canCraftItem(craftRequestTable)
+local function canCraftItem(craftRequestTable)
 	local missing =
 	{
 		["knowledge"] = {},
@@ -328,9 +328,6 @@ function canCraftItem(craftRequestTable)
 	return false, missing
 
 end
-LibLazyCrafting.canCraftItemHere = canCraftItemHere
-
-
 
 -- Returns SetIndex, Set Full Name, Traits Required
 local function GetCurrentSetInteractionIndex()
@@ -375,9 +372,8 @@ local function canCraftItemHere(station, setIndex)
 		end
 	end
 	return false
-
 end
-
+LibLazyCrafting.canCraftSmithingItemHere = canCraftItemHere
 
 ---------------------------------
 -- SMITHING HELPER FUNCTIONS
@@ -1220,28 +1216,6 @@ end
 
 local function findItemId()
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 -- This function takes the above table and returns a table of the item links.

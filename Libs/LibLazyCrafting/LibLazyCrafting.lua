@@ -337,6 +337,7 @@ function findEarliestRequest(station)
 	local earliest = {["timestamp"] = GetTimeStamp() + 100000} -- should be later than anything else, as it's 'in the future'
 	local addonName = nil
 	local position = 0
+	
 
 	for addon, requestTable in pairs(craftingQueue) do
 
@@ -553,39 +554,6 @@ function LibLazyCrafting:Init()
 		return unpack(LibLazyCrafting.isCurrentlyCrafting)
 	end
 
-	-- Probably has to be completely rewritten TODO
-	function LLC_CraftQueue()
-
-		local station = GetCraftingInteractionType()
-		if station == 0 then d("You must be at a crafting station") return end
-
-		if canCraftItemHere(station, craftingQueue[station][1]["setIndex"]) and not IsPerformingCraftProcess() then
-			local craftThis = craftingQueue[station][1]
-			if not craftThis then d("Nothing queued") return end
-			if canCraftItem(craftThis) then
-				local patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, quality = craftThis["pattern"], craftThis["materialIndex"], craftThis["materialQuantity"], craftThis["style"], craftThis["trait"], craftThis["quality"]
-				waitingOnSmithingCraftComplete = {}
-				waitingOnSmithingCraftComplete["slotID"] = FindFirstEmptySlotInBag(BAG_BACKPACK)
-				waitingOnSmithingCraftComplete["itemLink"] = GetSmithingPatternResultLink(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, 0)
-				waitingOnSmithingCraftComplete["craftFunction"] =
-				function()
-					CraftSmithingItem(patternIndex, materialIndex, materialQuantity, styleIndex, traitIndex, useUniversalStyleItem)
-				end
-				waitingOnSmithingCraftComplete["craftFunction"]()
-				waitingOnSmithingCraftComplete["creater"] = GetDisplayName()
-				waitingOnSmithingCraftComplete["finalQuality"] = quality
-
-				return
-			else
-				d("User does not have the skill to craft this")
-			end
-
-		else
-			if IsPerformingCraftProcess() then d("Already Crafting") else d("Item cannot be crafted here") end
-		end
-	end
-
-
 	-- Why use this instead of the EVENT_CRAFT_COMPLETE?
 	-- Using this will allow the library to tell you how the craft failed, at least for some problems.
 	-- Or that the craft was completed.
@@ -603,6 +571,7 @@ function LibLazyCrafting:Init()
 	LLC_INSUFFICIENT_SKILL  = "not enough skill" -- extra result: what skills are missing; both if not enough traits, not enough styles, or trait unknown
 	LLC_NO_FURTHER_CRAFT_POSSIBLE = "no further craft items possible" -- Thrown when there is no more items that can be made at the station
 	LLC_INITIAL_CRAFT_SUCCESS = "initial stage of crafting complete" -- Thrown when the white item of a higher quality item is created
+	LLC_BAG_FULL = "backpack is full" -- Thrown when BAG_BACKPACK is full. Not intelligent: If the item is stackable it will still be thrown
 
 	LLC_Global = LibLazyCrafting:AddRequestingAddon("LLC_Global",true, function(event, station, result)
 		d(GetItemLink(result.bag,result.slot).." crafted at slot "..tostring(result.slot).." with reference "..result.reference) end)
