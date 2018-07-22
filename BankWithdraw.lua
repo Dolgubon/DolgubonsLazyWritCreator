@@ -11,6 +11,7 @@
 -----------------------------------------------------------------------------------
 
 
+
 local function specialDebug(...)
 	if WritCreater.savedVarsAccountWide.bankDebug then
 		--df("[%s] " .. message, ADDON_NAME, ...)
