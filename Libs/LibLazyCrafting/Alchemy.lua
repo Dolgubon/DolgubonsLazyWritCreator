@@ -25,6 +25,14 @@ local function dbug(...)
 	DolgubonGlobalDebugOutput(...)
 end
 
+local function copy(t)
+	local a = {}
+	for k, v in pairs(t) do
+		a[k] = v
+	end
+	return a
+end
+
 local craftingQueue = LibLazyCrafting.craftingQueue
 
 local function getItemLinkFromItemId(itemId) local name = GetItemLinkName(ZO_LinkHandler_CreateLink("Test Trash", nil, ITEM_LINK_TYPE,itemId, 1, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 10000, 0))
@@ -69,13 +77,7 @@ local function LLC_CraftAlchemyPotion(self, selventBagId, solventSlotId, reagent
 	LLC_CraftAlchemyItemByItemId(self, GetItemId(selventBagId, solventSlotId),GetItemId( reagent1BagId, reagent1SlotId),GetItemId(reagent2BagId, reagent2SlotId), reagent3itemId, timesToMake,autocraft, reference)
 end
 
-local function copy(t)
-	local a = {}
-	for k, v in pairs(t) do
-		a[k] = v
-	end
-	return a
-end
+
 
 local function LLC_AlchemyCraftInteraction(event, station)
 	dbug("FUNCTION:LLCAlchemyCraft")
@@ -137,10 +139,10 @@ local function LLC_AlchemyIsItemCraftable(station, request)
     if station ~= CRAFTING_TYPE_ALCHEMY then return false end
 
     local materialList
-      = { { itemLink = getItemLinkFromItemId(request.solventId ) , requiredCt = request.timesToMake }
-        , { itemLink = getItemLinkFromItemId(request.reagentId1) , requiredCt = request.timesToMake }
-        , { itemLink = getItemLinkFromItemId(request.reagentId2) , requiredCt = request.timesToMake }
-        , { itemLink = getItemLinkFromItemId(request.reagentId3) , requiredCt = request.timesToMake }
+      = { { itemLink = getItemLinkFromItemId(request.solventId ) , requiredCt = request.timesToMake },
+          { itemLink = getItemLinkFromItemId(request.reagentId1) , requiredCt = request.timesToMake },
+          { itemLink = getItemLinkFromItemId(request.reagentId2) , requiredCt = request.timesToMake },
+          { itemLink = getItemLinkFromItemId(request.reagentId3) , requiredCt = request.timesToMake }
         }
     return LibLazyCrafting.HaveMaterials(materialList)
 end
