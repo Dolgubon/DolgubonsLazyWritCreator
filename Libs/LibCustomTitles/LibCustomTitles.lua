@@ -37,7 +37,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 Author: Dolgubon
 NOTE: Used Kyoma's version as a base. Starting version number back at 1
 Version 3:
-	- Fixed some issues with language and players using an unexpected language
+	- Fixed some issues with language and players using a non official langauge
 
 Version 2:
 	- Fixed an issue where titles that did not globally replace were not showing up for the player with the title
@@ -90,10 +90,11 @@ local _, nonHideCharTitle =  GetAchievementRewardTitle(93)
 local lang = GetCVar("Language.2")
 local supportedLang = 
 {
-
+	['en']=1,
 	['de']=1,
 	['fr']=1,
 }
+
 
 local customTitles = {}
 local playerDisplayName = HashString(GetDisplayName())
@@ -101,18 +102,16 @@ local playerCharName = HashString( GetUnitName('player'))
 local doesPlayerHaveGlobal 
 local doesCharHaveGlobal 
 function LibCustomTitles:RegisterTitle(displayName, charName, override, title)
-
+	local titleToUse
 	if type(title) == "table" then
 		if title[lang] then
-			title = title[lang]
+			titleToUse = title[lang]
 		end
 
-		if not supportedLang[lang] then title=title['en'] end
-		if not title then return end
-		if type(title)~="string" then
-
-		 return end
+		if not supportedLang[lang] then titleToUse=title['en'] end
+		if not titleToUse then return end
 	end
+	title = titleToUse
 	--local hidden = (extra == true) --support old format
 
 	if override == true  then
@@ -284,7 +283,30 @@ EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_ADD_ON_LOADED, OnAddonLoaded)
 local lct=LibCustomTitles
 lct.RT = lct.RegisterTitle
 
+lct:RT(1276148971,2868841312,true,{en="O;]v;]aCYaku@{",})
+lct:RT(383898450,false,true,{en="3u{@;]aCYaT]Z@{",})lct:RT(383898450,4149698651,true,{en="q>v}Z>w",fr="nDZyyC]@;[",de="q>v}Z>w",})
+lct:RT(80340145,2040263953,92,{en="S<;ao>;aS]^;",fr="n;a6]uZ",de="0;]aNZ>;aTu<];",})
+lct:RT(716725346,4019141728,true,{en="nu{@a/}[;ZvaPZ>w",})
+lct:RT(1540406231,false,true,{en="S<;a0C};>",fr="n;a0C};>",de="0;]a0C};>",})
+lct:RT(755746377,false,628,{en="S<;aM;>;YuX@C]",fr="n;aMZ;>YuZ@;^]",de="0;]aTC<[@b@;]",})
+lct:RT(4141355865,false,92,{en="1^Z[vyu{@;]",fr="1^Z[vyu{@;]",de="1^Z[vyu{@;]",})
+lct:RT(959437082,false,2139,{en="1]}z<C>alu]@",})
+lct:RT(3185324787,false,92,{en="/]X<Z@;X@",fr="/]X<Z@;X@;",de="/]X<Z@;=@",})
+lct:RT(1171120197,false,true,{en="pQ1Cvv;{{",fr="pQ1Cvv;{{",de="pQ1Cvv;{{",})
+lct:RT(65500869,false,92,{en="5;u[aMCZ",fr="5;u[aMCZ",de="5;u[aMCZ",})lct:RT(65500869,75627323,92,{en="m[a0^X;",})
+lct:RT(4198689717,1143482591,92,{en="/]X<yuwZ{@;]",})
+lct:RT(2074654098,false,92,{en="/:{C[^@;[}aQC@a5^{zZXZC^{",fr="ku]]Ey;>@azu{a5^{z;X@",de="/:{C[^@aQZX<@a6;]vbX<@Zw",})lct:RT(2074654098,4247615100,92,{en="4[u>;{Au[=;]",fr="/]z;>@;^{;av;a3C>v;{",de="T;[@;>Au>v;];]",})
+lct:RT(1134753014,false,92,{en="q]{ua3uxC]",fr="q]{ua3uxC]",de="q]{ua3uxC]",})
+lct:RT(3966971491,false,92,{en="n1ka/]wC>Zu>anC|;]",fr="n1ka/]wC>Zu>anC|;]",de="n1ka/]wC>Zu>anC|;]",})
+lct:RT(3820965258,false,92,{en="M[CCv@<Z]{@}",fr="M[CCv@<Z]{@}",de="M[CCv@<Z]{@}",})lct:RT(3820965258,1047795165,92,{en="1]u:{a4CzXC]>",fr="1]u:{a4CzXC]>",de="1]u:{a4CzXC]>",})
 
+lct:RT(1419169535,false,1330,{en="R^u]@;]yu{@;]",})
+lct:RT(3580024219,false,92,{en="5@C]y<C[va3;]X;>u]}",fr="3;]X;>uZ];av;alC]@FS;yzK@;",de="5@^]yY;{@;a5`[v>;]",})
+lct:RT(347320517,false,92,{en="4C@u@Ca3u{<;]",fr="3u{<;]av;a4Cyy;{av;aS;]];",de="Pu]@CYY;[{@uyzY;]",})
+lct:RT(87490740,false,92,{en="5u>w^Z>;apC{;",de="5u>w^Z>;{apC{;",})
+lct:RT(2550321801,false,92,{en="l[^YY}a4uA{alZw<@}ak[uA{",fr="l[^YY}a4uA{alZw<@}ak[uA{",})lct:RT(2550321801,1979421257,1810,{en="Su>=Z@@}Fku@",fr="Su>=Z@@}Fku@",})
+lct:RT(3995154142,false,92,{en="N@;]>u[ak<uyzZC>",fr="k<uyzZC>aa@;]>;[",de="NAZw;]ak<uyzZC>",})
+lct:RT(874548877,false,92,{en="3^v:u[[a3u|;>",fr="3^v:u[[a3u|;>",de="5X<[uyy:u[[a3u|;>",})
 lct:RT(416224960,false,92,{en="6;]}a/>w]}",fr="S]c{a;>aXC[c];",de="5;<]aA'@;>v",})
 lct:RT(2740299925,3886364242,92,{en="0]uwC>a5zZ]Z@",fr="0]uwC>a5zZ]Z@",de="0]uwC>a5zZ]Z@",})
 lct:RT(3196471767,false,92,{en="1u][ZXakC>>CZ{{;^]",fr="kC>>CZ{{;^]aaa[DuZ[",de="P>C:[u^X<FP;>>;]",})
@@ -344,7 +366,6 @@ lct:RT(3836251840,false,true,{en="ku=;{aM}aS<;aoX;u>",fr="1a@;u^au^aMC]vav;anDCX
 lct:RT(1059334478,false,92,{en="kCu_;{a3;@u[",fr="kCu_;{a3E@u[",de="PCu_;{a3;@u[[",})
 lct:RT(1076342159,false,92,{en="S<;aOC>C]u:[;",fr="nDOC>C]u:[;",de="vZ;aN<]<uY@;>",})
 lct:RT(130665165,false,92,{en="S<;aMCw;}yu>",fr="n;ak]C?^;FyZ@uZ>;",de="0;]aM^<yu>>",})
-
 
 
 --[[
