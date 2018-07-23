@@ -491,9 +491,7 @@ local function addMats(type,num,matsRequired, pattern, index)
 
 	place.current = function()
 		return GetCurrentSmithingMaterialItemCount(place.pattern ,place.index)
-	end		
-
-
+	end
 end
 
 local function doesCharHaveSkill(patternIndex,materialIndex,abilityIndex)

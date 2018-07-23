@@ -208,7 +208,13 @@ local function OnLootUpdated(event)
 				local n = SCENE_MANAGER:GetCurrentScene().name
 
 				LootAll()
-				if n == 'hudui' or n=='interact' or n == 'hud' then SCENE_MANAGER:Show('hud') test() else SCENE_MANAGER:Show(n) end
+				if n == 'hudui' or n=='interact' or n == 'hud' then 
+					SCENE_MANAGER:Show('hud')
+				    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+				    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+				else 
+					SCENE_MANAGER:Show(n) 
+				end
 				--local boxRank = romanNumeral(string.sub(lootInfo[1], b + 2))
 				if shouldSaveStats(i,boxRank) then LootAllHook(i,boxRank) end
 				--SYSTEMS:GetObject("mainMenu"):ToggleCategory(MENU_CATEGORY_INVENTORY)
@@ -334,10 +340,7 @@ function WritCreater.LootHandlerInitialize()
 			oldfunc(self, bag, slot) 
 		end 
 	end
-	local function test()
-	    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
-	    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
-	end
+	
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
