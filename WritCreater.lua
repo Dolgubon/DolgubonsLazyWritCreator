@@ -496,21 +496,6 @@ local function addMats(type,num,matsRequired, pattern, index)
 
 end
 
-local function sendNote(gold)
-	DolgubonsWrits:SetHidden(true)
-	DolgubonsWritsFeedback:SetHidden(true)
-    SCENE_MANAGER:Show('mailSend')
-    zo_callLater(function()
-    ZO_MailSendToField:SetText('@Dolgubon')
-    ZO_MailSendSubjectField:SetText("Dolgubon's Lazy Writ Crafter")
-    if gold then
-    	QueueMoneyAttachment(gold)
-    end
-    ZO_MailSendBodyField:TakeFocus() end, 200)
-  end
-
-WritCreater.SendNote = sendNote
-
 local function doesCharHaveSkill(patternIndex,materialIndex,abilityIndex)
 
 	local requirement =  select(10,GetSmithingPatternMaterialItemInfo( patternIndex,  materialIndex))
@@ -1106,12 +1091,11 @@ local function initializeLibraries()
 	if event == LLC_CRAFT_SUCCESS then  WritCreater.writItemCompletion(event, ...) end end)
 
 	LibFeedback = LibStub:GetLibrary("LibFeedback")
-	local showButton = LibFeedback:initializeFeedbackWindow(WritCreater, "Dolgubon's Lazy Writ Crafter",DolgubonsWrits, "@Dolgubon", 
-	{TOPLEFT , owningWindow , TOPLEFT , 10, 10}, 
+	local showButton, feedbackWindow = LibFeedback:initializeFeedbackWindow(WritCreater, "Dolgubon's Lazy Writ Crafter",DolgubonsWrits, "@Dolgubon", 
+	{RIGHT, DolgubonsWrits, RIGHT,-50,40}, 
 	{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
 	"If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail.")
-	showButton:ClearAnchors()
-	showButton:SetAnchor(RIGHT, DolgubonsWrits, RIGHT,-50,40 )
+	DolgubonsWritsFeedback = feedbackWindow
 end
 
 local function initializeLocalization()
