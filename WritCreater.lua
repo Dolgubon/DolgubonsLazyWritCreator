@@ -1104,6 +1104,14 @@ local function initializeLibraries()
 
 	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, ...)
 	if event == LLC_CRAFT_SUCCESS then  WritCreater.writItemCompletion(event, ...) end end)
+
+	LibFeedback = LibStub:GetLibrary("LibFeedback")
+	local showButton = LibFeedback:initializeFeedbackWindow(WritCreater, "Dolgubon's Lazy Writ Crafter",DolgubonsWrits, "@Dolgubon", 
+	{TOPLEFT , owningWindow , TOPLEFT , 10, 10}, 
+	{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"}, 
+	"If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail.")
+	showButton:ClearAnchors()
+	showButton:SetAnchor(RIGHT, DolgubonsWrits, RIGHT,-50,40 )
 end
 
 local function initializeLocalization()

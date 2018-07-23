@@ -334,12 +334,10 @@ function WritCreater.LootHandlerInitialize()
 			oldfunc(self, bag, slot) 
 		end 
 	end
-	function test()
-    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
-    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
-end
-
-SCENE_MANAGER:RegisterTopLevel(DolgubonsWritsFeedback, false)
+	local function test()
+	    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+	    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+	end
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end

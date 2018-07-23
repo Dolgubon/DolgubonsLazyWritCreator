@@ -8,63 +8,10 @@
 -- File Description: Contains all the XML GUI information for the addon
 -- Load Order Requirements: Before WritCreater.lua
 -- 
-------------------------------------------------------------------------------------->
+------------------------------------------------------------------------------------- -->
 
 <GuiXml>
 	<Controls>
-		<TopLevelControl movable="true" mouseEnabled="true" name="DolgubonsWritsFeedback" hidden="true" tier="HIGH">
-			 <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="5" />
-      <Dimensions x="545" y="150" />
-      <Controls>
-        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
-        <Label name="$(parent)Title" font="ZoFontGame"   height="25" width="95" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Dolgubon's Lazy Writ Crafter">
-          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="5" />
-        </Label>
-        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
-          <Dimensions x="48" y="48" />
-          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
-          <OnClicked>
-            DolgubonsWritsFeedback:SetHidden(true)
-          </OnClicked>
-        </Button>
-        <Label name="$(parent)Note"  font="ZoFontGame"  horizontalAlignment="CENTER" color="FFFFFF" text="If you found a bug, have a request, suggestion, or wish to donate gold, send me a mail, or even send me some money on Paypal.">
-          <Dimensions x="525" y="200" />
-          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50" />
-        </Label>
-        <Button name="$(parent)Feedback" inherits="ZO_DefaultButton" text="Send Note">
-          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5" />
-          <Dimensions x="130" />
-          <OnClicked>
-            WritCreater.SendNote(0)
-          </OnClicked>
-        </Button>
-        <Button name="$(parent)Medium" inherits="ZO_DefaultButton" text="Send 5000">
-		<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Feedback" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
-          
-          <Dimensions x="130" />
-          <OnClicked>
-            WritCreater.SendNote(5000)
-          </OnClicked>
-        </Button>
-        
-        <Button name="$(parent)Large" inherits="ZO_DefaultButton" text="Send 50000">
-		<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Medium" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
-          
-          <Dimensions x="130" />
-          <OnClicked>
-            WritCreater.SendNote(50000)
-          </OnClicked>
-        </Button>
-        <Button name="$(parent)Small" inherits="ZO_DefaultButton" text="Send $$">
-          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
-          <Dimensions x="130" />
-          <OnClicked>
-             RequestOpenUnsafeURL("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU")
-          </OnClicked>
-        </Button>
-      </Controls>
-    </TopLevelControl>
 		<TopLevelControl name="DolgubonsWrits" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="470" y="200" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50"/>
@@ -110,17 +57,6 @@
 								WritCreater.off()
 							</OnClicked>
 			    		</Button>
-						<Button name="$(parent)FeedbackButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-50" offsetY="-40" />
-							<Dimensions x="34" y="34" />
-							<Textures normal="ESOUI/art/chatwindow/chat_mail_up.dds" mouseOver="ESOUI/art/chatwindow/chat_mail_over.dds" />
-							<OnClicked>
-								DolgubonsWritsFeedback:SetHidden(false)
-							</OnClicked>
-							<OnMouseExit>
-								ZO_Tooltips_HideTextTooltip()
-							</OnMouseExit>
-						</Button>
 					</Controls>
 				</Backdrop>
 			</Controls>
