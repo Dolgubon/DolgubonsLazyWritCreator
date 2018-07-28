@@ -45,7 +45,7 @@ parentControl, -- The parent control to anchor the feedback button(s) + label(s)
 
 
 local libLoaded
-local LIB_NAME, VERSION = "LibFeedback", 1.0
+local LIB_NAME, VERSION = "LibFeedback", 1.1
 local LibFeedback, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibFeedback then return end
 LibFeedback.debug = false
@@ -127,6 +127,7 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
 		d("|cFF0000[LibFeedback] - ERROR:|r Parent control not found for addon namespace: \"|cFFFFFF" .. tostring(parentAddonName) .. "|r\"")
 		return nil
 	end
+
 	if mailButtonPosition == nil or mailButtonPosition[2] == nil then
 		d("|cFF0000[LibFeedback] - ERROR:|r Mail button data is missing for addon namespace: \"|cFFFFFF" .. tostring(parentAddonName) .. "|r\"")
 		return nil

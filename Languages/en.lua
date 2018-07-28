@@ -19,6 +19,7 @@
 -- If you ARE looking to translate this to something else then anything with a comment of Vital beside it is 
 -- REQUIRED for the addon to function properly. These strings MUST BE TRANSLATED EXACTLY!
 -- If only going for functionality, ctrl+f for Vital. Otherwise, you should just translate everything. Note that some strings 
+-- Note that if you are going for a full translation, you must also translate defualt.lua and paste it into your localization file.
 --
 -- For languages that do not use the Latin Alphabet, there is also an optional langParser() function. IF the language you are translating
 -- requires some changes to the WritCreater.parser() function then write the optional langParser() function here, and the addon
@@ -539,7 +540,7 @@ function WritCreater.getTaString()
 end
 
 WritCreater.lang = "en"
-
+WritCreater.langIsMasterWritSupported = true
 
 --[[
 SLASH_COMMANDS['/opencontainers'] = function()local a=WritCreater.langWritRewardBoxes() for i=1,200 do for j=1,6 do if a[j]==GetItemName(1,i) then if IsProtectedFunction("endUseItem") then

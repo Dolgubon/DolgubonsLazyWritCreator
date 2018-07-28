@@ -392,6 +392,8 @@ local function temporaryCheck(condition,info)
 	return true
 end
 
+
+
 function WritCreater.exceptions(condition)
 	local location = GetCraftingInteractionType()
 	if location == 0 then return condition end
@@ -614,8 +616,8 @@ WritCreater.optionStrings["writ grabbing tooltip"]						= "Entnimmt Gegenstände
 WritCreater.optionStrings["autoloot behaviour"]							= "Autoloot-Verhalten"
 WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Wann soll das Add-On Container looten"
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Gameplay-Einstellung kopieren", "Automatisch looten", "Nie looten"}
-WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
-WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
+-- WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
+-- WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 WritCreater.optionStrings["hide when done"]								= "Verstecke Fenster anschließend"
 WritCreater.optionStrings["hide when done tooltip"]						= "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
 WritCreater.optionStrings['reticleColour'] 								= "Fadenkreuzfarbe ändern"
@@ -646,3 +648,5 @@ function WritCreater.getTaString()
 end
 
 WritCreater.lang = "de"
+
+WritCreater.langIsMasterWritSupported = true

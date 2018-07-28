@@ -81,6 +81,12 @@ local function dailyResetFunction(till) -- You can translate the following simpl
 	end 
 end
 
+local function masterWritEnchantToCraft (pat,set,trait,style,qual,mat,writName,Mname,generalName)
+	local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and style <<t:4>> at <<t:5>> quality",pat,set,trait,style,qual,mat)
+	return zo_strformat("<<t:2>> <<t:3>> <<t:4>>: <<1>>",partialString,writName,Mname,generalName )
+end
+
+
 WritCreater.strings = 
 {
 	["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end,
@@ -109,6 +115,13 @@ WritCreater.strings =
 	["includesStorage"]				= function(type) local a= {"Surveys", "Master Writs"} a = a[type] return zo_strformat("Count includes <<1>> in house storage", a) end,
 	["surveys"]						= "Crafting Surveys",
 	["sealedWrits"]					= "Sealed Writs",
+	["masterWritEnchantToCraft"]	= function(lvl, type, quality, writCraft, writName, generalName) 
+											return zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality",lvl, type, quality,
+												writCraft,writName, generalName) end,
+	["masterWritSmithToCraft"]		= masterWritEnchantToCraft,
+	["withdrawItem"]				= function(amount, link) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link end,
+	['fullBag']						= "You have no open bag spaces. Please empty your bag.",
+
 
 }
 

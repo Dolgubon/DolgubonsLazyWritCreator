@@ -105,9 +105,9 @@ local function moveItem( amountRequired, bag, slot)
 		else
 			RequestMoveItem(bag, slot, BAG_BACKPACK,emptySlot,amount)
 		end
-		d("Dolgubon's Lazy Writ Crafter retrieved "..tostring(amountRequired).." "..GetItemLink(bag, slot,0))
+		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0)))
 	else
-		d("You have no open bag spaces. Please empty your bag.")
+		d(WritCreater.strings.fullBag)
 	end
 
 end

@@ -167,7 +167,7 @@ end
 -- Checks if all the traits of the glyph required were found. If one is not found, outputs an error message to chat.
 
 local function foundAllEnchantingRequirements(essence, potency, aspect)
-	if WritCreater.lang~="en" and WritCreater.lang~="de" then return false end
+	if not WritCreater.langIsMasterWritSupported then return false end
 	local foundAll = true
 	if not essence then
 		foundAll = false
@@ -214,13 +214,15 @@ local function EnchantingMasterWrit(journalIndex, sealedText, reference)
 		local lvl = potency[1]
 		-- Output what we're making.
 		if potency[1]=="truly" then lvl = "truly superb" end
-		d(zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality", lvl, essence[1], aspect[1],
+		-- Actually add the glyph to the queue
+		
+		d(WritCreater.strings.masterWritEnchantToCraft( lvl, essence[1], aspect[1],
 			WritCreater.langWritNames()[CRAFTING_TYPE_ENCHANTING],
 			WritCreater.langMasterWritNames()["M1"],
 			WritCreater.langWritNames()["G"]))
-		dbug("CALL:LLCENchantCraft")
-		-- Actually add the glyph to the queue
 		WritCreater.LLCInteractionMaster:CraftEnchantingItemId(potency[2][essence[3]], essence[2], aspect[2], true, reference)
+		dbug("CALL:LLCENchantCraft")
+		
 	else
 	end
 end
@@ -379,16 +381,13 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 
 	if foundAllRequirements(pattern, style, setIndex, trait, quality) then
 		-- too many variable stuff so need to do multiple calls to zo_strformat
-		local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and style <<t:4>> at <<t:5>> quality"
-			,pattern[1], 
+		d(WritCreater.strings.masterWritSmithToCraft(
+			pattern[1], 
 			GetSetIndexes()[setIndex][1],
 			trait[1],
 			style[1], 
 			quality[1],
-			material			
-			 )
-		d(zo_strformat("<<t:2>> <<t:3>> <<t:4>>: <<1>>",
-			partialString,
+			material,
 			WritCreater.langWritNames()[station],
 			WritCreater.langMasterWritNames()["M1"],
 			WritCreater.langWritNames()["G"]
