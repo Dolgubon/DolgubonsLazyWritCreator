@@ -169,7 +169,7 @@ function WritCreater.InitializeQuestHandling()
 	local original = AcceptOfferedQuest
 	AcceptOfferedQuest = function()
 	if string.find(GetOfferedQuestInfo(), completionStrings["Rolis Hlaalu"]) and WritCreater:GetSettings().preventMasterWritAccept then 
-		d("Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.")  else original() end end
+		d(WritCreater.strings.masterWritSave)  else original() end end
 end
 
 -- /script JumpToSpecificHouse("@marcopolo184", 46)

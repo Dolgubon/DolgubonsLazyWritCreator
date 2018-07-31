@@ -17,7 +17,9 @@
 
 --local d = function() for i = 1, #abc do end end
 --test
-local d= function() end
+local dbug = function(...) d(...) end
+local d= function(...) end
+
 CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
 --DolgubonsWritsBackdropQuestOutput.SetText = function()end
 if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
@@ -1116,8 +1118,14 @@ function WritCreater:Initialize()
 	DolgubonsWrits:SetHidden(true)
 	
 	initializeLocalization()
-
-	initializeLibraries()
+	dbug("hello")
+	local fail = pcall(initializeLibraries)
+	if not fail then
+		dbug("Libraries not found. Please do the following, especially if you use Minion to manage your addons:")
+		dbug("1. Open Minion and uninstall both the Writ Crafter and the RU Patch for the Writ Crafter, which may have been automatically installed by Minion")
+		dbug(" - To uninstall, right click the addon in Minion, and choose uninstall")
+		dbug("2. Then, reinstall the Writ Crafter, and reinstall the RU patch if desired.")
+	end
 
 	initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
 	initializeUI()
@@ -1128,6 +1136,8 @@ function WritCreater:Initialize()
 
 	WritCreater.LootHandlerInitialize()
 	WritCreater.InitializeQuestHandling()
+	WritCreater.initializeReticleChanges()
+
 	if GetDisplayName()== "@Dolgubon" then WritCreater:GetSettings().containerDelay = 2	end
 
 

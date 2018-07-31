@@ -56,6 +56,8 @@ function WritCreater.langParser(str)  -- Optional overwrite function for languag
 end
 --]]
 
+WritCreater = WritCreater or {}
+
 local function proper(str)
 	if type(str)== "string" then
 		return zo_strformat("<<C:1>>",str)

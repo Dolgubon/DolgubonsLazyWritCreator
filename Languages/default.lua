@@ -121,6 +121,7 @@ WritCreater.strings =
 	["masterWritSmithToCraft"]		= masterWritEnchantToCraft,
 	["withdrawItem"]				= function(amount, link) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link end,
 	['fullBag']						= "You have no open bag spaces. Please empty your bag.",
+	['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.",
 
 
 }

@@ -10,6 +10,9 @@
 -- 
 -----------------------------------------------------------------------------------
 
+WritCreater = WritCreater or {}
+
+
 function WritCreater.langWritNames() --Exacts!!!  I know for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
 	local names = {
 	["G"] = "schrieb",
