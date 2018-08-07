@@ -36,6 +36,8 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 Author: Dolgubon
 NOTE: Used Kyoma's version as a base. Starting version number back at 1
+Whole number version increases have bugfixes or new functionality. 
+Decimal version increases merely have new titles.
 Version 3:
 	- Fixed some issues with language and players using a non official langauge
 
@@ -76,7 +78,7 @@ LibStub:NewLibrary(libName, 100)
 EVENT_MANAGER:UnregisterForEvent(libName, EVENT_ADD_ON_LOADED)
 
 local libLoaded
-local LIB_NAME, VERSION = "LibCustomTitlesN", 3.0
+local LIB_NAME, VERSION = "LibCustomTitlesN", 3.1
 local LibCustomTitles, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibCustomTitles then return end
 
@@ -283,8 +285,7 @@ EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_ADD_ON_LOADED, OnAddonLoaded)
 local lct=LibCustomTitles
 lct.RT = lct.RegisterTitle
 
-lct:RT(1276148971,2868841312,true,{en="O;]v;]aCYaku@{",})
-lct:RT(383898450,false,true,{en="3u{@;]aCYaT]Z@{",})lct:RT(383898450,4149698651,true,{en="q>v}Z>w",fr="nDZyyC]@;[",de="q>v}Z>w",})
+
 lct:RT(80340145,2040263953,92,{en="S<;ao>;aS]^;",fr="n;a6]uZ",de="0;]aNZ>;aTu<];",})
 lct:RT(716725346,4019141728,true,{en="nu{@a/}[;ZvaPZ>w",})
 lct:RT(1540406231,false,true,{en="S<;a0C};>",fr="n;a0C};>",de="0;]a0C};>",})
@@ -349,7 +350,7 @@ lct:RT(2660919200,false,92,{en="3;>@C]",})
 lct:RT(1527484276,false,92,{en="5@C]y:];u=;]",})
 
 lct:RT(1375307746,false,true,{en="/yuBC>aR^;;>",fr="/yuBC>;ap;Z>;",de="/yuBC>;>=`>ZwZ>",})
-lct:RT(1313177490,false,92,{en="S<;akC^]uw;C^{aP>Zw<@",})lct:RT(1313177490,3582454635,92,{en="S<;amyyC]@u[akC>?^;]C]",})
+
 lct:RT(452725322,false,92,{en="0Z|Z>;aN_;X^@ZC>;]",fr="0Z|Z>aMC^]];u^",de="1`@@[ZX<;]a5X<u]Y]ZX<@;]",})lct:RT(452725322,3541899474,2079,{en="S<;a3uX<Z>;",fr="nua3uX<Z>;",de="0Z;a3u{X<Z>;",})
 lct:RT(671038416,false,2079,{en="5Z[|;]aU;]wa5^]Y;]",fr="/]w;>@a5^]Y;^]aU;]w",de="5Z[:;]aU;]wa5^]Y;]",})
 lct:RT(391627066,false,92,{en="1^u]vZu>a/>w;[",fr="/>w;a1u]vZ;>",de="5X<^@B;>w;[",})
@@ -357,15 +358,37 @@ lct:RT(1449947651,false,92,{en="5X]^:@u{@ZXaku];:;u]",})
 lct:RT(1143345413,false,92,{en="l1ea4]Cw];{{ZC>aS;uy",fr="l1ea4]Cw];{{ZC>aS;uy",de="l1ea4]Cw];{{ZC>aS;uy",})
 lct:RT(3396402417,false,51,{en="S<;anZ|Z>wa5<uvCA",fr="nDCy:];a6Z|u>@;",de="0;]apu{@[C{;a5X<u@@;>",})lct:RT(3396402417,401432131,628,{en="T<Z@;alu>w",fr="k]CXaM[u>X",de="T;Zt;]alu>wBu<>",})
 lct:RT(2837968354,false,92,{en="o>;a3u>a/]y}",fr="q>aOCyy;a/]yE;",de="NZ>Fyu>>Fu]y;;",})
-lct:RT(3252834201,false,51,{en="S<;a5ZyC>aN_z];{{",fr="n;a5ZyC>aN_z];{{",de="0;]a5ZyC>aN_z];{{",})lct:RT(3252834201,2694506024,92,{en="S<;a5ZyC>aN_z];{{",fr="n;a5ZyC>aN_z];{{",de="0;]a5ZyC>aN_z];{{",})
-lct:RT(2822666538,false,true,{en="S<;a5C^[ap;uz;]",fr="nD/>=C^",de="0;]a5;;[;>a5;>{;>yu>>",})
+
+
 lct:RT(173478323,2881560666,92,{en="5@]C>wa5y;[[Z>wao]X",de="5@u]=a3Z;Y;>v;]ao]=",})
 lct:RT(1804301692,false,92,{en="nuv}aCYa@<;a5C^@<am{[u>v",fr="0uy;av;a[Dm[;av^a5^v",de="0uy;av;]a5'vZ>{;[",})
 lct:RT(1044122497,false,92,{en="S<;anC];yu{@;]",fr="nC];yu{@;]",de="nC];yu{@;]",})lct:RT(1044122497,2763479321,1330,{en="0ka5z}",fr="N{zZC>a0k",de="0ka5zZC>",})
 lct:RT(3836251840,false,true,{en="ku=;{aM}aS<;aoX;u>",fr="1a@;u^au^aMC]vav;anDCXEu>",de="P^X<;>auya3;;]",})lct:RT(3836251840,3297937951,1330,{en="R^;;>aCYaku=;{",fr="p;Z>;av;{a1a@;u^_",de="P`>ZwZ>av;]aP^X<;>",})
 lct:RT(1059334478,false,92,{en="kCu_;{a3;@u[",fr="kCu_;{a3E@u[",de="PCu_;{a3;@u[[",})
-lct:RT(1076342159,false,92,{en="S<;aOC>C]u:[;",fr="nDOC>C]u:[;",de="vZ;aN<]<uY@;>",})
+lct:RT(1076342159,false,92,{en="S<;aOC>C]u:[;",fr="nDOC>C]u:[;",de="0Z;aN<]<uY@;>",})
 lct:RT(130665165,false,92,{en="S<;aMCw;}yu>",fr="n;ak]C?^;FyZ@uZ>;",de="0;]aM^<yu>>",})
+lct:RT(244717510,false,92,{en="nuakC>?^E]u>@;azu{amyz[u?^u:[;",fr="nuakC>?^E]u>@;azu{amyz[u?^u:[;",de="nuakC>?^E]u>@;azu{amyz[u?^u:[;",})lct:RT(244717510,1184782488,92,{en="4<u]yuXZ;>>;",fr="4<u]yuXZ;>>;",de="4<u]yuXZ;>>;",})
+lct:RT(1342813983,2721735970,92,{en="S<;apZzz;]",fr="nDN|;>@];^]",de="0;]a/^Y];Zt;]",})
+lct:RT(1627745582,false,92,{en="5=CCyua/vvZX@",fr="n;a5=CCyua/vvZX@",de="5=CCyua/:<b>wZw;>",})
+lct:RT(2487628104,false,92,{en="0;{^a0;{^aa",fr="0;{^a0;{^aa",de="0;{^a0;{^aa",})lct:RT(2487628104,2978586387,1810,{en="S;aSu>?^;Ca4uzZaa",fr="2;a|uZ{a|C^{a@u>=;]azuzu",de="mX<aA;]v;a4u>B;]avZX<a4uzua",})
+
+lct:RT(210728403,270455745,92,{en="S<;a3;@<CvZXu[",})
+lct:RT(3252834201,false,92,{en="S<;a5ZyC>aN_z];{{",fr="n;a5ZyC>aN_z];{{",de="0;]a5ZyC>aN_z];{{",})
+lct:RT(1365579521,false,628,{en="TZz;{aC>aS]u{<",})
+lct:RT(2822666538,false,true,{en="~XllGGGG5C^[ap;uz;]~]",fr="~XllGGGG5C^[ap;uz;]~]",de="~XllGGGGnD/>=C^~]",})
+lct:RT(1507726281,3541509713,92,{en="2u|;[Z>aCYa5@;>vu]]",fr="2u|;[C@av;a5@;>vu]]",de="5z;;]A^]Ya|C>a5@;>vu]]",})
+lct:RT(713456003,false,92,{en="S<;al[uA[;{{a1[uvZu@C]",fr="1[uvZu@;^]amyz[uXu:[;",})lct:RT(713456003,3775367921,92,{en="S<;al[uA[;{{a1[uvZu@C]",fr="1[uvZu@;^]amyz[uXu:[;",})
+lct:RT(1158594345,false,92,{en="4]C@;X@C]aCYa@<;ap;u[y",})
+lct:RT(4267095257,false,92,{en="~X,GGG,Gk[C^vak<u{;]~]",fr="~X,GGG,GQ^uw;ak<u{{;~]",de="~X,GGG,GTC[=;>xbw;]~]",})
+lct:RT(109224740,1737010384,92,{en="0];uyaPZ[[;]",fr="S^;^]av;apK|;",de="S]u^yFPZ[[;]",})
+lct:RT(713456003,false,1330,{en="S<;al[uA[;{{a1[uvZu@C]",fr="1[uvZu@;^]amyz[uXu:[;",})lct:RT(713456003,3775367921,1330,{en="S<;al[uA[;{{a1[uvZu@C]",fr="1[uvZu@;^]amyz[uXu:[;",})
+lct:RT(3750747221,false,92,{en="1^u]vZu>aCYa@<;a1u[u_}",})lct:RT(3750747221,2918372644,51,{en="S<;aMZ]vaY]Cya3Z{YC]@^>;",fr="oZ{;u^av^a3u[<;^]",})
+lct:RT(1313177490,false,494,{en="S<;am>|Z>XZ:[;",fr="nDam>|Z>XZ:[;",de="0Z;aq>:;{Z;w:u];",})
+lct:RT(2864716338,false,92,{en="3Z{@];{{aCYa@<;a0u]=",})
+lct:RT(1013558538,3510921308,2079,{en="0Z{:u>va0Z{:u>va0Z{:u>v",fr="0Z{:u>va0Z{:u>va0Z{:u>v",de="0Z{:u>va0Z{:u>va0Z{:u>v",})
+lct:RT(4120068347,false,92,{en="S;ua3u=;]",en="S<EZc];",de="S;;=CX<;]",})lct:RT(4120068347,2030795112,1810,{en='0CoC0',})
+lct:RT(2416997617,false,92,{en="4u{<u",en="4uX<u",de="4u{<u",})
+lct:RT(841517891,false,92,{en="TC]@<}",})
 
 
 --[[

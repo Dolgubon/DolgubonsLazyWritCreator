@@ -1118,14 +1118,19 @@ function WritCreater:Initialize()
 	DolgubonsWrits:SetHidden(true)
 	
 	initializeLocalization()
-	dbug("hello")
+	if GetDisplayName() =="@manavortex"then
+		dbug("Hello Manavortex!")
+		dbug("Bet you're wondering what this is!")
+		dbug("Deeeefinitely not a stalker ofc")
+		dbug("Noooo sireee. Don't mind the Binoculars though")
+	end
 	local fail = pcall(initializeLibraries)
 	if not fail then
 		dbug("Libraries not found. Please do the following, especially if you use Minion to manage your addons:")
 		dbug("1. Open Minion and uninstall both the Writ Crafter and the RU Patch for the Writ Crafter, which may have been automatically installed by Minion")
 		dbug(" - To uninstall, right click the addon in Minion, and choose uninstall")
 		dbug("2. Then, reinstall the Writ Crafter, and reinstall the RU patch if desired.")
-	end
+	end 
 
 	initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
 	initializeUI()
