@@ -934,7 +934,7 @@ local tutorial1 = function () end
 
 local function temporarycraftcheckerjustbecause(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100023
+	local currentAPIVersionOfAddon = 100024
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		for i= 1, 1 do 
