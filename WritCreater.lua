@@ -937,9 +937,7 @@ local function temporarycraftcheckerjustbecause(eventcode, station)
 	local currentAPIVersionOfAddon = 100024
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
-		for i= 1, 1 do 
-			d("Update your addons!") 
-		end 
+		d("Update your addons!") 
 	end
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
