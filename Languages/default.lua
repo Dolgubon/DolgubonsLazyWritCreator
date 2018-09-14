@@ -189,3 +189,12 @@ WritCreater.optionStrings["hide when done"]								= "Hide when done"
 WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon window when all items have been crafted"
 WritCreater.optionStrings['reticleColour']								= "Change Reticle Colour"
 WritCreater.optionStrings['reticleColourTooltip']						= "Changes the Reticle colour if you have an uncompleted or completed writ at the station"
+WritCreater.optionStrings['humorlessHuskProtection']					= "Toggle house hauntings"
+WritCreater.optionStrings['humorlessHuskProtectionTooltip']				= "Toggle the special Halloween house haunting on or off"
+WritCreater.optionStrings['spookyScarySkeletonWarning']					= "You feel a cold chill run down your back, as if something is following you..."
+WritCreater.optionStrings['humorlessHuskProtectionRitual']				= "Click here to banish the ghost"
+
+
+
+
+

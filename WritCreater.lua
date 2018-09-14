@@ -910,9 +910,10 @@ local function enchantCrafting(info, quest,add)
 	end
 end
 
+--[[
 
 
-
+]]
 local function writSearch()
 	local W = {}
 	for i=1 , 25 do
@@ -938,6 +939,9 @@ local function temporarycraftcheckerjustbecause(eventcode, station)
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
+		out("Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons.")
+		out = function() end
+		DolgubonsWrits:SetHidden(false)
 	end
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
