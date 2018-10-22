@@ -193,8 +193,3 @@ WritCreater.optionStrings['humorlessHuskProtection']					= "Toggle house hauntin
 WritCreater.optionStrings['humorlessHuskProtectionTooltip']				= "Toggle the special Halloween house haunting on or off"
 WritCreater.optionStrings['spookyScarySkeletonWarning']					= "You feel a cold chill run down your back, as if something is following you..."
 WritCreater.optionStrings['humorlessHuskProtectionRitual']				= "Click here to banish the ghost"
-
-
-
-
-

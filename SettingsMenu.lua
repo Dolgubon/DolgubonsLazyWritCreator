@@ -16,31 +16,28 @@ local validLanguages =
 	["en"]=true,["de"] = true,["fr"] = true,["jp"] = true, ["ru"] = false, ["zh"] = false, ["pl"] = false,
 }
 if true then
-EVENT_MANAGER:RegisterForEvent("WritCrafterLocalizationError", EVENT_PLAYER_ACTIVATED, function()
-
-	if not WritCreater.languageInfo then 
-
-		local language = GetCVar("language.2")
-		if validLanguages[language] == nil then
-			d("Dolgubon's Lazy Writ Crafter: Your language is not supported for this addon. If you are looking to translate the addon, check the lang/en.lua file for more instructions.")
-		elseif validLanguages[language] == false then
-			d("Dolgubon's Lazy Writ Crafter: The Localization file could not be loaded.")
-			d("Troubleshooting:")
-			d("1. Your language is supported by a patch for the Writ Crafter. Please make sure you have downloaded the appropriate patch")
-			d("2. Uninstall and then reinstall the Writ Crafter, and the patch")
-			d("3. If you still have issues, contact the author of the patch")
-		else
-			d("Dolgubon's Lazy Writ Crafter: The Localization file could not be loaded.")
-			d("Troubleshooting:")
-			d("1. Try to uninstall and then reinstall the addon")
-			d("2. If the error persists, contact @Dolgubon in-game or at tinyurl.com/WritCrafter")
+	EVENT_MANAGER:RegisterForEvent("WritCrafterLocalizationError", EVENT_PLAYER_ACTIVATED, function()
+		if not WritCreater.languageInfo then 
+			local language = GetCVar("language.2")
+			if validLanguages[language] == nil then
+				d("Dolgubon's Lazy Writ Crafter: Your language is not supported for this addon. If you are looking to translate the addon, check the lang/en.lua file for more instructions.")
+			elseif validLanguages[language] == false then
+				d("Dolgubon's Lazy Writ Crafter: The Localization file could not be loaded.")
+				d("Troubleshooting:")
+				d("1. Your language is supported by a patch for the Writ Crafter. Please make sure you have downloaded the appropriate patch")
+				d("2. Uninstall and then reinstall the Writ Crafter, and the patch")
+				d("3. If you still have issues, contact the author of the patch")
+			else
+				d("Dolgubon's Lazy Writ Crafter: The Localization file could not be loaded.")
+				d("Troubleshooting:")
+				d("1. Try to uninstall and then reinstall the addon")
+				d("2. If the error persists, contact @Dolgubon in-game or at tinyurl.com/WritCrafter")
+			end
 		end
-		
-	end
-	EVENT_MANAGER:UnregisterForEvent("WritCrafterLocalizationError", EVENT_PLAYER_ACTIVATED)
-end)
-
+		EVENT_MANAGER:UnregisterForEvent("WritCrafterLocalizationError", EVENT_PLAYER_ACTIVATED)
+	end)
 end
+
 
 WritCreater.styleNames = {}
 
@@ -116,6 +113,7 @@ end
 
 
 function WritCreater.Options() --Sentimental
+	
 	
 	local options =  {
 		{
@@ -433,7 +431,6 @@ function WritCreater.Options() --Sentimental
 				
 			})
 	end
-
 
 	return options
 end

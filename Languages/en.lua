@@ -495,6 +495,7 @@ local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutw
 	return false
 end
 
+
 local function hasMadnessEngulfedNirn()
 	local t = GetTimeString() local c = string.sub(t, 1,string.find(t, ":") - 1)
 	return tonumber(c) > 11

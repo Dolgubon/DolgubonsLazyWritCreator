@@ -18,8 +18,11 @@
 local LibLazyCrafting = LibStub("LibLazyCrafting")
 
 local widgetType = 'smithing'
-local widgetVersion = 2.3
+local widgetVersion = 2.7
 if not LibLazyCrafting:RegisterWidget(widgetType, widgetVersion) then return  end
+
+local LLC = LibLazyCrafting
+local throw = LLC.LLCThrowError
 
 local function dbug(...)
 	if DolgubonGlobalDebugOutput then
@@ -198,7 +201,7 @@ function enoughMaterials(craftRequestTable)
 	}
 	local missingSomething = false
 
-	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0 
+	if craftRequestTable["style"] and GetCurrentSmithingStyleItemCount(craftRequestTable["style"]) <= 0
 		and craftRequestTable['station']~= CRAFTING_TYPE_JEWELRYCRAFTING and not craftRequestTable["useUniversalStyleItem"] then
 		missing.materials["style"] = true
 		missingSomething = true
@@ -404,7 +407,7 @@ LibLazyCrafting.canCraftSmithingItemHere = canCraftItemHere
 -- SMITHING HELPER FUNCTIONS
 
 local function GetMaxImprovementMats(bag, slot ,station)
-	local numBooster = 1
+	local numBooster = 0
 	local chance =0
 	if not CanItemBeSmithingImproved(bag, slot, station) then return false end
 	while chance<100 do
@@ -536,6 +539,7 @@ local function LLC_CraftSmithingItem(self, patternIndex, materialIndex, material
 		station = GetCraftingInteractionType()
 		if not validStations[station] then
 			d("LLC: No station specified, and you are not at a crafting station")
+			throw(self, "No station specified, and you are not at a crafting station")
 			return
 		end
 	else
@@ -833,7 +837,8 @@ local function smithingCompleteNewItemHandler(station)
 			removedRequest.bag = BAG_BACKPACK
 			removedRequest.slot = currentCraftAttempt.slot
 			LibLazyCrafting.SendCraftEvent(LLC_INITIAL_CRAFT_SUCCESS, station, currentCraftAttempt.Requester, removedRequest)
-			LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
+			local requestTable = LLC_ImproveSmithingItem({["addonName"]=currentCraftAttempt.Requester}, BAG_BACKPACK, currentCraftAttempt.slot, currentCraftAttempt.quality, currentCraftAttempt.autocraft, currentCraftAttempt.reference)
+			requestTable["craftNow"] = true
 		else
 			removedRequest.bag = BAG_BACKPACK
 			removedRequest.slot = currentCraftAttempt.slot
@@ -1020,6 +1025,9 @@ SetIndexes =
 	{{135717 , 135737, [6] = 135724, [7] = 138714},3},  -- 43 adept rider
 	{{136417 , 136437, [6] = 136424, [7] = 138730},9},  -- 44 nocturnal's favor
 	{{136067 , 136087, [6] = 136074, [7] = 138722},6},  -- 45 sload's semblance
+	{{143161 , 143181, [6] = 143168, [7] = 143197},2},	-- 46 Naga Shaman
+	{{143531 , 143551, [7] = 143538, [7] = 143567},4},	-- 47 Might of the Lost Legion
+	{{142791 , 142811, [7] = 142798, [7] = 142827},7,}	-- 48 Grave-Stake Collector
 }
 
 for i = 1,#SetIndexes do
@@ -1111,19 +1119,35 @@ local improvementChances =
 	[3] = {2,3,4,8},
 }
 
+local improvementChancesJewelry =
+{
+	[0] = {3,5,7,10},
+	[1] = {2,4,5,7},
+	[2] = {2,3,4,5},
+	[3] = {1,2,3,4},
+}
+
+local function getImprovementChancesTable(station)
+	if station == CRAFTING_TYPE_JEWELRYCRAFTING then
+		return improvementChancesJewelry
+	else
+		return improvementChances
+	end
+end
+
 local function compileImprovementRequirements(request, station)
 	local requirements = {}
 	local currentQuality = GetItemQuality(request.ItemBagID, request.ItemSlotID)
 	local improvementLevel = getImprovementLevel(station)
 
 	for i  = 1, request.quality - 1 do
-		requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = improvementChances[improvementLevel][i]
+		requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = getImprovementChancesTable(station)[improvementLevel][i]
 	end
 	return requirements
 end
 
 function compileRequirements(request, station)-- Ingot/style mat/trait mat/improvement mat
-	
+
 	local requirements = {}
 	if request["type"] == "smithing" then
 
@@ -1154,7 +1178,7 @@ function compileRequirements(request, station)-- Ingot/style mat/trait mat/impro
 		local improvementLevel = getImprovementLevel(station)
 
 		for i  = 1, request.quality - 1 do
-			requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = improvementChances[improvementLevel][i]
+			requirements[GetItemLinkItemId( GetSmithingImprovementItemLink(station, i, 0) )] = getImprovementChancesTable(station)[improvementLevel][i]
 		end
 
 		return requirements

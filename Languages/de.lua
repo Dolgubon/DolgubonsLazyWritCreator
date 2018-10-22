@@ -262,7 +262,7 @@ local craftInfo =
 				{"Lebensregeneration",45834,1},
 				{"Lebensminderung",45834,2},
 				{"Schwächung",45843,2},
-				{"Waffenschadens",45843,1},
+				{"Waffenkraft",45843,1},
 				{"Trankverbesserung",45846,1},
 				{"Tranktempos",45846,2},
 				{"Flammenresistenz",45838,2},

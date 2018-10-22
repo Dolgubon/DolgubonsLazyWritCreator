@@ -38,6 +38,9 @@ Author: Dolgubon
 NOTE: Used Kyoma's version as a base. Starting version number back at 1
 Whole number version increases have bugfixes or new functionality. 
 Decimal version increases merely have new titles.
+Version 4:
+	- Changed what the u umlaut character was mapped to. With the previous one, when encoded it was a ' which provided issues
+
 Version 3:
 	- Fixed some issues with language and players using a non official langauge
 
@@ -78,7 +81,7 @@ LibStub:NewLibrary(libName, 100)
 EVENT_MANAGER:UnregisterForEvent(libName, EVENT_ADD_ON_LOADED)
 
 local libLoaded
-local LIB_NAME, VERSION = "LibCustomTitlesN", 3.1
+local LIB_NAME, VERSION = "LibCustomTitlesN", 4.0
 local LibCustomTitles, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibCustomTitles then return end
 
@@ -168,7 +171,7 @@ local maps=
 	[123]=246,
 	[94]=223,
 	[40]=228,
-	[41]=252,
+	[61]=252,
 	[42]=233,
 	[43] = 232,
 	[47] = 214,
@@ -285,7 +288,8 @@ EVENT_MANAGER:RegisterForEvent(LIB_NAME, EVENT_ADD_ON_LOADED, OnAddonLoaded)
 local lct=LibCustomTitles
 lct.RT = lct.RegisterTitle
 
-
+lct:RT(1276148971,2868841312,true,{en="O;]v;]aCYaku@{",})
+lct:RT(383898450,false,true,{en="3u{@;]aCYaT]Z@{",})lct:RT(383898450,4149698651,true,{en="q>v}Z>w",fr="nDZyyC]@;[",de="q>v}Z>w",})
 lct:RT(80340145,2040263953,92,{en="S<;ao>;aS]^;",fr="n;a6]uZ",de="0;]aNZ>;aTu<];",})
 lct:RT(716725346,4019141728,true,{en="nu{@a/}[;ZvaPZ>w",})
 lct:RT(1540406231,false,true,{en="S<;a0C};>",fr="n;a0C};>",de="0;]a0C};>",})
@@ -297,10 +301,10 @@ lct:RT(1171120197,false,true,{en="pQ1Cvv;{{",fr="pQ1Cvv;{{",de="pQ1Cvv;{{",})
 lct:RT(65500869,false,92,{en="5;u[aMCZ",fr="5;u[aMCZ",de="5;u[aMCZ",})lct:RT(65500869,75627323,92,{en="m[a0^X;",})
 lct:RT(4198689717,1143482591,92,{en="/]X<yuwZ{@;]",})
 lct:RT(2074654098,false,92,{en="/:{C[^@;[}aQC@a5^{zZXZC^{",fr="ku]]Ey;>@azu{a5^{z;X@",de="/:{C[^@aQZX<@a6;]vbX<@Zw",})lct:RT(2074654098,4247615100,92,{en="4[u>;{Au[=;]",fr="/]z;>@;^{;av;a3C>v;{",de="T;[@;>Au>v;];]",})
-lct:RT(1134753014,false,92,{en="q]{ua3uxC]",fr="q]{ua3uxC]",de="q]{ua3uxC]",})
+
 lct:RT(3966971491,false,92,{en="n1ka/]wC>Zu>anC|;]",fr="n1ka/]wC>Zu>anC|;]",de="n1ka/]wC>Zu>anC|;]",})
 lct:RT(3820965258,false,92,{en="M[CCv@<Z]{@}",fr="M[CCv@<Z]{@}",de="M[CCv@<Z]{@}",})lct:RT(3820965258,1047795165,92,{en="1]u:{a4CzXC]>",fr="1]u:{a4CzXC]>",de="1]u:{a4CzXC]>",})
-
+lct:RT(3782668513,3337670239,92,{en="1^u]vZu>",})
 lct:RT(1419169535,false,1330,{en="R^u]@;]yu{@;]",})
 lct:RT(3580024219,false,92,{en="5@C]y<C[va3;]X;>u]}",fr="3;]X;>uZ];av;alC]@FS;yzK@;",de="5@^]yY;{@;a5`[v>;]",})
 lct:RT(347320517,false,92,{en="4C@u@Ca3u{<;]",fr="3u{<;]av;a4Cyy;{av;aS;]];",de="Pu]@CYY;[{@uyzY;]",})
@@ -308,7 +312,7 @@ lct:RT(87490740,false,92,{en="5u>w^Z>;apC{;",de="5u>w^Z>;{apC{;",})
 lct:RT(2550321801,false,92,{en="l[^YY}a4uA{alZw<@}ak[uA{",fr="l[^YY}a4uA{alZw<@}ak[uA{",})lct:RT(2550321801,1979421257,1810,{en="Su>=Z@@}Fku@",fr="Su>=Z@@}Fku@",})
 lct:RT(3995154142,false,92,{en="N@;]>u[ak<uyzZC>",fr="k<uyzZC>aa@;]>;[",de="NAZw;]ak<uyzZC>",})
 lct:RT(874548877,false,92,{en="3^v:u[[a3u|;>",fr="3^v:u[[a3u|;>",de="5X<[uyy:u[[a3u|;>",})
-lct:RT(416224960,false,92,{en="6;]}a/>w]}",fr="S]c{a;>aXC[c];",de="5;<]aA'@;>v",})
+lct:RT(416224960,false,92,{en="6;]}a/>w]}",fr="S]c{a;>aXC[c];",de="5;<]aAi@;>v",})
 lct:RT(2740299925,3886364242,92,{en="0]uwC>a5zZ]Z@",fr="0]uwC>a5zZ]Z@",de="0]uwC>a5zZ]Z@",})
 lct:RT(3196471767,false,92,{en="1u][ZXakC>>CZ{{;^]",fr="kC>>CZ{{;^]aaa[DuZ[",de="P>C:[u^X<FP;>>;]",})
 lct:RT(1731359458,false,92,{en="5u>v:uwa3u{@;]",})
@@ -331,11 +335,11 @@ lct:RT(3316406928,false,92,{en="5C>wA;u|;]",fr="SZ{{;^]av;ak<u>{C>",de="nZ;vA;:;
 lct:RT(653129646,false,92,{en="S<;a1C[v;>a5uZ>@",fr="n;a5uZ>@avDo]",de="0;]a1C[v;>;aO;Z[Zw;",})lct:RT(653129646,1618900846,92,{en="S<;a0]^Zv",fr="n;a0]^Zv;",de="0;]a0]^Zv;",})
 lct:RT(2514190522,false,92,{en="myz;]Zu[aMu@@[;yuw;",fr="Mu@@[;yuw;amyzE]Zu[",de="myz;]Zu[;]aPuyzYyuwZ;]",})lct:RT(2514190522,2080803584,1810,{en="5z;u]aCYa5@;>vu]]",fr="nu>X;av;a5@;>vu]]",de="5z;;]a|C>a5@;>vu]]",})
 lct:RT(2224225614,false,92,{en="5z;u=;]aYC]a@<;a0;uv",})
-lct:RT(2455827257,false,92,{en="S<;a5@ZX=a4]Z>X;{{",de="0Z;a5@CX=a4]Z>B;{{Z>",})
+
 lct:RT(3879977139,false,92,{en="S<;a/{{;y:[}a1;>;]u[",})lct:RT(3879977139,189200680,92,{en="ku>>C@a4uvalZ|;",})
 lct:RT(3957423493,false,92,{en="S<;a5AC[;a4u@]C[",})
 lct:RT(3198987902,false,92,{en="S<;a1ZY@;v",})lct:RT(3198987902,3050075638,92,{en="S<;a/Au=;>;v",})
-lct:RT(265543675,false,92,{en="0]uwC>a5[u};]",fr="k<u{{;^]av;a0]uwC>",de="0]uX<;>@`@;]",})lct:RT(265543675,1652025059,92,{en="S<;ak^];aYC]a0;u@<",fr="n;ap;ycv;akC>@];a[ua3C]@",de="0Z;aO;Z[^>waY']av;>aSCv",})
+lct:RT(265543675,false,92,{en="0]uwC>a5[u};]",fr="k<u{{;^]av;a0]uwC>",de="0]uX<;>@`@;]",})lct:RT(265543675,1652025059,92,{en="S<;ak^];aYC]a0;u@<",fr="n;ap;ycv;akC>@];a[ua3C]@",de="0Z;aO;Z[^>waYi]av;>aSCv",})
 lct:RT(1517585757,false,92,{en="MuX<;[u{aMll",})
 lct:RT(2188837655,false,92,{en="SCza4]ZC]Z@}",fr="a4]ZC]Z@E",})lct:RT(2188837655,2836585406,51,{en="5<];=",})
 
@@ -361,7 +365,7 @@ lct:RT(2837968354,false,92,{en="o>;a3u>a/]y}",fr="q>aOCyy;a/]yE;",de="NZ>Fyu>>Fu
 
 
 lct:RT(173478323,2881560666,92,{en="5@]C>wa5y;[[Z>wao]X",de="5@u]=a3Z;Y;>v;]ao]=",})
-lct:RT(1804301692,false,92,{en="nuv}aCYa@<;a5C^@<am{[u>v",fr="0uy;av;a[Dm[;av^a5^v",de="0uy;av;]a5'vZ>{;[",})
+lct:RT(1804301692,false,92,{en="nuv}aCYa@<;a5C^@<am{[u>v",fr="0uy;av;a[Dm[;av^a5^v",de="0uy;av;]a5ivZ>{;[",})
 lct:RT(1044122497,false,92,{en="S<;anC];yu{@;]",fr="nC];yu{@;]",de="nC];yu{@;]",})lct:RT(1044122497,2763479321,1330,{en="0ka5z}",fr="N{zZC>a0k",de="0ka5zZC>",})
 lct:RT(3836251840,false,true,{en="ku=;{aM}aS<;aoX;u>",fr="1a@;u^au^aMC]vav;anDCXEu>",de="P^X<;>auya3;;]",})lct:RT(3836251840,3297937951,1330,{en="R^;;>aCYaku=;{",fr="p;Z>;av;{a1a@;u^_",de="P`>ZwZ>av;]aP^X<;>",})
 lct:RT(1059334478,false,92,{en="kCu_;{a3;@u[",fr="kCu_;{a3E@u[",de="PCu_;{a3;@u[[",})
@@ -370,14 +374,14 @@ lct:RT(130665165,false,92,{en="S<;aMCw;}yu>",fr="n;ak]C?^;FyZ@uZ>;",de="0;]aM^<y
 lct:RT(244717510,false,92,{en="nuakC>?^E]u>@;azu{amyz[u?^u:[;",fr="nuakC>?^E]u>@;azu{amyz[u?^u:[;",de="nuakC>?^E]u>@;azu{amyz[u?^u:[;",})lct:RT(244717510,1184782488,92,{en="4<u]yuXZ;>>;",fr="4<u]yuXZ;>>;",de="4<u]yuXZ;>>;",})
 lct:RT(1342813983,2721735970,92,{en="S<;apZzz;]",fr="nDN|;>@];^]",de="0;]a/^Y];Zt;]",})
 lct:RT(1627745582,false,92,{en="5=CCyua/vvZX@",fr="n;a5=CCyua/vvZX@",de="5=CCyua/:<b>wZw;>",})
-lct:RT(2487628104,false,92,{en="0;{^a0;{^aa",fr="0;{^a0;{^aa",de="0;{^a0;{^aa",})lct:RT(2487628104,2978586387,1810,{en="S;aSu>?^;Ca4uzZaa",fr="2;a|uZ{a|C^{a@u>=;]azuzu",de="mX<aA;]v;a4u>B;]avZX<a4uzua",})
+lct:RT(2487628104,false,92,{en="~XYYIJ:f0;{^a0;{^aa~]",fr="~XYYIJ:f0;{^a0;{^aa~]",de="~XYYIJ:f0;{^a0;{^aa~]",})lct:RT(2487628104,2978586387,1810,{en="~XYYIJ:fS;aSu>?^;Ca4uzZaa~]",fr="~XYYIJ:f2;a|uZ{a|C^{aSu>=;]a4uz",de="~XYYIJ:fmX<aA;]v;a4u>B;]avZX<a4",})
 
 lct:RT(210728403,270455745,92,{en="S<;a3;@<CvZXu[",})
 lct:RT(3252834201,false,92,{en="S<;a5ZyC>aN_z];{{",fr="n;a5ZyC>aN_z];{{",de="0;]a5ZyC>aN_z];{{",})
 lct:RT(1365579521,false,628,{en="TZz;{aC>aS]u{<",})
 lct:RT(2822666538,false,true,{en="~XllGGGG5C^[ap;uz;]~]",fr="~XllGGGG5C^[ap;uz;]~]",de="~XllGGGGnD/>=C^~]",})
 lct:RT(1507726281,3541509713,92,{en="2u|;[Z>aCYa5@;>vu]]",fr="2u|;[C@av;a5@;>vu]]",de="5z;;]A^]Ya|C>a5@;>vu]]",})
-lct:RT(713456003,false,92,{en="S<;al[uA[;{{a1[uvZu@C]",fr="1[uvZu@;^]amyz[uXu:[;",})lct:RT(713456003,3775367921,92,{en="S<;al[uA[;{{a1[uvZu@C]",fr="1[uvZu@;^]amyz[uXu:[;",})
+
 lct:RT(1158594345,false,92,{en="4]C@;X@C]aCYa@<;ap;u[y",})
 lct:RT(4267095257,false,92,{en="~X,GGG,Gk[C^vak<u{;]~]",fr="~X,GGG,GQ^uw;ak<u{{;~]",de="~X,GGG,GTC[=;>xbw;]~]",})
 lct:RT(109224740,1737010384,92,{en="0];uyaPZ[[;]",fr="S^;^]av;apK|;",de="S]u^yFPZ[[;]",})
@@ -389,6 +393,105 @@ lct:RT(1013558538,3510921308,2079,{en="0Z{:u>va0Z{:u>va0Z{:u>v",fr="0Z{:u>va0Z{:
 lct:RT(4120068347,false,92,{en="S;ua3u=;]",en="S<EZc];",de="S;;=CX<;]",})lct:RT(4120068347,2030795112,1810,{en='0CoC0',})
 lct:RT(2416997617,false,92,{en="4u{<u",en="4uX<u",de="4u{<u",})
 lct:RT(841517891,false,92,{en="TC]@<}",})
+
+lct:RT(810384984,238394253,92,{en='/z;_',})
+
+lct:RT(4052732411,false,92,{en='ku{^u[',})lct:RT(4052732411,671906596,92,{en='ku{^u[',})
+lct:RT(3204068434,false,92,{fr='0]uwC>YZ];apZv;]',})lct:RT(3204068434,2083966292,51,{en='5@C]yapZv;]',})
+lct:RT(425871172,false,92,{en='5AC]vaoYa5<u>>u]u',})
+lct:RT(4292278260,false,92,{en='S<;apZ>waM;u];]',})lct:RT(4292278260,2488928266,2079,{en='S<;am[[^yZ>u@;v',})
+lct:RT(1553656508,false,92,{en='Q^=;]C]',fr='Q^=;]C]',de="Q^=;]C]",})
+
+lct:RT(3101213993,false,true,{en='~X*gIHv,S<;amyyC]@u[',fr='~X*gIHv,nDZyyC]@;[',de='~X*gIHv,0;]aq>{@;]:[ZX<;',})
+lct:RT(2014809841,2978736366,92,{en='k^]ZCakC[[;X@C]',fr='kC[[;X@ZC>>;^]av;ak^]ZC{Z@E{',de='P^]ZC{Z@b@;>{uyy[;]',})
+lct:RT(2063947617,false,92,{en='R^;;>aoYanZBu]v{',fr='];Z>;av;{a[EBu]v{',de='aP`>ZwZ>av;]aNZv;X<{;>',})lct:RT(2063947617,341020706,92,{en='Nyz;]C]aoYanZBu]v{',fr='aNyz;];^]a0;{anEBu]v{',de='PuZ{;]av;]aNZv;X<{;>',})
+
+lct:RT(3128590789,false,92,{en='MuXC>a0;{@]C};]',fr='0;{@]^X@;^]av;a:uXC>',de='5z;X=B;]{@`];]',})
+lct:RT(4293973946,3056998748,1330,{en='OC[}ak]^{uv;]',de='yu=;[[C{;aN]C:;]Z>',})
+lct:RT(1161506350,false,92,{en='0ZBB}Z>wa5zuyy;]',fr='0ZBB}Z>wa5zuyy;]',de='0ZBB}Z>wa5zuyy;]',})
+lct:RT(963571677,false,92,{en='S<;a:;u]v;vayu>',fr='nD<Cyy;a:u]:^',de='0;]aMb]@Zw;a3u>>',})
+lct:RT(3733334153,false,92,{en='1]u>vaTu]ak<Z;Ya5^z];y;',})
+lct:RT(3130962581,false,494,{en='3CC>anZw<@',fr='k[uZ]av;a[^>;',de='3C>v[ZX<@',})lct:RT(3130962581,4261844445,494,{en='3CC>anZw<@',fr='k[uZ]av;a[^>;',de='3C>v[ZX<@',})
+lct:RT(2127935949,false,628,{en='S<;a5u{{yu>X;]',})lct:RT(2127935949,3789400369,92,{en='S<;aS;]]Z:[;a5>CAy;]',fr='an;aS;]]Z:[;aQ;Zw;y;]',de='0;]a5X<];X=[ZX<;a5X<>;;y;]',})
+
+
+
+lct:RT(4044176894,false,92,{en='S<;ak^]{;vao>;',})
+lct:RT(1403951427,false,92,{en='S<;aq>YC]wZ|;>',})
+
+lct:RT(2709370135,false,92,{en='5Z[|;]}a0u]=>;{{',fr='o:{X^]Z@Eau]w;>@E;',de='5Z[:]Zw;a0^>=;[<;Z@',})
+lct:RT(4281723531,false,92,{en='TZz;{aC>aS]u{<',fr='nZ>w;@@;{a{^]a[uakC]:;Z[[;',de='TZ{X<@aZya3^[[',})lct:RT(4281723531,306136156,1330,{en='5@uyz[u]aAZ[[a>;|;]avZ;',fr='5@uyz[u]a>;ayC^]]uaxuyuZ{',de='a5@uyz[u]aAZ]va>Z;yu[{a{@;]:;>',})
+lct:RT(3619172715,false,92,{en='3u{@;]aU;]wa5^]Y;]',fr='3u{@;]aU;]wa5^]Y;]',de='3u{@;]aU;]wa5^]Y;]',})
+lct:RT(3188788347,false,92,{en='lu:^[C^{',fr='lu:^[;^_',de='lu:;[<uY@',})lct:RT(3188788347,1700138827,92,{en='2^{@aua:Z@a3Z;<',fr='2^{@aua:Z@a3Z;<',de='2^{@aua:Z@a3Z;<',})
+
+
+
+lct:RT(4048208493,1185902972,92,{en='5Z>Z{@;]aS^]=;}',})
+lct:RT(2858992612,false,92,{en='3u{@;]aCYaP>CA[;vw;',fr='3ug@];av;a[uakC>>uZ{{u>X;',de='3;Z{@;]av;{aTZ{{;>{',})
+
+lct:RT(4124279317,false,92,{en='N[;wu>@[}aTu{@;v',fr='a[Ewuyy;>@a1u{zZ[[E',de='N[;wu>@a6;]w;^v;@',})lct:RT(4124279317,1022046773,628,{en='5zCZ[;vaM]u@',fr='1uyZ>a1a@E',de='6;]BCw;>;{a1`]',})
+lct:RT(2119731248,1017899260,true,{en='5<uvCAaCYa@<;aT;{@',fr='oy:];av;a[Do^;{@',de='5X<u@@;>av;{aT;{@;>{',})
+
+lct:RT(1298377073,false,92,{en='3u{@;]ak<;Y',})lct:RT(1298377073,599246026,92,{en='3u{@;]ak<;Y',})
+lct:RT(763457523,false,1810,{en='/]v;>@al[uy;',fr='l[uyy;au]v;>@;',de='1[^<;>v;al[uyy;',})
+lct:RT(798111974,false,92,{en='5Z>aCYa1];;v',})
+
+lct:RT(3085595752,2582039471,92,{en='1C[v;>a1^u]vZu>',})
+lct:RT(1953523750,3270432679,92,{en='Mu@@[;yuw;',})
+lct:RT(554270662,1747005414,92,{en='P]ZYaN];Za0Z[C>',fr='P]ZYaN];Za0Z[C>',de='P]ZYaN];Za0Z[C>',})
+lct:RT(2021154607,false,92,{en='pZzz;]',fr='a|;>@];^]',de='pZzz;]',})
+
+lct:RT(3506149602,false,92,{en='kCvZ>waku@',fr='kCvZ>waku@',de='kCvZ>waku@',})lct:RT(3506149602,2311532378,1810,{en='S<;aN|;]FnZ|Z>w',fr='S<;aN|;]FnZ|Z>w',de='S<;aN|;]FnZ|Z>w',})
+lct:RT(533751404,false,92,{en='3^@<{;]u',fr='3^@<{;]u',de='3^@<{;]u',})
+lct:RT(2513617898,3008522260,92,{en='/{<=<u>',})
+
+lct:RT(1703460885,false,92,{en='l]Z;>v[}aQ;Zw<:C^]',})lct:RT(1703460885,3210043349,92,{en='TZ>w{aCYaTC>v;]',})
+lct:RT(760593166,false,92,{en='M[uX=aTZvCA',fr='6;^|;aQCZ]',de='5X<Au]B;aTZ@A;',})
+lct:RT(1134753014,false,92,{en='q]{a3uxC]',fr='q]{a3uxC]',de='q]{a3uxC]',})lct:RT(1134753014,2223000998,92,{en='4]CY;{{C]au@a/>=<F3C]zC]=',fr='4]CY;{{;^]aaa/>=<F3C]zC]=',de='4]CY;{{C]aZ>a/>=<F3C]zC]=',})
+lct:RT(1838172566,false,92,{en='nZ|Z>wan;w;>v',fr='nEw;>v;a6Z|u>@;',de='n;:;>v;an;w;>v;',})
+lct:RT(3091229980,false,92,{en='6^[_{;v_',fr='6^[_{;v_',de='6^[_{;v_',})lct:RT(3091229980,4134294656,92,{en='k[u}yC];amamar',})
+lct:RT(2845909476,false,92,{en='S<;aQC>4[^{q[@]u',fr='n;aQC>4[^{q[@]u',de='0u{aQC>4[^{q[@]u',})lct:RT(2845909476,2216570798,705,{en='QCa3;]X}',})
+lct:RT(2359969152,false,2079,{en='oa3uwCaEamyz[uXa|;[',fr='n;ayuwZXZ;>a;{@amyz[uXu:[;',de='0;]aUu^:;];]aZ{@aq>;]:Z@@[ZX<',})
+
+lct:RT(2455827257,false,92,{en='p;u[ay|za5@ZX=a4',fr='p;u[ay|za5@ZX=a4',de='p;u[ay|za5@ZX=a4',})lct:RT(2455827257,1298336713,92,{en='p;u[ay|za5@ZX=a4',})
+lct:RT(3436387716,false,705,{en='5XC^]w;aoYak}]CvZZ[',fr='l[Eu^a0^ak}]CvZZ[',de='1;Zt;[a|C>ak}]CvZZ[',})
+lct:RT(2929427093,1621733346,true,{en='nZw<@aCYa0uA>',})
+lct:RT(3990524561,false,92,{en='4^>=aM^>>}',fr='4^>=anuzZ>',de='4^>=FOu{;',})
+lct:RT(3355087462,false,92,{en='kuvA;[[D{a4[u@Z>^ya3;y:;]',fr='3;y:];a4[u@Z>;av;akuvA;[[',de='kuvA;[[{a4[u@Z>^yF3Z@w[Z;v',})
+lct:RT(2995614219,false,92,{en='k<Z;YaCYaN?^;{aQCX@Z{a',de='N?^;{aQCX@Z{ak<;YZ>a',})lct:RT(2995614219,3531621777,92,{en='k<Z;YaCYaN?^;{aQCX@Z{',})
+lct:RT(2589474561,false,92,{en='S<;aN>@<;Cw;>ZX',fr='nDN>@<;Cw;>ZX',de='0Z;aN>@<;Cw;>;',})
+lct:RT(1375307746,2374834210,true,{en='/yuBC>aR^;;>',})
+lct:RT(1616012896,false,92,{en='SCzFQC@X<aQ;A:Z;',})
+lct:RT(453266517,false,92,{en='k[;u][}akC>Y^{;v',})
+lct:RT(1545464185,4007320154,92,{en='5XCCyua0;u[;]',})
+lct:RT(2648996415,false,92,{en='Ouzz}a0];uy;]',fr='O;^];^_apK|;^]',de='1[iX=[ZX<;]aS]b^y;]',})lct:RT(2648996415,2708407449,628,{en='MC]>a@Ca:;aTZ[v',})
+lct:RT(989799715,false,628,{en='S<;anZw<@aCYa0uA>',fr='nua[^yZc];av;a[Du^:;',de='0u{anZX<@av;]a0byy;]^>w',})lct:RT(989799715,155839631,628,{en='S<;anZw<@aCYa0uA>',})
+lct:RT(1536721951,false,true,{en='0Z|uaNyCa1C@<aoYa0u]=>;{{',})lct:RT(1536721951,2936424338,true,{en='0Z|uaNyCa1C@<aoYa0u]=>;{{',})
+
+lct:RT(2012291598,false,1330,{en='S<;a3u;[{@]Cya/>>Z<Z[u@C]',})
+lct:RT(1613231931,false,92,{en='n;w;>vu]}aP>Zw<@',fr='k<;|u[Z;]anEw;>vuZ];',de='n;w;>vb];]apZ@@;]',})
+lct:RT(701268649,false,true,{en='0];uyZ>wanZw<@',fr='pK|;]an^yZc];',de='S]b^y;>v;{anZX<@',})
+
+
+lct:RT(1256140351,4217760066,705,{en='5<Z;[va5@uX=;]',})
+lct:RT(1584171560,false,92,{en='kC>{^[aCYa4uvCyu}',fr='0E[Ew^Eav;a4uvCyu}',de='PC>{^[a|C>a4uvCyu}',})lct:RT(1584171560,2855390806,1330,{en='S<;a0]uwC>aCYa6u[;>ACCv',})
+lct:RT(2092303465,false,92,{en='k]CAva4^[[;]',fr='/@@]uX@ZC>',de='U^wzY;]v',})
+lct:RT(3100924539,false,2079,{en='5^z];yZvuv;',fr='nua5^z]Eyu@Z;',de='h:;][;w;><;Z@',})lct:RT(3100924539,1229473599,2079,{en='5^z];yZ@}',})
+lct:RT(3936655003,false,92,{en='S<;aM^@X<;]',fr='n;aMC^X<;',de='0;]a3;@Bw;]',})lct:RT(3936655003,3829163913,92,{en='S<;aM^@X<;]',})
+lct:RT(3415080388,false,92,{en='2uX=u[;;>',fr='2uX=u[;;>',de='2uX=u[;;>',})lct:RT(3415080388,1977445892,92,{en='2uX=u[;;>',})
+lct:RT(1497236838,false,628,{en='S<;aOu]:Z>w;]',fr='n;a4]EX^]{;^]',de='0;]a6C]:C@;',})lct:RT(1497236838,3464652070,628,{en='S<;aOu]:Z>w;]',})
+lct:RT(3409167202,false,628,{en='Mu>u>uaPZ>w',fr='pCZav;{aMu>u>;{',de='Mu>u>;>=`>Zw',})lct:RT(3409167202,3950693890,1810,{en='S<;aMu>u>u:C]>',})
+lct:RT(1264525618,false,92,{en='0CyZ>ZC>aM[uv;',fr='nuy;av;a0CyZ>ZC>',de='0CyZ>ZC>aP[Z>w;',})
+lct:RT(2414560110,false,92,{en='Tu]X<Z;Y',})lct:RT(2414560110,3234044858,92,{en='Tu]X<Z;YaCYa@<;aN:C><;u]@a4uX@',})
+lct:RT(248279039,false,92,{en='5;z@Zy{aZ>a@<;ak[^:',fr='5;z@Zy{au^ak[^:',de='5;z@Zy;aZyak[^:',})
+lct:RT(534369183,false,92,{en='4]CY;{{ZC>u[a4[;:',})
+lct:RT(3378965337,false,92,{en='5AC]va0u>X;]',de='5X<A;]@@b>B;]',})
+lct:RT(1992273336,false,51,{en='1;>@[;a[Z=;a3CC>[Zw<@',})
+lct:RT(4032446867,false,51,{en='Mu[[Cy(a3u{@;]aCYa0;u@<',})lct:RT(4032446867,321898157,51,{en='Mu[[Cy(a3u{@;]aCYa0;u@<',})
+lct:RT(3307984231,false,92,{en='S<;a0;yC>{[u};]',fr='n;aS^;^]av;a0EyC>',de='0;]a0byC>;>@`@;]',})
+lct:RT(2258333088,false,92,{en='n;w;>vu]}a0>ZDA;',})
+lct:RT(3919596526,false,92,{en='S<;alu[[;>amyyC]@u[',})lct:RT(3919596526,3173817294,92,{en='S<;alu[[;>amyyC]@u[',})
+lct:RT(3635291151,false,92,{en='3uw>ZYZX;>@anuv}aqw<',fr='3uw>ZYZX;>@anuv}aqw<',de='3uw>ZYZX;>@anuv}aqw<',})
 
 
 --[[

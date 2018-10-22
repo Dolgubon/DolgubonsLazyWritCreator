@@ -325,7 +325,6 @@ local function parser(str)
 	end
 
 	while searchResult1 do
-
 		params[i] = string.sub(str, 1, searchResult1-1)
 		str = string.sub(str, searchResult2+1)
 	    searchResult1, searchResult2  = string.find(str,seperater)
@@ -935,11 +934,12 @@ local tutorial1 = function () end
 
 local function temporarycraftcheckerjustbecause(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100024
+	local currentAPIVersionOfAddon = 100025
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
 		out("Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons.")
+		DolgubonsWritsBackdropCraft:SetHidden(true)
 		out = function() end
 		DolgubonsWrits:SetHidden(false)
 	end
@@ -947,7 +947,14 @@ local function temporarycraftcheckerjustbecause(eventcode, station)
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
 		for i = 1 , 20 do 
 			d("Set a reminder to change the API version of addon in function temporarycraftcheckerjustbecause when the game update comes out.") 
+			out("Set a reminder to change the API version of addon in function temporarycraftcheckerjustbecause when the game update comes out.")
+			out = function() end
+			DolgubonsWrits:SetHidden(false)
 		end
+	end
+	-- Make sure that Set Crafter is also updated
+	if GetAPIVersion() == 100025 and not DolgubonSetCrafter.isMurkmure then
+		DolgubonSetCrafter.out("Your version of Dolgubon's Lazy Set Crafter is outdated, and you should update it.")
 	end
 	local writs
 	if WritCreater:GetSettings().tutorial then

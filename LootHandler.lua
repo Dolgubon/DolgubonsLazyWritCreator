@@ -231,7 +231,7 @@ end
 
 local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local jewelryMatFlavourText = GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-local matReward = GetItemLinkFlavorText("|H1:item:99256:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local matRewardFlavourText = GetItemLinkFlavorText("|H1:item:99256:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local firstOpen = 10000000000000000000000
 local completeTimes = 0
 local slotUpdateHandler
@@ -244,7 +244,7 @@ local function shouldOpenContainer(bag, slot)
 		return true
 	elseif flavour == jewelryMatFlavourText then
 		return true
-	elseif matReward == flavour then
+	elseif flavour == matRewardFlavourText then
 		return true
 	end
 	return false
@@ -262,7 +262,7 @@ local function openContainer(bag, slot)
 		UseItem(bag, slot)
 	end 
 	calledFromQuest = true
-	zo_callLater(scanBagForUnopenedContainers, 1000)
+	zo_callLater(scanBagForUnopenedContainers, 1500)
 end
 
 
@@ -296,6 +296,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 		autoLoot = GetSetting(SETTING_TYPE_LOOT,LOOT_SETTING_AUTO_LOOT) == "1"
 	end
 	if not isNew then return end
+	if not bag or not slot then return end
 	local link = GetItemLink(bag, slot)
 	local function attemptOpenContainer(bag, slot)
 		firstOpen = math.min(GetTimeStamp() + GetSlotCooldownInfo( 1 ) + 100 + WritCreater:GetSettings().containerDelay*1000, firstOpen)
@@ -316,7 +317,7 @@ end
 function scanBagForUnopenedContainers( ... )
 	for i = 0, GetBagSize(BAG_BACKPACK) do 
 		if shouldOpenContainer(BAG_BACKPACK, i) then
-			slotUpdateHandler(1, bag, slot, true)
+			slotUpdateHandler(1, BAG_BACKPACK, i, true)
 		end
 	end
 end

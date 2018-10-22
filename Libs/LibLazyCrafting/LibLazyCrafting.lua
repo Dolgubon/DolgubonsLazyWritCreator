@@ -18,7 +18,7 @@ end
 
 -- Initialize libraries
 local libLoaded
-local LIB_NAME, VERSION = "LibLazyCrafting", 2.2
+local LIB_NAME, VERSION = "LibLazyCrafting", 2.3
 
 local LibLazyCrafting, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibLazyCrafting then return end
@@ -26,7 +26,9 @@ local LLC = LibLazyCrafting -- Short form version we can use if needed
 
 LLC.name, LLC.version = LIB_NAME, VERSION
 
-local CRAFTING_TYPE_JEWELRY = CRAFTING_TYPE_JEWELRY or 7
+LLC.debugDisplayNames = {}
+
+local CRAFTING_TYPE_JEWELRY = CRAFTING_TYPE_JEWELRY
 
 LibLazyCrafting.craftInteractionTables = LibLazyCrafting.craftInteractionTables or 
 {
@@ -520,7 +522,9 @@ function LibLazyCrafting:Init()
 	-- Really this is mostly arbitrary, I just want to force an addon to give me their name ;p. But it's an easy way, and only needs to be done once.
 	-- Returns a table with all the functions, as well as the addon's personal queue.
 	-- nilable:boolean autocraft will cause the library to automatically craft anything in the queue when at a crafting station.
-	function LibLazyCrafting:AddRequestingAddon(addonName, autocraft, functionCallback)
+	-- If optionalDebugAuthor is set, then when the @name == GetDisplayName(), the library will throw errors when some invalid arguments are entered for functions
+	-- Example: If an invalid level is entered for a piece of equipment, will throw and error "LLC: Invalid level"
+	function LibLazyCrafting:AddRequestingAddon(addonName, autocraft, functionCallback, optionalDebugAuthor)
 		-- Add the 'open functions' here.
 		local LLCAddonInteractionTable = {}
 		if LLCAddonInteractionTable[addonName] then
@@ -533,6 +537,8 @@ function LibLazyCrafting:Init()
 		-- The crafting queue is added. Consider hiding this.
 
 		LLCAddonInteractionTable["personalQueue"]  = craftingQueue[addonName]
+
+		LLC.debugDisplayNames[addonName] = optionalDebugAuthor
 
 		-- Add all the functions to the interaction table!!
 		-- On the other hand, then addon devs can mess up the functions?
@@ -552,10 +558,6 @@ function LibLazyCrafting:Init()
 		return LLCAddonInteractionTable
 	end
 
-	-- Allows addons to see if the library is currently crafting anything, a quick overview of what it is making, and what addon is asking for it
-	function LibLazyCrafting:IsPerformingCraftProcess()
-		return unpack(LibLazyCrafting.isCurrentlyCrafting)
-	end
 	
 	-- Response codes
 	LLC_CRAFT_SUCCESS = "success" -- extra result: Position of item, item link, maybe other stuff?
@@ -570,6 +572,38 @@ function LibLazyCrafting:Init()
 
 	--craftingQueue["ExampleAddon"] = nil
 end
+
+-- Allows addons to see if the library is currently crafting anything, a quick overview of what it is making, and what addon is asking for it
+	function LibLazyCrafting:IsPerformingCraftProcess()
+		if not LibLazyCrafting.isCurrentlyCrafting then
+			return nil
+		end
+		return unpack(LibLazyCrafting.isCurrentlyCrafting)
+	end
+	
+
+-- The first parameter is basically an overloaded parameter
+-- If it is a table: Grabs the addonName from the table, if addonName doesn't exist, exit
+-- 			if it does exist, and the user's name is the optional debug name for the addon, throw an error
+-- If it is a string, simply check to see if the user's name is the optional debug name for the addon, throw an error
+-- if it is true, always throw the error.
+
+local function LLCThrowError(addonNameOrTableOrAlwaysThrow, message)
+	local addonName
+	if type(addonNameOrTable)=="table" then
+		addonName = addonNameOrTable.addonName
+		if not addonName then
+			return 
+		end
+	else
+		addonName = addonNameOrTable
+	end
+	if addonName==true or LLC.debugDisplayNames[addonName] == GetDisplayName() then
+		error("LibLazyCrafting Error: Caused by "..addonName.." ; Reason: "..message.." ; Stack Trace: ")
+	end
+end
+
+LLC.LLCThrowError = LLCThrowError
 
 ------------------------------------------------------
 -- CRAFT EVENT HANDLERS

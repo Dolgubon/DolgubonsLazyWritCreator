@@ -75,7 +75,7 @@ local craftInfo =
 				[11]= "brassards",
 				[12]= "casque",
 				[13]= "gardes",
-				[14]= "d'épaules",
+				[14]= "épaules",
 				[15]= "ceinture",
 			},
 			["match"] = --exact!!! This is not the material, but rather the prefix the material gives to equipment. e.g. Homespun Robe, Linen Robe
@@ -83,11 +83,11 @@ local craftInfo =
 				[1] = "artisanal", --lvtier one of mats
 				[2] = "lin",	--l
 				[3] = "coton",
-				[4] = "d'araignée",
-				[5] = "d'ébonite",
+				[4] = "araignée",
+				[5] = "ébonite",
 				[6] = "kresh",
 				[7] = "fer",
-				[8] = "d'argent",
+				[8] = "argent",
 				[9] = "tissombre",
 				[10]= "ancestrale",
 				[11]= "brut",
@@ -98,7 +98,7 @@ local craftInfo =
 				[16]= "clouté",
 				[17]= "ferhide",
 				[18]= "superbes",
-				[19]= "d'ombre",
+				[19]= "ombre",
 				[20]= "pourpre",
 			},
 			["names"] = --Does not strictly need to be exact, but people would probably appreciate it
@@ -133,7 +133,7 @@ local craftInfo =
 				[2] = "masse",
 				[3] = "épée",
 				[4] = "bataille",
-				[5] = "d'arme",
+				[5] = "arme",
 				[6] = "longue",
 				[7] = "dague",
 				[8] = "cuirasse",
@@ -345,6 +345,7 @@ local exceptions = -- This is a slight misnomer. Not all are corrections - some 
 	[32]= "déchu",
 	[33]= "anneaux",
 	[34]= "colliers",
+	[35]="d'",
 
 
 	},
@@ -383,6 +384,7 @@ local exceptions = -- This is a slight misnomer. Not all are corrections - some 
 	[32]= "déchue",
 	[33] = "anneau",
 	[34]= "collier",
+	[35]="",
 	}
 
 }
@@ -626,11 +628,12 @@ end
 function WritCreater.langWritRewardBoxes () return {
 	[1] = "Récipient d'alchimiste",
 	[2] = "coffre d'enchanteur",
-	[3] = "paquet de cuisiner",
+	[3] = "paquet de cuisinier",
 	[4] = "caisse de forgeron",
 	[5] = "sacoche de tailleur",
 	[6] = "caisse de travailleur du bois",
-	[7] = "cargaison",
+	[7] = "coffre de joailler",
+	[8] = "cargaison",
 }
 end
 
