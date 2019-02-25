@@ -30,7 +30,7 @@ end
 function WritCreater.writCompleteStrings()
 	local strings = {
 	["place"] = "Die Waren in die Kiste legen",
-	["singn"] = "Das Manifest unterschreiben",
+	["sing"] = "Das Manifest unterschreiben",
 	["masterStart"] = "<Nehmt den Auftrag an.>",
 	["masterSign"] = "<Auftrag abschließen.>",
 	["masterPlace"] = "Ich habe den ",
@@ -363,72 +363,7 @@ local enExceptions = -- This is a slight misnomer. Not all are corrections - som
 	},
 }
 
-local exceptions = -- This is a slight misnomer. Not all are corrections - some are changes into english so that future functions will work
-{
-	["original"] =
-	{
-		[1] = "beliefert",
-		[2] = "bögen",
-		[3] = "ringe",
-		[4] = "ketten",
-		[5] = "halskette",
-		[6] = "halsketten",
-	},
-	["corrected"] = 
-	{
-		[1] = "deliver",
-		[2] = "bogen",
-		[3] = "ring",
-		[4] = "kette",
-		[5] = "kette",
-		[6] = "kette",
-	},
-}
 
-local function temporaryCheck(condition,info)
-	
-	for i = 9, 15 do
-		if string.find(condition, info[CRAFTING_TYPE_CLOTHIER]["match"][i]) then
-			return false
-		end
-	end
-	return true
-end
-
-
-
-function WritCreater.exceptions(condition)
-	local location = GetCraftingInteractionType()
-	if location == 0 then return condition end
-	condition = string.lower(condition)
-	local info = WritCreater.languageInfo()
-	for i = 1, #info[location]["match"] do
-		condition = string.gsub(condition,string.lower(info[location]["match"][i]),string.lower(info[location]["match"][i].." "))
-
-	end
-	
-	if location ==CRAFTING_TYPE_WOODWORKING  then
-		condition = string.gsub(condition,"rubeditholz", "rubineschen ")
-		condition = string.gsub(condition,"rubedit", "rubineschen ")
-
-	elseif location ==CRAFTING_TYPE_CLOTHIER and temporaryCheck(condition,info) then
-		condition = string.gsub(condition,"rubeditstoff", "ahnenseiden ")
-		condition = string.gsub(condition,"rubedit", "ahnenseiden ")
-		
-	elseif location ==CRAFTING_TYPE_CLOTHIER then
-		condition = string.gsub(condition,"rubeditleder", "rubedoleder ")
-		condition = string.gsub(condition,"rubedit", "rubedoleder ")
-		
-	end
-
-
-	for i = 1, #exceptions["original"] do
-		condition = string.gsub(condition,exceptions["original"][i],exceptions["corrected"][i])
-	end
-	condition = string.gsub(condition, " "," ")
-	condition = string.gsub(condition, "  "," ")
-	return condition
-end
 
 function WritCreater.questExceptions(condition)
 	condition = string.gsub(condition, " "," ")
@@ -529,9 +464,10 @@ WritCreater.strings["lootReceived"]								= "<<1>> erhalten (Du hast <<2>>)"
 WritCreater.strings["lootReceivedM"]							= "<<1>> erhalten"
 WritCreater.strings["countSurveys"]								= "Du hast <<1>> Gutachten"
 WritCreater.strings["countVouchers"]							= "Du hast <<1>> offene Schriebscheine"
-WritCreater.strings["includesStorage"] 							= "Zähle <<1>> in deinen Lagertruhen mit" -- <- I'm not sure if Lagertruhe is correct, i have to check crownstore first in the afternoon when i'm home
+WritCreater.strings["includesStorage"] 							= "Zähle <<1>> in deinen Lagertruhen mit" 
 WritCreater.strings["surveys"]									= "Handwerksgutachten"
 WritCreater.strings["sealedWrits"]								= "Versiegelte Schriebe"
+WritCreater.strings["missingLibraries"]							= "Dolgubon's Lazy Writ Crafter benötigt die folgenden Standalone-Libraries. Bitte installiere oder aktiviere diese Libraries: "
 
 
 local DivineMats =
@@ -625,6 +561,10 @@ WritCreater.optionStrings["hide when done"]								= "Verstecke Fenster anschlie
 WritCreater.optionStrings["hide when done tooltip"]						= "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
 WritCreater.optionStrings['reticleColour'] 								= "Fadenkreuzfarbe ändern"
 WritCreater.optionStrings['reticleColourTooltip'] 						= "Ändert die Farbe des Fadenkreuzes, falls es an der Station einen unvollständigen oder abgeschlossenen Schrieb gibt"
+WritCreater.optionStrings['autoCloseBank']								= "Automatically Exit Bank"
+WritCreater.optionStrings['autoCloseBankTooltip']						= "Automatically exit the banking dialogue when all items have been withdrawn"
+
+
 function WritCreater.langStationNames()
 	return
 	{["Schmiedestelle"] = 1, ["Schneidertisch"] = 2, 

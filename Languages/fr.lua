@@ -308,86 +308,6 @@ function WritCreater.langPotencyNames() --exact!! Also, these are all the positi
 	return potencyNames
 end
 
-local exceptions = -- This is a slight misnomer. Not all are corrections - some are changes into english so that future functions will work
-{
-	["original"] = {
-	[1] = "artisanales",
-	[2] = "artisanale",
-	[3] = "artisanaux",
-	[5] = "dwemère",
-	[4] = "dwemères",
-	[6] = "dwemers",
-	[7] = "brutes",
-	[8] = "brute",
-	[9] = "bruts",
-	[10]= "cuir brut",
-	[11]= "complètes",
-	[13]= "complet",
-	[12]= "complets",
-	[14]= "cuir complète",
-	[17]= "déchu",
-	[15]= "déchues",
-	[16]= "déchus",
-	[20]= "cloutées",
-	[19]= "cloutés",
-	[18]= "cloutée",
-	[21]= "cuir clouté",
-	[22]= "peau de fer",
-	[23]= "superbe",
-	[24]= "cuir pourpre",
-	[25]= "peau d'ombre",
-	[26]= "livrez",
-	[27]= "acier de vide",
-	[28]= "casque en cuprite",
-	[29]= "spallières",
-	[30]= "néant",
-	[31]= "gantelets",
-	[32]= "déchu",
-	[33]= "anneaux",
-	[34]= "colliers",
-	[35]="d'",
-
-
-	},
-	["corrected"] = {
-	[1] = "artisanal",
-	[2] = "artisanal",
-	[3] = "artisanal",
-	[4] = "dwemer",
-	[5] = "dwemer",
-	[6] = "dwemer",
-	[7] = "brut",
-	[8] = "brut",
-	[9] = "brut",
-	[10]= "brut",
-	[11]= "complète",
-	[12]= "complète",
-	[13]= "complète",
-	[14]= "complète",
-	[15]= "déchue",
-	[16]= "déchue",
-	[17]= "déchue",
-	[18]= "clouté",
-	[19]= "clouté",
-	[20]= "clouté",
-	[21]= "clouté",
-	[22]= "ferhide",
-	[23]= "superbes",
-	[24]= "pourpre",
-	[25]= "d'ombre",
-	[26]= "deliver",
-	[27]= "vide",
-	[28]= "heaume en cuprite",
-	[29]= "spallière",
-	[30]= "vide",
-	[31]= "gantelet",
-	[32]= "déchue",
-	[33] = "anneau",
-	[34]= "collier",
-	[35]="",
-	}
-
-}
 local enExceptions = {
 	["original"]  = {
 		[1] = "santé",
@@ -413,18 +333,6 @@ function WritCreater.bankExceptions(condition)
 	return condition
 end
 
-function WritCreater.exceptions(condition)
-	condition = string.lower(condition)
-
-	for i = 1, #exceptions["original"] do
-		if string.find(condition, exceptions["original"][i]) then
-			condition = string.gsub(condition, exceptions["original"][i],exceptions["corrected"][i])
-		end
-	end
-	condition = string.gsub(condition, " "," ")
-	condition = string.lower(condition)
-	return condition
-end
 
 function WritCreater.questExceptions(condition)
 	condition = string.gsub(condition, " "," ")

@@ -10,7 +10,7 @@
 -- 
 -----------------------------------------------------------------------------------
 
-
+WritCreater = WritCreater or {}
 
 
 local function specialDebug(...)
@@ -93,10 +93,12 @@ local function strFind(str, str2find, a, b, c)
 	return string.find(str, str2find, a, b, c)
 end
 
+local saidBankIsFull = false
+
 local function moveItem( amountRequired, bag, slot)
 
 	local emptySlot = emptySlots[1]
-
+	local _,remainingInBank = GetItemLinkStacks(GetItemLink(bag, slot))
 	if emptySlot then
 		table.remove(emptySlots,1)
 		specialDebug("WC Debug Moving item to bag")
@@ -105,10 +107,16 @@ local function moveItem( amountRequired, bag, slot)
 		else
 			RequestMoveItem(bag, slot, BAG_BACKPACK,emptySlot,amount)
 		end
-		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0)))
+		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0) , remainingInBank ))
 	else
-		d(WritCreater.strings.fullBag)
+		if not saidBankIsFull then
+			d(WritCreater.strings.fullBag)
+			saidBankIsFull = true
+		end
+
+		return false
 	end
+	return true
 
 end
 
@@ -183,11 +191,13 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 		local stackSize = GetSlotStackSize(bag, slot)
 		if stackSize < amountRequired then
 			specialDebug("WC Debug User does not have enough items for quest in the bank. Moving what is there, and checking again after")
-			moveItem(stackSize, bag, slot)
-			zo_callLater(function() potionGrabRefactored(questCondition, amountRequired -stackSize, validItemTypes ) end , 50)
+			queue[#queue + 1]  = function() return potionGrabRefactored(questCondition, amountRequired -stackSize, validItemTypes ) end 
 		else
 			specialDebug("WC Debug User has enough items for quest. Withdrawing items")
-			moveItem(amountRequired, bag, slot)
+			if not moveItem(amountRequired, bag, slot) then
+				return false
+			end
+			return true
 		end
 
 	else
@@ -203,14 +213,24 @@ end
 
 
 local alchGrab = function() end
-
+local wasItemInQueue
 local function queueRun()
 	if queue[1] then
-		queue[1]()
+		local result = queue[1]() 
+		if result == false then
+			wasItemInQueue = false
+		elseif result and wasItemInQueue ~= false then
+			wasItemInQueue = true
+		end
 		table.remove(queue, 1)
 		zo_callLater(queueRun, 10)
 		--queueRun()
 	else
+		if wasItemInQueue and  WritCreater:GetSettings().autoCloseBank then
+			zo_callLater(function() ZO_SharedInteraction:CloseChatterAndDismissAssistant() end , 50)
+		end
+		saidBankIsFull = false
+		wasItemInQueue = nil
 		queue = {}
 		--emptySlots = {}
 	end
@@ -226,7 +246,7 @@ local function addToQueue(questIndex, validItemTypes)
 		a = string.gsub(a, " ", " ") -- First is a NO-BREAK SPACE, 2nd a SPACE, copied from Ayantir's BMR just in case
 		if cur < max and a~="" then 
 
-			queue[#queue + 1] = function() potionGrabRefactored(a, max - cur, validItemTypes, questIndex, 1, j) end
+			queue[#queue + 1] = function() return potionGrabRefactored(a, max - cur, validItemTypes, questIndex, 1, j) end
 
 			
 		end

@@ -1,4 +1,4 @@
-﻿-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
 -- Addon Name: Dolgubon's Lazy Writ Crafter
 -- Creator: Dolgubon (Joseph Heinzle)
 -- Addon Ideal: Simplifies Crafting Writs as much as possible
@@ -359,68 +359,6 @@ function WritCreater.langPotencyNames() -- Vital
 	return potencyNames
 end
 
-
-local exceptions = 
-{
-	[1] = 
-	{
-		["original"] = "rubedo leather",
-		["corrected"] = "rubedo",
-	},
-	[2] = 
-	{
-		["original"] = "ancestor silk",
-		["corrected"] = "ancestor",
-	},
-	[3] = 
-	{
-		["original"] = "ebony",
-		["corrected"] = "ebon",
-	},
-	[4] = 
-	{
-		["original"] = "orichalcum",
-		["corrected"] = "orichalc",
-	},
-	[5] = 
-	{
-		["original"] = "ruby ash",
-		["corrected"] = "ruby",
-	},
-	[6] = 
-	{
-		["original"] = "dwarven pauldrons",
-		["corrected"] = "dwarven pauldron",
-	},
-	[7] = 
-	{
-		["original"] = "epaulets",
-		["corrected"] = "epaulet",
-	},
-	[8] = {
-		["original"] = "rings",
-		["corrected"] = "ring",
-	},
-	[9] = {
-		["original"] = "necklaces",
-		["corrected"] = "necklace",
-	},
-}
-
-
-function WritCreater.exceptions(condition)
-	condition = string.gsub(condition, " "," ")
-	condition = string.lower(condition)
-
-	for i = 1, #exceptions do
-
-		if string.find(condition, exceptions[i]["original"]) then
-			condition = string.gsub(condition, exceptions[i]["original"],exceptions[i]["corrected"])
-		end
-	end
-	return condition
-end
-
 function WritCreater.questExceptions(condition)
 	condition = string.gsub(condition, " "," ")
 	return condition
@@ -466,10 +404,11 @@ function WritCreater.langTutorialButton(i,onOrOff) -- sentimental and short plea
 	end
 end
 
-
-
-
-
+function WritCreater.langStationNames()
+	return
+	{["Blacksmithing Station"] = 1, ["Clothing Station"] = 2, 
+	 ["Enchanting Table"] = 3,["Alchemy Station"] = 4, ["Cooking Fire"] = 5, ["Woodworking Station"] = 6, ["Jewelry Crafting Station"] = 7, }
+end
 
 -- What is this??! This is just a fun 'easter egg' that is never activated on easter.
 -- Replaces mat names with a random DivineMats on Halloween, New Year's, and April Fools day. You don't need this many! :D
@@ -515,6 +454,141 @@ if l then
 	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 end
 
+local function hasMadnessEngulfedNirn()
+	local t = GetTimeString() local c = string.sub(t, 1,string.find(t, ":") - 1)
+	return tonumber(c) > 11
+end
+
+
+-- [[ /script local writcreater = {} local c = {a = 1} local g = {__index = c} setmetatable(writ, g) d(a.a) local e = {__index = {Z = 2}} setmetatable(c, e) d(a.Z)
+local h = {__index = {}}
+local t = {}
+local g = {["__index"] = t}
+setmetatable(t, h)
+setmetatable(WritCreater, g) --]]
+
+local function enableAlternateUniverse(override)
+
+	if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 1 or override then
+	--if true then
+		local stations = 
+			{"Blacksmithing Station", "Clothing Station", "Enchanting Table",
+			"Alchemy Station",  "Cooking Fire", "Woodworking Station","Jewelry Crafting Station",  "Outfit Station", "Transmute Station", "Wayshrine"}
+			local stationNames =  -- in the comments are other names that were also considered, though not all were considered seriously
+			{"Wightsmithing Station", -- Popcorn Machine , Skyforge, Heavy Metal Station, Metal Clockwork Solid, Wightsmithing Station., Coyote Stopper
+			 "Sock Puppet Theatre", -- Sock Distribution Center, Soul-Shriven Sock Station, Grandma's Sock Knitting Station, Knits and Pieces, Sock Knitting Station
+			"Top Hats Inc.", -- Mahjong Station, Magic Store, Card Finder, Five Aces, Top Hat Store
+			"Seedy Skooma Bar", -- Chemical Laboratory , Drugstore, White's Garage, Cocktail Bar, Med-Tek Pharmaceutical Company, Med-Tek Laboratories, Skooma Central, Skooma Backdoor Dealers, Sheogorath's Pharmacy
+			 "Khajit Fried Chicken", -- Khajit Fried Chicken, soup Kitchen, Some kind of bar, misspelling?, Roast Bosmer
+			 "IKEA Assembly Station", -- Chainsaw Massace, Saw Station, Shield Corp, IKEA Assembly Station, Wood Splinter Removal Station
+			 "April Fool's Gold",--"Diamond Scam Store", -- Lucy in the Sky, Wedding Planning Hub, Shiny Maker, Oooh Shiny, Shiny Bling Maker, Cubit Zirconia, Rhinestone Palace
+			 -- April Fool's Gold
+			 "Khajit Fur Trade Outpost", -- Jester Dressing Room Loincloth Shop, Khajit Walk, Khajit Fashion Show, Mummy Maker, Thalmor Spy Agency, Tamriel Catwalk, 
+			 --	Tamriel Khajitwalk, second hand warehouse,. Dye for Me, Catfur Jackets, Outfit station "Khajiit Furriers", Khajit Fur Trading Outpost
+			 "Sacrificial Goat Altar",-- Heisenberg's Station Correction Facility, Time Machine, Probability Redistributor, Slot Machine Rigger, RNG Countermeasure, Lootcifer Shrine, Whack-a-mole
+			 -- Anti Salt Machine, Department of Corrections, Quantum State Rigger , Unnerf Station
+			 "TARDIS" } -- Transporter, Molecular Discombobulator, Beamer, Warp Tunnel, Portal, Stargate, Cannon!, Warp Gate
+			
+			local crafts = {"Blacksmithing", "Clothing", "Enchanting","Alchemy","Provisioning","Woodworking","Jewelry Crafting" }
+			local craftNames = {
+				"Wightsmithing",
+				"Sock Knitting",
+				"Top Hat Tricks",
+				"Skooma Brewing",
+				"Chicken Frying",
+				"IKEA Assembly",
+				"Fool's Gold Creation",
+			}
+			local quest = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner", "Woodworker", "Jewelry Crafting"}
+			local questNames = 	
+			{
+				"Wightsmith",
+				"Sock Knitter",
+				"Top Hat Trickster",
+				"Skooma Brewer",
+				"Chicken Fryer",
+				"IKEA Assembly",
+				"Fool's Gold",
+			}
+			local items = {"Blacksmith", "Clothier", "Enchanter", "alchemical", "food and drink",  "Woodworker", "Jewelry"}
+			local itemNames = {
+				"Wight",
+				"Sock Puppet",
+				"Top Hat",
+				"Skooma",
+				"Fried Chicken",
+				"IKEA",
+				"Fool's Gold",
+			}
+			local coffers = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner", "Woodworker", "Jewelry Crafter's",}
+			local cofferNames = {
+				"Wightsmith",
+				"Sock Knitter",
+				"Top Hat Trickster",
+				"Skooma Brewer",
+				"Chicken Fryer",
+				"IKEA Assembly",
+				"Fool's Gold",
+			}
+		
+
+		local t = {["__index"] = {}}
+		function h.__index.alternateUniverse()
+			return stations, stationNames
+		end
+		function h.__index.alternateUniverseCrafts()
+			return crafts, craftNames
+		end
+		function h.__index.alternateUniverseQuests()
+			return quest, questNames
+		end
+		function h.__index.alternateUniverseItems()
+			return items, itemNames
+		end
+		function h.__index.alternateUniverseCoffers()
+			return coffers, cofferNames
+		end
+
+		h.__metatable = "No looky!"
+		local a = WritCreater.langStationNames()
+		a[1] = 1
+		for i = 1, 7 do
+			a[stationNames[i]] = i
+		end
+		WritCreater.langStationNames = function() 
+			return a
+		end
+		local b =WritCreater.langWritNames()
+		for i = 1, 7 do
+			b[i] = questNames[i]
+		end
+		-- WritCreater.langWritNames = function() return b end
+
+	end
+end
+
+-- For Transmutation: "Well Fitted Forever"
+-- So far, I like blacksmithing, clothing, woodworking, and wayshrine, enchanting
+-- that leaves , alchemy, cooking, jewelry, outfits, and transmutation
+
+local lastYearStations = 
+{"Blacksmithing Station", "Clothing Station", "Woodworking Station", "Cooking Fire", 
+"Enchanting Table", "Alchemy Station", "Outfit Station", "Transmute Station", "Wayshrine"}
+local stationNames =  -- in the comments are other names that were also considered, though not all were considered seriously
+{"Heavy Metal 112.3 FM", -- Popcorn Machine , Skyforge, Heavy Metal Station
+ "Sock Knitting Station", -- Sock Distribution Center, Soul-Shriven Sock Station, Grandma's Sock Knitting Station, Knits and Pieces
+ "Splinter Removal Station", -- Chainsaw Massace, Saw Station, Shield Corp, IKEA Assembly Station, Wood Splinter Removal Station
+ "McSheo's Food Co.", 
+ "Tetris Station", -- Mahjong Station
+ "Poison Control Centre", -- Chemical Laboratory , Drugstore, White's Garage, Cocktail Bar, Med-Tek Pharmaceutical Company, Med-Tek Laboratories
+ "Thalmor Spy Agency", -- Jester Dressing Room Loincloth Shop, Khajit Walk, Khajit Fashion Show, Mummy Maker, Thalmor Spy Agency, Morag Tong Information Hub, Tamriel Spy HQ, 
+ "Department of Corrections",-- Heisenberg's Station Correction Facility, Time Machine, Probability Redistributor, Slot Machine Rigger, RNG Countermeasure, Lootcifer Shrine, Whack-a-mole
+ -- Anti Salt Machine, Department of Corrections
+ "Warp Gate" } -- Transporter, Molecular Discombobulator, Beamer, Warp Tunnel, Portal, Stargate, Cannon!, Warp Gate
+
+enableAlternateUniverse(GetDisplayName()=="@Dolgubon")
+
+
 --Hide craft window when done
 --"Verstecke Fenster anschließend",
 -- [tooltip ] = "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
@@ -531,16 +605,12 @@ function WritCreater.langWritRewardBoxes () return {
 }
 end
 
-function WritCreater.langStationNames()
-	return
-	{["Blacksmithing Station"] = 1, ["Clothing Station"] = 2, 
-	 ["Enchanting Table"] = 3,["Alchemy Station"] = 4, ["Cooking Fire"] = 5, ["Woodworking Station"] = 6, ["Jewelry Crafting Station"] = 7, }
-end
-
 
 function WritCreater.getTaString()
 	return "ta"
 end
+
+
 
 WritCreater.lang = "en"
 WritCreater.langIsMasterWritSupported = true

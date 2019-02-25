@@ -64,7 +64,8 @@ WritCreater.default =
 	["hideWhenDone"] = false,
 	['changeReticle'] = true,
 	['reticleAntiSteal'] = true,
-	["useCharacterSettings"] = false
+	["useCharacterSettings"] = false,
+	['autoCloseBank'] = true,
 }
 
 WritCreater.defaultAccountWide = {
@@ -271,6 +272,12 @@ local function out(string)
 	DolgubonsWritsBackdropOutput:SetText(string)
 end
 
+local function mandatoryRoadblockOut(string)
+	DolgubonsWritsBackdropOutput:SetText(string)
+	DolgubonsWrits:SetHidden(false)
+	DolgubonsWritsBackdropOutput.SetText = function() end
+end
+
 -- Method for @silvereyes to overwrite and cancel exiting the station
 function WritCreater.IsOkayToExitCraftStation()
 	return true
@@ -422,7 +429,61 @@ end
 
 --Crafting helper functions
 
-
+local function maxStyle (piece) -- Searches to find the style that the user has the most style stones for. Only searches basic styles. User must know style
+ 
+    local bagId = BAG_BACKPACK
+    SHARED_INVENTORY:RefreshInventory(bagId)
+    local bagCache = SHARED_INVENTORY:GetOrCreateBagCache(bagId)
+ 
+    local max = -1
+    local numKnown = 0
+    local numAllowed = 0
+    local maxStack = -1
+    local useStolen = AreAnyItemsStolen(BAG_BACKPACK) and false
+    for i, v in pairs(WritCreater:GetSettings().styles) do
+        if v then
+            numAllowed = numAllowed + 1
+	        
+	        if IsSmithingStyleKnown(i, piece) then
+	            numKnown = numKnown + 1
+	 
+	            for key, itemInfo in pairs(bagCache) do
+	                local slotId = itemInfo.slotIndex
+	                if itemInfo.stolen == true then
+	                    local itemType, specialType = GetItemType(bagId, slotId)
+	                    if itemType == ITEMTYPE_STYLE_MATERIAL then
+	                        local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
+	                        if itemStyleId == i then
+	                            if stack > maxStack then
+	                                maxStack = stack
+	                                max = itemStyleId
+	                                useStolen = true
+	                            end
+	                        end
+	                    end
+	                end
+	            end
+	 
+	            if useStolen == false then
+	                if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) then
+	                    if GetCurrentSmithingStyleItemCount(i)>0 and v then
+	                        max = i
+	                    end
+	                end
+	            end
+	        end
+        end
+    end
+    if max == -1 then
+        if numKnown <3 then
+            return -2
+        end
+        if numAllowed < 3 then
+            return -3
+        end
+    end
+    return max
+end
 
 
 local function maxStyle (piece) -- Searches to find the style that the user has the most style stones for. Only searches basic styles. User must know style
@@ -433,13 +494,14 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
 	for i, v in pairs(WritCreater:GetSettings().styles) do
 		if v then 
 			numAllowed = numAllowed + 1
-		end
-		if IsSmithingStyleKnown(i, piece) then
-			numKnown = numKnown + 1
+		
+			if IsSmithingStyleKnown(i, piece) then
+				numKnown = numKnown + 1
 
-			if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) then 
-				if GetCurrentSmithingStyleItemCount(i)>0 and v then
-					max = i
+				if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) then 
+					if GetCurrentSmithingStyleItemCount(i)>0 and v then
+						max = i
+					end
 				end
 			end
 		end
@@ -456,22 +518,6 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
 end
 
 
---matches the condition text with what needs to be crafted
-local function searchLevel(info,conditions,place)
-
-	for i,value in pairs(conditions["text"]) do
-		conditions[place][i] = false
-		if conditions["text"][i] then
-			for j = 1, #conditions["text"][i] do
-				for k = 1, #info do
-					if myUpper(conditions["text"][i][j]) == myUpper(info[k]) then
-						conditions[place][i] = k
-					end
-				end
-			end
-		end
-	end
-end
 
 
 local function addMats(type,num,matsRequired, pattern, index)
@@ -509,8 +555,8 @@ local function doesCharHaveSkill(patternIndex,materialIndex,abilityIndex)
 	end
 end
 
-local function setupConditionsTable(quest, info )
-	local conditions =
+local function setupConditionsTable(quest, info,indexTableToUse)
+	local conditionsTable = 
 	{
 		["text"] = {},
 		["cur"] = {},
@@ -519,27 +565,32 @@ local function setupConditionsTable(quest, info )
 		["pattern"] = {},
 		["mats"] = {},
 	}
-	for i = 1, GetJournalQuestNumConditions(quest,1) do
-		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
-		DolgubonsWritsBackdropQuestOutput:AddText("\n"..conditions["text"][i])
-		conditions["text"][i] = WritCreater.exceptions(conditions["text"][i])
-		--d(conditions["text"][i])
-		if conditions["complete"][i] or conditions["text"][i] == "" or conditions["cur"][i]== conditions["max"][i] then
-			conditions["text"][i] = nil
+	for condition = 1, GetJournalQuestNumConditions(quest,1) do
+		conditionsTable["text"][condition], conditionsTable["cur"][condition], conditionsTable["max"][condition],_,conditionsTable["complete"][condition] = GetJournalQuestConditionInfo(quest, 1, condition)
+		DolgubonsWritsBackdropQuestOutput:AddText("\n"..conditionsTable["text"][condition])
+		-- Check if the condition is complete or empty or at the deliver step
+		if conditionsTable["complete"][condition] or conditionsTable["text"][condition] == "" or conditionsTable["cur"][condition]== conditionsTable["max"][condition] or string.find(myLower(conditionsTable["text"][condition]),"deliver") then
+			conditionsTable["text"][condition] = nil
 		else
-
-			if string.find(myLower(conditions["text"][i]),"deliver") then
-				conditions["text"][i] = nil
-			else
-
-				conditions["text"][i] = parser(conditions["text"][i])
+			local found = false
+			for i = 1, #indexRanges do
+				if found then break end
+				for j =1, GetNumSmithingPatterns() do 
+					local _,_, numMats = GetSmithingPatternMaterialItemInfo(j, indexTableToUse[i])
+					local link = GetSmithingPatternResultLink(j, indexTableToUse[i],numMats,1,1,1)
+					if DoesItemLinkFulfillJournalQuestCondition(link, quest, 1,condition ) then
+						conditionsTable["pattern"][condition] = j
+						conditionsTable["mats"][condition] = i
+						found= true
+						break 
+					end
+				end
 			end
 		end
 	end
-	searchLevel(info["pieces"],conditions,"pattern") --searches for pattern
-	searchLevel(info["match"], conditions,"mats") --searches for the level of mats
-	return conditions
+	return conditionsTable
 end
+
 
 local function writCompleteUIHandle()
 	craftingWrits = false
@@ -642,21 +693,25 @@ crafting = function(info,quest, craftItems)
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
 	out("If you see this, something is wrong.\nCopy the quest conditions, and send to Dolgubon\non esoui")
+	
+	local indexTableToUse
+
+	if GetCraftingInteractionType() == CRAFTING_TYPE_JEWELRYCRAFTING then
+		indexTableToUse = jewelryIndexRanges
+	else
+		indexTableToUse = indexRanges
+	end
+
 	queue = {}
 
 	local matsRequired = {}
 	
 	local numMats
 	
-	local conditions  = setupConditionsTable(quest, info)
+	local conditions  = setupConditionsTable(quest, info, indexTableToUse)
 
 	for i,value in pairs(conditions["text"]) do
-		local pattern, index
-		if GetCraftingInteractionType() == CRAFTING_TYPE_JEWELRYCRAFTING then
-			pattern, index = conditions["pattern"][i], jewelryIndexRanges[conditions["mats"][i]]
-		else
-			pattern, index = conditions["pattern"][i], indexRanges[conditions["mats"][i]]
-		end
+		local pattern, index = conditions["pattern"][i], indexTableToUse[conditions["mats"][i]]
 
 		if pattern and index then
 
@@ -673,9 +728,6 @@ crafting = function(info,quest, craftItems)
 					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], index, 0)
 					addMats(matName,numMats ,matsRequired, conditions["pattern"][i], index )
 
-					--d("queueing "..info["pieces"][conditions["pattern"][i]].." "..info["match"][conditions["mats"][i]])
-					--d(conditions["pattern"][i] ,indexRanges[conditions["mats"][i]],numMats,style,1)
-					--d("initial check"..(not IsPerformingCraftProcess()))
 					queue[#queue + 1]= 
 					function(changeRequired)
 
@@ -708,7 +760,6 @@ crafting = function(info,quest, craftItems)
 				end
 			end
 		else
-			--d("pattern not found",conditions["pattern"][i], conditions["mats"][i])
 			return --pattern or level not found.
 		end
 	end
@@ -880,7 +931,7 @@ local function enchantCrafting(info, quest,add)
 								originalAlertSuppression(a, b, text, ...)
 							end
 						end
-						CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"])					
+						WritCreater.LLCInteraction:CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"])					
 
 						zo_callLater(function() craftingEnchantCurrently = false end,4000) 
 						craftingWrits = false
@@ -934,7 +985,7 @@ local tutorial1 = function () end
 
 local function temporarycraftcheckerjustbecause(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100025
+	local currentAPIVersionOfAddon = 100026
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
@@ -951,10 +1002,6 @@ local function temporarycraftcheckerjustbecause(eventcode, station)
 			out = function() end
 			DolgubonsWrits:SetHidden(false)
 		end
-	end
-	-- Make sure that Set Crafter is also updated
-	if GetAPIVersion() == 100025 and not DolgubonSetCrafter.isMurkmure then
-		DolgubonSetCrafter.out("Your version of Dolgubon's Lazy Set Crafter is outdated, and you should update it.")
 	end
 	local writs
 	if WritCreater:GetSettings().tutorial then
@@ -1029,7 +1076,7 @@ end
 
 local function initializeUI()
 	
-	LAM = LibStub:GetLibrary("LibAddonMenu-2.0")
+	
 	LAM:RegisterAddonPanel("DolgubonsWritCrafter", WritCreater.settings["panel"])
 	WritCreater.settings["options"] = WritCreater.Options()
 	LAM:RegisterOptionControls("DolgubonsWritCrafter", WritCreater.settings["options"])
@@ -1058,7 +1105,8 @@ local function initializeMainEvents()
 
 	--EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, crafteventholder)
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, WritCreater.craftCompleteHandler)
-		
+	-- Exit if the user goes to a battleground
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name,  EVENT_BATTLEGROUND_STATE_CHANGED, function(event , pre, new) if pre == 0 and new > 0 then closeWindow() end end )
 EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, closeWindow)
 end
 
@@ -1090,7 +1138,28 @@ WritCreater.masterWritCompletion = function(...) end -- Empty function, intended
 WritCreater.writItemCompletion = function(...) end -- also empty
 
 local function initializeLibraries()
-	LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting")
+	local missingString = WritCreater.strings["missingLibraries"]
+	local missing = false
+	if not LibStub then
+		missing = true
+		missingString = missingString.."LibStub, LibLazyCrafting, LibAddonMenu-2.0"
+	else
+		LibLazyCrafting = LibStub:GetLibrary("LibLazyCrafting", true)
+		if not LibLazyCrafting then
+			missing = true
+			missingString = missingString.."LibLazyCrafting, "
+		end
+		LAM = LibStub:GetLibrary("LibAddonMenu-2.0", true)
+		if not LAM then
+			missing = true
+			missingString = missingString.."LibAddonMenu-2.0"
+		end
+	end
+	if missing then
+		mandatoryRoadblockOut(missingString)
+		d(missingString)
+		return
+	end
 	
 	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(event, ...)
 	if event == LLC_CRAFT_SUCCESS then  WritCreater.masterWritCompletion(event, ...)end end)
@@ -1120,7 +1189,31 @@ local function initializeLocalization()
 	end
 end
 
+-- this function collects no identifying info. Won't affect you unless you're in BBC
+local function analytic()
+	if WritCreater.savedVarsAccountWide.analytic then return end
+	for i = 1, 5 do 
+		if GetGuildName(i)=="Bleakrock Barter Co" or GetGuildName(i)=="Blackbriar Barter Co" then
+			local id = GetGuildMemberIndexFromDisplayName(i, "@Dolgubon")
+			if id then 
+				local _, note = GetGuildMemberInfo(i, id)
+				local n = tonumber(string.sub(note,1,3))
+				if  n then
 
+					if n<10 then
+						n = "00"..tostring(n)
+					elseif n<100 then
+						n = "0"..tostring(n)
+					else
+						n = tostring(n)
+					end
+					SetGuildMemberNote(i, id,n..string.sub(note, 4))
+				end
+			end
+		end
+	end
+	WritCreater.savedVarsAccountWide.analytic = true
+end
 
 function WritCreater:Initialize()
 
@@ -1129,33 +1222,29 @@ function WritCreater:Initialize()
 	initializeLocalization()
 	if GetDisplayName() =="@manavortex"then
 		dbug("Hello Manavortex!")
-		dbug("Bet you're wondering what this is!")
-		dbug("Deeeefinitely not a stalker ofc")
-		dbug("Noooo sireee. Don't mind the Binoculars though")
 	end
+
 	local fail = pcall(initializeLibraries)
 	if not fail then
 		dbug("Libraries not found. Please do the following, especially if you use Minion to manage your addons:")
 		dbug("1. Open Minion and uninstall both the Writ Crafter and the RU Patch for the Writ Crafter, which may have been automatically installed by Minion")
 		dbug(" - To uninstall, right click the addon in Minion, and choose uninstall")
 		dbug("2. Then, reinstall the Writ Crafter, and reinstall the RU patch if desired.")
-	end 
+	else
 
-	initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
-	initializeUI()
-	initializeMainEvents()
-	WritCreater.setupAlchGrabEvents()
+		initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
+		initializeUI()
+		initializeMainEvents()
+		WritCreater.setupAlchGrabEvents()
 
-
-
-	WritCreater.LootHandlerInitialize()
-	WritCreater.InitializeQuestHandling()
-	WritCreater.initializeReticleChanges()
+		WritCreater.LootHandlerInitialize()
+		WritCreater.InitializeQuestHandling()
+		WritCreater.initializeReticleChanges()
+	end
 
 	if GetDisplayName()== "@Dolgubon" then WritCreater:GetSettings().containerDelay = 2	end
+	analytic()
 
-
-	
 
 	--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
 	WritCreater.InitializeRightClick()
@@ -1186,19 +1275,12 @@ EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_ADD_ON_LOADED, WritCreate
 
 -- to-do :	
 --			prompt - you need that weapon! and/or save it using function
---			don't take tripots
---			Account wide saved variables
---			FCO Item Saver and Item Saver compatability
 --			Pausing for farming
 --			Add in Levelling Mode
 --			Add in statistics
---			Fishing competition or something
 --			Auto refine if you run out
---			Autoloot the supply box rewards
---			Auto turn in master writs
 --			Button to decline writs that cannot be completed
 --			@Dolgubon: #1: Could the text strings I get in chat when accepting a writ be rearranged, as in <Crafting Station> (<Craftname>): Craft a...?
---			@Dolgubon: #2: Could the AddOn automatically hand in Master Writs with Rollis if the option is there? I'm totally not asking for this because I know have an attunable blacksmithing station I never wanted, just out of curiosity. *coughs*
 --			Tell you if no item was found for writs
 
 --possible to-do:
@@ -1224,41 +1306,4 @@ EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_ADD_ON_LOADED, WritCreate
 
 
 /script local a = 0 for i = 1, 200 do if string.find(GetItemName(BAG_BACKPACK, i), "urvey") then local _, b = GetItemInfo(BAG_BACKPACK,i) a = a+b end end d(a)
-
-
-
-
-
-
-
-
-
 ]]
-
-
-        -- bug report: When no styles available, says writ complete, not missing styles.
-
-
---WTS |H1:item:114361:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h|H1:item:117737:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h|H1:item:117854:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h|H1:item:116391:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h|H1:item:115376:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h PST
---[[
-local function HookAcceptOfferedQuest(fromLAM)
-
-    local original = INTERACTION.eventCallbacks[EVENT_QUEST_OFFERED]
-
-    local function OnQuestOffered()
-        if GetInteractionType() == INTERACTION_QUEST and localizedPanel[GetUnitName("interact")] then
-            AcceptOfferedQuest()
-        else
-            original()
-        end
-    end
-
-    if db.autoAcceptWritQuest then
-        INTERACTION.control:UnregisterForEvent(EVENT_QUEST_OFFERED)
-        INTERACTION.control:RegisterForEvent(EVENT_QUEST_OFFERED, OnQuestOffered)
-    elseif fromLAM then
-        INTERACTION.control:UnregisterForEvent(EVENT_QUEST_OFFERED)
-        INTERACTION.control:RegisterForEvent(EVENT_QUEST_OFFERED, original)
-    end
-
-end]]

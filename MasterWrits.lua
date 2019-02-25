@@ -220,7 +220,12 @@ local function EnchantingMasterWrit(journalIndex, sealedText, reference)
 			WritCreater.langWritNames()[CRAFTING_TYPE_ENCHANTING],
 			WritCreater.langMasterWritNames()["M1"],
 			WritCreater.langWritNames()["G"]))
+		if not WritWorthy then 
+			d("The Master Writ crafting feature of Dolgubon's Lazy Writ Crafter will no longer be supported. Please download and use Writ Worthy by Ziggr from Minion or Esoui if you wish to do Master Writs.")
+		end
+
 		WritCreater.LLCInteractionMaster:CraftEnchantingItemId(potency[2][essence[3]], essence[2], aspect[2], true, reference)
+
 		dbug("CALL:LLCENchantCraft")
 		
 	else
@@ -257,8 +262,8 @@ local function smithingSearch(condition, info, debug)
 		local longest = 0
 		local position = 0
 		for i = 1, #matches do
-			if string.len(matches[i][1][1])>longest then
-				longest = string.len(matches[i][1][1])
+			if ZoUTF8StringLength(matches[i][1][1])>longest then
+				longest = ZoUTF8StringLength(matches[i][1][1])
 				position = i
 			end
 		end
@@ -392,7 +397,9 @@ local function SmithingMasterWrit(journalIndex, info, station, isArmour, materia
 			WritCreater.langMasterWritNames()["M1"],
 			WritCreater.langWritNames()["G"]
 			))
-
+		if not WritWorthy then 
+			d("The Master Writ crafting feature of Dolgubon's Lazy Writ Crafter will no longer be supported. Please download and use Writ Worthy by Ziggr from Minion or Esoui if you wish to do Master Writs.")
+		end
 		dbug("CALL:LLCCraftSmithing")
 		-- Cancel any previously added items with the same reference so we don't craft twice
 		WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
@@ -511,7 +518,7 @@ end
 
 local function QuestCounterChanged(event, journalIndex, questName, _, _, currConditionVal, newConditionVal, conditionMax)
 	dbug("EVENT:Quest Counter Change")
-
+	if not WritCreater.LLCInteractionMaster then return end
 	if #WritCreater.LLCInteractionMaster:findItemByReference(journalIndex) == 0 then
 		WritCreater.LLCInteractionMaster:cancelItemByReference(journalIndex)
 		if newConditionVal<conditionMax then
@@ -526,6 +533,7 @@ end
 EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_QUEST_CONDITION_COUNTER_CHANGED , QuestCounterChanged)
 
 function WritCreater.scanAllQuests()
+	if not WritCreater.LLCInteractionMaster then return end
 	WritCreater.LLCInteractionMaster:cancelItem()
 	dbug("FUNCTION:scanAllQuests")
 	for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end

@@ -238,7 +238,7 @@ local slotUpdateHandler
 
 local function shouldOpenContainer(bag, slot)
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
-
+	if FindFirstEmptySlotInBag(BAG_BACKPACK) == nil then return false end
 	local flavour = GetItemLinkFlavorText(GetItemLink(bag, slot))
 	if flavour ==rewardFlavourText then
 		return true
@@ -253,6 +253,7 @@ end
 local scanBagForUnopenedContainers
 
 local function openContainer(bag, slot)
+	if not shouldOpenContainer(bag, slot) then return end
 	lastScene = SCENE_MANAGER:GetCurrentScene():GetName()
 	if lastScene == "interact" then lastScene = "hudui" end
 	if IsProtectedFunction("UseItem") then
@@ -262,7 +263,8 @@ local function openContainer(bag, slot)
 		UseItem(bag, slot)
 	end 
 	calledFromQuest = true
-	zo_callLater(scanBagForUnopenedContainers, 1500)
+	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootRescan", 1500, scanBagForUnopenedContainers)
+	-- zo_callLater(scanBagForUnopenedContainers, 1500)
 end
 
 
@@ -315,11 +317,13 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 end
 
 function scanBagForUnopenedContainers( ... )
+	if not FindFirstEmptySlotInBag(BAG_BACKPACK) then return end
 	for i = 0, GetBagSize(BAG_BACKPACK) do 
 		if shouldOpenContainer(BAG_BACKPACK, i) then
 			slotUpdateHandler(1, BAG_BACKPACK, i, true)
 		end
 	end
+	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootRescan")
 end
 
 DSlotUpdate = slotUpdateHandler

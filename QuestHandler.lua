@@ -62,7 +62,6 @@ local function isQuestTypeActive(optionString)
 	optionString = string.gsub(optionString, "couture","tailleur")
 
 	for i = 1, 7 do
-
 		if string.find(string.lower(optionString), string.lower(WritCreater.writNames[i])) and (WritCreater:GetSettings()[i] or WritCreater:GetSettings()[i]==nil) then 
 			return true
 		
