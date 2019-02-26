@@ -122,7 +122,7 @@ WritCreater.strings =
 	["withdrawItem"]				= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link..". ("..remaining.." in bank)" end, -- in Bank for German
 	['fullBag']						= "You have no open bag spaces. Please empty your bag.",
 	['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.",
-	['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please install or turn on these libraries: ",
+	['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: ",
 
 }
 

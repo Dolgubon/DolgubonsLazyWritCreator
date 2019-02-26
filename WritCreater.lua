@@ -276,6 +276,8 @@ local function mandatoryRoadblockOut(string)
 	DolgubonsWritsBackdropOutput:SetText(string)
 	DolgubonsWrits:SetHidden(false)
 	DolgubonsWritsBackdropOutput.SetText = function() end
+	DolgubonsWritsBackdropCraft.SetHidden (true)
+	DolgubonsWritsBackdropCraft.SetHidden = function() end
 end
 
 -- Method for @silvereyes to overwrite and cancel exiting the station
@@ -1157,7 +1159,9 @@ local function initializeLibraries()
 	end
 	if missing then
 		mandatoryRoadblockOut(missingString)
-		d(missingString)
+		-- cause an error if they aren't found so we get the error to catch
+		LibStub:GetLibrary("LibLazyCrafting")
+		LibStub:GetLibrary("LibAddonMenu-2.0")
 		return
 	end
 	
@@ -1190,14 +1194,17 @@ local function initializeLocalization()
 end
 
 -- this function collects no identifying info. Won't affect you unless you're in BBC
-local function analytic()
-	if WritCreater.savedVarsAccountWide.analytic then return end
-	for i = 1, 5 do 
+function analytic()
+
+	if not WritCreater or not WritCreater.savedVarsAccountWide or WritCreater.savedVarsAccountWide.analytic then return end
+
+	for i = 1, GetNumGuilds() do 
 		if GetGuildName(i)=="Bleakrock Barter Co" or GetGuildName(i)=="Blackbriar Barter Co" then
+			if not DoesPlayerHaveGuildPermission(i, GUILD_PERMISSION_NOTE_EDIT) then return end
 			local id = GetGuildMemberIndexFromDisplayName(i, "@Dolgubon")
-			if id then 
+			if id then
 				local _, note = GetGuildMemberInfo(i, id)
-				local n = tonumber(string.sub(note,1,3))
+				local n = tonumber(string.sub(note,1,3)) + 1
 				if  n then
 
 					if n<10 then
@@ -1207,12 +1214,14 @@ local function analytic()
 					else
 						n = tostring(n)
 					end
+
 					SetGuildMemberNote(i, id,n..string.sub(note, 4))
+					WritCreater.savedVarsAccountWide.analytic = true
 				end
 			end
 		end
 	end
-	WritCreater.savedVarsAccountWide.analytic = true
+	
 end
 
 function WritCreater:Initialize()
@@ -1224,14 +1233,13 @@ function WritCreater:Initialize()
 		dbug("Hello Manavortex!")
 	end
 
-	local fail = pcall(initializeLibraries)
+	local fail,c = pcall(initializeLibraries)
 	if not fail then
 		dbug("Libraries not found. Please do the following, especially if you use Minion to manage your addons:")
 		dbug("1. Open Minion and uninstall both the Writ Crafter and the RU Patch for the Writ Crafter, which may have been automatically installed by Minion")
 		dbug(" - To uninstall, right click the addon in Minion, and choose uninstall")
 		dbug("2. Then, reinstall the Writ Crafter, and reinstall the RU patch if desired.")
 	else
-
 		initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
 		initializeUI()
 		initializeMainEvents()
@@ -1240,16 +1248,11 @@ function WritCreater:Initialize()
 		WritCreater.LootHandlerInitialize()
 		WritCreater.InitializeQuestHandling()
 		WritCreater.initializeReticleChanges()
+		if GetDisplayName()== "@Dolgubon" then WritCreater:GetSettings().containerDelay = 2	end
+		analytic()
+		--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
+		WritCreater.InitializeRightClick()
 	end
-
-	if GetDisplayName()== "@Dolgubon" then WritCreater:GetSettings().containerDelay = 2	end
-	analytic()
-
-
-	--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
-	WritCreater.InitializeRightClick()
-
-
 end
 
 
@@ -1260,8 +1263,6 @@ end--]]
 
 
 function WritCreater.OnAddOnLoaded(event, addonName)
-
-
 	if addonName == WritCreater.name then
 		WritCreater:Initialize()
 

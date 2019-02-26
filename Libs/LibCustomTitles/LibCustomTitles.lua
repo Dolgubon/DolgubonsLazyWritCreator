@@ -77,6 +77,7 @@ Changes: Rewrote how custom titles are added and stored to help reduce conflict 
 	- Added option to replace a title globally.
 ]]--
 local libName = "LibCustomTitles"
+if not LibStub then return end
 LibStub:NewLibrary(libName, 100)
 EVENT_MANAGER:UnregisterForEvent(libName, EVENT_ADD_ON_LOADED)
 

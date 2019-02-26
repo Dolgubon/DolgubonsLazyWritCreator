@@ -18,6 +18,10 @@ libs\LibAddonMenu-2.0\controls\divider.lua
 
 libs\LibCustomMenu\LibCustomMenu.lua
 
+libs\LibLazyCrafting\LibLazyCrafting.lua	
+libs\LibLazyCrafting\Enchanting.lua	
+libs\LibLazyCrafting\Smithing.lua
+
 HelperFunctions.lua
 LootHandler.lua
 QuestHandler.lua
