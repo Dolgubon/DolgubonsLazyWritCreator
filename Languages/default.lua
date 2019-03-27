@@ -52,7 +52,7 @@ local function runeMissingFunction (ta,essence,potency)
 end
 
 
-local function dailyResetFunction(till) -- You can translate the following simple version instead.
+local function dailyResetFunction(till, stamp) -- You can translate the following simple version instead.
 										-- function (till) d(zo_strformat("<<1>> hours and <<2>> minutes until the daily reset.",till["hour"],till["minute"])) end,
 	if till["hour"]==0 then
 		if till["minute"]==1 then
@@ -61,7 +61,7 @@ local function dailyResetFunction(till) -- You can translate the following simpl
 			if stamp==1 then
 				return "Daily reset in "..stamp.." seconds!"
 			else
-				return "Seriously... Stop asking. Are you that impatient??? It resets in one more second godammit. Stupid entitled MMO players. *grumble grumble*"
+				return "Seriously... Stop asking. Are you that impatient??? It resets in one more second! *grumble grumble*"
 			end
 		else
 			return till["minute"].." minutes until daily reset!"
@@ -105,9 +105,7 @@ WritCreater.strings =
 	["complete"] 					= "|c00FF00Writ complete.|r",
 	["craftingstopped"]				= "Crafting stopped. Please check to make sure the addon is crafting the correct item.",
 	["smithingReqM"] 				= function (amount, type, more) return zo_strformat( "Crafting will use <<1>> <<2>> (|cf60000You need <<3>>|r)" ,amount, type, more) end,
-	["smithingReqM2"] 				= function (amount,type,more)     return zo_strformat( "\nAs well as <<1>> <<2>> (|cf60000You need <<3>>|r)"          ,amount, type, more) end,
 	["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end,
-	["smithingReq2"] 				= function (amount,type, current) return zo_strformat( "\nAs well as <<1>> <<2>> (|c2dff00<<3>> available|r)"         ,amount, type, current) end,
 	["lootReceived"]				= "<<1>> was received (You have <<2>>)",
 	["lootReceivedM"]				= "<<1>> was received ",
 	["countSurveys"]				= "You have <<1>> surveys",
@@ -123,6 +121,8 @@ WritCreater.strings =
 	['fullBag']						= "You have no open bag spaces. Please empty your bag.",
 	['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.",
 	['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: ",
+	['resetWarningMessageText']		= "The daily reset for writs will be in <<1>> hour and <<2>> minutes\nYou can customize or turn off this warning in the settings",
+	['resetWarningExampleText']		= "The warning will look like this",
 
 }
 
@@ -152,7 +152,7 @@ WritCreater.optionStrings["woodworking"]								= "Woodworking"
 WritCreater.optionStrings["woodworking tooltip"]						= "Turn the addon on for Woodworking"
 WritCreater.optionStrings["jewelry crafting"]							= "Jewelry Crafting"
 WritCreater.optionStrings["jewelry crafting tooltip"]					= "Turn the addon on for Jewelry Crafting"
-WritCreater.optionStrings["writ grabbing"]								= "Grab writ items"
+WritCreater.optionStrings["writ grabbing"]								= "Withdraw writ items"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Grab items required for writs (e.g. nirnroot, Ta, etc.) from the bank"
 WritCreater.optionStrings["delay"]										= "Item Grab Delay"
 WritCreater.optionStrings["delay tooltip"]								= "How long to wait before grabbing items from the bank (milliseconds)"
@@ -189,7 +189,14 @@ WritCreater.optionStrings["hide when done"]								= "Hide when done"
 WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon window when all items have been crafted"
 WritCreater.optionStrings['reticleColour']								= "Change Reticle Colour"
 WritCreater.optionStrings['reticleColourTooltip']						= "Changes the Reticle colour if you have an uncompleted or completed writ at the station"
-WritCreater.optionStrings['autoCloseBank']								= "Automatically Exit Bank"
-WritCreater.optionStrings['autoCloseBankTooltip']						= "Automatically exit the banking dialogue when all items have been withdrawn"
-
+WritCreater.optionStrings['autoCloseBank']								= "Automatic Bank Dialog"
+WritCreater.optionStrings['autoCloseBankTooltip']						= "Automatically enter and exit the banking dialogue if there are items to be withdrawn"
+WritCreater.optionStrings['dailyResetWarn']								= "Writ Reset Warning"
+WritCreater.optionStrings['dailyResetWarnTooltip']						= "Displays a warning when writs are about to reset for the day"
+WritCreater.optionStrings['dailyResetWarnTime']							= "Minutes Before Reset"
+WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "How many minutes before the daily reset the warning should be displayed"
+WritCreater.optionStrings['dailyResetWarnType']							= "Daily Reset Warning"
+WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "What type of warning should be displayed when the daily reset is about to occur"
+WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "None","Type 1", "Type 2", "Type 3", "Type 4", "All"}
+																		-- CSA, ZO_Alert, chat message, window
 

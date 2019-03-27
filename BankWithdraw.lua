@@ -96,10 +96,15 @@ end
 local saidBankIsFull = false
 
 local function moveItem( amountRequired, bag, slot)
-
+	if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
+		local _, optiontype = GetChatterOption(1)
+		if optiontype == CHATTER_START_BANK then
+			SelectChatterOption(1)
+		end
+	end
 	local emptySlot = emptySlots[1]
 	local _,remainingInBank = GetItemLinkStacks(GetItemLink(bag, slot))
-	if emptySlot then
+	if emptySlot and GetItemName(BAG_BACKPACK, emptySlot)=="" then
 		table.remove(emptySlots,1)
 		specialDebug("WC Debug Moving item to bag")
 		if IsProtectedFunction("RequestMoveItem") then
@@ -131,7 +136,7 @@ local function isPotentialMatch(validItemTypes, bag, slot, quest, stepindex, con
 		specialDebug("WC Debug Item Link: "..link)
 		
 		
-		if DoesItemLinkFulfillJournalQuestCondition(link, quest, stepindex, conditionindex) then 
+		if DoesItemFulfillJournalQuestCondition(bag, slot, quest, stepindex, conditionindex) then 
 			
 			return true 
 		end
@@ -227,7 +232,17 @@ local function queueRun()
 		--queueRun()
 	else
 		if wasItemInQueue and  WritCreater:GetSettings().autoCloseBank then
-			zo_callLater(function() ZO_SharedInteraction:CloseChatterAndDismissAssistant() end , 50)
+			local function recursiveCall() 
+				zo_callLater(
+					function() 
+						if GetInteractionType()==6 then 
+							ZO_SharedInteraction:CloseChatterAndDismissAssistant()
+							SCENE_MANAGER:Show('hud')
+							recursiveCall()
+						end
+					end , 100) 
+				end
+			recursiveCall()
 		end
 		saidBankIsFull = false
 		wasItemInQueue = nil
@@ -331,7 +346,10 @@ function WritCreater.setupAlchGrabEvents()
 
 	WritCreater.MasterWritsQuestAdded(event, journalIndex,name) end) 
 
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_OPEN_BANK, alchGrab)
+	if not WritCreater:GetSettings().autoCloseBank then
+		EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_OPEN_BANK, alchGrab)
+	end
+
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.." Withdraw", EVENT_PLAYER_ACTIVATED, function() if GetCurrentZoneHouseId() >0 then  alchGrab() end end)
 	
 	--I use SCENE_MANAGER:IsShowing("bank")

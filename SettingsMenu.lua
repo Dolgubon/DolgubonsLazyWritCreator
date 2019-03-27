@@ -120,7 +120,9 @@ function WritCreater.Options() --Sentimental
 			local quests, questNames = WritCreater.alternateUniverseQuests()
 			local items, itemNames = WritCreater.alternateUniverseItems()
 			local oneOff, oneOffNames = WritCreater.alternateUniverseCoffers()
+			local ones, oneNames = WritCreater.alternateUniverseOnes()
 			local function setupReplacement(object, functionName, positionOfText, types, stationOrNot, case, x)
+				if not object then return end
 				local usingOld, usingNames
 				if stationOrNot==nil then
 					usingOld, usingNames = stations, stationNames
@@ -132,6 +134,8 @@ function WritCreater.Options() --Sentimental
 					usingOld, usingNames = items, itemNames
 				elseif stationOrNot == 4 then
 					usingOld, usingNames = oneOff, oneOffNames
+				elseif stationOrNot == 0 then
+					usingOld, usingNames = ones, oneNames
 				end
 
 				local stationsToCheck = {}
@@ -145,17 +149,18 @@ function WritCreater.Options() --Sentimental
 				local original = object[functionName]
 				object[functionName] = function(self, ...)
 					local parameters = {...}
-					if x then d(parameters) end
+					-- if x then d(parameters) end
 					local text = parameters[positionOfText]
 					if positionOfText == 0 then text = self end
 					if type(text )~="string" then original(self, ...) return end
 					for i, stationOriginalName in pairs(stationsToCheck) do 
-						if case =="u" then d(text, string.upper(usingOld[i]) ) d(string.find(text, usingOld[i]) or (case == "u" and string.find(text, string.upper(usingOld[i]) ))) end
+						-- if case =="u" then d(text, string.upper(usingOld[i]) ) d(string.find(text, usingOld[i]) or (case == "u" and string.find(text, string.upper(usingOld[i]) ))) end
 						if string.find(text, usingOld[i]) or (case == "u" and string.find(text, string.upper(usingOld[i]) )) then
 							local newText = string.gsub(text, usingOld[i], usingNames[i] or text or "")
 							parameters[positionOfText] = newText
 							if positionOfText == 0 then self = newText end
 							if case== "u" then
+
 								local newText = string.gsub(text, string.upper(usingOld[i]), string.upper(usingNames[i]) or text or "")
 								parameters[positionOfText] = newText
 								if positionOfText == 0 then self = newText end
@@ -167,6 +172,7 @@ function WritCreater.Options() --Sentimental
 				end
 			end
 			local function interceptReplacement(object, functionName, positionOfText, types, stationOrNot)
+				if not object then return end
 				local usingOld, usingNames
 				if stationOrNot==nil then
 					usingOld, usingNames = stations, stationNames
@@ -223,22 +229,66 @@ function WritCreater.Options() --Sentimental
 					return original(self, newEntry)
 				end
 			end
-
-			local original = ZO_PlayerInventoryList.dataTypes[1].pool.AcquireObject
-			ZO_PlayerInventoryList.dataTypes[1].pool.AcquireObject = function (...) 
-				local c,b = original(...)
+			local original
+			local function inventorySetup (self,...) 
+				local c,b = self.originalAcquireObject(self,...)
 				abctestwrit = c
 				local label  = c:GetNamedChild("Name")
 				if not label.isAlternatedUniverse and label.SetText then
 					label.isAlternatedUniverse = true
 
 					setupReplacement(label, "SetText",1,true,4)
+					setupReplacement(label, "SetText",1,true,1)
+					setupReplacement(label, "SetText",1,1,0)
 					label:SetText(label:GetText())
 				end
 				return c,b
 			end
+			local object = ZO_PlayerInventoryList.dataTypes[1].pool
+			original = object.AcquireObject
+			object.originalAcquireObject = original
+			object.AcquireObject = inventorySetup
+
+
+			object = ZO_PlayerBankBackpack.dataTypes[1].pool
+			original = object.AcquireObject
+			object.originalAcquireObject = original
+			object.AcquireObject = inventorySetup
+
+			object = ZO_HouseBankBackpack.dataTypes[1].pool
+			original = object.AcquireObject
+			object.originalAcquireObject = original
+			object.AcquireObject = inventorySetup
+
+			object =WORLD_MAP_QUESTS.headerPool
+			original = object.AcquireObject
+			object.originalAcquireObject = original
+			object.AcquireObject = inventorySetup
+			
 
 			-- The quest labels in the journal
+			-- local o = ACHIEVEMENTS.categoryTree.AcquireNewChildContainer
+			-- ACHIEVEMENTS.categoryTree.AcquireNewChildContainer = function(...)
+			-- 	local c,b = o(...)
+			-- 	abcdtest=c
+
+			-- 	local label  = c.control
+			-- 	if label and not label.isAlternatedUniverse and label.SetText then
+			-- 		label.isAlternatedUniverse = true
+
+			-- 		setupReplacement(label, "SetText",1,true,1)
+			-- 		label:SetText(label:GetText())
+			-- 	end
+			-- 	return c,b
+			-- end
+			local t = ACHIEVEMENTS.categoryTree.control:GetChild():GetChild(7)
+			for i = 1, t:GetNumChildren() do
+				local label = t:GetChild(i)
+				if label and label.SetText then
+					setupReplacement(label, "SetText",1,true,1)
+					label:SetText(label:GetText())
+				end
+			end
 
 			local o = QUEST_JOURNAL_KEYBOARD.navigationTree.AddNode
 			QUEST_JOURNAL_KEYBOARD.navigationTree.AddNode = function (...) 
@@ -273,6 +323,10 @@ function WritCreater.Options() --Sentimental
 			setupReplacement(ZO_CenterScreenAnnounce_GetEventHandlers(), EVENT_QUEST_ADDED,1,true,2)
 			setupReplacement(ZO_CenterScreenAnnounce_GetEventHandlers(), EVENT_QUEST_COMPLETE,0,true,2)
 			setupReplacement(ZO_LootTitle, "SetText",1,true,4)
+			setupReplacement(ZO_TargetUnitFramereticleoverCaption , "SetText",1,true,2)
+
+			
+			setupReplacement(ZO_AchievementsCategoryTitle,"SetText", 1, true, 1)
 
 			setupReplacement(ZO_AlchemyTopLevelSkillInfoName,"SetText", 2, true, 1,"u")
 
@@ -328,6 +382,7 @@ function WritCreater.Options() --Sentimental
 				if not control.hasAprilStarted then 
 					control.hasAprilStarted = true 
 					setupReplacement(control, "SetText", 1, true)
+					setupReplacement(control, "SetText", 1, true,2)
 				end
 				return control,b
 			end
@@ -435,6 +490,31 @@ function WritCreater.Options() --Sentimental
 				end
 			end,
 		},
+		{
+			type = "dropdown",
+			name = WritCreater.optionStrings['dailyResetWarnType'],--"Master Writs",
+			tooltip = WritCreater.optionStrings['dailyResetWarnTypeTooltip'],--"Craft Master Writ Items",
+			choices = WritCreater.optionStrings["dailyResetWarnTypeChoices"],
+			choicesValues = {"none","announcement","alert","chat","window","all"},
+			getFunc = function() return WritCreater:GetSettings().dailyResetWarnType end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().dailyResetWarnType = value 
+				WritCreater.showDailyResetWarnings("Example") -- Show the example warnings
+			end
+		},
+		{
+		    type = "slider",
+		    name = WritCreater.optionStrings['dailyResetWarnTime'], -- or string id or function returning a string
+		    getFunc = function() return WritCreater:GetSettings().dailyResetWarnTime end,
+		    setFunc = function(value) WritCreater:GetSettings().dailyResetWarnTime = math.max(0,value) WritCreater.refreshWarning() end,
+		    min = 0,
+		    max = 300,
+		    step = 1, --(optional)
+		    clampInput = false, -- boolean, if set to false the input won't clamp to min and max and allow any number instead (optional)
+		    tooltip = WritCreater.optionStrings['dailyResetWarnTimeTooltip'], -- or string id or function returning a string (optional)
+		    requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
+} 
+
 			
 	}
 ----------------------------------------------------
@@ -448,7 +528,22 @@ function WritCreater.Options() --Sentimental
 			tooltip = WritCreater.optionStrings["automatic complete tooltip"],
 			getFunc = function() return WritCreater:GetSettings().autoAccept end,
 			setFunc = function(value) WritCreater:GetSettings().autoAccept = value end,
-		},		
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['autoCloseBank'],
+			tooltip = WritCreater.optionStrings['autoCloseBankTooltip'],
+			getFunc = function() return  WritCreater:GetSettings().autoCloseBank end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().autoCloseBank = value
+				if not value then
+					EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_OPEN_BANK, alchGrab)
+				else
+					EVENT_MANAGER:UnregisterForEvent(WritCreater.name)
+				end
+			end,
+		},
+		
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["exit when done"],
@@ -530,15 +625,6 @@ function WritCreater.Options() --Sentimental
 			getFunc = function() return  WritCreater:GetSettings().changeReticle end,
 			setFunc = function(value) 
 				WritCreater:GetSettings().changeReticle = value
-			end,
-		},
-		{
-			type = "checkbox",
-			name = WritCreater.optionStrings['autoCloseBank'],
-			tooltip = WritCreater.optionStrings['autoCloseBankTooltip'],
-			getFunc = function() return  WritCreater:GetSettings().autoCloseBank end,
-			setFunc = function(value) 
-				WritCreater:GetSettings().autoCloseBank = value
 			end,
 		},
 		

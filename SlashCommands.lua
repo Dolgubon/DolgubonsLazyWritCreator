@@ -31,7 +31,7 @@ local function dailyReset()
 		till["hour"] = 6- date["hour"] -1
 	end
 	till["minute"] = 60-date["minute"]
-	output = WritCreater.strings.dailyreset(till)
+	output = WritCreater.strings.dailyreset(till, stamp)
 	d(output)
 end
 
@@ -104,11 +104,23 @@ local function countSurveys()
 end
 
 -- countVouchers counts how many unearned vouchers the user has in sealed writs
+local masterWritTextures  = {
+	["/esoui/art/icons/master_writ_blacksmithing.dds"] = CRAFTING_TYPE_BLACKSMITHING,   
+	["/esoui/art/icons/master_writ_clothier.dds"     ] = CRAFTING_TYPE_CLOTHIER,
+	["/esoui/art/icons/master_writ_woodworking.dds"  ] = CRAFTING_TYPE_WOODWORKING,
+	["/esoui/art/icons/master_writ_jewelry.dds"      ] = CRAFTING_TYPE_JEWELRYCRAFTING,
+	["/esoui/art/icons/master_writ_alchemy.dds"      ] = CRAFTING_TYPE_ALCHEMY,
+	["/esoui/art/icons/master_writ_enchanting.dds"   ] = CRAFTING_TYPE_ENCHANTING,
+	["/esoui/art/icons/master_writ_provisioning.dds" ] = CRAFTING_TYPE_PROVISIONING,
+	["/esoui/art/icons/master_writ-newlife.dds"] 	   = nil,
+}
+
 
 local function countVouchers()
+
     local total= 0
     local i, j, bankNum
-  
+    local craftTotals = {}
     for j, bankNum in ipairs(bags) do
         for i = 1, GetBagSize(bankNum) do
             local itemType =  GetItemType(bankNum, i)
@@ -116,12 +128,26 @@ local function countVouchers()
             	if j > 3 then
             		storageIncluded = true
             	end
-                total = total + WritCreater.toVoucherCount(GetItemLink(bankNum, i))
+            	local numVouchers = WritCreater.toVoucherCount(GetItemLink(bankNum, i))
+                total = total + numVouchers
+                local icon = GetItemLinkInfo(GetItemLink(bankNum, i))
+                local craft = masterWritTextures[icon]
+                if craft then
+                	craftTotals[craft] = (craftTotals[craft] or 0) + numVouchers
+                end
             end
         end
     end
     if storageIncluded then
     	d(WritCreater.strings.includesStorage(2))
+    end
+    local names = WritCreater.langWritNames()
+	if WritCreater.lang == "fr" then
+		names[CRAFTING_TYPE_ALCHEMY] = "enchanteur"
+		names[CRAFTING_TYPE_ENCHANTING] = "alchimiste"
+	end
+    for k, v in pairs(craftTotals) do 
+    	d(names[k].." : "..v)
     end
     d(zo_strformat(WritCreater.strings.countVouchers,total))
     

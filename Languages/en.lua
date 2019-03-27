@@ -530,6 +530,8 @@ local function enableAlternateUniverse(override)
 				"IKEA Assembly",
 				"Fool's Gold",
 			}
+			local ones = {"Jewelry Crafter"}
+			local oneNames = {"Fool's Gold"}
 		
 
 		local t = {["__index"] = {}}
@@ -548,6 +550,10 @@ local function enableAlternateUniverse(override)
 		function h.__index.alternateUniverseCoffers()
 			return coffers, cofferNames
 		end
+		function h.__index.alternateUniverseOnes()
+			return ones, oneNames
+		end
+		
 
 		h.__metatable = "No looky!"
 		local a = WritCreater.langStationNames()
@@ -587,6 +593,7 @@ local stationNames =  -- in the comments are other names that were also consider
  "Warp Gate" } -- Transporter, Molecular Discombobulator, Beamer, Warp Tunnel, Portal, Stargate, Cannon!, Warp Gate
 
 enableAlternateUniverse(GetDisplayName()=="@Dolgubon")
+-- enableAlternateUniverse()
 
 
 --Hide craft window when done
@@ -610,7 +617,8 @@ function WritCreater.getTaString()
 	return "ta"
 end
 
-
+WritCreater.optionStrings["alternate universe"] = "Turn off April"
+WritCreater.optionStrings["alternate universe tooltip"] = "Turn off the renaming of crafts, crafting stations, and other interactables"
 
 WritCreater.lang = "en"
 WritCreater.langIsMasterWritSupported = true

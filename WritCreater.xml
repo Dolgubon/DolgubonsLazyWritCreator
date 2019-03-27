@@ -1,17 +1,44 @@
-<!-------------------------------------------------------------------------------------
--- Addon Name: Dolgubon's Lazy Writ Crafter
--- Creator: Dolgubon (Joseph Heinzle)
--- Addon Ideal: Simplifies Crafting Writs as much as possible
--- Addon Creation Date: March 14, 2016
---
--- File Name: WritCreater.xml
--- File Description: Contains all the XML GUI information for the addon
--- Load Order Requirements: Before WritCreater.lua
--- 
-------------------------------------------------------------------------------------- -->
+<!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	Addon Name: Dolgubon's Lazy Writ Crafter
+	Creator: Dolgubon (Joseph Heinzle)
+	Addon Ideal: Simplifies Crafting Writs as much as possible
+	Addon Creation Date: March 14, 2016
+	File Name: WritCreater.xml
+	File Description: Contains all the XML GUI information for the addon
+	Load Order Requirements: Before WritCreater.lua
+	
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
 
 <GuiXml>
 	<Controls>
+		<TopLevelControl name="DolgubonsLazyWritResetWarner" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="700" y="150" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200"/>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
+					<Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+					<Dimensions x="700" y="150"/>
+					<Edge edgeSize="1"/>
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
+							<Anchor  point="TOP"  relativePoint="TOP" relativeTo="$(parent)" offsetY="15" offsetX="-5"/>
+						</Label>
+						<Label name="$(parent)Output" font="ZoFontHeader3" color="FFFF33" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="The daily reset for writs will be in 1 hour" mouseEnabled="true">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="-5" />
+
+					    </Label>
+						<Button name="$(parent)Close" alpha="1" inherits="ZO_DefaultButton" text="Close" clickSound="Book_Acquired" topmost="true">
+					    	<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-15" />
+					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
+		         			<Dimensions x="130"  />
+							<OnClicked>
+								self:GetOwningWindow():SetHidden(true)
+							</OnClicked>
+			    		</Button>
+			    	</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
 		<TopLevelControl name="DolgubonsWrits" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="470" y="200" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50"/>

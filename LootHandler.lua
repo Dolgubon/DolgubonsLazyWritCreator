@@ -228,10 +228,14 @@ local function OnLootUpdated(event)
 	end
 	calledFromQuest = false
 end
+flavourTexts = {
+	[GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Normal reward
+	[GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward
+	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
+	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
 
-local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-local jewelryMatFlavourText = GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-local matRewardFlavourText = GetItemLinkFlavorText("|H1:item:99256:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+}
+
 local firstOpen = 10000000000000000000000
 local completeTimes = 0
 local slotUpdateHandler
@@ -240,11 +244,7 @@ local function shouldOpenContainer(bag, slot)
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
 	if FindFirstEmptySlotInBag(BAG_BACKPACK) == nil then return false end
 	local flavour = GetItemLinkFlavorText(GetItemLink(bag, slot))
-	if flavour ==rewardFlavourText then
-		return true
-	elseif flavour == jewelryMatFlavourText then
-		return true
-	elseif flavour == matRewardFlavourText then
+	if flavourTexts[flavour] then
 		return true
 	end
 	return false
@@ -337,14 +337,24 @@ function WritCreater.LootHandlerInitialize()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdateHandler)
 	local oldfunc = ZO_SharedInventoryManager.ClearNewStatus
 	ZO_SharedInventoryManager.ClearNewStatus = function(self, bag, slot) 
-		local rewardFlavourText = GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 
-		if WritCreater:GetSettings().keepNewContainer and GetItemLinkFlavorText(GetItemLink(bag,slot)) ==rewardFlavourText then
+		if WritCreater:GetSettings().keepNewContainer and flavourTexts[ GetItemLinkFlavorText(GetItemLink(bag,slot))]then
 
 		else
 			oldfunc(self, bag, slot) 
 		end 
 	end
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED, 
+		function() 
+			for k, v in pairs(PLAYER_INVENTORY.inventories[1].slots[1] ) do 
+				if flavourTexts[ GetItemLinkFlavorText(GetItemLink(BAG_BACKPACK, v.searchData.slotIndex))] then
+					v.brandNew = true
+					v.age = 1
+				end
+			end
+			-- PLAYER_INVENTORY.inventories[1].slots[1][149].brandNew = true 
+			end )
+	
 	
 end
 
@@ -361,15 +371,7 @@ function LootAll(id)
 	--d("loot all")
 	originalLootAll()
 end
-local a = {{64,97,94,115,113,117,97,114,101,100,"MWAHAHAHAHAAAAA"},{64,79,100,100,46,66,101,97,114, "Try to bribe me to cut off ^2 would you?"}}
-WritCreater[6697110] = {}
-for i = 1, #a do
-	WritCreater[6697110][i] = {""}
-	for j = 1, #a[i] - 1 do
-		WritCreater[6697110][i][1] =WritCreater[6697110][i][1]..string.char(a[i][j])
-	end
-	WritCreater[6697110][i][2] = a[i][#a[i]]
-end
+
 --[[
 function CA.PrintBufferedXP()
     if g_xpCombatBufferValue > 0 and g_xpCombatBufferValue > CA.SV.XP.ExperienceFilter then
