@@ -461,6 +461,11 @@ local function findItem(item)
 			return BAG_BACKPACK,i
 		end
 	end
+	for i=0, GetBagSize(BAG_SUBSCRIBER_BANK) do
+		if GetItemId(BAG_SUBSCRIBER_BANK,i)==item then
+			return BAG_SUBSCRIBER_BANK,i
+		end
+	end
 	if GetItemId(BAG_VIRTUAL, item) ~=0 then
 		
 		return BAG_VIRTUAL, item
@@ -495,7 +500,7 @@ local function enchantCrafting(info, quest,add)
 		["glyph"] = {},
 		["type"] = {},
 	}
-
+	local incomplete = false
 	for i = 1, numConditions do
 
 		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
@@ -504,15 +509,17 @@ local function enchantCrafting(info, quest,add)
 		if string.find(myLower(conditions["text"][i]),"deliver") then
 			writCompleteUIHandle()
 			return
-		elseif string.find(myLower(conditions["text"][i]),"acquire")  then
+		elseif string.find(myLower(conditions["text"][i]),"acquire")   then
 
 			conditions["text"][i] = false
-			writCompleteUIHandle()
-			return
+			if not incomplete then
+				writCompleteUIHandle()
+				return
+			end
 		elseif conditions["text"][i] =="" then
 
 		else
-
+			incomplete = true
 			DolgubonsWritsBackdropQuestOutput:AddText(conditions["text"][i])
 			conditions["text"][i] = WritCreater.parser(conditions["text"][i])
 			DolgubonsWritsBackdropCraft:SetHidden(false)
@@ -666,8 +673,11 @@ end
 	end
 	if station == CRAFTING_TYPE_ENCHANTING then 
 
-		local writs = WritCreater.writSearch()
-		enchantCrafting(craftInfo[CRAFTING_TYPE_ENCHANTING],writs[CRAFTING_TYPE_ENCHANTING],craftingWrits)
+		local writs, hasWrits = WritCreater.writSearch()
+		if hasWrits then
+			WritCreater.DismissPets()
+			enchantCrafting(craftInfo[CRAFTING_TYPE_ENCHANTING],writs[CRAFTING_TYPE_ENCHANTING],craftingWrits)
+		end
 
 	elseif station == CRAFTING_TYPE_ALCHEMY then
 	elseif station == CRAFTING_TYPE_PROVISIONING then

@@ -177,7 +177,7 @@ local petIds = {
 [85982]=true, [85983]=true, [85984]=true, [85985]=true, [85986]=true, [85987]=true, 
 [85988]=true, [85989]=true, [85990]=true, [85991]=true, [85992]=true, [85993]=true, }
 
-local function DismissPets(petList)
+local function DismissPets()
 
 	-- Walk through the player's active buffs
 	for i = 1, GetNumBuffs("player") do
@@ -189,6 +189,8 @@ local function DismissPets(petList)
 		end
 	end
 end
+
+WritCreater.DismissPets = DismissPets
 
 local watchedZones = 
 {--	[zoneIndex] = {zoneId, x, y, distance}

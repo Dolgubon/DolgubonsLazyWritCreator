@@ -493,7 +493,7 @@ local function initializeLibraries()
 	{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url",
 	}
 	local feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail."
-	if math.random()<0.25 or GetDisplayName()=="@Dolgubon" then
+	if (math.random()<0.25 and GetWorldName() ~= "NA Megaserver" )or GetDisplayName()=="@Dolgubon" then
 		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit House"}
 		feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house!"
 	end
