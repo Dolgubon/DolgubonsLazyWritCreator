@@ -62,6 +62,7 @@ local warningFunctions =
 }
 
 local function showWarnings(isExample)
+	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."DailyResetWarning")
 	local hour, minute = dailyReset()
 	local msgText = zo_strformat(warningText, hour, minute)
 	if isExample=="Example" then
@@ -73,10 +74,10 @@ local function showWarnings(isExample)
 			v(msgText)
 		end
 	else
-		if not warningFunctions[warningType] then d(warningType) return end
+		if not warningFunctions[warningType] then return end
 		warningFunctions[warningType](msgText)
 	end
-	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."DailyResetWarning")
+	
 end
 
 WritCreater.showDailyResetWarnings = showWarnings

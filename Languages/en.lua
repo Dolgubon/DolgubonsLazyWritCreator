@@ -435,11 +435,6 @@ local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutw
 end
 
 
-local function hasMadnessEngulfedNirn()
-	local t = GetTimeString() local c = string.sub(t, 1,string.find(t, ":") - 1)
-	return tonumber(c) > 11
-end
-
 
 local function wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed() local a= math.random(1, #DivineMats ) return DivineMats[a] end
 local l = shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit()
@@ -454,11 +449,6 @@ if l then
 	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 end
 
-local function hasMadnessEngulfedNirn()
-	local t = GetTimeString() local c = string.sub(t, 1,string.find(t, ":") - 1)
-	return tonumber(c) > 11
-end
-
 
 -- [[ /script local writcreater = {} local c = {a = 1} local g = {__index = c} setmetatable(writ, g) d(a.a) local e = {__index = {Z = 2}} setmetatable(c, e) d(a.Z)
 local h = {__index = {}}
@@ -469,7 +459,7 @@ setmetatable(WritCreater, g) --]]
 
 local function enableAlternateUniverse(override)
 
-	if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 1 or override then
+	if shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 2 or override then
 	--if true then
 		local stations = 
 			{"Blacksmithing Station", "Clothing Station", "Enchanting Table",
@@ -595,6 +585,20 @@ local stationNames =  -- in the comments are other names that were also consider
 enableAlternateUniverse(GetDisplayName()=="@Dolgubon")
 -- enableAlternateUniverse()
 
+local function alternateListener(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
+	-- if GetDisplayName() == "@Dolgubon" then
+	-- 	d(WritCreater.alternateUniverse)
+	-- 	return
+	-- end
+	if not WritCreater.alternateUniverse and fromDisplayName == "@Dolgubon"and text == "Let the Isles bleed into Nirn!" then	
+		enableAlternateUniverse(true)	
+		WritCreater.WipeThatFrownOffYourFace(true)	
+	end	
+end	
+-- 20764
+-- 21465
+
+ EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_CHAT_MESSAGE_CHANNEL, alternateListener)
 
 --Hide craft window when done
 --"Verstecke Fenster anschließend",

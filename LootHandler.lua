@@ -162,6 +162,7 @@ end
 
 local function shouldSaveStats(boxType, boxRank)
 	if GetNumLootItems() < 2 then return false end
+	if boxType == 9 then return false end
 
 	return true
 end
@@ -179,7 +180,6 @@ sceneDefault()
 local calledFromQuest = false
 
 local function OnLootUpdated(event)
-
 	local ignoreAuto = WritCreater:GetSettings().ignoreAuto
 	local autoLoot 
 	if WritCreater:GetSettings().ignoreAuto then
@@ -192,10 +192,16 @@ local function OnLootUpdated(event)
 	if autoLoot then
 		local lootInfo = {GetLootTargetInfo()}
 		local writRewardNames = WritCreater.langWritRewardBoxes ()
+		if not writRewardNames[9] then
+			writRewardNames[9] = GetItemLinkName("|H1:item:147430:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+			writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
+			writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
+		end
 		for i = 1, #writRewardNames  do
+			testa = lootInfo[1]
+			testb = writRewardNames[i]
 
 			local a, b = string.find(lootInfo[1], writRewardNames[i])
-
 			if a then
 
 				if i == 8 then 
@@ -206,15 +212,15 @@ local function OnLootUpdated(event)
 				end
 				--LOOT_SHARED:LootAllItems()
 				local n = SCENE_MANAGER:GetCurrentScene().name
-
 				LootAll()
+				zo_callLater(function()
 				if n == 'hudui' or n=='interact' or n == 'hud' then 
 					SCENE_MANAGER:Show('hud')
 				    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
 				    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
 				else 
 					SCENE_MANAGER:Show(n) 
-				end
+				end end , 100)
 				--local boxRank = romanNumeral(string.sub(lootInfo[1], b + 2))
 				if shouldSaveStats(i,boxRank) then LootAllHook(i,boxRank) end
 				--SYSTEMS:GetObject("mainMenu"):ToggleCategory(MENU_CATEGORY_INVENTORY)
@@ -233,8 +239,10 @@ flavourTexts = {
 	[GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward
 	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
+	[GetItemLinkFlavorText("|H1:item:147430:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- anniversary
 
 }
+
 
 local firstOpen = 10000000000000000000000
 local completeTimes = 0
@@ -350,6 +358,7 @@ function WritCreater.LootHandlerInitialize()
 				if flavourTexts[ GetItemLinkFlavorText(GetItemLink(BAG_BACKPACK, v.searchData.slotIndex))] then
 					v.brandNew = true
 					v.age = 1
+					v.statusSortOrder = 1
 				end
 			end
 			-- PLAYER_INVENTORY.inventories[1].slots[1][149].brandNew = true 

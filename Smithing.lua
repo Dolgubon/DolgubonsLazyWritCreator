@@ -519,6 +519,7 @@ local function enchantCrafting(info, quest,add)
 		elseif conditions["text"][i] =="" then
 
 		else
+			WritCreater.DismissPets()
 			incomplete = true
 			DolgubonsWritsBackdropQuestOutput:AddText(conditions["text"][i])
 			conditions["text"][i] = WritCreater.parser(conditions["text"][i])
@@ -638,6 +639,7 @@ local function craftCheck(eventcode, station)
 			writs = WritCreater.writSearch()
 
 			if WritCreater:GetSettings()[station] and writs[station] then
+				WritCreater.DismissPets()
 				if station == CRAFTING_TYPE_ENCHANTING then
 
 					DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)

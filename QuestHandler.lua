@@ -220,7 +220,7 @@ local function calculateDistance()
 	local dist = math.sqrt(x*x + y*y)
 	local _, hasWrit = WritCreater.writSearch()
 	if not hasWrit then
-		dist = dist + 0.01
+		dist = dist + 0.016
 	end
 	if dist<(watchedZones[zoneIndex][4] or 0) then
 		DismissPets()

@@ -484,9 +484,9 @@ local function initializeLibraries()
 	 WritCreater.masterWritCompletion(event, station, result)end end)
 
 
-	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, station, result)
+	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, station, result,...)
 	if event == LLC_CRAFT_SUCCESS then 
-		WritCreater.writItemCompletion(event, station, result) 
+		WritCreater.writItemCompletion(event, station, result,...) 
 	 end end)
 
 	local buttonInfo = 
