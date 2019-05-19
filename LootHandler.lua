@@ -178,7 +178,8 @@ end
 sceneDefault()
 --If the box/loot item that is open is a writ container, loot it and open the inventory again
 local calledFromQuest = false
-
+local containerHasTransmute = {}
+local lastInteractedSlot = nil
 local function OnLootUpdated(event)
 	local ignoreAuto = WritCreater:GetSettings().ignoreAuto
 	local autoLoot 
@@ -193,13 +194,11 @@ local function OnLootUpdated(event)
 		local lootInfo = {GetLootTargetInfo()}
 		local writRewardNames = WritCreater.langWritRewardBoxes ()
 		if not writRewardNames[9] then
-			writRewardNames[9] = GetItemLinkName("|H1:item:147430:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+			writRewardNames[9] = GetItemLinkName("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 			writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
 			writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
 		end
 		for i = 1, #writRewardNames  do
-			testa = lootInfo[1]
-			testb = writRewardNames[i]
 
 			local a, b = string.find(lootInfo[1], writRewardNames[i])
 			if a then
@@ -209,48 +208,84 @@ local function OnLootUpdated(event)
 					if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
 						return
 					end
+				elseif i == 9 then
+					if not WritCreater:GetSettings().lootJubileeBoxes then 
+						return
+					end
 				end
 				--LOOT_SHARED:LootAllItems()
 				local n = SCENE_MANAGER:GetCurrentScene().name
-				LootAll()
+				
+				local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
+				local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
+				
+				if numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
+					LootAll()
+				else
+					-- GetLootItemInfo(number lootIndex)
+					-- do not loot the transmute if it would go over max
+					for i = 1, GetNumLootItems() do
+						local lootId, name,_,_,_,_,_,_,lootType = GetLootItemInfo(i)
+						LootItemById(lootId)
+					end
+					-- Then add the container to a 'blacklist'
+					if lastInteractedSlot then
+						containerHasTransmute[lastInteractedSlot] = true
+					end
+				end
+				
 				zo_callLater(function()
 				if n == 'hudui' or n=='interact' or n == 'hud' then 
-					SCENE_MANAGER:Show('hud')
-				    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
-				    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+					-- SCENE_MANAGER:Show('hud')
+				 --    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
+				 --    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
 				else 
 					SCENE_MANAGER:Show(n) 
 				end end , 100)
-				--local boxRank = romanNumeral(string.sub(lootInfo[1], b + 2))
 				if shouldSaveStats(i,boxRank) then LootAllHook(i,boxRank) end
-				--SYSTEMS:GetObject("mainMenu"):ToggleCategory(MENU_CATEGORY_INVENTORY)
-				--[[local timeToWait = 50
-				if IsInGamepadPreferredMode() then timeToWait = 200 end
-					if lastScene =='hudui' then lastScene = 'hud' end
-					zo_callLater(function() if SCENE_MANAGER:GetCurrentScene().name~=lastScene then SCENE_MANAGER:Show(lastScene) sceneDefault() end end , timeToWait)--]]
-				
 			end
 		end
 	end
 	calledFromQuest = false
 end
-flavourTexts = {
+
+local flavours = {
 	[GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Normal reward
 	[GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward
 	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
-	[GetItemLinkFlavorText("|H1:item:147430:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- anniversary
-
 }
+local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local flavourTexts = {}
+setmetatable(flavourTexts, {__index = function(t, i)
+	if flavours[i] then return true end
+	if i == anniversaryBoxie then
+		return WritCreater:GetSettings().lootJubileeBoxes
+	end
+end
+})
+-- local flavourTexts = {
+-- 	[GetItemLinkFlavorText("|H1:item:121302:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Normal reward
+-- 	[GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward
+-- 	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
+-- 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
+-- 	[GetItemLinkFlavorText("|H1:item:147430:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = 1, -- anniversary
+-- }
 
 
-local firstOpen = 10000000000000000000000
 local completeTimes = 0
 local slotUpdateHandler
 
 local function shouldOpenContainer(bag, slot)
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
+
 	if FindFirstEmptySlotInBag(BAG_BACKPACK) == nil then return false end
+
+	if containerHasTransmute[slot] then return false end
+
+	local itemType, specialItemType = GetItemType(bag, slot)
+	if itemType ~=ITEMTYPE_CONTAINER or specialItemType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then return false end
+
 	local flavour = GetItemLinkFlavorText(GetItemLink(bag, slot))
 	if flavourTexts[flavour] then
 		return true
@@ -258,12 +293,11 @@ local function shouldOpenContainer(bag, slot)
 	return false
 end
 
-local scanBagForUnopenedContainers
-
 local function openContainer(bag, slot)
 	if not shouldOpenContainer(bag, slot) then return end
 	lastScene = SCENE_MANAGER:GetCurrentScene():GetName()
 	if lastScene == "interact" then lastScene = "hudui" end
+	lastInteractedSlot = slot
 	if IsProtectedFunction("UseItem") then
 		--d("Attempting to open container "..GetItemLink(bag, slot))
 		CallSecureProtected("UseItem", bag, slot)
@@ -295,7 +329,7 @@ local function prepareToInteract()
 	end
 	return false
 end
-
+-- EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."OpenAllContainers", 1000, scanBagForUnopenedContainers)
 local function slotUpdateHandler(event, bag, slot, isNew,...)
 
 	if WritCreater.checkIfMasterWritWasStarted then WritCreater.checkIfMasterWritWasStarted(event, bag, slot, isNew,...) end
@@ -309,7 +343,6 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	if not bag or not slot then return end
 	local link = GetItemLink(bag, slot)
 	local function attemptOpenContainer(bag, slot)
-		firstOpen = math.min(GetTimeStamp() + GetSlotCooldownInfo( 1 ) + 100 + WritCreater:GetSettings().containerDelay*1000, firstOpen)
 		
 		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' or prepareToInteract() then
 			zo_callLater(function()attemptOpenContainer(bag, slot) end , math.max(GetSlotCooldownInfo( 1 ) + 100,300))
@@ -324,7 +357,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	end
 end
 
-function scanBagForUnopenedContainers( ... )
+local function scanBagForUnopenedContainers( ... )
 	if not FindFirstEmptySlotInBag(BAG_BACKPACK) then return end
 	for i = 0, GetBagSize(BAG_BACKPACK) do 
 		if shouldOpenContainer(BAG_BACKPACK, i) then
@@ -334,7 +367,6 @@ function scanBagForUnopenedContainers( ... )
 	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootRescan")
 end
 
-DSlotUpdate = slotUpdateHandler
 
 WritCreater.OnLootUpdated = OnLootUpdated
 

@@ -352,12 +352,16 @@ function crafting(info,quest, craftItems)
 	local numMats
 	
 	local conditions  = setupConditionsTable(quest, info, indexTableToUse)
-
+	
 	for i,value in pairs(conditions["text"]) do
 		local pattern, index = conditions["pattern"][i], indexTableToUse[conditions["mats"][i]]
 
 		if pattern and index then
-
+			if FindFirstEmptySlotInBag(BAG_BACKPACK) ==nil then
+				writCompleteUIHandle()
+				out("Your inventory is full!")
+				return
+			end
 			 -- pattern is are we making gloves, chest, etc. Index is level.
 			--_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
 			_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index) --WritCreater.LLCInteraction.GetMatRequirements(pattern, index)
@@ -386,7 +390,7 @@ function crafting(info,quest, craftItems)
 								if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
 								if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
 							end
-							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 1, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType())
+							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 0, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType())
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
 							if changeRequired then return true end
@@ -423,31 +427,43 @@ function crafting(info,quest, craftItems)
 	end
 	
 end
+local glyphIds = {
+{26580,45831,}, --health
+{26588,45833,}, --stamina
+{26582,45832,}, --magicka
+}
+local itemLinkLevel={
+{20,5,45855,},-- 1
+{20,10,45856,},-- 5
+{20,15,45857,},-- 10
+{20,20,45806,},-- 15
+{20,25,45807,},-- 20
+{20,30,45808,},-- 25
+{20,35,45809,},-- 30
+{20,40,45810,},-- 35
+{20,45,45811,},-- 40
+{125,50,45812,},-- cp10
+{127,50,45813,},-- cp30
+{129,50,45814,},-- cp50
+{131,50,45815,},-- cp70
+{272,50,45816,},-- cp100
+{308,50,64509,},-- cp150
+}
+local function createItemLink(itemId, quality, lvl)
+	return string.format("|H1:item:%d:%d:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId, quality, lvl) 
+end
 
-
-
-local function enchantSearch(info,conditions, position,parity)
-	for i = 1, #conditions["text"] do
-		if conditions["text"][i] then
-			for j = 1, #conditions["text"][i] do
-				for k = 1, #info do
-					if myUpper(conditions["text"][i][j]) == myUpper(info[k][1]) then
-						if type(info[k][2])=="table" then
-							conditions[position][i] = info[k][2][parity]
-						else
-							conditions[position][i] = info[k][2]
-							return info[k][3]
-						end
-					end
-				end
+local function enchantSearch(info,conditions, position,parity,questId)
+	for i = 1, #glyphIds do
+		for j = 1, #itemLinkLevel do
+			local link = createItemLink(glyphIds[i][1], itemLinkLevel[j][1],itemLinkLevel[j][2])
+			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,2,true) then
+				return glyphIds[i][2], itemLinkLevel[j][3]
 			end
 		end
 	end
 	return nil
 end
-
-
-
 
 local function findItem(item)
 
@@ -519,15 +535,16 @@ local function enchantCrafting(info, quest,add)
 		elseif conditions["text"][i] =="" then
 
 		else
+			if FindFirstEmptySlotInBag(BAG_BACKPACK) ==nil then
+				writCompleteUIHandle()
+				out("Your inventory is full!")
+				return
+			end
 			WritCreater.DismissPets()
 			incomplete = true
 			DolgubonsWritsBackdropQuestOutput:AddText(conditions["text"][i])
-			conditions["text"][i] = WritCreater.parser(conditions["text"][i])
 			DolgubonsWritsBackdropCraft:SetHidden(false)
 			DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
-			local parity = enchantSearch(info["pieces"], conditions,"type") --searches for pattern
-			enchantSearch(info["match"], conditions,"glyph", parity) --searches for the type of mats
-			if conditions["text"][i] then
 				local ta={}
 				local essence={}
 				local potency={}
@@ -536,9 +553,13 @@ local function enchantCrafting(info, quest,add)
 				taString = WritCreater.getTaString()
 
 				ta["bag"],ta["slot"] = findItem(45850)
-				
-				essence["bag"], essence["slot"] = findItem(conditions["type"][i])
-				potency["bag"], potency["slot"] = findItem(conditions["glyph"][i])
+				local essenceId , potencyId = enchantSearch(nil,nil, nil,nil,quest)
+				if not essenceId and not potency then
+					out("Could not determine which glyphs to use")
+					return
+				end
+				essence["bag"], essence["slot"] = findItem(essenceId)
+				potency["bag"], potency["slot"] = findItem(potencyId)
 
 				if essence["slot"] == nil or potency["slot"] == nil  or ta["slot"]== nil then -- should never actually be run, but whatever
 					out("An error was encountered.")
@@ -584,7 +605,6 @@ local function enchantCrafting(info, quest,add)
 						DolgubonsWritsBackdropCraft:SetHidden(true)
 						craftingWrits = false
 					end
-				end
 			end
 		end
 	end
@@ -608,7 +628,7 @@ end
 
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100026
+	local currentAPIVersionOfAddon = 100027
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 
@@ -696,7 +716,7 @@ local function closeWindow(event, station)
 	WritCreater:GetSettings().OffsetX = DolgubonsWrits:GetRight()
 	WritCreater:GetSettings().OffsetY = DolgubonsWrits:GetTop()
 	queue = {}
-	DolgubonsWritsBackdropCraft:SetHidden(false)
+	DolgubonsWritsBackdropCraft:SetHidden(true)
 	closeOnce = false
 	WritCreater.LLCInteraction:cancelItem()
 

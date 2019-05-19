@@ -30,7 +30,7 @@ end
 function WritCreater.writCompleteStrings()
 	local strings = {
 	["place"] = "Die Waren in die Kiste legen",
-	["sing"] = "Das Manifest unterschreiben",
+	["sign"] = "Das Manifest unterschreiben",
 	["masterStart"] = "<Nehmt den Auftrag an.>",
 	["masterSign"] = "<Auftrag abschließen.>",
 	["masterPlace"] = "Ich habe den ",

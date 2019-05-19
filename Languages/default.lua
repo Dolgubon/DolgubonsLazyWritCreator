@@ -198,5 +198,15 @@ WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "How many minutes b
 WritCreater.optionStrings['dailyResetWarnType']							= "Daily Reset Warning"
 WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "What type of warning should be displayed when the daily reset is about to occur"
 WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "None","Type 1", "Type 2", "Type 3", "Type 4", "All"}
+WritCreater.optionStrings['stealingProtection']							= "Stealing Protection"
+WritCreater.optionStrings['stealingProtectionTooltip']					= "Prevent you from stealing while near a writ turn in location"
+WritCreater.optionStrings['jewelryWritDestroy']							= "Destroy Jewelry Sealed Writs"
+WritCreater.optionStrings['jewelryWritDestroyTooltip']					= "Destroy looted Jewelry Sealed writs. WARNING: There is no prompt!"
+WritCreater.optionStrings['jewelryWritDestroyWarning']					= "WARNING: There is no prompt when destroying jewelry writs! Enable at your own risk!"
+WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Destruction"
+WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete jewelry dialog box"
+
+
+
 																		-- CSA, ZO_Alert, chat message, window
 

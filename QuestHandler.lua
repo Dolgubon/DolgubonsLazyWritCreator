@@ -13,7 +13,18 @@
 
 WritCreater = WritCreater or {}
 local completionStrings
+local function onWritComplete()
 
+	local zoneIndex = GetUnitZoneIndex("player")
+	local zoneId = GetZoneId(zoneIndex)
+	if WritCreater.savedVarsAccountWide.writLocations[zoneId] then
+		return
+	end
+	
+	local _,x,_, y = GetUnitWorldPosition("player")
+	WritCreater.savedVarsAccountWide.writLocations[zoneId] = {zoneIndex, x, y, 640000}
+
+end
 
 -- Handles the dialogue where we actually complete the quest
 local function HandleQuestCompleteDialog(eventCode, journalIndex)
@@ -45,6 +56,8 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
     if not WritCreater:GetSettings().autoAccept then return end
 	CompleteQuest()
 	WritCreater.analytic()
+	onWritComplete()
+
 
 end
 
@@ -192,45 +205,44 @@ end
 
 WritCreater.DismissPets = DismissPets
 
-local watchedZones = 
-{--	[zoneIndex] = {zoneId, x, y, distance}
-	[645] =  {1011 , 0.22504281997681, 0.70089447498322, 0.03}, -- summerset
-	[496]= {849 , 0.25478214025497,  0.55092114210129, 0.035 }, -- vivec
-	[179]= {382 ,0.3137067258358,  0.39710983633995, 0.04}, -- Rawlkha
-	[16]= {103 , 0.65962821245193, 0.59825921058655 , 0.045}, -- Riften
-	[154] = {347 , 0.26477551460266,  0.57783675193787, 0.04 }, -- coldharbour
-	[5] = {20 ,0.85589545965195, 0.60531121492386, 0.05 }, -- Shornhelm 
-	[10] = {57 ,0.73952090740204, 0.75583720207214, 0.03 }, -- Mournhold
-}
 local function calculateDistance()
-	
+	local watchedZones=	WritCreater.savedVarsAccountWide.writLocations
 	local zoneIndex = GetUnitZoneIndex("player")
-	if not watchedZones[zoneIndex] then
-		return
-	end
 	local zoneId = GetZoneId(zoneIndex)
-	if not watchedZones[zoneIndex][1] == zoneId then
+	if not watchedZones[zoneId] then
 		return
 	end
-	if not watchedZones[zoneIndex][2] then return end
-	-- Pretty sure that means we're in the right zone so let's calculate!
-	local x, y = GetMapPlayerPosition("player")
-	x = watchedZones[zoneIndex][2] - x
-	y = watchedZones[zoneIndex][3] - y
-	local dist = math.sqrt(x*x + y*y)
+
+	if not watchedZones[zoneId][2] then return end
+	-- Pretty sure that means we're in a tracked zone so let's calculate!
+	local _,x,_, y = GetUnitWorldPosition("player")
+	x = watchedZones[zoneId][2] - x
+	y = watchedZones[zoneId][3] - y
+	local dist = x*x + y*y
 	local _, hasWrit = WritCreater.writSearch()
 	if not hasWrit then
-		dist = dist + 0.016
+		dist = dist *2
 	end
-	if dist<(watchedZones[zoneIndex][4] or 0) then
+	
+	if dist<(watchedZones[zoneId][4] or 0) then
 		DismissPets()
 	end
 	return dist
 end
-
+--[[
+WritCreater.savedVarsAccountWide.writLocations={
+WritCreater.savedVarsAccountWide.writLocations[645] =  {1011 , 146161, 341851, 1000000}, -- summerset
+WritCreater.savedVarsAccountWide.writLocations[496]= {849 , 215118,  512682, 900000 },-- vivec check
+WritCreater.savedVarsAccountWide.writLocations[179]= {382 ,122717,  187928, 1000000},-- Rawlkha
+WritCreater.savedVarsAccountWide.writLocations[16]= {103 , 366252, 201624 , 2000000}, -- Riften
+WritCreater.savedVarsAccountWide.writLocations[154] = {347 , 237668,  302699, 1000000 },-- coldharbour chek
+WritCreater.savedVarsAccountWide.writLocations[5] = {20 ,243273, 227612, 1000000 },  -- Shornhelm 
+WritCreater.savedVarsAccountWide.writLocations[10] = {57 ,231085, 249391, 1000000 }, -- Mournhold
+}
+]]
 -- Initialize the event listener, and grab the language strings
 function WritCreater.InitializeQuestHandling()
-	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."Pe(s)tControl", 400, calculateDistance)
+	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."Pe(s)tControl", 1000, calculateDistance)
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CHATTER_BEGIN, HandleChatterBegin)
 	completionStrings = WritCreater.writCompleteStrings()
 	local original = AcceptOfferedQuest

@@ -51,3 +51,37 @@ function WritCreater.initializeReticleChanges()
 
 	setupReplacement(ZO_ReticleContainerInteractContext, "SetText")
 end
+
+local oldInteract = FISHING_MANAGER.StartInteraction
+FISHING_MANAGER.StartInteraction = function(...)
+	if WritCreater:GetSettings().stealProtection then
+		local _, hasWrits = WritCreater.writSearch()
+		if not hasWrits then
+			return oldInteract(...)
+		end
+		local action, _, isBlocked, isOwned, additional,_,_,isCriminal = GetGameCameraInteractableActionInfo()
+		if isBlocked then
+			return oldInteract(...)
+		end
+		if isCriminal then
+			d("The Lazy Writ Crafter has saved you from stealing while doing writs!")
+			return isCriminal
+		end
+		return oldInteract(...)
+	end
+end
+
+local jewelryName =zo_strformat("<<1>>",GetItemLinkName("|H1:item:138799:6:1:0:0:0:24:255:5:325:28:0:0:0:0:0:0:0:0:0:4320001|h|h"))
+local original = ZO_Dialogs_ShowDialog 
+ZO_Dialogs_ShowDialog = function(...)
+	
+	local returns = { original(...) }
+	if ZO_Dialog1 and ZO_Dialog1.textParams and ZO_Dialog1.textParams.mainTextParams then
+		local itemName= ZO_Dialog1.textParams.mainTextParams[1]
+		if  WritCreater:GetSettings().EZJewelryDestroy and string.find(itemName ,jewelryName )then
+
+			ZO_Dialog1EditBox:SetText("DESTROY")
+		end
+	end
+	return unpack(returns)
+end

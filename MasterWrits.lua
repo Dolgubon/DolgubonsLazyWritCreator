@@ -245,7 +245,7 @@ local function smithingSearch(condition, info, debug)
 	--if debug then d(info) end
 	-- Inital run through: Check to see if each itemName is found in the condition. Save it to a placeholder table
 	local matches = {}
-	for i = 1, #info do
+	for i, v in pairs(info) do
 		local str = string.gsub(info[i][1], "-"," ")
 		if strFind(condition, str) then
 			matches[#matches+1] = {info[i] , i}

@@ -521,6 +521,13 @@ function WritCreater.Options() --Sentimental
 		    clampInput = false, -- boolean, if set to false the input won't clamp to min and max and allow any number instead (optional)
 		    tooltip = WritCreater.optionStrings['dailyResetWarnTimeTooltip'], -- or string id or function returning a string (optional)
 		    requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
+} ,
+{
+		    type = "checkbox",
+		    name = WritCreater.optionStrings['stealingProtection'], -- or string id or function returning a string
+		    getFunc = function() return WritCreater:GetSettings().stealProtection end,
+		    setFunc = function(value) WritCreater:GetSettings().stealProtection = value end,
+		    tooltip = WritCreater.optionStrings['stealingProtectionTooltip'], -- or string id or function returning a string (optional)
 } 
 
 			
@@ -545,7 +552,7 @@ function WritCreater.Options() --Sentimental
 			setFunc = function(value) 
 				WritCreater:GetSettings().autoCloseBank = value
 				if not value then
-					EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_OPEN_BANK, alchGrab)
+					EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_OPEN_BANK, WritCreater.alchGrab)
 				else
 					EVENT_MANAGER:UnregisterForEvent(WritCreater.name)
 				end
@@ -633,6 +640,15 @@ function WritCreater.Options() --Sentimental
 			getFunc = function() return  WritCreater:GetSettings().changeReticle end,
 			setFunc = function(value) 
 				WritCreater:GetSettings().changeReticle = value
+			end,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['noDELETEConfirmJewelry'],--"Master Writs",
+			tooltip = WritCreater.optionStrings['noDELETEConfirmJewelryTooltip'],--"Craft Master Writ Items",
+			getFunc = function() return  WritCreater:GetSettings().EZJewelryDestroy end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().EZJewelryDestroy = value
 			end,
 		},
 		
