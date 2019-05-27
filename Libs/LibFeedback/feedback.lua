@@ -45,7 +45,7 @@ parentControl, -- The parent control to anchor the feedback button(s) + label(s)
 
 
 local libLoaded
-local LIB_NAME, VERSION = "LibFeedback", 1.21
+local LIB_NAME, VERSION = "LibFeedback", 1.3
 local LibFeedback, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibFeedback then return end
 LibFeedback.debug = false

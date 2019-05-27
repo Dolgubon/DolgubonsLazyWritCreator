@@ -271,7 +271,7 @@ end
 -- 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
 -- 	[GetItemLinkFlavorText("|H1:item:147430:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = 1, -- anniversary
 -- }
-
+local scanBagForUnopenedContainers
 
 local completeTimes = 0
 local slotUpdateHandler
@@ -357,7 +357,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	end
 end
 
-local function scanBagForUnopenedContainers( ... )
+function scanBagForUnopenedContainers( ... )
 	if not FindFirstEmptySlotInBag(BAG_BACKPACK) then return end
 	for i = 0, GetBagSize(BAG_BACKPACK) do 
 		if shouldOpenContainer(BAG_BACKPACK, i) then

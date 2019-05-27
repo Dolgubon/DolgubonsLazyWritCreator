@@ -138,6 +138,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 	        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)
 	        -- Select the first option to complete the quest
 	        SelectChatterOption(1)
+	        return
 	    
 	    -- If the goods were already placed, then complete the quest
 	    elseif optionType == CHATTER_START_COMPLETE_QUEST
@@ -149,6 +150,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 	        EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG, HandleQuestCompleteDialog)
 	        -- Select the first option to place goods and/or sign the manifest
 	        SelectChatterOption(1)
+	        return
 	        -- Talking to the master writ person?
 	    elseif zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,completionStrings["Rolis Hlaalu"]) then 
 	    	if not WritCreater:GetSettings().autoAccept then return end
@@ -162,6 +164,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 		        -- Select the first option to complete the quest
 		        --d("Chat")
 		        SelectChatterOption(1)
+		        return
 		        -- If the goods were already placed, then complete the quest
 		    elseif optionType == CHATTER_START_COMPLETE_QUEST
 		       and (string.find(string.lower(optionString), string.lower(completionStrings.masterPlace)) ~= nil 
@@ -172,6 +175,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 		        -- Select the first option to place goods and/or sign the manifest
 		        --d("Chat2")
 		        SelectChatterOption(1)
+		        return
 		    end
 		elseif optionType == CHATTER_START_BANK then
 			if WritCreater:GetSettings().autoCloseBank then

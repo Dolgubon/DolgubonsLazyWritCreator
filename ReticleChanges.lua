@@ -53,7 +53,9 @@ function WritCreater.initializeReticleChanges()
 end
 
 local oldInteract = FISHING_MANAGER.StartInteraction
-FISHING_MANAGER.StartInteraction = function(...)
+
+
+local function hook(...)
 	if WritCreater:GetSettings().stealProtection then
 		local _, hasWrits = WritCreater.writSearch()
 		if not hasWrits then
@@ -69,19 +71,27 @@ FISHING_MANAGER.StartInteraction = function(...)
 		end
 		return oldInteract(...)
 	end
+	return oldInteract(...)
 end
+FISHING_MANAGER.StartInteraction = hook
+
 
 local jewelryName =zo_strformat("<<1>>",GetItemLinkName("|H1:item:138799:6:1:0:0:0:24:255:5:325:28:0:0:0:0:0:0:0:0:0:4320001|h|h"))
-local original = ZO_Dialogs_ShowDialog 
-ZO_Dialogs_ShowDialog = function(...)
-	
-	local returns = { original(...) }
-	if ZO_Dialog1 and ZO_Dialog1.textParams and ZO_Dialog1.textParams.mainTextParams then
-		local itemName= ZO_Dialog1.textParams.mainTextParams[1]
-		if  WritCreater:GetSettings().EZJewelryDestroy and string.find(itemName ,jewelryName )then
+local function dialogHook(...)
+	zo_callLater(function()
+		if ZO_Dialog1 and ZO_Dialog1.textParams and ZO_Dialog1.textParams.mainTextParams then
+			local itemName= ZO_Dialog1.textParams.mainTextParams[1]
+			if  WritCreater:GetSettings().EZJewelryDestroy and string.find(itemName ,jewelryName )then
+				for k, v in pairs(ZO_Dialog1.textParams.mainTextParams) do
+					if v == string.upper(v) then
+						ZO_Dialog1EditBox:SetText(v)
+						ZO_Dialog1EditBox:LoseFocus()
+					end
+				end
 
-			ZO_Dialog1EditBox:SetText("DESTROY")
+			end
 		end
-	end
-	return unpack(returns)
+	end, 10)
 end
+
+ZO_PreHook("ZO_Dialogs_ShowDialog", dialogHook)

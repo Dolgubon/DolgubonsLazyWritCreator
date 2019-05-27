@@ -523,9 +523,24 @@ local function initializeLibraries()
 end
 
 local function initializeLocalization()
+	local langs = {
+		['en'] = 1,
+		['de'] = 1,
+		['fr'] = 1,
+		['jp'] = 1,
+	}
 	-- Initializes Localizations 
 	craftInfo = WritCreater.languageInfo
-	WritCreater.craftInfo = WritCreater.languageInfo()
+	if WritCreater.languageInfo then
+		WritCreater.craftInfo = WritCreater.languageInfo()
+	else
+		if langs[GetCVar("language.2")] then
+			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing your language file")
+		else
+			mandatoryRoadblockOut("Writ Crafter initialization failed. Your game is currently set to the language "..GetCVar("language.2").." but you do not have the patch for that language installed (if it exists)")
+		end
+		return 
+	end
 
 	WritCreater.writNames = WritCreater.langWritNames()
 

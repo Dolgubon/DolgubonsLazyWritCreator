@@ -82,7 +82,7 @@ LibStub:NewLibrary(libName, 100)
 EVENT_MANAGER:UnregisterForEvent(libName, EVENT_ADD_ON_LOADED)
 
 local libLoaded
-local LIB_NAME, VERSION = "LibCustomTitlesN", 4.2
+local LIB_NAME, VERSION = "LibCustomTitlesN", 4.3
 local LibCustomTitles, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 if not LibCustomTitles then return end
 
