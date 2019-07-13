@@ -598,7 +598,7 @@ end
 -- 20764
 -- 21465
 
- EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_CHAT_MESSAGE_CHANNEL, alternateListener)
+EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_CHAT_MESSAGE_CHANNEL, alternateListener)
 
 --Hide craft window when done
 --"Verstecke Fenster anschließend",

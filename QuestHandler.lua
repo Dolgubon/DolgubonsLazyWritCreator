@@ -216,7 +216,6 @@ local function calculateDistance()
 	if not watchedZones[zoneId] then
 		return
 	end
-
 	if not watchedZones[zoneId][2] then return end
 	-- Pretty sure that means we're in a tracked zone so let's calculate!
 	local _,x,_, y = GetUnitWorldPosition("player")
@@ -227,7 +226,6 @@ local function calculateDistance()
 	if not hasWrit then
 		dist = dist *2
 	end
-	
 	if dist<(watchedZones[zoneId][4] or 0) then
 		DismissPets()
 	end
@@ -251,8 +249,15 @@ function WritCreater.InitializeQuestHandling()
 	completionStrings = WritCreater.writCompleteStrings()
 	local original = AcceptOfferedQuest
 	AcceptOfferedQuest = function()
-	if string.find(GetOfferedQuestInfo(), completionStrings["Rolis Hlaalu"]) and WritCreater:GetSettings().preventMasterWritAccept then 
-		d(WritCreater.strings.masterWritSave)  else original() end end
+		if string.find(GetOfferedQuestInfo(), completionStrings["Rolis Hlaalu"]) and WritCreater:GetSettings().preventMasterWritAccept then 
+			d(WritCreater.strings.masterWritSave)  
+		else 
+			original() 
+		end 
+	end
+	for k, v in pairs(WritCreater.defaultAccountWide.writLocations) do
+		WritCreater.savedVarsAccountWide.writLocations[k] = v
+	end
 end
 
 -- /script JumpToSpecificHouse("@marcopolo184", 46)

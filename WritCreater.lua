@@ -84,13 +84,13 @@ WritCreater.defaultAccountWide = {
 	["total"] = 0,
 	[6697110] = false,
 	["writLocations"] = {--	[zoneIndex] = {zoneId, x, y, distance}
-			[645] =  {1011 , 146161, 341851, 1000000}, -- summerset
-			[496]= {849 , 215118,  512682, 1000000  }, -- vivec check
-			[179]= {382 ,122717,  187928, 1000000}, -- Rawlkha
-			[16]= {103 , 366252, 201624 , 2000000}, -- Riften
-			[154] = {347 , 237668,  302699, 1000000 }, -- coldharbour chek
-			[5] = {20 ,243273, 227612, 1000000 }, -- Shornhelm 
-			[10] = {57 ,231085, 249391, 1000000 }, -- Mournhold
+			[1011] =  {1011 , 146161, 341851, 1000000}, -- summerset
+			[849]= {849 , 215118,  512682, 1000000  }, -- vivec check
+			[382]= {382 ,122717,  187928, 1000000}, -- Rawlkha
+			[103]= {103 , 366252, 201624 , 2000000}, -- Riften
+			[347] = {347 , 237668,  302699, 1000000 }, -- coldharbour chek
+			[20] = {20 ,243273, 227612, 1000000 }, -- Shornhelm 
+			[57] = {10 ,231085, 249391, 1000000 }, -- Mournhold
 			--[09:44] 1938065
 		},
 	["rewards"] = 
@@ -535,9 +535,10 @@ local function initializeLocalization()
 		WritCreater.craftInfo = WritCreater.languageInfo()
 	else
 		if langs[GetCVar("language.2")] then
-			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing your language file")
+			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing your language file. Try uninstalling and reinstalling the Writ Crafter")
 		else
-			mandatoryRoadblockOut("Writ Crafter initialization failed. Your game is currently set to the language "..GetCVar("language.2").." but you do not have the patch for that language installed (if it exists)")
+			mandatoryRoadblockOut("Writ Crafter initialization failed. Your game is currently set to the language "..GetCVar("language.2").." but you do not have the patch for that language installed (if it exists). To fix, in chat type /script SetCVar('language.2', 'en') (replace with 'de' or 'fr' if applicable)")
+
 		end
 		return 
 	end

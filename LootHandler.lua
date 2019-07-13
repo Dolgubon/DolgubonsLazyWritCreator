@@ -168,14 +168,6 @@ local function shouldSaveStats(boxType, boxRank)
 end
 
 local callFromSlotUpdated = false
-local lastScene = "inventory"
-local function sceneDefault()
-	lastScene = 'inventory'
-	if IsInGamepadPreferredMode() then
-		lastScene = "gamepad_inventory_root"
-	end
-end
-sceneDefault()
 --If the box/loot item that is open is a writ container, loot it and open the inventory again
 local calledFromQuest = false
 local containerHasTransmute = {}
@@ -206,11 +198,11 @@ local function OnLootUpdated(event)
 				if i == 8 then 
 					local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
 					if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
-						return
+						return false
 					end
 				elseif i == 9 then
 					if not WritCreater:GetSettings().lootJubileeBoxes then 
-						return
+						return false
 					end
 				end
 				--LOOT_SHARED:LootAllItems()
@@ -233,20 +225,14 @@ local function OnLootUpdated(event)
 						containerHasTransmute[lastInteractedSlot] = true
 					end
 				end
-				
-				zo_callLater(function()
-				if n == 'hudui' or n=='interact' or n == 'hud' then 
-					-- SCENE_MANAGER:Show('hud')
-				 --    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
-				 --    SCENE_MANAGER:ToggleTopLevel(DolgubonsWritsFeedback)
-				else 
-					SCENE_MANAGER:Show(n) 
-				end end , 100)
+
 				if shouldSaveStats(i,boxRank) then LootAllHook(i,boxRank) end
+				return true
 			end
 		end
 	end
 	calledFromQuest = false
+	return false
 end
 
 local flavours = {
@@ -368,10 +354,11 @@ function scanBagForUnopenedContainers( ... )
 end
 
 
+
+
 WritCreater.OnLootUpdated = OnLootUpdated
 
 function WritCreater.LootHandlerInitialize()
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_LOOT_UPDATED ,OnLootUpdated )
 	
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdateHandler)
@@ -385,18 +372,22 @@ function WritCreater.LootHandlerInitialize()
 		end 
 	end
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED, 
-		function() 
+		function(e, first) 
 			for k, v in pairs(PLAYER_INVENTORY.inventories[1].slots[1] ) do 
 				if flavourTexts[ GetItemLinkFlavorText(GetItemLink(BAG_BACKPACK, v.searchData.slotIndex))] then
 					v.brandNew = true
 					v.age = 1
 					v.statusSortOrder = 1
 				end
+
+				if GetDisplayName() =="@Dolgubon" and string.sub(GetItemLinkName(GetItemLink(BAG_BACKPACK, v.searchData.slotIndex)),16) == string.sub(GetItemLinkFlavorText("|H1:item:151602:4:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"),16) then
+					-- DestroyItem(BAG_BACKPACK, v.searchData.slotIndex)
+				end
 			end
 			-- PLAYER_INVENTORY.inventories[1].slots[1][149].brandNew = true 
-			end )
-	
-	
+			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
+			end )	
+	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
@@ -412,6 +403,24 @@ function LootAll(id)
 	--d("loot all")
 	originalLootAll()
 end
+
+--[[
+  local function UpdateLootWindow()
+
+        local name, targetType, actionName, isOwned = GetLootTargetInfo()
+        if name ~= "" then
+            if targetType == INTERACT_TARGET_TYPE_ITEM then
+                name = zo_strformat(SI_TOOLTIP_ITEM_NAME, name)
+            elseif targetType == INTERACT_TARGET_TYPE_OBJECT then
+                name = zo_strformat(SI_LOOT_OBJECT_NAME, name)
+            elseif targetType == INTERACT_TARGET_TYPE_FIXTURE then
+                name = zo_strformat(SI_TOOLTIP_FIXTURE_INSTANCE, name)
+            end
+        end
+
+        SYSTEMS:GetObject("loot"):UpdateLootWindow(name, actionName, isOwned)
+    end
+]]
 
 --[[
 function CA.PrintBufferedXP()

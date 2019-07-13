@@ -276,4 +276,3 @@ SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 SLASH_COMMANDS['/dlwcfindwrit'] = findWrits
 
 
-
