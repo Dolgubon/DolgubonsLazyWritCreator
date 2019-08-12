@@ -55,6 +55,7 @@ end
 
 local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
+-- local bags = {BAG_BACKPACK}
 
 
 local function countSurveys()
@@ -274,5 +275,35 @@ SLASH_COMMANDS['/dlwcdebug'] = activateDebug
 SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function
 SLASH_COMMANDS['/dlwcfindwrit'] = findWrits
-
-
+-- local bags2 = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
+-- 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
+-- local function newBagTable()
+-- return  { [BAG_HOUSE_BANK_EIGHT]={} ,[BAG_HOUSE_BANK_FIVE]={} ,[BAG_HOUSE_BANK_FOUR]={},
+-- 	[BAG_HOUSE_BANK_ONE] ={},[BAG_HOUSE_BANK_SEVEN]={} ,[BAG_HOUSE_BANK_SIX] ={} ,[BAG_HOUSE_BANK_THREE] ={},[BAG_HOUSE_BANK_TWO]={} ,}
+-- end
+-- function reregister()
+-- SCENE_MANAGER.scenes.houseBank.RegisterCallback("StateChange",   function(oldState, newState)
+--                                                     if newState == SCENE_SHOWING then
+--                                                         --initialize the slots and banking bag fresh here since there are many different house bank bags and only one is active at a time
+--                                                         local inventory = self.inventories[INVENTORY_HOUSE_BANK]
+--                                                         local bankingBag = GetBankingBag()
+--                                                         inventory.slots = newBagTable()
+--                                                         inventory.backingBags = bags2
+--                                                         self:RefreshAllInventorySlots(INVENTORY_HOUSE_BANK)
+--                                                         self:UpdateFreeSlots(INVENTORY_HOUSE_BANK)
+--                                                         self:UpdateFreeSlots(INVENTORY_BACKPACK)
+--                                                         houseBankFragmentBar:SelectFragment(SI_BANK_WITHDRAW)
+--                                                         TriggerTutorial(TUTORIAL_TRIGGER_HOME_STORAGE_OPENED)
+--                                                     elseif newState == SCENE_HIDDEN then
+--                                                         ZO_InventorySlot_RemoveMouseOverKeybinds()
+--                                                         ZO_PlayerInventory_EndSearch(ZO_HouseBankSearchBox)
+--                                                         houseBankFragmentBar:Clear()
+--                                                         --Wipe out the inventory slot data and connection to a bag
+--                                                         local inventory = self.inventories[INVENTORY_HOUSE_BANK]
+--                                                         inventory.slots = nil
+--                                                         inventory.backingBags = nil
+--                                                         inventory.hasAnyQuickSlottableItems = nil
+--                                                     end
+--                                                 end)
+-- end
+-- reregister()

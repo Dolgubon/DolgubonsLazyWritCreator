@@ -238,6 +238,15 @@ local function setupConditionsTable(quest, info,indexTableToUse)
 	return conditionsTable
 end
 
+function isCurrentStationsWritComplete()
+	local questIndex = WritCreater.writSearch()[GetCraftingInteractionType()]
+	for i = 0, 7 do
+		local text, _,_,_,_,_,_, conditionType = GetJournalQuestConditionInfo(questIndex, 1, i)
+		if text~="" and conditionType == 45 then
+			return true
+		end
+	end
+end
 
 local function writCompleteUIHandle()
 	craftingWrits = false
@@ -245,8 +254,19 @@ local function writCompleteUIHandle()
 	out(WritCreater.strings.complete)
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	--if WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
-	if closeOnce and WritCreater.IsOkayToExitCraftStation() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
+	if closeOnce and WritCreater.IsOkayToExitCraftStation() and isCurrentStationsWritComplete() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
 	if WritCreater:GetSettings().hideWhenDone then DolgubonsWrits:SetHidden(true) end
+	closeOnce = false
+	DolgubonsWritsBackdropCraft:SetHidden(true)
+end
+local function fullInventorySpaceUIHandle()
+	craftingWrits = false
+
+	out("Your inventory is full")
+	DolgubonsWritsBackdropQuestOutput:SetText("")
+	--if WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
+	-- if closeOnce and WritCreater.IsOkayToExitCraftStation() and isCurrentStationsWritComplete() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
+	-- if WritCreater:GetSettings().hideWhenDone then DolgubonsWrits:SetHidden(true) end
 	closeOnce = false
 	DolgubonsWritsBackdropCraft:SetHidden(true)
 end
@@ -269,7 +289,11 @@ local function craftNextQueueItem(calledFromCrafting)
 				table.remove(queue, 1)
 			end
 		else
-			writCompleteUIHandle()			
+			if FindFirstEmptySlotInBag(BAG_BACKPACK)== nil then
+				fullInventorySpaceUIHandle()
+			else
+				writCompleteUIHandle()
+			end
 		end
 	elseif calledFromCrafting then
 		return
@@ -313,7 +337,7 @@ local function createMatRequirementText(matsRequired)
 	end
 	if not unfinished then out(WritCreater.strings.complete)  
 
-		if closeOnce and WritCreater.IsOkayToExitCraftStation() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene()  end
+		if closeOnce and WritCreater.IsOkayToExitCraftStation()and isCurrentStationsWritComplete() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene()  end
 		closeOnce = false
 		return 
 	end
@@ -364,8 +388,7 @@ function crafting(info,quest, craftItems)
 
 		if pattern and index then
 			if FindFirstEmptySlotInBag(BAG_BACKPACK) ==nil then
-				writCompleteUIHandle()
-				out("Your inventory is full!")
+				fullInventorySpaceUIHandle()
 				return
 			end
 			 -- pattern is are we making gloves, chest, etc. Index is level.
@@ -635,7 +658,7 @@ end
 
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100027
+	local currentAPIVersionOfAddon = 100028
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
 		d("Update your addons!") 

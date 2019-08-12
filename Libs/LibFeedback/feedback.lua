@@ -46,9 +46,15 @@ parentControl, -- The parent control to anchor the feedback button(s) + label(s)
 
 local libLoaded
 local LIB_NAME, VERSION = "LibFeedback", 1.3
-local LibFeedback, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
-if not LibFeedback then return end
-LibFeedback.debug = false
+local lib, oldminor
+if
+	LibStub then lib, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
+else
+	lib = {}
+end
+if not lib then return end
+lib.debug = false
+lib.version = VERSION
 
 local function SendNote(self)
 
@@ -119,7 +125,7 @@ local function createFeedbackWindow(owningWindow, messageText, feedbackWindowWid
 	return feedbackWindow
 end
 
-function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonName, parentControl, mailDestination,  mailButtonPosition, buttonInfo,  messageText, feedbackWindowWidth, feedbackWindowHeight, feedbackWindowButtonWidth, feedbackWindowButtonHeight)
+function lib:initializeFeedbackWindow(parentAddonNameSpace, parentAddonName, parentControl, mailDestination,  mailButtonPosition, buttonInfo,  messageText, feedbackWindowWidth, feedbackWindowHeight, feedbackWindowButtonWidth, feedbackWindowButtonHeight)
 	-- Create Default settings
 	if parentAddonNameSpace == nil or parentAddonNameSpace == "" then
 		d("|cFF0000[LibFeedback] - ERROR:|r Obligatory addon namespace is missing!")
@@ -192,7 +198,7 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
             local isString = (not isButtonInfoDeep and (type(buttonData) == "string") or (isButtonInfoDeep and type(buttonData[1]) == "string")) or false
             local sendGold = (not isButtonInfoDeep and (type(buttonData) == "number" and buttonData > 0) or (isButtonInfoDeep and buttonData[3])) or false
 
-            if LibFeedback.debug then
+            if lib.debug then
                 d(zo_strformat("|cFF0000[LibFeedback]|r <<1>> - Button <<2>>: isButtonInfoDeep: <<3>>, isString: <<4>>, sendGold: <<5>>,", tostring(parentAddonName), tostring(i), tostring(isButtonInfoDeep), tostring(isString), tostring(sendGold)))
                 if isButtonInfoDeep then
                     d(zo_strformat("> Param1: <<1>>, Param2: <<2>>, Param3: <<3>>,", tostring(buttonData[1]), tostring(buttonData[2]), tostring(buttonData[3])))
@@ -256,7 +262,10 @@ function LibFeedback:initializeFeedbackWindow(parentAddonNameSpace, parentAddonN
 	return showButton, feedbackWindow
 end
 
-function LibFeedback:setDebug(debugValue)
+function lib:setDebug(debugValue)
     debugValue = debugValue or false
-    LibFeedback.debug = debugValue
+    lib.debug = debugValue
 end
+
+LibFeedback = lib
+
