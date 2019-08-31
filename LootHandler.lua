@@ -116,7 +116,7 @@ local function LootAllHook(boxType, boxRank) -- technically not a hook.
 			end
 		elseif CanItemLinkBeVirtual(itemLink) then 
 			updateSavedVars(vars, GetItemIDFromLink(itemLink), quantity)
-			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY then
+			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or itemLink == "|H1:item:135153:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h" then
 				lootOutput(itemLink)
 			end
 		elseif itemType==ITEMTYPE_RECIPE then 
@@ -211,7 +211,7 @@ local function OnLootUpdated(event)
 				local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
 				local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
 				
-				if numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
+				if numLootTransmute==0 or numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
 					LootAll()
 				else
 					-- GetLootItemInfo(number lootIndex)

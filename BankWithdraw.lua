@@ -95,13 +95,20 @@ end
 
 local saidBankIsFull = false
 
-local function moveItem( amountRequired, bag, slot)
+local function moveItem( amountRequired, bag, slot, secondTry)
 	if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
 		local _, optiontype = GetChatterOption(1)
 		if optiontype == CHATTER_START_BANK then
 			SelectChatterOption(1)
 		end
 	end
+
+	-- if not IsBankOpen() then
+	-- 	if not secondTry then
+	-- 		zo_callLater(function() moveItem( amountRequired, bag, slot, true) end, 100)
+	-- 	end
+	-- 	return
+	-- end
 	local emptySlot = emptySlots[1]
 	local _,remainingInBank = GetItemLinkStacks(GetItemLink(bag, slot))
 	if emptySlot and GetItemName(BAG_BACKPACK, emptySlot)=="" then
@@ -112,7 +119,7 @@ local function moveItem( amountRequired, bag, slot)
 		else
 			RequestMoveItem(bag, slot, BAG_BACKPACK,emptySlot,amount)
 		end
-		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0) , remainingInBank ))
+		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0) , math.max(0,remainingInBank - amountRequired )))
 	else
 		if not saidBankIsFull then
 			d(WritCreater.strings.fullBag)
@@ -168,7 +175,10 @@ local function filterMatches(matches)
 	end
 
 end
-
+local bagList = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
+	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
+local houseBagList =  {BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
+		BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 local function potionGrabRefactored(questCondition, amountRequired, validItemTypes, quest, stepindex, conditionindex)
 	specialDebug("WC Debug Beggining Bank Withdrawal Sequence")
 	specialDebug("Attempting to find items for "..questCondition)
@@ -177,8 +187,10 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	specialDebug(validItemTypes )
 	local potentialMatches = {}
 	local storageIncluded = false
-	local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
-	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
+	local bags = bagList
+	if (GetBankingBag()==BAG_DELETE and GetInteractionType() ~= INTERACTION_CONVERSATION ) and GetCurrentZoneHouseId() >0 then
+		bags = houseBagList
+	end
 	for i = 1, #bags do
 		local bagId = bags[i]
 		specialDebug("Searching bag number "..bagId)

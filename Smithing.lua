@@ -419,7 +419,7 @@ function crafting(info,quest, craftItems)
 								if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
 								if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
 							end
-							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 0, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType())
+							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 0, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
 							if changeRequired then return true end
@@ -640,32 +640,21 @@ local function enchantCrafting(info, quest,add)
 	end
 
 	
-	function ZO_SharedEnchanting:Create()
-	    if self.enchantingMode == ENCHANTING_MODE_CREATION then
-	        local rune1BagId, rune1SlotIndex, rune2BagId, rune2SlotIndex, rune3BagId, rune3SlotIndex = self:GetAllCraftingBagAndSlots()
-	        self.potencySound, self.potencyLength = GetRunestoneSoundInfo(rune1BagId, rune1SlotIndex)
-	        self.essenceSound, self.essenceLength = GetRunestoneSoundInfo(rune2BagId, rune2SlotIndex)
-	        self.aspectSound, self.aspectLength = GetRunestoneSoundInfo(rune3BagId, rune3SlotIndex)
-	        CraftEnchantingItem(rune1BagId, rune1SlotIndex, rune2BagId, rune2SlotIndex, rune3BagId, rune3SlotIndex)
-	    elseif self.enchantingMode == ENCHANTING_MODE_EXTRACTION then
-	        ExtractEnchantingItem(self.extractionSlot:GetBagAndSlot())
-	        self.extractionSlot:ClearDropCalloutTexture()
-	    end
-	end
 end
 
 
-
+local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
 	local currentAPIVersionOfAddon = 100028
 
-	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" then 
+	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 
 		out("Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons.")
 		DolgubonsWritsBackdropCraft:SetHidden(true)
 		out = function() end
 		DolgubonsWrits:SetHidden(false)
+		updateWarningShown = true
 	end
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
@@ -765,7 +754,7 @@ function WritCreater.initializeCraftingEvents()
 		else
 			WritCreater.craftCheck(event, station) craftNextQueueItem() 
 		end
-		end
+	end
 
 	--EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, crafteventholder)
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, WritCreater.craftCompleteHandler)

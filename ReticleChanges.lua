@@ -66,8 +66,13 @@ local function hook(...)
 			return oldInteract(...)
 		end
 		if isCriminal then
-			d("The Lazy Writ Crafter has saved you from stealing while doing writs!")
-			return isCriminal
+			local isStealthed = GetUnitStealthState("player")
+			if isStealthed == 3 or isStealthed == 5 then
+				return oldInteract(...)
+			else
+				d("The Lazy Writ Crafter has saved you from stealing while doing writs!")
+				return isCriminal
+			end
 		end
 		return oldInteract(...)
 	end
