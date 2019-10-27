@@ -469,7 +469,7 @@ local function enableAlternateUniverse(override)
 			 "Sock Puppet Theatre", -- Sock Distribution Center, Soul-Shriven Sock Station, Grandma's Sock Knitting Station, Knits and Pieces, Sock Knitting Station
 			"Top Hats Inc.", -- Mahjong Station, Magic Store, Card Finder, Five Aces, Top Hat Store
 			"Seedy Skooma Bar", -- Chemical Laboratory , Drugstore, White's Garage, Cocktail Bar, Med-Tek Pharmaceutical Company, Med-Tek Laboratories, Skooma Central, Skooma Backdoor Dealers, Sheogorath's Pharmacy
-			 "Khajit Fried Chicken", -- Khajit Fried Chicken, soup Kitchen, Some kind of bar, misspelling?, Roast Bosmer
+			 "McDaedra Order Kiosk",--"Khajit Fried Chicken", -- Khajit Fried Chicken, soup Kitchen, Some kind of bar, misspelling?, Roast Bosmer
 			 "IKEA Assembly Station", -- Chainsaw Massace, Saw Station, Shield Corp, IKEA Assembly Station, Wood Splinter Removal Station
 			 "April Fool's Gold",--"Diamond Scam Store", -- Lucy in the Sky, Wedding Planning Hub, Shiny Maker, Oooh Shiny, Shiny Bling Maker, Cubit Zirconia, Rhinestone Palace
 			 -- April Fool's Gold
@@ -485,18 +485,18 @@ local function enableAlternateUniverse(override)
 				"Sock Knitting",
 				"Top Hat Tricks",
 				"Skooma Brewing",
-				"Chicken Frying",
+				"McDaedra",--"Chicken Frying",
 				"IKEA Assembly",
 				"Fool's Gold Creation",
 			}
-			local quest = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner", "Woodworker", "Jewelry Crafting"}
+			local quest = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner Writ", "Woodworker", "Jewelry Crafting"}
 			local questNames = 	
 			{
 				"Wightsmith",
 				"Sock Knitter",
 				"Top Hat Trickster",
 				"Skooma Brewer",
-				"Chicken Fryer",
+				"McDaedra Delivery",--"Chicken Fryer",
 				"IKEA Assembly",
 				"Fool's Gold",
 			}
@@ -506,17 +506,17 @@ local function enableAlternateUniverse(override)
 				"Sock Puppet",
 				"Top Hat",
 				"Skooma",
-				"Fried Chicken",
+				"McDaedra Nuggets",--"Fried Chicken",
 				"IKEA",
 				"Fool's Gold",
 			}
-			local coffers = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner", "Woodworker", "Jewelry Crafter's",}
+			local coffers = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner's Pack", "Woodworker", "Jewelry Crafter's",}
 			local cofferNames = {
 				"Wightsmith",
 				"Sock Knitter",
 				"Top Hat Trickster",
 				"Skooma Brewer",
-				"Chicken Fryer",
+				"McDaedra Takeout",--"Chicken Fryer",
 				"IKEA Assembly",
 				"Fool's Gold",
 			}
@@ -582,8 +582,8 @@ local stationNames =  -- in the comments are other names that were also consider
  -- Anti Salt Machine, Department of Corrections
  "Warp Gate" } -- Transporter, Molecular Discombobulator, Beamer, Warp Tunnel, Portal, Stargate, Cannon!, Warp Gate
 
--- enableAlternateUniverse(GetDisplayName()=="@Dolgubon")
-enableAlternateUniverse()
+enableAlternateUniverse(GetDisplayName()=="@Dolgubon")
+-- enableAlternateUniverse()
 
 local function alternateListener(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
 	-- if GetDisplayName() == "@Dolgubon" then

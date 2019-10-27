@@ -74,6 +74,7 @@ end
 function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d:item:(%d+)")) end
 
 local function updateSavedVars(vars, location, quantity)
+	-- d("Saving "..location.." #"..quantity)
 	if vars[location] then
 		vars[location] = vars[location] + quantity
 	else
@@ -82,6 +83,7 @@ local function updateSavedVars(vars, location, quantity)
 end
 
 local function lootOutput(itemLink, itemType)
+
 	if WritCreater:GetSettings().lootOutput then
 		local amountBag, amountBank, amountCraft = GetItemLinkStacks( itemLink)
 		local amount = amountCraft + amountBank + amountBag + 1
@@ -116,7 +118,7 @@ local function LootAllHook(boxType, boxRank) -- technically not a hook.
 			end
 		elseif CanItemLinkBeVirtual(itemLink) then 
 			updateSavedVars(vars, GetItemIDFromLink(itemLink), quantity)
-			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or itemLink == "|H1:item:135153:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h" then
+			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or GetItemIDFromLink(itemLink) ==135153 then
 				lootOutput(itemLink)
 			end
 		elseif itemType==ITEMTYPE_RECIPE then 
@@ -167,6 +169,15 @@ local function shouldSaveStats(boxType, boxRank)
 	return true
 end
 
+local fatiguedLoot = 
+{
+
+}
+
+local function clearLootFatigue()
+	fatiguedLoot = {}
+	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
+end
 local callFromSlotUpdated = false
 --If the box/loot item that is open is a writ container, loot it and open the inventory again
 local calledFromQuest = false
@@ -187,14 +198,16 @@ local function OnLootUpdated(event)
 		local writRewardNames = WritCreater.langWritRewardBoxes ()
 		if not writRewardNames[9] then
 			writRewardNames[9] = GetItemLinkName("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+			if GetDisplayName()=="@Dolgubon" then
+				writRewardNames[9] = GetItemLinkName("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+				
+			end
 			writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
 			writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
 		end
 		for i = 1, #writRewardNames  do
-
 			local a, b = string.find(lootInfo[1], writRewardNames[i])
 			if a then
-
 				if i == 8 then 
 					local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
 					if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
@@ -210,7 +223,14 @@ local function OnLootUpdated(event)
 				
 				local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
 				local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
-				
+
+				EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
+				EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootSavingFatigue", 5000, clearLootFatigue)
+
+				if shouldSaveStats(i,boxRank) and not fatiguedLoot[i] then 
+					LootAllHook(i,boxRank)
+					fatiguedLoot[i] = true
+				end
 				if numLootTransmute==0 or numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
 					LootAll()
 				else
@@ -220,13 +240,13 @@ local function OnLootUpdated(event)
 						local lootId, name,_,_,_,_,_,_,lootType = GetLootItemInfo(i)
 						LootItemById(lootId)
 					end
-					-- Then add the container to a 'blacklist'
+					-- Then add the container to a 'blacklist' so we don't try to open it in a loop
 					if lastInteractedSlot then
 						containerHasTransmute[lastInteractedSlot] = true
 					end
 				end
 
-				if shouldSaveStats(i,boxRank) then LootAllHook(i,boxRank) end
+
 				return true
 			end
 		end
@@ -242,11 +262,15 @@ local flavours = {
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
 }
 local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local plunderSkulls = GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local flavourTexts = {}
 setmetatable(flavourTexts, {__index = function(t, i)
 	if flavours[i] then return true end
 	if i == anniversaryBoxie then
 		return WritCreater:GetSettings().lootJubileeBoxes
+	end
+	if i==plunderSkulls and GetDisplayName()=="@Dolgubon" then
+		return true
 	end
 end
 })

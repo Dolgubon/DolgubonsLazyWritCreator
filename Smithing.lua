@@ -137,6 +137,7 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
 	local max = -1
 	local numKnown = 0
 	local numAllowed = 0
+	local maxStones = 0 
 	for i, v in pairs(WritCreater:GetSettings().styles) do
 		if v then 
 			numAllowed = numAllowed + 1
@@ -144,10 +145,9 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
 			if IsSmithingStyleKnown(i, piece) then
 				numKnown = numKnown + 1
 
-				if GetCurrentSmithingStyleItemCount(i)>GetCurrentSmithingStyleItemCount(max) then 
-					if GetCurrentSmithingStyleItemCount(i)>0 and v then
-						max = i
-					end
+				if GetCurrentSmithingStyleItemCount(i)>maxStones then 
+					maxStones =  GetCurrentSmithingStyleItemCount(i)
+					max = i
 				end
 			end
 		end
@@ -160,7 +160,7 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
 			return -3
 		end
 	end
-	return max
+	return max, maxStones
 end
 
 
@@ -413,13 +413,18 @@ function crafting(info,quest, craftItems)
 						local _,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
 						local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
 						if numMats<=curMats then 
-							local style = maxStyle(pattern)
+							local style, stonesOwned = maxStyle(pattern)
 							if station ~= CRAFTING_TYPE_JEWELRYCRAFTING then
 								if style == -1 then out(WritCreater.strings.moreStyle) return false end
 								if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
 								if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
+								if needed>stonesOwned then
+									-- User doesn't have enough to craft them all at once, so split it up
+									needed = stonesOwned
+								end
 							end
-							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 0, ITEM_QUALITY_NORMAL, true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
+							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
+								true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
 							if changeRequired then return true end
@@ -646,7 +651,7 @@ end
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100028
+	local currentAPIVersionOfAddon = 100029
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

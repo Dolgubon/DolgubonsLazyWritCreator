@@ -230,57 +230,28 @@ function WritCreater.Options() --Sentimental
 				end
 			end
 			local original
-			local function inventorySetup (self,...) 
-				local c,b = self.originalAcquireObject(self,...)
-				abctestwrit = c
-				local label  = c:GetNamedChild("Name")
-				if not label.isAlternatedUniverse and label.SetText then
-					label.isAlternatedUniverse = true
+			local function inventorySetup (pool) 
+				local activeObjects = pool:GetActiveObjects()
+				for k, c in pairs(activeObjects) do
+					local label  = c:GetNamedChild("Name")
+					if not label.isAlternatedUniverse and label.SetText then
+						label.isAlternatedUniverse = true
 
-					setupReplacement(label, "SetText",1,true,4)
-					setupReplacement(label, "SetText",1,true,1)
-					setupReplacement(label, "SetText",1,1,0)
-					label:SetText(label:GetText())
+						setupReplacement(label, "SetText",1,true,4)
+						setupReplacement(label, "SetText",1,true,1)
+						setupReplacement(label, "SetText",1,1,0)
+						label:SetText(label:GetText())
+					end
 				end
-				return c,b
 			end
-			local object = ZO_PlayerInventoryList.dataTypes[1].pool
-			original = object.AcquireObject
-			object.originalAcquireObject = original
-			object.AcquireObject = inventorySetup
+			local function setupPool(object)
+				SecurePostHook (object, "AcquireObject", function(pool)inventorySetup(pool) end)
+			end
+			setupPool(ZO_PlayerInventoryList.dataTypes[1].pool)
+			setupPool(ZO_PlayerBankBackpack.dataTypes[1].pool)
+			setupPool(ZO_HouseBankBackpack.dataTypes[1].pool)
+			setupPool(WORLD_MAP_QUESTS.headerPool)
 
-
-			object = ZO_PlayerBankBackpack.dataTypes[1].pool
-			original = object.AcquireObject
-			object.originalAcquireObject = original
-			object.AcquireObject = inventorySetup
-
-			object = ZO_HouseBankBackpack.dataTypes[1].pool
-			original = object.AcquireObject
-			object.originalAcquireObject = original
-			object.AcquireObject = inventorySetup
-
-			object =WORLD_MAP_QUESTS.headerPool
-			original = object.AcquireObject
-			object.originalAcquireObject = original
-			object.AcquireObject = inventorySetup
-			
-
-			-- The quest labels in the journal
-			-- local o = ACHIEVEMENTS.categoryTree.AcquireNewChildContainer
-			-- ACHIEVEMENTS.categoryTree.AcquireNewChildContainer = function(...)
-			-- 	local c,b = o(...)
-			-- 	abcdtest=c
-
-			-- 	local label  = c.control
-			-- 	if label and not label.isAlternatedUniverse and label.SetText then
-			-- 		label.isAlternatedUniverse = true
-
-			-- 		setupReplacement(label, "SetText",1,true,1)
-			-- 		label:SetText(label:GetText())
-			-- 	end
-			-- 	return c,b
-			-- end
 			local t = ACHIEVEMENTS.categoryTree.control:GetChild():GetChild(7)
 			for i = 1, t:GetNumChildren() do
 				local label = t:GetChild(i)
@@ -302,7 +273,9 @@ function WritCreater.Options() --Sentimental
 				end
 				return c,b
 			end
-			-- ZO_CraftBagTabsActive
+
+			setupReplacement(ZO_QuestJournalTitleText, "SetText",1,true,2)
+
 			setupReplacement(ZO_CraftBagTabsActive, "SetText",1,true,1)
 			for j = 3, 9 do 
 				local text = ZO_CraftBagTabs:GetNamedChild("Button"..j).m_object.m_buttonData.tooltipText
@@ -384,9 +357,10 @@ function WritCreater.Options() --Sentimental
 			setupReplacement(_G, "ZO_Alert", 2, {9}) -- location change notification (top right of screen)
 			setupReplacement(ZO_DeathReleaseOnlyButton1NameLabel, "SetText", 1, {9}) -- when you only have one port option on death
 			setupReplacement(ZO_DeathTwoOptionButton2NameLabel, "SetText", 1, {9}) -- when you can revive here or go to wayshrine
-			local original = ZO_MapLocationTooltip.labelPool.AcquireObject
+
+			local originalMapAcquire = ZO_MapLocationTooltip.labelPool.AcquireObject
 			ZO_MapLocationTooltip.labelPool.AcquireObject = function(...) 
-				local control,b = original(...)
+				local control,b = originalMapAcquire(...)
 				if not control.hasAprilStarted then 
 					control.hasAprilStarted = true 
 					setupReplacement(control, "SetText", 1, true)
@@ -762,19 +736,20 @@ function WritCreater.Options() --Sentimental
 	})
 	table.insert(options,{
 	  type = "submenu",
+	  name = WritCreater.optionStrings["crafting submenu"],
+	  tooltip = WritCreater.optionStrings["crafting submenu tooltip"],
+	  controls = craftSubmenu,
+	  reference = "WritCreaterMasterWritSubMenu",
+	})
+	table.insert(options,{
+	  type = "submenu",
 	  name =WritCreater.optionStrings["style stone menu"],
 	  tooltip = WritCreater.optionStrings["style stone menu tooltip"]  ,
 	  controls = styleCompiler(),
 	  reference = "WritCreaterStyleSubmenu",
 	})
 
-	table.insert(options,{
-	  type = "submenu",
-	  name = WritCreater.optionStrings["crafting submenu"],
-	  tooltip = WritCreater.optionStrings["crafting submenu tooltip"],
-	  controls = craftSubmenu,
-	  reference = "WritCreaterMasterWritSubMenu",
-	})
+	
 	if WritCreater.alternateUniverse then
 		table.insert(options,1, {
 				type = "checkbox",
