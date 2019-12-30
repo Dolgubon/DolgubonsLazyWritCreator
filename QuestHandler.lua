@@ -53,9 +53,9 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 	WritCreater.savedVarsAccountWide["rewards"][currentWritDialogue]["num"] = WritCreater.savedVarsAccountWide["rewards"][currentWritDialogue]["num"] + 1
 	WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] + 1
     -- Complete the writ quest
+    WritCreater.analytic()
     if not WritCreater:GetSettings().autoAccept then return end
 	CompleteQuest()
-	WritCreater.analytic()
 	onWritComplete()
 
 

@@ -155,25 +155,43 @@ local function countVouchers()
 end
 
 -- outputStats outputs the user's writ rewards in a (mildly) readable fashion
+function round(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
 
-local function outputStats()
+
+local function outputStats(showChances)
 	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
 		if type(v) == "table" and WritCreater.writNames[k] then
 			d("--------------------------------")
 			d(WritCreater.writNames[k].." Stats")
+			local numberOfWritType = v.num
 			for statType, stats in pairs(v) do 
 				if stats==0 then
 				elseif type(stats)=="table" then
 					for quality, amount in pairs(stats) do
 						if amount~=0 then
-							d(quality.." recipes: "..amount)
+							if showChances then
+								d(quality.." recipes: 1 in "..round(numberOfWritType/amount, 2))
+							else
+								d(quality.." recipes: "..amount)
+							end
 						end
 					end
 				else
 					if type(statType)=="number" then
-						d(getItemLinkFromItemId(statType)..": "..tostring(stats))
+						if showChances then
+							d(getItemLinkFromItemId(statType)..": 1 in "..round(numberOfWritType/stats, 2))
+						else
+							d(getItemLinkFromItemId(statType)..": "..tostring(stats))
+						end
 					else
-						d(statType..": "..tostring(stats))
+						if showChances and statType~="num" then
+							d(statType..": 1 in "..round(numberOfWritType/stats, 2))
+						else
+							d(statType..": "..tostring(stats))
+						end
 					end
 				end
 			end
@@ -258,6 +276,7 @@ SLASH_COMMANDS['/countsurveys'] = countSurveys
 --------------------------------------------------
 -- WRIT STATISTICS
 SLASH_COMMANDS['/outputwritstats'] = outputStats
+SLASH_COMMANDS['/outputwritchances'] = function() outputStats(true) end
 SLASH_COMMANDS['/resetwritstatistics'] = resetStats
 
 --------------------------------------------------

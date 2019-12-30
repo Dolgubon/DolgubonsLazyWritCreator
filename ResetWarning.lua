@@ -1,6 +1,4 @@
 
-
-
 local function dailyReset()
 	stamp = GetTimeStamp()
 	local date = {}

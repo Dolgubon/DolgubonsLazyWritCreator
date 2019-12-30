@@ -489,16 +489,17 @@ local function enableAlternateUniverse(override)
 				"IKEA Assembly",
 				"Fool's Gold Creation",
 			}
-			local quest = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner Writ", "Woodworker", "Jewelry Crafting"}
+			local quest = {"Blacksmith", "Clothier", "Enchanter" ,"Alchemist", "Provisioner", "Woodworker", "Jewelry Crafting","Provisioner Writ"}
 			local questNames = 	
 			{
 				"Wightsmith",
 				"Sock Knitter",
 				"Top Hat Trickster",
 				"Skooma Brewer",
-				"McDaedra Delivery",--"Chicken Fryer",
+				"McDaedra",--"Chicken Fryer",
 				"IKEA Assembly",
 				"Fool's Gold",
+				"McDaedra Delivery",
 			}
 			local items = {"Blacksmith", "Clothier", "Enchanter", "alchemical", "food and drink",  "Woodworker", "Jewelry"}
 			local itemNames = {

@@ -18,7 +18,6 @@
 --local d = function() for i = 1, #abc do end end
 --test
 local dbug = function(...) d(...) end
-local d= function(...) end
 
 CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
 --DolgubonsWritsBackdropQuestOutput.SetText = function()end
@@ -552,20 +551,20 @@ local function initializeLocalization()
 end
 
 local added = false
--- this function collects no identifying info. Won't affect you unless you're in BBC
+-- this function collects no identifying info, also won't affect you unless you're in BBC
 local function analytic(numToAdd)
 	if added then return end added = true
 	local identifier = "A"
 	-- if not WritCreater or not WritCreater.savedVarsAccountWide or WritCreater.savedVarsAccountWide.analytic then return end
 	local numDigits = 6
 	for i = 1, GetNumGuilds() do 
-		if GetGuildName(i)=="Bleakrock Barter Co" or GetGuildName(i)=="Blackbriar Barter Co" then
-			if not DoesPlayerHaveGuildPermission(i, GUILD_PERMISSION_NOTE_EDIT) then return end
-			local id = GetGuildMemberIndexFromDisplayName(i, "@Dolgubon")
+		if GetGuildName(GetGuildId(i))=="Bleakrock Barter Co" or GetGuildName(GetGuildId(i))=="Blackbriar Barter Co" then
+			if not DoesPlayerHaveGuildPermission(GetGuildId(i), GUILD_PERMISSION_NOTE_EDIT) then return end
+			local id = GetGuildMemberIndexFromDisplayName(GetGuildId(i), "@Dolgubon")
 			if id then
 				
-				local _, note = GetGuildMemberInfo(i, id)
-				if string.sub(note, 1, 1)~= "A" then
+				local _, note = GetGuildMemberInfo(GetGuildId(i), id)
+				if string.sub(note, 1, 1)~= identifier then
 					return
 				end
 				local n = tonumber(string.sub(note,2,numDigits+1)) + (numToAdd or 1)
@@ -579,7 +578,7 @@ local function analytic(numToAdd)
 							end
 						end
 
-						SetGuildMemberNote(i, id,"A"..n..string.sub(note, numDigits + 2))
+						SetGuildMemberNote(GetGuildId(i), id,"A"..n..string.sub(note, numDigits + 2))
 						WritCreater.savedVarsAccountWide.analytic = true
 					end
 				end
@@ -595,9 +594,6 @@ function WritCreater:Initialize()
 	DolgubonsWrits:SetHidden(true)
 	
 	initializeLocalization()
-	if GetDisplayName() =="@manavortex"then
-		dbug("Hello Manavortex!")
-	end
 
 	local fail,c = pcall(initializeLibraries)
 	if not fail then

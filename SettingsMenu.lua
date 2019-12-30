@@ -306,19 +306,20 @@ function WritCreater.Options() --Sentimental
 			setupReplacement(ZO_ProvisionerTopLevelSkillInfoName,"SetText", 2, true, 1,"u")
 
 			setupReplacement(ZO_EnchantingTopLevelSkillInfoName,"SetText", 2, true, 1,"u")
-			if IsPlayerActivated() then
+			local function skillActvices()
 				ZO_Skills_TieSkillInfoHeaderToCraftingSkill(ENCHANTING.control:GetNamedChild("SkillInfo"),CRAFTING_TYPE_ENCHANTING)
 				ZO_Skills_TieSkillInfoHeaderToCraftingSkill(ALCHEMY.control:GetNamedChild("SkillInfo"),CRAFTING_TYPE_ALCHEMY)
 				ZO_Skills_TieSkillInfoHeaderToCraftingSkill(PROVISIONER.control:GetNamedChild("SkillInfo"),CRAFTING_TYPE_PROVISIONING) 
 				setupReplacement(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1,"SetText", 1, true, 2)
-				ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1:SetText(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1:GetText())
+				if ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1 then
+					ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1:SetText(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1:GetText())
+				end
+			end
+			if IsPlayerActivated() then
+				skillActvices()
 			else
 				EVENT_MANAGER:RegisterForEvent("AlternateUniversalCraftStudios",EVENT_PLAYER_ACTIVATED,function()
-				ZO_Skills_TieSkillInfoHeaderToCraftingSkill(ENCHANTING.control:GetNamedChild("SkillInfo"),CRAFTING_TYPE_ENCHANTING)
-				ZO_Skills_TieSkillInfoHeaderToCraftingSkill(ALCHEMY.control:GetNamedChild("SkillInfo"),CRAFTING_TYPE_ALCHEMY)
-				ZO_Skills_TieSkillInfoHeaderToCraftingSkill(PROVISIONER.control:GetNamedChild("SkillInfo"),CRAFTING_TYPE_PROVISIONING) 
-				setupReplacement(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1,"SetText", 1, true, 2)
-				ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1:SetText(ZO_FocusedQuestTrackerPanelContainerQuestContainerTrackedHeader1:GetText())
+				skillActvices()
 				EVENT_MANAGER:UnregisterForEvent("AlternateUniversalCraftStudios",EVENT_PLAYER_ACTIVATED)
 				end , 1000)
 			end

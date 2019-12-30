@@ -418,11 +418,8 @@ function crafting(info,quest, craftItems)
 								if style == -1 then out(WritCreater.strings.moreStyle) return false end
 								if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
 								if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
-								if needed>stonesOwned then
-									-- User doesn't have enough to craft them all at once, so split it up
-									needed = stonesOwned
-								end
 							end
+							needed = math.min(needed,  GetMaxIterationsPossibleForSmithingItem(pattern, index,numMats,style,1, false))
 							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
 								true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
 

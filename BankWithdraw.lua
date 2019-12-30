@@ -65,7 +65,7 @@ local emptySlots = {}
 local function findEmptySlots(location)
 	specialDebug("WC Debug Locating empty slots in backpack")
 	emptySlots = {}
-	for i = FindFirstEmptySlotInBag(location) or 250, GetBagSize(location) do
+	for i = FindFirstEmptySlotInBag(location) or 250, GetBagSize(location) - 1 do
 		if GetItemName(location, i) == "" then
 			emptySlots[#emptySlots + 1] = i
 		end
