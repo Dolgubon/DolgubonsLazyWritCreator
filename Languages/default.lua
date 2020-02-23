@@ -191,6 +191,8 @@ WritCreater.optionStrings['reticleColour']								= "Change Reticle Colour"
 WritCreater.optionStrings['reticleColourTooltip']						= "Changes the Reticle colour if you have an uncompleted or completed writ at the station"
 WritCreater.optionStrings['autoCloseBank']								= "Automatic Bank Dialog"
 WritCreater.optionStrings['autoCloseBankTooltip']						= "Automatically enter and exit the banking dialogue if there are items to be withdrawn"
+WritCreater.optionStrings['despawnBanker']							= "Despawn Banker"
+WritCreater.optionStrings['despawnBankerTooltip']					= "Automatically despawn the banker after withdrawing items"
 WritCreater.optionStrings['dailyResetWarn']								= "Writ Reset Warning"
 WritCreater.optionStrings['dailyResetWarnTooltip']						= "Displays a warning when writs are about to reset for the day"
 WritCreater.optionStrings['dailyResetWarnTime']							= "Minutes Before Reset"
@@ -205,6 +207,8 @@ WritCreater.optionStrings['jewelryWritDestroyTooltip']					= "Destroy looted Jew
 WritCreater.optionStrings['jewelryWritDestroyWarning']					= "WARNING: There is no prompt when destroying jewelry writs! Enable at your own risk!"
 WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Destruction"
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete jewelry dialog box"
+WritCreater.optionStrings['suppressQuestAnnouncements']					= "Hide Writ Quest Announcements"
+WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Hides the text in the center of the screen when you start a writ or create an item for it"
 
 
 

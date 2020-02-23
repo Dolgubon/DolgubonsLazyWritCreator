@@ -648,7 +648,7 @@ end
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100029
+	local currentAPIVersionOfAddon = 100030
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

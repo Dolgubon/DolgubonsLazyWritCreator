@@ -39,6 +39,91 @@
 				</Backdrop>
 			</Controls>
 		</TopLevelControl>
+		<Control name="WritCrafterScrollTemplate" alpha="1"  mouseEnabled="false" inheritAlpha="false" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="100" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="-120" />
+			<Controls>
+				<Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="0" offsetX="10" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="0" offsetX="-10" relativePoint="BOTTOMRIGHT"/>
+					
+				</Control>
+			</Controls>
+		</Control>
+		<TopLevelControl name="DolgubonsLazyWritStatsWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="300" y="700" />
+			<Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="250"/>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
+					<AnchorFill/>
+					<Dimensions x="700" y="150"/>
+					<Edge edgeSize="1"/>
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
+							<Anchor  point="TOP"  relativePoint="TOP" relativeTo="$(parent)" offsetY="15" offsetX="0"/>
+						</Label>
+						<Label name="$(parent)SubTitle" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Writ Reward Stats">
+							<Anchor  point="TOP"  relativePoint="BOTTOM" relativeTo="$(parent)Title" offsetY="0" offsetX="0"/>
+						</Label>
+						<Label name="$(parent)WritCounter" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Writs Done: ">
+							<Anchor  point="TOP"  relativePoint="BOTTOM" relativeTo="$(parent)SubTitle" offsetY="0" offsetX="0"/>
+						</Label>
+					    <Control name="$(grandparent)RewardScroll" inherits="WritCrafterScrollTemplate" alpha="1"  mouseEnabled="false" inheritAlpha="false">
+						</Control>
+						<Button name="$(parent)Close" alpha="1" inherits="ZO_DefaultButton" text="Close" clickSound="Book_Acquired" topmost="true">
+					    	<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-15" />
+					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
+		         			<Dimensions x="130"  />
+							<OnClicked>
+								self:GetOwningWindow():SetHidden(true)
+							</OnClicked>
+			    		</Button>
+			    	</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+
+		<Button name="WritCrafterRewardTemplate" virtual="true" mouseEnabled="true">
+
+			<OnMouseEnter>
+				if self.data.header then
+					return
+				end
+				WritCreater.rewardsScroll:Row_OnMouseEnter(self)
+					<!-- ItemTooltip:SetLink(self.data.Name) -->
+					d(self.data)
+			</OnMouseEnter>
+			<OnMouseExit>
+				if self.data.header then
+					return
+				end
+				local name = GetControl(self, "Name")
+				WritCreater.rewardsScroll:Row_OnMouseExit(self)
+				ClearTooltip(ItemTooltip)
+			</OnMouseExit>
+			<Dimensions x="280" y="30" />
+			<Controls>
+				<Backdrop name="$(parent)BG" mouseEnabled="false"/>
+				<Label name="$(parent)Name" color="76BCC3" mouseEnabled="false"  font="ZoFontGame" wrapMode="TEXT_WRAP_MODE_TRUNCATE" horizontalAlignment="LEFT">
+					<Anchor point="LEFT" relativeTo="$(grandparent)" relativePoint="LEFT" offsetX="0" color="000000" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Amount" relativePoint="LEFT" offsetX="0" color="000000" />
+				</Label>
+				<Label name="$(parent)Amount"  color="76BCC3"  font="ZoFontGame" horizontalAlignment="RIGHT" mouseEnabled="false" >
+					<Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-5" color="000000" />
+				</Label>
+				
+			</Controls>
+		</Button>
+<!-- 		<Button name="WritCrafterRewardHeaderTemplate" virtual="true" mouseEnabled="true">
+			<Dimensions x="280" y="30" />
+			<Controls>
+				<Backdrop name="$(parent)BG" mouseEnabled="false"/>
+				<Label name="$(parent)Name" inherits="QueueRowLabelTemplate" color="76BCC3" mouseEnabled="false" wrapMode="TEXT_WRAP_MODE_TRUNCATE">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" color="000000" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Amount" relativePoint="LEFT" offsetX="0" color="000000" />
+				</Label>
+			</Controls>
+		</Button> -->
 		<TopLevelControl name="DolgubonsWrits" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="470" y="200" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50"/>
@@ -82,6 +167,14 @@
 		         			<Dimensions x="150"  />
 							<OnClicked>
 								WritCreater.off()
+							</OnClicked>
+			    		</Button>
+			    		<Button name="$(parent)Stats" alpha="1" inherits="ZO_DefaultButton" text="Stats" clickSound="Book_Acquired" topmost="true" hidden="false">
+					    	<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-20" offsetY="-70" />
+					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
+		         			<Dimensions x="130"  />
+							<OnClicked>
+								DolgubonsLazyWritStatsWindow:SetHidden(not DolgubonsLazyWritStatsWindow:IsHidden())
 							</OnClicked>
 			    		</Button>
 					</Controls>

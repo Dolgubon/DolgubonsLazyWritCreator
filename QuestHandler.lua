@@ -243,6 +243,80 @@ WritCreater.savedVarsAccountWide.writLocations[10] = {57 ,231085, 249391, 100000
 }
 ]]
 -- Initialize the event listener, and grab the language strings
+
+local function isQuestWritQuest(questId)
+	local writs = WritCreater.writSearch()
+	for k, v in pairs(writs) do
+		if v == questId then
+			return true
+		end
+	end
+end
+
+local function hookIndexEvent(event)
+	local originalAdded = ZO_CenterScreenAnnounce_GetEventHandlers()[ event]
+	ZO_CenterScreenAnnounce_GetEventHandlers()[ event] = function(...)
+		local params={...} 
+		local questIndex = params[1] 
+		if isQuestWritQuest(questIndex) then 
+			return 
+		end 
+		originalAdded(...) 
+	end
+end
+
+local function OnQuestAdvanced(eventId, questIndex, questName, isPushed, isComplete, mainStepChanged)
+	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
+		return 
+	end 
+    if(not mainStepChanged) then return end
+
+    local announceObject = CENTER_SCREEN_ANNOUNCE
+    local sound = SOUNDS.QUEST_OBJECTIVE_STARTED
+
+    for stepIndex = QUEST_MAIN_STEP_INDEX, GetJournalQuestNumSteps(questIndex) do
+        local a, visibility, stepType, stepOverrideText, conditionCount = GetJournalQuestStepInfo(questIndex, stepIndex)
+
+        if visibility == nil or visibility == QUEST_STEP_VISIBILITY_OPTIONAL then
+            if stepOverrideText ~= "" then
+                local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, sound)
+                messageParams:SetText(stepOverrideText)
+                messageParams:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_QUEST_PROGRESSION_CHANGED)
+                announceObject:AddMessageWithParams(messageParams)
+                sound = nil -- no longer needed, we played it once
+            else
+                for conditionIndex = 1, conditionCount do
+                    local conditionText, curCount, maxCount, isFailCondition, isConditionComplete, _, isVisible  = GetJournalQuestConditionInfo(questIndex, stepIndex, conditionIndex)
+
+                    if not (isFailCondition or isConditionComplete) and isVisible then
+                        local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, sound)
+                        messageParams:SetText(conditionText)
+                        messageParams:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_QUEST_PROGRESSION_CHANGED)
+                        announceObject:AddMessageWithParams(messageParams)
+                        sound = nil -- no longer needed, we played it once
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function OnQuestAdded(eventId, questIndex)
+	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
+		return 
+	end 
+    OnQuestAdvanced(EVENT_QUEST_ADVANCED, questIndex, nil, nil, nil, true)
+end
+
+local function centerScreenAnnouncingHandlerHooks()
+	EVENT_MANAGER:UnregisterForEvent("CSA_MiscellaneousHandlers", EVENT_QUEST_ADDED)
+	EVENT_MANAGER:RegisterForEvent("CSA_MiscellaneousHandlers", EVENT_QUEST_ADDED, OnQuestAdded)
+	EVENT_MANAGER:UnregisterForEvent("CSA_MiscellaneousHandlers", EVENT_QUEST_ADVANCED)
+	EVENT_MANAGER:RegisterForEvent("CSA_MiscellaneousHandlers", EVENT_QUEST_ADVANCED, OnQuestAdvanced)
+	hookIndexEvent(EVENT_QUEST_ADDED)
+	hookIndexEvent(EVENT_QUEST_CONDITION_COUNTER_CHANGED)
+end
+
 function WritCreater.InitializeQuestHandling()
 	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."Pe(s)tControl", 1000, calculateDistance)
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CHATTER_BEGIN, HandleChatterBegin)
@@ -258,6 +332,7 @@ function WritCreater.InitializeQuestHandling()
 	for k, v in pairs(WritCreater.defaultAccountWide.writLocations) do
 		WritCreater.savedVarsAccountWide.writLocations[k] = v
 	end
+	centerScreenAnnouncingHandlerHooks()
 end
 
 -- /script JumpToSpecificHouse("@marcopolo184", 46)

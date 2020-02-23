@@ -150,6 +150,9 @@ function WritCreater.Options() --Sentimental
 				object[functionName] = function(self, ...)
 					local parameters = {...}
 					-- if x then d(parameters) end
+					if WritCreater.savedVarsAccountWide.alternateUniverse then
+						return original(self, ...)
+					end
 					local text = parameters[positionOfText]
 					if positionOfText == 0 then text = self end
 					if type(text )~="string" then original(self, ...) return end
@@ -195,6 +198,9 @@ function WritCreater.Options() --Sentimental
 				end
 				local original = object[functionName]
 				object[functionName] = function(self, ...)
+					if WritCreater.savedVarsAccountWide.alternateUniverse then
+						return original(self, ...)
+					end
 					local results = {original(self, ...)}
 					local text = results[positionOfText]
 					if type(text )~="string" then return unpack(results) end
@@ -216,6 +222,9 @@ function WritCreater.Options() --Sentimental
 
 			local original = LOOT_HISTORY_KEYBOARD.InsertOrQueue
 			LOOT_HISTORY_KEYBOARD.InsertOrQueue = function(self, newEntry) 
+				if WritCreater.savedVarsAccountWide.alternateUniverse then
+					return original(self, newEntry)
+				end
 				for k, v in pairs(newEntry.lines) do
 					local text = v.text
 					if type(text )~="string" then return original(self, newEntry)  end
@@ -247,9 +256,9 @@ function WritCreater.Options() --Sentimental
 			local function setupPool(object)
 				SecurePostHook (object, "AcquireObject", function(pool)inventorySetup(pool) end)
 			end
-			setupPool(ZO_PlayerInventoryList.dataTypes[1].pool)
-			setupPool(ZO_PlayerBankBackpack.dataTypes[1].pool)
-			setupPool(ZO_HouseBankBackpack.dataTypes[1].pool)
+			-- setupPool(ZO_PlayerInventoryList.dataTypes[1].pool)
+			-- setupPool(ZO_PlayerBankBackpack.dataTypes[1].pool)
+			-- setupPool(ZO_HouseBankBackpack.dataTypes[1].pool)
 			setupPool(WORLD_MAP_QUESTS.headerPool)
 
 			local t = ACHIEVEMENTS.categoryTree.control:GetChild():GetChild(7)
@@ -262,7 +271,7 @@ function WritCreater.Options() --Sentimental
 			end
 
 			local o = QUEST_JOURNAL_KEYBOARD.navigationTree.AddNode
-			QUEST_JOURNAL_KEYBOARD.navigationTree.AddNode = function (...) 
+			QUEST_JOURNAL_KEYBOARD.navigationTree.AddNode = function (...)
 				local c,b = o(...)
 				local label  = c:GetControl()
 				if not label.isAlternatedUniverse and label.SetText then
@@ -417,18 +426,7 @@ function WritCreater.Options() --Sentimental
 			alpha = 0.5,
 			width = "full",
 		},
-		{
-			type = "checkbox",
-			name = optionStrings["show craft window"],
-			tooltip =WritCreater.optionStrings["show craft window tooltip"],
-			getFunc = function() return WritCreater:GetSettings().showWindow end,
-			setFunc = function(value) 
-				WritCreater:GetSettings().showWindow = value
-				if value == false then
-					WritCreater:GetSettings().autoCraft = true
-				end
-			end,
-		},
+
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["autocraft"]  ,
@@ -496,14 +494,21 @@ function WritCreater.Options() --Sentimental
 		    clampInput = false, -- boolean, if set to false the input won't clamp to min and max and allow any number instead (optional)
 		    tooltip = WritCreater.optionStrings['dailyResetWarnTimeTooltip'], -- or string id or function returning a string (optional)
 		    requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
-} ,
-{
-		    type = "checkbox",
-		    name = WritCreater.optionStrings['stealingProtection'], -- or string id or function returning a string
-		    getFunc = function() return WritCreater:GetSettings().stealProtection end,
-		    setFunc = function(value) WritCreater:GetSettings().stealProtection = value end,
-		    tooltip = WritCreater.optionStrings['stealingProtectionTooltip'], -- or string id or function returning a string (optional)
-} 
+		} ,
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['stealingProtection'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().stealProtection end,
+			setFunc = function(value) WritCreater:GetSettings().stealProtection = value end,
+			tooltip = WritCreater.optionStrings['stealingProtectionTooltip'], -- or string id or function returning a string (optional)
+		} ,
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['suppressQuestAnnouncements'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().suppressQuestAnnouncements end,
+			setFunc = function(value) WritCreater:GetSettings().suppressQuestAnnouncements = value end,
+			tooltip = WritCreater.optionStrings['suppressQuestAnnouncementsTooltip'], -- or string id or function returning a string (optional)
+		} ,
 
 			
 	}
@@ -533,7 +538,17 @@ function WritCreater.Options() --Sentimental
 				end
 			end,
 		},
-		
+
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['despawnBanker'],
+			tooltip = WritCreater.optionStrings['despawnBankerTooltip'],
+			getFunc = function() return  WritCreater:GetSettings().despawnBanker end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().despawnBanker = value
+			end,
+			disabled = function() return not WritCreater:GetSettings().autoCloseBank end,
+		},
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["exit when done"],
@@ -759,7 +774,9 @@ function WritCreater.Options() --Sentimental
 				getFunc = function() return WritCreater.savedVarsAccountWide.alternateUniverse end,
 				setFunc = function(value) 
 					WritCreater.savedVarsAccountWide.alternateUniverse = value 
-					WritCreater.savedVarsAccountWide.completeImmunity = not value end,
+					WritCreater.savedVarsAccountWide.completeImmunity = not value 
+				end,
+				requiresReload = true,
 				
 			})
 	end

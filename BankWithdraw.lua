@@ -250,8 +250,10 @@ local function queueRun()
 			local function recursiveCall() 
 				zo_callLater(
 					function() 
-						if GetInteractionType()==6 then 
-							ZO_SharedInteraction:CloseChatterAndDismissAssistant()
+						if GetInteractionType()==6 then
+							if WritCreater:GetSettings().despawnBanker then
+								ZO_SharedInteraction:CloseChatterAndDismissAssistant()
+							end
 							SCENE_MANAGER:Show('hud')
 							recursiveCall()
 						end

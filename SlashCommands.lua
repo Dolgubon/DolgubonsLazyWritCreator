@@ -122,6 +122,8 @@ local function countVouchers()
     local total= 0
     local i, j, bankNum
     local craftTotals = {}
+    local sealedTotals = {}
+    local totalSealed = 0
     for j, bankNum in ipairs(bags) do
         for i = 1, GetBagSize(bankNum) do
             local itemType =  GetItemType(bankNum, i)
@@ -131,10 +133,12 @@ local function countVouchers()
             	end
             	local numVouchers = WritCreater.toVoucherCount(GetItemLink(bankNum, i))
                 total = total + numVouchers
+                totalSealed = totalSealed + 1
                 local icon = GetItemLinkInfo(GetItemLink(bankNum, i))
                 local craft = masterWritTextures[icon]
                 if craft then
                 	craftTotals[craft] = (craftTotals[craft] or 0) + numVouchers
+                	sealedTotals[craft] = (sealedTotals[craft] or 0) + 1
                 end
             end
         end
@@ -148,9 +152,9 @@ local function countVouchers()
 		names[CRAFTING_TYPE_ENCHANTING] = "alchimiste"
 	end
     for k, v in pairs(craftTotals) do 
-    	d(names[k].." : "..v)
+    	d(names[k].." : "..v.." ("..sealedTotals[k].." sealed writs)")
     end
-    d(zo_strformat(WritCreater.strings.countVouchers,total))
+    d(zo_strformat(WritCreater.strings.countVouchers,total).." ("..totalSealed.." sealed writs)")
     
 end
 
@@ -162,6 +166,10 @@ end
 
 
 local function outputStats(showChances)
+	if GetDisplayName()=="@Dolgubon" then
+		DolgubonsLazyWritStatsWindow:SetHidden(false)
+		return
+	end
 	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
 		if type(v) == "table" and WritCreater.writNames[k] then
 			d("--------------------------------")
@@ -275,7 +283,7 @@ SLASH_COMMANDS['/countsurveys'] = countSurveys
 
 --------------------------------------------------
 -- WRIT STATISTICS
-SLASH_COMMANDS['/outputwritstats'] = outputStats
+SLASH_COMMANDS['/outputwritstats'] = function() outputStats(false) end
 SLASH_COMMANDS['/outputwritchances'] = function() outputStats(true) end
 SLASH_COMMANDS['/resetwritstatistics'] = resetStats
 
