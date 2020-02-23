@@ -1,2 +1,6 @@
 /*.zip
 /Libs/LibFeedback/package.bat
+*.zip
+Libs/LibFeedback/LibFeedback.txt
+WizardMousedds.dds
+Libs/LibFeedback/libs/LibStub.lua
