@@ -172,7 +172,7 @@
 			    		<Button name="$(parent)Stats" alpha="1" inherits="ZO_DefaultButton" text="Stats" clickSound="Book_Acquired" topmost="true" hidden="false">
 					    	<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-20" offsetY="-70" />
 					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
-		         			<Dimensions x="130"  />
+		         			<Dimensions x="90"  />
 							<OnClicked>
 								DolgubonsLazyWritStatsWindow:SetHidden(not DolgubonsLazyWritStatsWindow:IsHidden())
 							</OnClicked>
