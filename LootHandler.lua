@@ -157,6 +157,7 @@ local function LootAllHook(boxType, boxRank) -- technically not a hook.
 			updateSavedVars(vars, "other", quantity)
 		end
 	end
+	WritCreater.updateList()
 	--saveStats(loot,boxType,boxRank)
 end
 

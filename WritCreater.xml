@@ -41,7 +41,7 @@
 		</TopLevelControl>
 		<Control name="WritCrafterScrollTemplate" alpha="1"  mouseEnabled="false" inheritAlpha="false" virtual="true">
 			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="135" />
-			<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="-80" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="-50" />
 			<Controls>
 				<Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
 					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="0" offsetX="10" relativePoint="TOPLEFT"/>
@@ -201,6 +201,7 @@
 					    	<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3"/>
 		         			<Dimensions x="90"  />
 							<OnClicked>
+								WritCreater.updateList()
 								DolgubonsLazyWritStatsWindow:SetHidden(not DolgubonsLazyWritStatsWindow:IsHidden())
 							</OnClicked>
 			    		</Button>

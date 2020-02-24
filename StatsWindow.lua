@@ -92,9 +92,9 @@ local rewardNameMaps =
 {
 	["master"] = "Sealed Writs",
 	["intricate"] = "Intricate Gear",
-	["material"] = "Low level mats",
+	["material"] = "Mat Shipments",
 	["survey"] = "Surveys",
-	["soulGem"] = "Soul Gems",
+	["soulGem"] = "Empty Soul Gems",
 	["glyph"] = "Decon Glyphs",
 	["repair"] = "Repair Kits",
 	["ornate"] = "Ornate Gear"
@@ -114,12 +114,21 @@ function RewardsScroll:BuildMasterList()
 	for craft, craftRewards in pairs(self.data) do
 		local craftHeader = {["craft"] = craft ,["header"]=true}
 		local craftMasterList = {}
+		local traitMatTable =  {["craft"] = craft ,["item"]="Trait Stones", ["amount"]=0}
 		-- table.insert(self.masterList, 
 		-- 		craftHeader
 		-- 	)
 		local i = 1
+		if not (craft == CRAFTING_TYPE_ENCHANTING or craft == CRAFTING_TYPE_ALCHEMY) then
+			self.masterList[i] = self.masterList[i] or {}
+			self.masterList[i][craft]= traitMatTable
+			if craft == CRAFTING_TYPE_PROVISIONING then
+				self.masterList[i][craft].item = "White Mats"
+			end
+			i = i+1
+		end
 		for reward, amount in pairs(craftRewards) do
-
+			local numTraitStones = 0
 			if reward=="num" then
 				craftHeader.amount=amount.." Writs Done"
 			elseif reward=="fragment" then
@@ -129,9 +138,11 @@ function RewardsScroll:BuildMasterList()
 				else
 					name = "Glass Fragment"
 				end
-				self.masterList[i] = self.masterList[i] or {}
-				self.masterList[i][craft]= {["craft"] = craft ,["item"]=name, ["amount"]=amount}
-				i = i+1
+				if amount > 0 then
+					self.masterList[i] = self.masterList[i] or {}
+					self.masterList[i][craft]= {["craft"] = craft ,["item"]=name, ["amount"]=amount}
+					i = i+1
+				end
 			else
 				
 				if type(amount)=="table" then
@@ -151,7 +162,19 @@ function RewardsScroll:BuildMasterList()
 							i = i+1
 						end
 					end
+				elseif type(reward)== "number" then
+					local link = getItemLinkFromItemId(reward)
+					local trait = GetItemLinkItemType(link)
+					if trait == ITEMTYPE_WEAPON_TRAIT or trait==ITEMTYPE_JEWELRY_TRAIT or trait == ITEMTYPE_ARMOR_TRAIT or (trait == ITEMTYPE_INGREDIENT and GetItemLinkQuality(link)==1) then
+						traitMatTable.amount = traitMatTable.amount + amount
+					else
+						self.masterList[i] = self.masterList[i] or {}
+						self.masterList[i][craft]= {["craft"] = craft ,["item"]=rewardNameMaps[reward] or reward, ["amount"]=amount}
+						i = i+1
+					end
+					
 				else
+
 					self.masterList[i] = self.masterList[i] or {}
 					self.masterList[i][craft]= {["craft"] = craft ,["item"]=rewardNameMaps[reward] or reward, ["amount"]=amount}
 					i = i+1
