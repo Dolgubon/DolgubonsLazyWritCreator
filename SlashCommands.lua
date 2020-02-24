@@ -166,9 +166,10 @@ end
 
 
 local function outputStats(showChances)
-	if GetDisplayName()=="@Dolgubon" then
+	if GetDisplayName()=="@Dolgubon" or not showChances  then
 		WritCreater.updateList()
 		DolgubonsLazyWritStatsWindow:SetHidden(false)
+		return
 	end
 	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
 		if type(v) == "table" and WritCreater.writNames[k] then
