@@ -216,10 +216,10 @@ WritCreater.settings["panel"] =
      registerForRefresh = true,
      registerForDefaults = true,
      resetFunc = WritCreater.resetSettings,
+     donation = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"
 
 }
 WritCreater.settings["options"] =  {} 
-local LibLazyCrafting  
 
 local craftingEnchantCurrently = false
 local closeOnce = false
@@ -467,20 +467,16 @@ local function initializeLibraries()
 	local missingString = WritCreater.strings["missingLibraries"]
 	local missing = false
 	local LLCVersion
-	if not LibStub then
+	local orid = d d = function()end if SLASH_COMMANDS["/libstubwarning"] then SLASH_COMMANDS["/libstubwarning"]("off") end d=orid
+	LLCVersion  =  LibLazyCrafting.version
+	if not LibLazyCrafting then
 		missing = true
-		missingString = missingString.."LibStub, LibLazyCrafting, LibAddonMenu-2.0"
-	else
-		LibLazyCrafting, LLCVersion = LibStub:GetLibrary("LibLazyCrafting", true)
-		if not LibLazyCrafting then
-			missing = true
-			missingString = missingString.."LibLazyCrafting, "
-		end
-		LAM = LibStub:GetLibrary("LibAddonMenu-2.0", true)
-		if not LAM then
-			missing = true
-			missingString = missingString.."LibAddonMenu-2.0"
-		end
+		missingString = missingString.."LibLazyCrafting, "
+	end
+	LAM = LibAddonMenu2
+	if not LAM then
+		missing = true
+		missingString = missingString.."LibAddonMenu-2.0"
 	end
 	if missing then
 		mandatoryRoadblockOut(missingString)
@@ -507,12 +503,13 @@ local function initializeLibraries()
 	 end end)
 
 	local buttonInfo = 
-	{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url",
+	{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url",{"https://www.patreon.com/Dolgubon", "Patreon"}
 	}
-	local feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail."
+	local feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also donate through Paypal or on Patreon"
 	if GetWorldName() == "NA Megaserver" then
-		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit House"}
-		feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house! (It's a maze)"
+		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit Maze 1"}
+		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 9) end, "Visit Maze 2"}
+		feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house, or donate through Paypal or on Patreon."
 	end
 	local orP=JumpToSpecificHouse
 	local function rep(f, c)
@@ -542,6 +539,11 @@ local function initializeLibraries()
 	buttonInfo, 
 	feedbackString)
 	DolgubonsWritsFeedback = feedbackWindow
+	local showButton2, feedbackWindow2 = LibFeedback:initializeFeedbackWindow(WritCreater, "Dolgubon's Lazy Writ Crafter",DolgubonsLazyWritStatsWindow, "@Dolgubon", 
+	{TOPRIGHT, DolgubonsLazyWritStatsWindow, TOPRIGHT,-20,55}, 
+	buttonInfo, 
+	feedbackString)
+	DolgubonsWritsFeedback2 = feedbackWindow
 end
 
 local function initializeLocalization()
@@ -610,6 +612,7 @@ local function analytic(numToAdd)
 	end
 	
 end
+
 WritCreater.analytic = analytic
 
 function WritCreater:Initialize()

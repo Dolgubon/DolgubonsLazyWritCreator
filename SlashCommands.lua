@@ -159,16 +159,16 @@ local function countVouchers()
 end
 
 -- outputStats outputs the user's writ rewards in a (mildly) readable fashion
-function round(num, numDecimalPlaces)
+local function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
 
 
 local function outputStats(showChances)
-	if GetDisplayName()=="@Dolgubon" or not showChances  then
+	if not showChances  then
 		WritCreater.updateList()
-		DolgubonsLazyWritStatsWindow:SetHidden(false)
+		DolgubonsLazyWritStatsWindow:SetHidden(not DolgubonsLazyWritStatsWindow:IsHidden())
 		return
 	end
 	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
@@ -271,6 +271,10 @@ local function findWrits(params)
 	end
 end--]]
 
+local function activateStatWindowDebug()
+	WritCreater:GetSettings().debugMode = not WritCreater:GetSettings().debugMode
+end
+
 
 --------------------------------------------------
 -- TIME TO RESET
@@ -299,6 +303,7 @@ SLASH_COMMANDS['/rerunmasterwrits'] = WritCreater.scanAllQuests
 SLASH_COMMANDS['/resetwritcraftersettings'] = WritCreater.resetSettings
 	-- Activates debug mode. Debug mode is not comprehensive.
 SLASH_COMMANDS['/dlwcdebug'] = activateDebug
+SLASH_COMMANDS['/dlwcstatwindowdebug'] = activateStatWindowDebug
 	-- Abandons all currently active writs.
 SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function

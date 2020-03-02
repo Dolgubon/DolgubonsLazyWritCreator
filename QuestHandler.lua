@@ -266,7 +266,7 @@ local function hookIndexEvent(event)
 end
 
 local function OnQuestAdvanced(eventId, questIndex, questName, isPushed, isComplete, mainStepChanged)
-	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
+	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then
 		return 
 	end 
     if(not mainStepChanged) then return end

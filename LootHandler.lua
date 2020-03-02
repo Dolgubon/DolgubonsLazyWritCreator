@@ -98,7 +98,7 @@ local function lootOutput(itemLink, itemType)
 end
 
 --begin the save stat process. Also decides if a mail with current stats should be sent.
-local function LootAllHook(boxType, boxRank) -- technically not a hook.
+local function LootAllHook(boxType) -- technically not a hook.
 	local vars = WritCreater.savedVarsAccountWide["rewards"][boxType]
 	if vars==nil then return end
 	local loot = {}
@@ -152,6 +152,7 @@ local function LootAllHook(boxType, boxRank) -- technically not a hook.
 		elseif itemType == ITEMTYPE_MASTER_WRIT then
 			lootOutput(itemLink, ITEMTYPE_MASTER_WRIT)
 			updateSavedVars(vars, "master", quantity)
+			updateSavedVars(vars, "voucher", toVoucherCount(itemLink))
 		else
 			if vars["other"]==nil then vars["other"] = {} end
 			updateSavedVars(vars, "other", quantity)
@@ -163,7 +164,7 @@ end
 
 --if the stats should be saved, saves them
 
-local function shouldSaveStats(boxType, boxRank)
+local function shouldSaveStats(boxType)
 	if GetNumLootItems() < 2 then return false end
 	if boxType == 9 then return false end
 
@@ -194,44 +195,44 @@ local function OnLootUpdated(event)
 	end
 	if calledFromQuest then autoLoot = true end
 
-	if autoLoot then
-		local lootInfo = {GetLootTargetInfo()}
-		local writRewardNames = WritCreater.langWritRewardBoxes ()
-		if not writRewardNames[9] then
-			writRewardNames[9] = GetItemLinkName("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-			if GetDisplayName()=="@Dolgubon" then
-				writRewardNames[9] = GetItemLinkName("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-				
-			end
-			writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
-			writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
+	local lootInfo = {GetLootTargetInfo()}
+	local writRewardNames = WritCreater.langWritRewardBoxes ()
+	if not writRewardNames[9] then
+		writRewardNames[9] = GetItemLinkName("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+		if GetDisplayName()=="@Dolgubon" then
+			writRewardNames[9] = GetItemLinkName("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+			
 		end
-		for i = 1, #writRewardNames  do
-			local a, b = string.find(lootInfo[1], writRewardNames[i])
-			if a then
-				if i == 8 then 
-					local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
-					if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
-						return false
-					end
-				elseif i == 9 then
-					if not WritCreater:GetSettings().lootJubileeBoxes then 
-						return false
-					end
+		writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
+		writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
+	end
+	for i = 1, #writRewardNames  do
+		local a, b = string.find(lootInfo[1], writRewardNames[i])
+		if a then
+			if i == 8 then 
+				local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
+				if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
+					return false
 				end
-				--LOOT_SHARED:LootAllItems()
-				local n = SCENE_MANAGER:GetCurrentScene().name
-				
-				local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
-				local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
-
-				EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
-				EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootSavingFatigue", 5000, clearLootFatigue)
-
-				if shouldSaveStats(i,boxRank) and not fatiguedLoot[i] then 
-					LootAllHook(i,boxRank)
-					fatiguedLoot[i] = true
+			elseif i == 9 then
+				if not WritCreater:GetSettings().lootJubileeBoxes then 
+					return false
 				end
+			end
+			--LOOT_SHARED:LootAllItems()
+			local n = SCENE_MANAGER:GetCurrentScene().name
+			
+			local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
+			local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
+
+			EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
+			EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootSavingFatigue", 10000, clearLootFatigue)
+
+			if shouldSaveStats(i,boxRank) and not fatiguedLoot[i] then 
+				LootAllHook(i,boxRank)
+				fatiguedLoot[i] = true
+			end
+			if autoLoot then
 				if numLootTransmute==0 or numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
 					LootAll()
 				else
@@ -246,10 +247,10 @@ local function OnLootUpdated(event)
 						containerHasTransmute[lastInteractedSlot] = true
 					end
 				end
-
-
-				return true
+			else
+				return false
 			end
+			return true
 		end
 	end
 	calledFromQuest = false
