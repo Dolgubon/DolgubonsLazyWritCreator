@@ -563,7 +563,8 @@ WritCreater.optionStrings['reticleColour'] 								= "Fadenkreuzfarbe ändern"
 WritCreater.optionStrings['reticleColourTooltip'] 						= "Ändert die Farbe des Fadenkreuzes, falls es an der Station einen unvollständigen oder abgeschlossenen Schrieb gibt"
 WritCreater.optionStrings['autoCloseBank']								= "Automatically Exit Bank"
 WritCreater.optionStrings['autoCloseBankTooltip']						= "Automatically exit the banking dialogue when all items have been withdrawn"
-
+WritCreater.optionStrings["jubilee"]									= "Jubiläumsboxen öffnen"
+WritCreater.optionStrings["jubilee tooltip"]							= "Eure Jubiläumsboxen 2020 werden automatisch geöffnet."
 
 function WritCreater.langStationNames()
 	return

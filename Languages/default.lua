@@ -106,7 +106,7 @@ WritCreater.strings =
 	["craftingstopped"]				= "Crafting stopped. Please check to make sure the addon is crafting the correct item.",
 	["smithingReqM"] 				= function (amount, type, more) return zo_strformat( "Crafting will use <<1>> <<2>> (|cf60000You need <<3>>|r)" ,amount, type, more) end,
 	["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end,
-	["lootReceived"]				= "<<1>> was received (You have <<2>>)",
+	["lootReceived"]				= "<<3>> <<1>> was received (You have <<2>>)",
 	["lootReceivedM"]				= "<<1>> was received ",
 	["countSurveys"]				= "You have <<1>> surveys",
 	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
@@ -209,7 +209,8 @@ WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Destruc
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete jewelry dialog box"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Hide Writ Quest Announcements"
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Hides the text in the center of the screen when you start a writ or create an item for it"
-
+WritCreater.optionStrings["jubilee"]									= "Loot Jubilee boxes"
+WritCreater.optionStrings["jubilee tooltip"]							= "Automatically loot the 2020 Jubilee Boxes"
 
 
 																		-- CSA, ZO_Alert, chat message, window

@@ -1,3 +1,4 @@
+WritCreater = WritCreater or {}
 local RewardsScroll = ZO_SortFilterList:Subclass()
 WritCreater.rewardsScroll = RewardsScroll
 
@@ -168,6 +169,9 @@ local function getPrice(itemInfo,estimateKey, craft)
 	if itemInfo == "Trait Stones" and craft == CRAFTING_TYPE_JEWELRYCRAFTING then
 		return 200
 	end
+	if itemInfo == "Vouchers" and craft == CRAFTING_TYPE_JEWELRYCRAFTING then
+		return 10
+	end
 	if itemInfo == "Surveys" and craft == CRAFTING_TYPE_JEWELRYCRAFTING then
 		return 13000
 	end
@@ -177,7 +181,7 @@ local function getPrice(itemInfo,estimateKey, craft)
 		end
 		return estimateKey
 	end
-	local default = priceEstimates[GetWorldName()][itemInfo] or priceEstimates["NA Megaserver"][itemInfo]
+	local default = (priceEstimates[GetWorldName()] and priceEstimates[GetWorldName()][itemInfo]) or priceEstimates["NA Megaserver"][itemInfo]
 	if not default then
 		return GetItemLinkValue(itemLink)
 	end
@@ -223,7 +227,7 @@ function RewardsScroll:SetupEntry(control, data)
 						local amountText = "1 in "..round(self.craftTotals[craft]/data[craft].amount, 2)
 						amount:SetText(amountText)
 					elseif  WritCreater.rewardsScrollManager.viewType == 2 then
-						local amountText = round(data[craft].amount/self.craftTotals[craft], 4).."%"
+						local amountText = round(data[craft].amount/self.craftTotals[craft]*100, 2).."%"
 						amount:SetText(amountText)
 					elseif WritCreater.rewardsScrollManager.viewType == 3 then
 						local price = (getPrice(data[craft].item, data[craft].estimate, craft)or 0)*data[craft].amount

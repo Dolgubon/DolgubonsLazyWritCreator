@@ -420,7 +420,7 @@ function crafting(info,quest, craftItems)
 								if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
 							end
 							needed = math.min(needed,  GetMaxIterationsPossibleForSmithingItem(pattern, index,numMats,style,1, false))
-							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,style,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
+							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,LLC_FREE_STYLE_CHOICE,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
 								true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
 
 							DolgubonsWritsBackdropCraft:SetHidden(true) 
@@ -648,7 +648,7 @@ end
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100030
+	local currentAPIVersionOfAddon = 100031
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

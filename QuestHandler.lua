@@ -256,27 +256,29 @@ end
 local function hookIndexEvent(event)
 	local originalAdded = ZO_CenterScreenAnnounce_GetEventHandlers()[ event]
 	ZO_CenterScreenAnnounce_GetEventHandlers()[ event] = function(...)
+	originalAdded(...)
 		local params={...} 
-		local questIndex = params[1] 
+		local questIndex = params[1]
 		if isQuestWritQuest(questIndex) then 
 			return 
 		end 
-		originalAdded(...) 
+		return originalAdded(...)
 	end
 end
 
 local function OnQuestAdvanced(eventId, questIndex, questName, isPushed, isComplete, mainStepChanged)
+	
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then
 		return 
-	end 
-    if(not mainStepChanged) then return end
+	end
 
+    if(not mainStepChanged) then
+    	return
+    end
     local announceObject = CENTER_SCREEN_ANNOUNCE
     local sound = SOUNDS.QUEST_OBJECTIVE_STARTED
-
     for stepIndex = QUEST_MAIN_STEP_INDEX, GetJournalQuestNumSteps(questIndex) do
         local a, visibility, stepType, stepOverrideText, conditionCount = GetJournalQuestStepInfo(questIndex, stepIndex)
-
         if visibility == nil or visibility == QUEST_STEP_VISIBILITY_OPTIONAL then
             if stepOverrideText ~= "" then
                 local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, sound)
@@ -300,6 +302,7 @@ local function OnQuestAdvanced(eventId, questIndex, questName, isPushed, isCompl
         end
     end
 end
+WritCreater.OnQuestAdvanced = OnQuestAdvanced
 
 local function OnQuestAdded(eventId, questIndex)
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 

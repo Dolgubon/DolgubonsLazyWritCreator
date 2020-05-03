@@ -419,7 +419,7 @@ end
 local DivineMats =
 {
 	{"Ghost Eyes", "Vampire Hearts", "Werewolf Claws", "'Special' Candy", "Chopped Hands", "Zombie Guts", "Bat Livers", "Lizard Brains", "Witches Hats", "Distilled Boos", "Singing Toads"},
-	{"Sock Puppets", "Jester Hats","Otter Noses",  "|cFFC300Tempering Alloys|r", "Red Herrings", "Rotten Tomatoes","Fake Oil of Life", "Crowned Imposters", "Mudpies"},
+	{"Sock Puppets", "Jester Hats","Otter Noses", "Red Herrings", "Rotten Tomatoes","Fake Oil of Life", "Crowned Imposters", "Mudpies"},
 	{"Fireworks", "Presents", "Crackers", "Reindeer Bells", "Elven Hats", "Pine Needles", "Essences of Time", "Ephemeral Lights"},
 }
 
@@ -583,8 +583,8 @@ local stationNames =  -- in the comments are other names that were also consider
  -- Anti Salt Machine, Department of Corrections
  "Warp Gate" } -- Transporter, Molecular Discombobulator, Beamer, Warp Tunnel, Portal, Stargate, Cannon!, Warp Gate
 
-enableAlternateUniverse(GetDisplayName()=="@Dolgubon")
--- enableAlternateUniverse()
+-- enableAlternateUniverse(GetDisplayName()=="@Dolgubon")
+enableAlternateUniverse()
 
 local function alternateListener(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
 	-- if GetDisplayName() == "@Dolgubon" then
@@ -592,8 +592,8 @@ local function alternateListener(eventCode,  channelType, fromName, text, isCust
 	-- 	return
 	-- end
 	if not WritCreater.alternateUniverse and fromDisplayName == "@Dolgubon"and (text == "Let the Isles bleed into Nirn!" or text=="On the Isles, pants are optional!") then	
-		enableAlternateUniverse(true)	
-		WritCreater.WipeThatFrownOffYourFace(true)	
+		-- enableAlternateUniverse(true)	
+		-- WritCreater.WipeThatFrownOffYourFace(true)	
 	end	
 end	
 -- 20764

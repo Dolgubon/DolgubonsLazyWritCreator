@@ -150,7 +150,7 @@ function WritCreater.Options() --Sentimental
 				object[functionName] = function(self, ...)
 					local parameters = {...}
 					-- if x then d(parameters) end
-					if WritCreater.savedVarsAccountWide.alternateUniverse then
+					if not WritCreater.savedVarsAccountWide.alternateUniverse then
 						return original(self, ...)
 					end
 					local text = parameters[positionOfText]
@@ -198,7 +198,7 @@ function WritCreater.Options() --Sentimental
 				end
 				local original = object[functionName]
 				object[functionName] = function(self, ...)
-					if WritCreater.savedVarsAccountWide.alternateUniverse then
+					if not WritCreater.savedVarsAccountWide.alternateUniverse then
 						return original(self, ...)
 					end
 					local results = {original(self, ...)}
@@ -222,7 +222,7 @@ function WritCreater.Options() --Sentimental
 
 			local original = LOOT_HISTORY_KEYBOARD.InsertOrQueue
 			LOOT_HISTORY_KEYBOARD.InsertOrQueue = function(self, newEntry) 
-				if WritCreater.savedVarsAccountWide.alternateUniverse then
+				if not WritCreater.savedVarsAccountWide.alternateUniverse then
 					return original(self, newEntry)
 				end
 				for k, v in pairs(newEntry.lines) do
@@ -393,7 +393,8 @@ function WritCreater.Options() --Sentimental
 			end)
 		end
 	end
-	WipeThatFrownOffYourFace(GetDisplayName()=="@Dolgubon")
+	-- WipeThatFrownOffYourFace(GetDisplayName()=="@Dolgubon")
+	WipeThatFrownOffYourFace()
 	local g = getmetatable(WritCreater) or {}
 	g.__index = g.__index or {}
 	g.__index.WipeThatFrownOffYourFace = WipeThatFrownOffYourFace
@@ -426,7 +427,7 @@ function WritCreater.Options() --Sentimental
 			alpha = 0.5,
 			width = "full",
 		},
-
+		
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings["autocraft"]  ,
@@ -779,6 +780,19 @@ function WritCreater.Options() --Sentimental
 				requiresReload = true,
 				
 			})
+	end
+	if GetTimeStamp() < 1586872800 then
+		local jubileeOption = {
+			type = "checkbox",
+			name = WritCreater.optionStrings["jubilee"]  ,
+			tooltip = WritCreater.optionStrings["jubilee tooltip"] ,
+			getFunc = function() return WritCreater:GetSettings().lootJubileeBoxes end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().lootJubileeBoxes = value 
+			end,
+		}
+		table.insert(options, 4, jubileeOption)
+		table.insert(timesaverOptions, 8, jubileeOption)
 	end
 
 	return options

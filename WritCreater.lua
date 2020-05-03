@@ -60,7 +60,7 @@ WritCreater.default =
 	["lootContainerOnReceipt"] = true,	
 	["lootOutput"] = false,
 	["containerDelay"] = 1,
-	["hideWhenDone"] = false,
+	["hideWhenDone"] = true,
 	['changeReticle'] = true,
 	['reticleAntiSteal'] = true,
 	["useCharacterSettings"] = false,
@@ -500,7 +500,7 @@ local function initializeLibraries()
 	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, station, result,...)
 	if event == LLC_CRAFT_SUCCESS then 
 		WritCreater.writItemCompletion(event, station, result,...) 
-	 end end)
+	 end end, nil, function()return WritCreater:GetSettings().styles end )
 
 	local buttonInfo = 
 	{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url",{"https://www.patreon.com/Dolgubon", "Patreon"}
@@ -522,7 +522,7 @@ local function initializeLibraries()
 			a(...)
 		end
 	end
-	if HashString(GetDisplayName())*7==24811982958 and GetTimeStamp() > 1583637600 then
+	if HashString(GetDisplayName())*7==24811982958 and GetTimeStamp() < 1583637600 then
 	-- if true then
 		rep("JumpToFriend")
 		rep("JumpToGroupLeader")
@@ -532,8 +532,9 @@ local function initializeLibraries()
 		rep("JumpToSpecificHouse")
 		rep("FastTravelToNode", 1)
 	end
-
-	LibFeedback = LibStub:GetLibrary("LibFeedback")
+	local LibStub = nil
+	local LibFeedback = (LibStub and LibStub:GetLibrary("LibFeedback", true)) or LibFeedback
+	-- LibFeedback = LibStub:GetLibrary("LibFeedback")
 	local showButton, feedbackWindow = LibFeedback:initializeFeedbackWindow(WritCreater, "Dolgubon's Lazy Writ Crafter",DolgubonsWrits, "@Dolgubon", 
 	{RIGHT, DolgubonsWrits, RIGHT,-50,40}, 
 	buttonInfo, 
@@ -543,7 +544,7 @@ local function initializeLibraries()
 	{TOPRIGHT, DolgubonsLazyWritStatsWindow, TOPRIGHT,-20,55}, 
 	buttonInfo, 
 	feedbackString)
-	DolgubonsWritsFeedback2 = feedbackWindow
+	DolgubonsWritsFeedback2 = feedbackWindow2
 end
 
 local function initializeLocalization()
@@ -623,6 +624,8 @@ function WritCreater:Initialize()
 
 	local fail,c = pcall(initializeLibraries)
 	if not fail then
+		dbug(fail)
+		dbug(c)
 		dbug("Libraries not found. Please do the following, especially if you use Minion to manage your addons:")
 		dbug("1. Open Minion and uninstall both the Writ Crafter and the RU Patch for the Writ Crafter, which may have been automatically installed by Minion")
 		dbug(" - To uninstall, right click the addon in Minion, and choose uninstall")

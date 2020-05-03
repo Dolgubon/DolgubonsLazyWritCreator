@@ -82,15 +82,15 @@ local function updateSavedVars(vars, location, quantity)
 	end
 end
 
-local function lootOutput(itemLink, itemType)
+local function lootOutput(itemLink, itemType, quantity)
 
 	if WritCreater:GetSettings().lootOutput then
 		local amountBag, amountBank, amountCraft = GetItemLinkStacks( itemLink)
-		local amount = amountCraft + amountBank + amountBag + 1
+		local amount = amountCraft + amountBank + amountBag + quantity
 		if itemType then 
 			d(zo_strformat( WritCreater.strings.lootReceivedM.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink))
 		else
-			d(zo_strformat( WritCreater.strings.lootReceived, itemLink, amount))
+			d(zo_strformat( WritCreater.strings.lootReceived, itemLink, amount, quantity))
 		end
 		
 		
@@ -119,7 +119,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 		elseif CanItemLinkBeVirtual(itemLink) then 
 			updateSavedVars(vars, GetItemIDFromLink(itemLink), quantity)
 			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or GetItemIDFromLink(itemLink) ==135153 then
-				lootOutput(itemLink)
+				lootOutput(itemLink, nil, quantity)
 			end
 		elseif itemType==ITEMTYPE_RECIPE then 
 			local quality = GetItemLinkQuality(itemLink)
@@ -137,7 +137,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 				updateSavedVars(vars["recipe"], "unkownQuality", quantity)
 			end
 		elseif specializedType==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
-			lootOutput(itemLink)
+			lootOutput(itemLink, nil , quantity)
 			updateSavedVars(vars, "survey", quantity)
 		elseif specializedType ==SPECIALIZED_ITEMTYPE_TROPHY_RECIPE_FRAGMENT then
 			updateSavedVars(vars, "fragment", quantity)
@@ -150,7 +150,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 		elseif itemType == ITEMTYPE_SOUL_GEM then 
 			updateSavedVars(vars, "soulGem", quantity)
 		elseif itemType == ITEMTYPE_MASTER_WRIT then
-			lootOutput(itemLink, ITEMTYPE_MASTER_WRIT)
+			lootOutput(itemLink, ITEMTYPE_MASTER_WRIT, quantity)
 			updateSavedVars(vars, "master", quantity)
 			updateSavedVars(vars, "voucher", toVoucherCount(itemLink))
 		else
@@ -198,16 +198,12 @@ local function OnLootUpdated(event)
 	local lootInfo = {GetLootTargetInfo()}
 	local writRewardNames = WritCreater.langWritRewardBoxes ()
 	if not writRewardNames[9] then
-		writRewardNames[9] = GetItemLinkName("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-		if GetDisplayName()=="@Dolgubon" then
-			writRewardNames[9] = GetItemLinkName("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-			
-		end
-		writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
-		writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
+		-- writRewardNames[9] = GetItemLinkName("|H1:item:157534:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+		-- writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
+		-- writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
 	end
 	for i = 1, #writRewardNames  do
-		local a, b = string.find(lootInfo[1], writRewardNames[i])
+		local a, b = string.find(string.lower(lootInfo[1]), writRewardNames[i])
 		if a then
 			if i == 8 then 
 				local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
@@ -263,14 +259,14 @@ local flavours = {
 	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
 }
-local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:147434:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+-- local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:157534:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local plunderSkulls = GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local flavourTexts = {}
 setmetatable(flavourTexts, {__index = function(t, i)
 	if flavours[i] then return true end
-	if i == anniversaryBoxie then
-		return WritCreater:GetSettings().lootJubileeBoxes
-	end
+	-- if i == anniversaryBoxie then
+	-- 	return WritCreater:GetSettings().lootJubileeBoxes
+	-- end
 	if i==plunderSkulls and GetDisplayName()=="@Dolgubon" then
 		return true
 	end
@@ -307,18 +303,14 @@ end
 
 local function openContainer(bag, slot)
 	if not shouldOpenContainer(bag, slot) then return end
-	lastScene = SCENE_MANAGER:GetCurrentScene():GetName()
-	if lastScene == "interact" then lastScene = "hudui" end
 	lastInteractedSlot = slot
 	if IsProtectedFunction("UseItem") then
-		--d("Attempting to open container "..GetItemLink(bag, slot))
 		CallSecureProtected("UseItem", bag, slot)
 	else
 		UseItem(bag, slot)
 	end 
 	calledFromQuest = true
 	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootRescan", 1500, scanBagForUnopenedContainers)
-	-- zo_callLater(scanBagForUnopenedContainers, 1500)
 end
 
 
@@ -414,6 +406,18 @@ function WritCreater.LootHandlerInitialize()
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
 			end )	
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
+	-- if not WritCreater.savedVarsAccountWide.jubileeQuestionAsked then
+	-- 	function WritCreater.resetWindowClose(settingChoice)
+	-- 		WritCreater:GetSettings().lootJubileeBoxes = settingChoice
+	-- 		WritCreater.savedVarsAccountWide.jubileeQuestionAsked = true
+	-- 		WritCreater.savedVarsAccountWide.jubileeChoice = settingChoice
+
+	-- 	end
+	-- 	WritCreater.showSettingsChoice("There's a new option to auto loot Jubilee boxes. Do you want it ON or OFF?")
+	-- elseif not WritCreater:GetSettings().copiedJubileeChoice then
+	-- 	WritCreater:GetSettings().lootJubileeBoxes = WritCreater.savedVarsAccountWide.jubileeChoice
+	-- 	WritCreater:GetSettings().copiedJubileeChoice = true
+	-- end
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
@@ -429,7 +433,17 @@ function LootAll(id)
 	--d("loot all")
 	originalLootAll()
 end
-
+--[[
+local f=true
+local o=ZO_ActionBar_OnActionButtonDown 
+ZO_ActionBar_OnActionButtonDown=function(s)if GetSlotName(s)=="Flames of Oblivion" then f=false else o(s)end end
+z="ZO_ActionBar_OnActionButtonUp"
+local p=_G[z]
+_G[z]=function(s)f=true p(s)end
+y="ZO_ActionBar_CanUseActionSlots"
+local l=_G[y]
+_G[y]=function(s)return f and l(s)end
+]]
 --[[
   local function UpdateLootWindow()
 

@@ -56,7 +56,7 @@ local oldInteract = FISHING_MANAGER.StartInteraction
 
 
 local function hook(...)
-	if WritCreater:GetSettings().stealProtection then
+	if WritCreater:GetSettings().stealProtection and not NoAccidentalStealing then
 		local _, hasWrits = WritCreater.writSearch()
 		if not hasWrits then
 			return oldInteract(...)
@@ -70,7 +70,7 @@ local function hook(...)
 			if isStealthed == 3 or isStealthed == 5 then
 				return oldInteract(...)
 			else
-				d("The Lazy Writ Crafter has saved you from stealing while doing writs!")
+				d("The Lazy Writ Crafter™ has saved you from stealing while doing writs!")
 				return isCriminal
 			end
 		end
@@ -86,7 +86,7 @@ local function dialogHook(...)
 	zo_callLater(function()
 		if ZO_Dialog1 and ZO_Dialog1.textParams and ZO_Dialog1.textParams.mainTextParams then
 			local itemName= ZO_Dialog1.textParams.mainTextParams[1]
-			if  WritCreater:GetSettings().EZJewelryDestroy and string.find(itemName ,jewelryName )then
+			if  WritCreater:GetSettings().EZJewelryDestroy and itemName and string.find(itemName ,jewelryName )then
 				for k, v in pairs(ZO_Dialog1.textParams.mainTextParams) do
 					if v == string.upper(v) then
 						ZO_Dialog1EditBox:SetText(v)

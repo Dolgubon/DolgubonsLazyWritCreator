@@ -45,10 +45,16 @@ end
 local function chatWarning(msgText)
 	CHAT_SYSTEM:AddMessage(msgText)
 end
+
+local needsReset = false
+
 local function windowWarning(msgText)
 	DolgubonsLazyWritResetWarnerBackdropOutput:SetText(msgText)
 	DolgubonsLazyWritResetWarner:SetHidden(false)
-
+	DolgubonsLazyWritResetWarnerBackdropClose:SetText("Close")
+	DolgubonsLazyWritResetWarnerBackdropClose:ClearAnchors()
+	DolgubonsLazyWritResetWarnerBackdropClose:SetAnchor(BOTTOM,DolgubonsLazyWritResetWarnerBackdrop, BOTTOM, 0, -15 )
+	DolgubonsLazyWritResetWarnerBackdropButton2:SetHidden(true)
 end
 local warningFunctions = 
 {
@@ -97,5 +103,15 @@ function WritCreater.initializeResetWarnings()
 	WritCreater.refreshWarning()
 end
 
+function WritCreater.showSettingsChoice(question)
+	DolgubonsLazyWritResetWarnerBackdropOutput:SetText(question)
+	DolgubonsLazyWritResetWarner:SetHidden(false)
+	DolgubonsLazyWritResetWarnerBackdropClose:SetText("On")
+	DolgubonsLazyWritResetWarnerBackdropButton2:SetText("Off")
+	DolgubonsLazyWritResetWarnerBackdropClose:ClearAnchors()
+	DolgubonsLazyWritResetWarnerBackdropClose:SetAnchor(BOTTOM,DolgubonsLazyWritResetWarnerBackdrop, BOTTOM, -100, -15 )
+	DolgubonsLazyWritResetWarnerBackdropButton2:SetHidden(false)
+	needsReset = true
+end
 
 
