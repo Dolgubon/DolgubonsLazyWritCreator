@@ -14,7 +14,6 @@
 WritCreater = WritCreater or {}
 local completionStrings
 local function onWritComplete()
-
 	local zoneIndex = GetUnitZoneIndex("player")
 	local zoneId = GetZoneId(zoneIndex)
 	if WritCreater.savedVarsAccountWide.writLocations[zoneId] then
@@ -28,6 +27,12 @@ end
 
 -- Handles the dialogue where we actually complete the quest
 local function HandleQuestCompleteDialog(eventCode, journalIndex)
+	if WritCreater:GetSettings().petBegone == 3 then
+		local _, writActive = WritCreater.writSearch()
+		if not writActive then
+			SetCrownCrateNPCVisible(false)
+		end
+	end
 	local writs = WritCreater.writSearch()
 	if not GetJournalQuestIsComplete(journalIndex) then return end
 	local currentWritDialogue 
@@ -305,6 +310,13 @@ end
 WritCreater.OnQuestAdvanced = OnQuestAdvanced
 
 local function OnQuestAdded(eventId, questIndex)
+
+	if WritCreater:GetSettings().petBegone == 3 then
+		local _, writActive = WritCreater.writSearch()
+		if writActive then
+			SetCrownCrateNPCVisible(true)
+		end
+	end
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
 		return 
 	end 

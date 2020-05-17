@@ -642,6 +642,26 @@ function WritCreater.Options() --Sentimental
 				WritCreater:GetSettings().EZJewelryDestroy = value
 			end,
 		},
+		{
+			type = "dropdown",
+			name = WritCreater.optionStrings["pet begone"]	,
+			tooltip = WritCreater.optionStrings["pet begone tooltip"],
+			choices = WritCreater.optionStrings["pet begone choices"],
+			warning = WritCreater.optionStrings["pet begone warning"],
+			choicesValues = {1,2,3},
+			getFunc = function() return WritCreater:GetSettings().petBegone end ,
+			setFunc = function(value) 
+				WritCreater:GetSettings().petBegone = value
+				local _, writActive = WritCreater.writSearch()
+				if WritCreater:GetSettings().petBegone == 2 then
+					SetCrownCrateNPCVisible(true)
+				elseif WritCreater:GetSettings().petBegone == 3 and writActive then
+					SetCrownCrateNPCVisible(true)
+				end
+				WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone = value
+			end,
+		},
+
 		
 	}
 	

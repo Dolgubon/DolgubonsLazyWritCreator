@@ -216,7 +216,7 @@ local function setupConditionsTable(quest, info,indexTableToUse)
 		conditionsTable["text"][condition], conditionsTable["cur"][condition], conditionsTable["max"][condition],_,conditionsTable["complete"][condition] = GetJournalQuestConditionInfo(quest, 1, condition)
 		DolgubonsWritsBackdropQuestOutput:AddText("\n"..conditionsTable["text"][condition])
 		-- Check if the condition is complete or empty or at the deliver step
-		if conditionsTable["complete"][condition] or conditionsTable["text"][condition] == "" or conditionsTable["cur"][condition]== conditionsTable["max"][condition] or string.find(myLower(conditionsTable["text"][condition]),"deliver") then
+		if conditionsTable["complete"][condition] or conditionsTable["text"][condition] == "" or conditionsTable["cur"][condition]== conditionsTable["max"][condition] or string.find(myLower(conditionsTable["text"][condition]),myLower(WritCreater.writCompleteStrings()["Deliver"])) then
 			conditionsTable["text"][condition] = nil
 		else
 			local found = false
@@ -644,7 +644,7 @@ local function enchantCrafting(info, quest,add)
 	
 end
 
-
+local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
@@ -661,11 +661,16 @@ local function craftCheck(eventcode, station)
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetDisplayName()=="@Dolgubon" and GetWorldName()=="PTS"  then 
 		for i = 1 , 20 do 
-			d("Set a reminder to change the API version of addon in function temporarycraftcheckerjustbecause when the game update comes out.") 
-			out("Set a reminder to change the API version of addon in function temporarycraftcheckerjustbecause when the game update comes out.")
+			d("Set a reminder to change the API version of addon in function temporarycraftcheckerjustbecause (smithing.lua) when the game update comes out.") 
+			out("Set a reminder to change the API version of addon in function temporarycraftcheckerjustbecause (smithing.lua) when the game update comes out.")
 			out = function() end
 			DolgubonsWrits:SetHidden(false)
 		end
+	end
+
+	if WritCreater.needTranslations and showOnce then
+		showOnce = false
+		d("Writ Crafter needs translations for your language! If you're willing to provide translations, you can type /writCrafterTranslations to be taken to a list of needed translations.")
 	end
 	local writs
 	if WritCreater:GetSettings().tutorial then

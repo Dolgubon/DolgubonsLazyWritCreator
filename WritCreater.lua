@@ -73,9 +73,19 @@ WritCreater.default =
 	['EZJewelryDestroy'] = true,
 	['suppressQuestAnnouncements'] = true,
 	['despawnBanker'] = true,
+	['petBegone'] = 1,
+	["updateChoiceCopies"]= {
+		["petBegone"] = false,
+	}
 }
 
 WritCreater.defaultAccountWide = {
+	["updateNoticesShown"]={
+		["petBegone"] = false,
+	},
+	["updateDefaultCopyValue"]= {
+		-- ["petBegone"] = 1,
+	},
 	["notifyWiped"] = true,
 	["accountWideProfile"] = WritCreater.default,
 	["masterWrits"] = true,
@@ -442,6 +452,15 @@ local function initializeOtherStuff()
 	WritCreater:GetSettings().showWindow = true
 	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, 
 		--function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
+
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."PlayerActivated_PetBegone", EVENT_PLAYER_ACTIVATED, function()
+		local _, writActive = WritCreater.writSearch()
+		if WritCreater:GetSettings().petBegone == 2 then
+			SetCrownCrateNPCVisible(true)
+		elseif WritCreater:GetSettings().petBegone == 3 and writActive then
+			SetCrownCrateNPCVisible(true)
+		end
+	end) -- For after porting
 end
 
 WritCreater.masterWritCompletion = function(...) end -- Empty function, intended to be overwritten by other addons
@@ -661,6 +680,28 @@ function WritCreater.OnAddOnLoaded(event, addonName)
 end
 
 EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_ADD_ON_LOADED, WritCreater.OnAddOnLoaded)
+
+function WritCreater.hidePets()
+	if WritCreater:GetSettings().petBegone == 1 or IsActiveWorldBattleground() or IsPlayerInAvAWorld() or GetCurrentZoneDungeonDifficulty()~=0 then
+		SetCrownCrateNPCVisible(false)
+		return
+	end
+
+	if WritCreater:GetSettings().petBegone == 2 then
+		SetCrownCrateNPCVisible(true)
+		return
+	end
+	if WritCreater:GetSettings().petBegone == 3 then
+		local _, writActive = WritCreater.writSearch()
+		if writActive then
+			SetCrownCrateNPCVisible(true)
+			return
+		else
+			SetCrownCrateNPCVisible(false)
+		end
+	end
+
+end
 
 
 

@@ -203,7 +203,7 @@ local function OnLootUpdated(event)
 		-- writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
 	end
 	for i = 1, #writRewardNames  do
-		local a, b = string.find(string.lower(lootInfo[1]), writRewardNames[i])
+		local a, b = string.find(string.lower(lootInfo[1]), string.lower(writRewardNames[i]))
 		if a then
 			if i == 8 then 
 				local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
@@ -406,18 +406,13 @@ function WritCreater.LootHandlerInitialize()
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
 			end )	
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
-	-- if not WritCreater.savedVarsAccountWide.jubileeQuestionAsked then
-	-- 	function WritCreater.resetWindowClose(settingChoice)
-	-- 		WritCreater:GetSettings().lootJubileeBoxes = settingChoice
-	-- 		WritCreater.savedVarsAccountWide.jubileeQuestionAsked = true
-	-- 		WritCreater.savedVarsAccountWide.jubileeChoice = settingChoice
-
-	-- 	end
-	-- 	WritCreater.showSettingsChoice("There's a new option to auto loot Jubilee boxes. Do you want it ON or OFF?")
-	-- elseif not WritCreater:GetSettings().copiedJubileeChoice then
-	-- 	WritCreater:GetSettings().lootJubileeBoxes = WritCreater.savedVarsAccountWide.jubileeChoice
-	-- 	WritCreater:GetSettings().copiedJubileeChoice = true
-	-- end
+	if not WritCreater.savedVarsAccountWide.updateNoticesShown.petBegone then
+		WritCreater.savedVarsAccountWide.updateNoticesShown.petBegone = true
+		WritCreater.showSettingsChoice("There's a new option to hide pets! Check it out in the settings menu in the timesavers section")
+	elseif not WritCreater:GetSettings().updateChoiceCopies.petBegone and WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone then
+		WritCreater:GetSettings().petBegone = WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone
+		WritCreater:GetSettings().updateChoiceCopies.petBegone = true
+	end
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end

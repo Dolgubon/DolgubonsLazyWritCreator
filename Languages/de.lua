@@ -35,7 +35,7 @@ function WritCreater.writCompleteStrings()
 	["masterSign"] = "<Auftrag abschließen.>",
 	["masterPlace"] = "Ich habe den ",
 	["Rolis Hlaalu"] = "Rolis Hlaalu",
-	["Deliver"] = "Beliefert"
+	["Deliver"] = "Beliefer"
 	}
 	return strings
 end
@@ -353,12 +353,16 @@ local enExceptions = -- This is a slight misnomer. Not all are corrections - som
 	{
 		[1] = "beschafft",
 		[2] = "beliefert",
+		[3] = "beliefer",
+		[4] = "Beliefer",
 
 	},
 	["corrected"] = 
 	{	
 		[1] = "acquire",
 		[2] = "deliver",
+		[3] = "deliver",
+		[4] = "deliver",
 
 	},
 }
@@ -594,3 +598,4 @@ end
 WritCreater.lang = "de"
 
 WritCreater.langIsMasterWritSupported = true
+WritCreater.needTranslations = "https://www.esoui.com/forums/showpost.php?p=41147&postcount=9"

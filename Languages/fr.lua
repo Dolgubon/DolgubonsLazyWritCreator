@@ -32,7 +32,7 @@ function WritCreater.writCompleteStrings()
 	["masterSign"] = "<Finir le travail.>",
 	["masterPlace"] = "J'ai accompli la t",
 	["Rolis Hlaalu"] = "Rolis Hlaalu",
-	["Deliver"] = "Livrez",
+	["Deliver"] = "Livre",
 	}
 	return strings
 end
@@ -550,3 +550,5 @@ function WritCreater.getTaString()
 end
 
 WritCreater.lang = "fr"
+
+WritCreater.needTranslations = "https://www.esoui.com/forums/showpost.php?p=41147&postcount=9"

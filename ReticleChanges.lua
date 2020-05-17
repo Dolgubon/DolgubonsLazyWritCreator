@@ -86,7 +86,7 @@ local function dialogHook(...)
 	zo_callLater(function()
 		if ZO_Dialog1 and ZO_Dialog1.textParams and ZO_Dialog1.textParams.mainTextParams then
 			local itemName= ZO_Dialog1.textParams.mainTextParams[1]
-			if  WritCreater:GetSettings().EZJewelryDestroy and itemName and string.find(itemName ,jewelryName )then
+			if WritCreater:GetSettings() and WritCreater:GetSettings().EZJewelryDestroy and itemName and string.find(itemName ,jewelryName )then
 				for k, v in pairs(ZO_Dialog1.textParams.mainTextParams) do
 					if v == string.upper(v) then
 						ZO_Dialog1EditBox:SetText(v)

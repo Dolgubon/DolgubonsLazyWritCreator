@@ -42,7 +42,7 @@ local function determineSurveyType(bag, slot, names)
 	local name = GetItemName(bag, slot)
 	for i = 1, 7 do
 
-		if string.find(name,names[i]) then
+		if string.find(zo_strformat("<<z:1>>",name),zo_strformat("<<z:1>>",names[i])) then
 			return i
 		end
 	end
@@ -89,6 +89,7 @@ local function countSurveys()
                 local _, count = GetItemInfo(bankNum,i)
                 total = total + count
                 local surveyType = determineSurveyType(bankNum, i, names)
+                d(""..GetItemLink(bankNum, i).." : "..surveyType)
                 detailedCount[surveyType] = detailedCount[surveyType] + count
             end
         end
@@ -274,7 +275,9 @@ end--]]
 local function activateStatWindowDebug()
 	WritCreater:GetSettings().debugMode = not WritCreater:GetSettings().debugMode
 end
-
+local function goToTranslationSite()
+	RequestOpenUnsafeURL(WritCreater.needTranslations)
+end
 
 --------------------------------------------------
 -- TIME TO RESET
@@ -308,6 +311,10 @@ SLASH_COMMANDS['/dlwcstatwindowdebug'] = activateStatWindowDebug
 SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function
 SLASH_COMMANDS['/dlwcfindwrit'] = findWrits
+
+if WritCreater.needTranslations then
+	SLASH_COMMANDS['/writcraftertranslations'] = goToTranslationSite
+end
 -- local bags2 = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 -- 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 -- local function newBagTable()

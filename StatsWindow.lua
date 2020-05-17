@@ -364,7 +364,7 @@ function RewardsScroll:BuildMasterList()
 		end
 		local header = GetControl(DolgubonsLazyWritStatsWindowBackdropCraftHeader,"Craft"..craft)
 		local  headerName= GetControl(header,"Name")
-		headerName:SetText(zo_strformat(GetCraftingSkillName(craftHeader.craft)).. " Rewards")
+		headerName:SetText(zo_strformat("<<1>>",GetCraftingSkillName(craftHeader.craft)).. " Rewards")
 		headerName:SetColor(0,1,0)
 		local headerAmount = GetControl(header, "Amount")
 		headerAmount:SetText(craftHeader.amount)

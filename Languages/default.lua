@@ -86,48 +86,59 @@ local function masterWritEnchantToCraft (pat,set,trait,style,qual,mat,writName,M
 	return zo_strformat("<<t:2>> <<t:3>> <<t:4>>: <<1>>",partialString,writName,Mname,generalName )
 end
 
-
-WritCreater.strings = 
+WritCreater.missingTranslations = {}
+local stringIndexTable = {}
+local findMissingTranslationsMetatable = 
 {
-	["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end,
-	["runeMissing"] 				= runeMissingFunction ,
-	["notEnoughSkill"]				= "You do not have a high enough crafting skill to make the required equipment",
-	["smithingMissing"] 			= "\n|cf60000You do not have enough mats|r",
-	["craftAnyway"] 				= "Craft anyway",
-	["smithingEnough"] 				= "\n|c2dff00You have enough mats|r",
-	["craft"] 						= "|c00ff00Craft|r",
-	["crafting"] 					= "|c00ff00Crafting...|r",
-	["craftIncomplete"] 			= "|cf60000Crafting could not be completed.\nYou need more mats.|r",
-	["moreStyle"] 					= "|cf60000You do not have any usable style stones.\nCheck your inventory, achievements, and settings|r",
-	["moreStyleSettings"]			= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r",
-	["moreStyleKnowledge"]			= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r",
-	["dailyreset"] 					= dailyResetFunction,
-	["complete"] 					= "|c00FF00Writ complete.|r",
-	["craftingstopped"]				= "Crafting stopped. Please check to make sure the addon is crafting the correct item.",
-	["smithingReqM"] 				= function (amount, type, more) return zo_strformat( "Crafting will use <<1>> <<2>> (|cf60000You need <<3>>|r)" ,amount, type, more) end,
-	["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end,
-	["lootReceived"]				= "<<3>> <<1>> was received (You have <<2>>)",
-	["lootReceivedM"]				= "<<1>> was received ",
-	["countSurveys"]				= "You have <<1>> surveys",
-	["countVouchers"]				= "You have <<1>> unearned Writ Vouchers",
-	["includesStorage"]				= function(type) local a= {"Surveys", "Master Writs"} a = a[type] return zo_strformat("Count includes <<1>> in house storage", a) end,
-	["surveys"]						= "Crafting Surveys",
-	["sealedWrits"]					= "Sealed Writs",
-	["masterWritEnchantToCraft"]	= function(lvl, type, quality, writCraft, writName, generalName) 
-											return zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality",lvl, type, quality,
-												writCraft,writName, generalName) end,
-	["masterWritSmithToCraft"]		= masterWritEnchantToCraft,
-	["withdrawItem"]				= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link..". ("..remaining.." in bank)" end, -- in Bank for German
-	['fullBag']						= "You have no open bag spaces. Please empty your bag.",
-	['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option.",
-	['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: ",
-	['resetWarningMessageText']		= "The daily reset for writs will be in <<1>> hour and <<2>> minutes\nYou can customize or turn off this warning in the settings",
-	['resetWarningExampleText']		= "The warning will look like this",
-
+["__newindex"] = function(t,k,v) if not stringIndexTable[tostring(t)] then stringIndexTable[tostring(t)] = {} end stringIndexTable[tostring(t)][k] = v WritCreater.missingTranslations[k] = {k, v} end,
+["__index"] = function(t, k) return stringIndexTable[tostring(t)][k] end,
 }
+
+WritCreater.strings = {}
+setmetatable(WritCreater.strings, findMissingTranslationsMetatable)
+
+WritCreater.strings["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end
+WritCreater.strings["runeMissing"] 				= runeMissingFunction 
+WritCreater.strings["notEnoughSkill"]				= "You do not have a high enough crafting skill to make the required equipment"
+WritCreater.strings["smithingMissing"] 			= "\n|cf60000You do not have enough mats|r"
+WritCreater.strings["craftAnyway"] 				= "Craft anyway"
+WritCreater.strings["smithingEnough"] 				= "\n|c2dff00You have enough mats|r"
+WritCreater.strings["craft"] 						= "|c00ff00Craft|r"
+WritCreater.strings["crafting"] 					= "|c00ff00Crafting...|r"
+WritCreater.strings["craftIncomplete"] 			= "|cf60000Crafting could not be completed.\nYou need more mats.|r"
+WritCreater.strings["moreStyle"] 					= "|cf60000You do not have any usable style stones.\nCheck your inventory, achievements, and settings|r"
+WritCreater.strings["moreStyleSettings"]			= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r"
+WritCreater.strings["moreStyleKnowledge"]			= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r"
+WritCreater.strings["dailyreset"] 					= dailyResetFunction
+WritCreater.strings["complete"] 					= "|c00FF00Writ complete.|r"
+WritCreater.strings["craftingstopped"]				= "Crafting stopped. Please check to make sure the addon is crafting the correct item."
+WritCreater.strings["smithingReqM"] 				= function (amount, type, more) return zo_strformat( "Crafting will use <<1>> <<2>> (|cf60000You need <<3>>|r)" ,amount, type, more) end
+WritCreater.strings["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end
+WritCreater.strings["lootReceived"]				= "<<3>> <<1>> was received (You have <<2>>)"
+WritCreater.strings["lootReceivedM"]				= "<<1>> was received "
+WritCreater.strings["countSurveys"]				= "You have <<1>> surveys"
+WritCreater.strings["countVouchers"]				= "You have <<1>> unearned Writ Vouchers"
+WritCreater.strings["includesStorage"]				= function(type) local a= {"Surveys", "Master Writs"} a = a[type] return zo_strformat("Count includes <<1>> in house storage", a) end
+WritCreater.strings["surveys"]						= "Crafting Surveys"
+WritCreater.strings["sealedWrits"]					= "Sealed Writs"
+WritCreater.strings["masterWritEnchantToCraft"]	= function(lvl, type, quality, writCraft, writName, generalName) 
+										return zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality",lvl, type, quality,
+											writCraft,writName, generalName) end
+WritCreater.strings["masterWritSmithToCraft"]		= masterWritEnchantToCraft
+WritCreater.strings["withdrawItem"]				= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link..". ("..remaining.." in bank)" end -- in Bank for German
+WritCreater.strings['fullBag']						= "You have no open bag spaces. Please empty your bag."
+WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option."
+WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: "
+WritCreater.strings['resetWarningMessageText']		= "The daily reset for writs will be in <<1>> hour and <<2>> minutes\nYou can customize or turn off this warning in the settings"
+WritCreater.strings['resetWarningExampleText']		= "The warning will look like this"
+
+
 
 
 WritCreater.optionStrings = {}
+
+setmetatable(WritCreater.optionStrings, findMissingTranslationsMetatable)
+
 WritCreater.optionStrings.nowEditing                   = "You are changing %s settings"
 WritCreater.optionStrings.accountWide                  = "Account Wide"
 WritCreater.optionStrings.characterSpecific            = "Character Specific"
@@ -154,8 +165,6 @@ WritCreater.optionStrings["jewelry crafting"]							= "Jewelry Crafting"
 WritCreater.optionStrings["jewelry crafting tooltip"]					= "Turn the addon on for Jewelry Crafting"
 WritCreater.optionStrings["writ grabbing"]								= "Withdraw writ items"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Grab items required for writs (e.g. nirnroot, Ta, etc.) from the bank"
-WritCreater.optionStrings["delay"]										= "Item Grab Delay"
-WritCreater.optionStrings["delay tooltip"]								= "How long to wait before grabbing items from the bank (milliseconds)"
 WritCreater.optionStrings["style stone menu"]							= "Style Stones Used"
 WritCreater.optionStrings["style stone menu tooltip"]					= "Choose which style stones the addon will use"
 WritCreater.optionStrings["send data"]									= "Send Writ Data"
@@ -183,18 +192,14 @@ WritCreater.optionStrings["loot output tooltip"]						= "Output a message when v
 WritCreater.optionStrings["autoloot behaviour"]							= "Autoloot Behaviour" -- Note that the following three come early in the settings menu, but becuse they were changed
 WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Choose when the addon will autoloot writ reward containers" -- they are now down below (with untranslated stuff)
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Copy the setting under the Gameplay settings", "Autoloot", "Never Autoloot"}
-WritCreater.optionStrings["container delay"]							= "Delay Container Looting"
-WritCreater.optionStrings["container delay tooltip"]					= "Delay the autolooting of writ reward containers when you receive them"
 WritCreater.optionStrings["hide when done"]								= "Hide when done"
 WritCreater.optionStrings["hide when done tooltip"]						= "Hide the addon window when all items have been crafted"
 WritCreater.optionStrings['reticleColour']								= "Change Reticle Colour"
 WritCreater.optionStrings['reticleColourTooltip']						= "Changes the Reticle colour if you have an uncompleted or completed writ at the station"
 WritCreater.optionStrings['autoCloseBank']								= "Automatic Bank Dialog"
 WritCreater.optionStrings['autoCloseBankTooltip']						= "Automatically enter and exit the banking dialogue if there are items to be withdrawn"
-WritCreater.optionStrings['despawnBanker']							= "Despawn Banker"
-WritCreater.optionStrings['despawnBankerTooltip']					= "Automatically despawn the banker after withdrawing items"
-WritCreater.optionStrings['dailyResetWarn']								= "Writ Reset Warning"
-WritCreater.optionStrings['dailyResetWarnTooltip']						= "Displays a warning when writs are about to reset for the day"
+WritCreater.optionStrings['despawnBanker']								= "Despawn Banker"
+WritCreater.optionStrings['despawnBankerTooltip']						= "Automatically despawn the banker after withdrawing items"
 WritCreater.optionStrings['dailyResetWarnTime']							= "Minutes Before Reset"
 WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "How many minutes before the daily reset the warning should be displayed"
 WritCreater.optionStrings['dailyResetWarnType']							= "Daily Reset Warning"
@@ -202,16 +207,15 @@ WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "What type of warni
 WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "None","Type 1", "Type 2", "Type 3", "Type 4", "All"}
 WritCreater.optionStrings['stealingProtection']							= "Stealing Protection"
 WritCreater.optionStrings['stealingProtectionTooltip']					= "Prevent you from stealing while near a writ turn in location"
-WritCreater.optionStrings['jewelryWritDestroy']							= "Destroy Jewelry Sealed Writs"
-WritCreater.optionStrings['jewelryWritDestroyTooltip']					= "Destroy looted Jewelry Sealed writs. WARNING: There is no prompt!"
-WritCreater.optionStrings['jewelryWritDestroyWarning']					= "WARNING: There is no prompt when destroying jewelry writs! Enable at your own risk!"
 WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Destruction"
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete jewelry dialog box"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Hide Writ Quest Announcements"
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Hides the text in the center of the screen when you start a writ or create an item for it"
-WritCreater.optionStrings["jubilee"]									= "Loot Jubilee boxes"
-WritCreater.optionStrings["jubilee tooltip"]							= "Automatically loot the 2020 Jubilee Boxes"
+WritCreater.optionStrings["pet begone"]									= "Pet hiding"
+WritCreater.optionStrings["pet begone tooltip"]							= "Whether and when pets should be hidden. Pets can block interaction, but this will stop them from blocking interactions with crafting stations, writ turn-ins, etc. For best results, have it always on for writ-only toons"
+WritCreater.optionStrings["pet begone choices"]							= {"Never hide", "Always hide", "Hide on quest pickup"}
+WritCreater.optionStrings["pet begone warning"]							= "When on, you will see Pacrooti. You will not see any other players, or any combat pets. If it turns on, players will not disappear instantly. If it turns off, they will not re-appear instantly. These are not bugs, but unavoidable side effects."
 
-
+findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
 																		-- CSA, ZO_Alert, chat message, window
 

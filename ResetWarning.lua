@@ -106,11 +106,11 @@ end
 function WritCreater.showSettingsChoice(question)
 	DolgubonsLazyWritResetWarnerBackdropOutput:SetText(question)
 	DolgubonsLazyWritResetWarner:SetHidden(false)
-	DolgubonsLazyWritResetWarnerBackdropClose:SetText("On")
-	DolgubonsLazyWritResetWarnerBackdropButton2:SetText("Off")
-	DolgubonsLazyWritResetWarnerBackdropClose:ClearAnchors()
-	DolgubonsLazyWritResetWarnerBackdropClose:SetAnchor(BOTTOM,DolgubonsLazyWritResetWarnerBackdrop, BOTTOM, -100, -15 )
-	DolgubonsLazyWritResetWarnerBackdropButton2:SetHidden(false)
+	-- DolgubonsLazyWritResetWarnerBackdropClose:SetText("On")
+	-- DolgubonsLazyWritResetWarnerBackdropButton2:SetText("Off")
+	-- DolgubonsLazyWritResetWarnerBackdropClose:ClearAnchors()
+	-- DolgubonsLazyWritResetWarnerBackdropClose:SetAnchor(BOTTOM,DolgubonsLazyWritResetWarnerBackdrop, BOTTOM, -100, -15 )
+	-- DolgubonsLazyWritResetWarnerBackdropButton2:SetHidden(false)
 	needsReset = true
 end
 
