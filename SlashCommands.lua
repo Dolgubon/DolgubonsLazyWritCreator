@@ -89,7 +89,7 @@ local function countSurveys()
                 local _, count = GetItemInfo(bankNum,i)
                 total = total + count
                 local surveyType = determineSurveyType(bankNum, i, names)
-                d(""..GetItemLink(bankNum, i).." : "..surveyType)
+                d(""..GetItemLink(bankNum, i).." : "..count)
                 detailedCount[surveyType] = detailedCount[surveyType] + count
             end
         end
