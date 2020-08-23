@@ -56,7 +56,7 @@ local oldInteract = FISHING_MANAGER.StartInteraction
 
 
 local function hook(...)
-	if WritCreater:GetSettings().stealProtection and not NoAccidentalStealing then
+	if WritCreater and WritCreater:GetSettings() and WritCreater:GetSettings().stealProtection and not NoAccidentalStealing then
 		local _, hasWrits = WritCreater.writSearch()
 		if not hasWrits then
 			return oldInteract(...)
@@ -70,7 +70,7 @@ local function hook(...)
 			if isStealthed == 3 or isStealthed == 5 then
 				return oldInteract(...)
 			else
-				d("The Lazy Writ Crafter™ has saved you from stealing while doing writs!")
+				ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The Lazy Writ Crafter™ has saved you from stealing while doing writs!")
 				return isCriminal
 			end
 		end

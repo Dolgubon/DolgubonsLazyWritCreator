@@ -207,14 +207,16 @@ WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "What type of warni
 WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "None","Type 1", "Type 2", "Type 3", "Type 4", "All"}
 WritCreater.optionStrings['stealingProtection']							= "Stealing Protection"
 WritCreater.optionStrings['stealingProtectionTooltip']					= "Prevent you from stealing while near a writ turn in location"
-WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Destruction"
-WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete jewelry dialog box"
+WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Writ Destruction"
+WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete Jewelry Writ dialog box"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Hide Writ Quest Announcements"
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Hides the text in the center of the screen when you start a writ or create an item for it"
 WritCreater.optionStrings["pet begone"]									= "Pet hiding"
 WritCreater.optionStrings["pet begone tooltip"]							= "Whether and when pets should be hidden. Pets can block interaction, but this will stop them from blocking interactions with crafting stations, writ turn-ins, etc. For best results, have it always on for writ-only toons"
 WritCreater.optionStrings["pet begone choices"]							= {"Never hide", "Always hide", "Hide on quest pickup"}
 WritCreater.optionStrings["pet begone warning"]							= "When on, you will see Pacrooti. You will not see any other players, or any combat pets. If it turns on, players will not disappear instantly. If it turns off, they will not re-appear instantly. These are not bugs, but unavoidable side effects."
+WritCreater.optionStrings["questBuffer"]								= "Writ Quest Buffer"
+WritCreater.optionStrings["questBufferTooltip"]							= "Keep a buffer of quests so you can always have room to pick up writs"
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
 																		-- CSA, ZO_Alert, chat message, window

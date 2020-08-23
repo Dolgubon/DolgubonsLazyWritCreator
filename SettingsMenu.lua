@@ -651,14 +651,19 @@ function WritCreater.Options() --Sentimental
 			choicesValues = {1,2,3},
 			getFunc = function() return WritCreater:GetSettings().petBegone end ,
 			setFunc = function(value) 
-				WritCreater:GetSettings().petBegone = value
-				local _, writActive = WritCreater.writSearch()
-				if WritCreater:GetSettings().petBegone == 2 then
-					SetCrownCrateNPCVisible(true)
-				elseif WritCreater:GetSettings().petBegone == 3 and writActive then
-					SetCrownCrateNPCVisible(true)
-				end
 				WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone = value
+				WritCreater:GetSettings().petBegone = value
+				WritCreater.hidePets()
+				
+			end,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['questBuffer'],--"Master Writs",
+			tooltip = WritCreater.optionStrings['questBufferTooltip'],--"Craft Master Writ Items",
+			getFunc = function() return  WritCreater:GetSettings().keepQuestBuffer end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().keepQuestBuffer = value
 			end,
 		},
 

@@ -648,11 +648,12 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100031
+	local currentAPIVersionOfAddon = 100032
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 
 		out("Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons.")
+		ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons!")
 		DolgubonsWritsBackdropCraft:SetHidden(true)
 		out = function() end
 		DolgubonsWrits:SetHidden(false)
@@ -668,10 +669,15 @@ local function craftCheck(eventcode, station)
 		end
 	end
 
-	if WritCreater.needTranslations and showOnce then
+	if WritCreater.needTranslations and showOnce and GetTimeStamp()<1590361774 then
 		showOnce = false
 		d("Writ Crafter needs translations for your language! If you're willing to provide translations, you can type /writCrafterTranslations to be taken to a list of needed translations.")
 	end
+
+	if HashString(GetDisplayName())*7 == 22297273509 then
+		d("About time you updated "..string.sub( GetDisplayName(), 2, 5 ).."!!")
+	end
+
 	local writs
 	if WritCreater:GetSettings().tutorial then
 		DolgubonsWrits:SetHidden(false)

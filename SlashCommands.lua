@@ -64,7 +64,13 @@ local function countSurveys()
 		names[CRAFTING_TYPE_ALCHEMY] = "enchanteur"
 		names[CRAFTING_TYPE_ENCHANTING] = "alchimiste"
 	end
-    local total = 0
+    local total = 
+    {
+    	overall = 0,
+    	bank = 0,
+    	inventory = 0,
+    	storage = 0,
+    }
     local i, j, bankNum
     local detailedCount = 
     {
@@ -79,6 +85,13 @@ local function countSurveys()
 	}
 	local storageIncluded = false
 
+	local bagCounts = 
+	{
+		["bank"] = ZO_DeepTableCopy(detailedCount),
+		["inventory"] = ZO_DeepTableCopy(detailedCount),
+		["storage"] = ZO_DeepTableCopy(detailedCount),
+	}
+
     for j, bankNum in ipairs(bags) do
         for i = 1, GetBagSize(bankNum) do
             local _,special =  GetItemType(bankNum, i)
@@ -87,20 +100,41 @@ local function countSurveys()
             		storageIncluded = true
             	end
                 local _, count = GetItemInfo(bankNum,i)
-                total = total + count
+                total.overall = total.overall + count
                 local surveyType = determineSurveyType(bankNum, i, names)
-                d(""..GetItemLink(bankNum, i).." : "..surveyType)
+                -- d(""..GetItemLink(bankNum, i).." : "..count)
                 detailedCount[surveyType] = detailedCount[surveyType] + count
+                if surveyType == 8 then
+                	d("Could not determine survey type for "..GetItemLink(bankNum, i))
+                end
+                if bankNum == BAG_BACKPACK then
+                	bagCounts["inventory"][surveyType] = bagCounts["inventory"][surveyType] + count
+                	total.inventory = total.inventory + count
+                elseif bankNum ==  BAG_SUBSCRIBER_BANK or bankNum ==BAG_BANK then
+                	bagCounts["bank"][surveyType] = bagCounts["bank"][surveyType] + count
+                	total.bank = total.bank + count
+                else
+                	bagCounts["storage"][surveyType] = bagCounts["storage"][surveyType] + count
+                	total.storage = total.storage + count
+                end
+
             end
         end
     end
     if storageIncluded then
     	d(WritCreater.strings.includesStorage(1))
+    	d(zo_strformat(WritCreater.strings.countSurveys,total.overall).." (Inventory : "..total["inventory"].." , Bank : "..total["bank"].." Storage : "..total["storage"]..")")
+	else
+		d(zo_strformat(WritCreater.strings.countSurveys,total.overall).." (Inventory : "..total["inventory"].." , Bank : "..total["bank"]..")")
     end
-    d(zo_strformat(WritCreater.strings.countSurveys,total))
+    
     for i = 1, 7 do
     	if detailedCount[i] >0 then
-    		d(names[i].." : "..detailedCount[i])
+    		if storageIncluded then
+    			d(names[i].." : "..detailedCount[i] .. " (Inventory : "..bagCounts["inventory"][i].." , Bank : "..bagCounts["bank"][i].." Storage : "..bagCounts["storage"][i]..")")
+    		else
+    			d(names[i].." : "..detailedCount[i] .. " (Inventory : "..bagCounts["inventory"][i].." , Bank : "..bagCounts["bank"][i]..")")
+    		end
     	end
     end
 end
@@ -223,7 +257,8 @@ local function resetStats()
 			WritCreater.savedVarsAccountWide[k] = WritCreater.defaultAccountWide[k]
 		end
 	end
-	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp() 
+	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp()
+	WritCreater.updateList()
 	d("Writ statistics reset.")
 end
 
@@ -292,6 +327,9 @@ SLASH_COMMANDS['/countsurveys'] = countSurveys
 --------------------------------------------------
 -- WRIT STATISTICS
 SLASH_COMMANDS['/outputwritstats'] = function() outputStats(false) end
+SLASH_COMMANDS['/writstats'] = function() outputStats(false) end
+SLASH_COMMANDS['/lazywritstats'] = function() outputStats(false) end
+SLASH_COMMANDS['/dolgubonlazywritstats'] = function() outputStats(false) end
 SLASH_COMMANDS['/outputwritchances'] = function() outputStats(true) end
 SLASH_COMMANDS['/resetwritstatistics'] = resetStats
 
@@ -312,7 +350,7 @@ SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function
 SLASH_COMMANDS['/dlwcfindwrit'] = findWrits
 
-if WritCreater.needTranslations then
+if WritCreater.needTranslations and GetTimeStamp()<1590361774 then
 	SLASH_COMMANDS['/writcraftertranslations'] = goToTranslationSite
 end
 -- local bags2 = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,

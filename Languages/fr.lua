@@ -424,8 +424,8 @@ WritCreater.strings["craftingstopped"] 				= "Crat interrompu. Veuillez vérifie
 WritCreater.strings["crafting"] 						= "|c00ff00Fabrication ...|r"
 WritCreater.strings["craftIncomplete"] 				= "|cf60000La fabrication ne peux être réalisée.\nMatériaux insuffisants.|r"
 WritCreater.strings["moreStyle"] 						= "|cf60000Vous n'avez aucune pierre de style utilisable de définie|r"
-WritCreater.strings["moreStyleSettings"]				= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r"
-WritCreater.strings["moreStyleKnowledge"]				= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r"
+WritCreater.strings["moreStyleSettings"]				= "|cf60000Vous n'avez pas de pierre de style utilisable.\nVous devriez probablement en autoriser plus dans le menu Réglages > Extensions.|r"
+WritCreater.strings["moreStyleKnowledge"]				= "|cf60000Vous n'avez pas de pierre de style utilisable.\nIl se pourrait que vous ayez besoin d'apprendre à fabriquer plus de styles.|r"
 WritCreater.strings["smithingReqM"] 					= function (amount, type, more) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|cf60000Vous en avez besoin de <<3>>|r)"    ,amount, type, more) end
 WritCreater.strings["smithingReqM2"] 					= function (amount,type,more)     return zo_strformat( "\nMais aussi <<1>> <<2>> (|cf60000Vous en avez besoin de <<3>>|r)" ,amount, type, more) end
 WritCreater.strings["smithingReq"] 					= function (amount,type, current) return zo_strformat( "La fabrication utilisera <<1>> <<2>> (|c2dff00<<3>> disponible|r)"  ,amount, type, current) end
@@ -436,8 +436,14 @@ WritCreater.strings["lootReceivedM"]					= "<<1>> a été reçu"
 WritCreater.strings["countSurveys"]					= "Vous avez <<1>> repérages"
 WritCreater.strings["countVouchers"]					= "Vous avez <<1>> Coupons de Commande non-acquis"
 WritCreater.strings["includesStorage"]				= "Le total inclus <<1>> qui sont dans les coffres de domicile"
-WritCreater.strings["surveys"]						= "Crafting Surveys"
-WritCreater.strings["sealedWrits"]					= "Sealed Writs"
+WritCreater.strings["surveys"]						= "Repérages d'artisanat"
+WritCreater.strings["sealedWrits"]					= "Commandes scellées"
+WritCreater.strings["withdrawItem"]				= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter a récupéré " .. amount .. " " .. link .. " (reste en banque : " .. remaining .. ")." end -- in Bank for German
+WritCreater.strings['fullBag']						= "Vous n’avez plus de place dans votre sac. Merci de le vider."
+WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter vous a évité d’accepter accidentellement une commande de maître ! Allez dans le menu Réglages > Extensions pour désactiver cette option."
+WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafter a besoin des librairies indépendantes suivantes. Merci de télécharger, installer ou activer ces librairies :"
+WritCreater.strings['resetWarningMessageText']		= "La réinitialisation quotidienne des commandes aura lieu dans <<1>> heure(s) et <<2>> minute(s).\nVous pouvez personnaliser ou désactiver cet avertissement dans les réglages."
+WritCreater.strings['resetWarningExampleText']		= "L’avertissement ressemblera à ça"
 
 
 
@@ -475,7 +481,8 @@ WritCreater.optionStrings = WritCreater.optionStrings or {}
 WritCreater.optionStrings.nowEditing                   = "Vous modifier le réglage de %s"
 WritCreater.optionStrings.accountWide                  = "Configuration Globale"
 WritCreater.optionStrings.characterSpecific            = " Configuration Specifique par personnage"
-
+WritCreater.optionStrings.useCharacterSettings         = "Utiliser des options de personnage" -- de
+WritCreater.optionStrings.useCharacterSettingsTooltip  = "Utilise des options spécifiques pour ce personnage uniquement" --de
 
 WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses <<2>> to be used for crafting",styleName) end 
 WritCreater.optionStrings["show craft window"]                        = "Afficher la fenêtre de craft"
@@ -524,8 +531,30 @@ WritCreater.optionStrings["autoloot behaviour"]							= "Loot automatique"
 WritCreater.optionStrings["autoloot behaviour tooltip"]					= "Sélectionner comment l'addon loote les conteneurs de récompense de quête"
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"Paramètres du menu d'options Gameplay", "Loot automatique", "Ne pas looter"}
 WritCreater.optionStrings["style tooltip"]                            = function (styleName, styleStone) return zo_strformat("Autoriser le style <<1>> , qui utilise <<2>> lors de la création",styleName) end 
-WritCreater.optionStrings["hide when done"]								= "Faire disparaitre lorsque terminé"
-WritCreater.optionStrings["hide when done tooltip"]						= "Faire disparaitre la fenêtre lorsque tous les items sont fabriqués"
+WritCreater.optionStrings["hide when done"]								= "Cacher quand terminé"
+WritCreater.optionStrings["hide when done tooltip"]						= "Cacher la fenêtre de l'extension quand tous les objets ont été fabriqués"
+WritCreater.optionStrings['reticleColour']								= "Changer la couleur du réticule"
+WritCreater.optionStrings['reticleColourTooltip']						= "Change la couleur du réticule si vous avez une commande, terminée ou non, à l’atelier"
+WritCreater.optionStrings['autoCloseBank']								= "Dialogue automatique à la banque"
+WritCreater.optionStrings['autoCloseBankTooltip']						= "Entre et sort automatiquement du dialogue à la banque, s’il y a des objet à en retirer"
+WritCreater.optionStrings['despawnBanker']								= "Renvoyer le banquier"
+WritCreater.optionStrings['despawnBankerTooltip']						= "Renvoie automatiquement l’assistant banquier après avoir retiré les objets"
+WritCreater.optionStrings['dailyResetWarnTime']							= "Minutes avant réinitialisation"
+WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "Combien de minutes avant la réinitialisation quotidienne l’avertissement doit être affiché"
+WritCreater.optionStrings['dailyResetWarnType']							= "Avertissement de réinitialisation quotidienne"
+WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "Quel type d’avertissement doit être affiché quand la réinitialisation des quêtes quotidienne est sur le point d’avoir lieu"
+WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "Aucun", "Type 1", "Type 2", "Type 3", "Type 4", "Tous"}
+WritCreater.optionStrings['stealingProtection']							= "Protection contre le vol"
+WritCreater.optionStrings['stealingProtectionTooltip']					= "Vous empêche de voler tant qu’une commande est dans votre journal"
+WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Destruction de joaillerie facile"
+WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Ajouter automatiquement le texte de confirmation DETRUIRE à la boîte de dialogue de destruction de joaillerie"
+WritCreater.optionStrings['suppressQuestAnnouncements']					= "Cacher les annonces de quête des commandes"
+WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Cache le texte au centre de l’écran quand vous commencez une commande, ou que vous créez un objet pour une commande."
+WritCreater.optionStrings["pet begone"]									= "Cacher les familiers"
+WritCreater.optionStrings["pet begone tooltip"]							= "Contrôle si et quand les familiers doivent être cachés. Les familiers peuvent bloquer les interactions ; cette option les empêchera de bloquer les interactions avec les ateliers, les caisses de livraison des commandes, etc. Pour de meilleurs résultats, laissez-la toujours activée pour les personnages qui ne font que des commandes d’artisanat."
+WritCreater.optionStrings["pet begone choices"]							= {"Ne jamais cacher", "Toujours cacher", "Cacher lorsqu’on prend une quête"}
+WritCreater.optionStrings["pet begone warning"]							= "Quand cette option est activée, vous verrez Pacrooti. Vous ne verrez pas les autres joueurs, ni aucun familier de combat. Les joueurs ne disparaîtront pas instantanément au moment où cette option est activée, pas plus qu’il ne réapparaîtront immédiatement quand elle est désactivée. Ce ne sont pas des bugs, mais des effets de bord inévitables."
+
 
 function WritCreater.langStationNames()
 	return
@@ -551,4 +580,4 @@ end
 
 WritCreater.lang = "fr"
 
-WritCreater.needTranslations = "https://www.esoui.com/forums/showpost.php?p=41147&postcount=9"
+-- WritCreater.needTranslations = "https://www.esoui.com/forums/showpost.php?p=41147&postcount=9"

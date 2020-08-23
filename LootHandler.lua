@@ -75,9 +75,9 @@ function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d
 
 local function updateSavedVars(vars, location, quantity)
 	-- d("Saving "..location.." #"..quantity)
-	if vars[location] then
+	if vars and vars[location] then
 		vars[location] = vars[location] + quantity
-	else
+	elseif vars then
 		vars[location] = quantity
 	end
 end
@@ -176,6 +176,8 @@ local fatiguedLoot =
 
 }
 
+local completeTimes = 0
+local cooldown = 0
 local function clearLootFatigue()
 	fatiguedLoot = {}
 	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
@@ -201,6 +203,10 @@ local function OnLootUpdated(event)
 		-- writRewardNames[9] = GetItemLinkName("|H1:item:157534:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 		-- writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
 		-- writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
+	end
+	if lootInfo[1] == "" and ((GetGameTimeMilliseconds() - cooldown) < 1000 )then
+		-- zo_callLater(EndLooting, 100)
+		return true
 	end
 	for i = 1, #writRewardNames  do
 		local a, b = string.find(string.lower(lootInfo[1]), string.lower(writRewardNames[i]))
@@ -281,7 +287,7 @@ end
 -- }
 local scanBagForUnopenedContainers
 
-local completeTimes = 0
+local lootClosedTime
 local slotUpdateHandler
 
 local function shouldOpenContainer(bag, slot)
@@ -304,20 +310,23 @@ end
 local function openContainer(bag, slot)
 	if not shouldOpenContainer(bag, slot) then return end
 	lastInteractedSlot = slot
+	cooldown = GetGameTimeMilliseconds()
 	if IsProtectedFunction("UseItem") then
 		CallSecureProtected("UseItem", bag, slot)
 	else
 		UseItem(bag, slot)
 	end 
 	calledFromQuest = true
-	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootRescan", 1500, scanBagForUnopenedContainers)
+	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootRescan", 100, scanBagForUnopenedContainers)
 end
 
-
+local cooldownTimer = 300
 
 local function prepareToInteract()
 	if IsUnitSwimming("player") then return true end
 	if IsUnitInCombat("player") then return true end
+	if IsLooting() then return true end
+	if GetGameTimeMilliseconds() - cooldown < cooldownTimer then return true end
 	local _, interact = GetGameCameraInteractableActionInfo()
 	if interact then
 		local names =WritCreater.langWritNames()
@@ -333,6 +342,16 @@ local function prepareToInteract()
 	end
 	return false
 end
+
+local function attemptOpenContainer(bag, slot)
+	
+	if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' or prepareToInteract() then
+		zo_callLater(function()attemptOpenContainer(bag, slot) end , math.max(GetSlotCooldownInfo( 1 ) + cooldownTimer,300))
+	else
+		openContainer(bag, slot)
+	end
+end
+
 -- EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."OpenAllContainers", 1000, scanBagForUnopenedContainers)
 local function slotUpdateHandler(event, bag, slot, isNew,...)
 
@@ -346,14 +365,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	if not isNew then return end
 	if not bag or not slot then return end
 	local link = GetItemLink(bag, slot)
-	local function attemptOpenContainer(bag, slot)
-		
-		if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' or prepareToInteract() then
-			zo_callLater(function()attemptOpenContainer(bag, slot) end , math.max(GetSlotCooldownInfo( 1 ) + 100,300))
-		else
-			openContainer(bag, slot)
-		end
-	end
+
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return end
 	if shouldOpenContainer(bag, slot) then
 		attemptOpenContainer(bag, slot)
@@ -406,10 +418,10 @@ function WritCreater.LootHandlerInitialize()
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
 			end )	
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
-	if not WritCreater.savedVarsAccountWide.updateNoticesShown.petBegone then
+	if false and not WritCreater.savedVarsAccountWide.updateNoticesShown.petBegone then
 		WritCreater.savedVarsAccountWide.updateNoticesShown.petBegone = true
 		WritCreater.showSettingsChoice("There's a new option to hide pets! Check it out in the settings menu in the timesavers section")
-	elseif not WritCreater:GetSettings().updateChoiceCopies.petBegone and WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone then
+	elseif false and  not WritCreater:GetSettings().updateChoiceCopies.petBegone and WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone then
 		WritCreater:GetSettings().petBegone = WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone
 		WritCreater:GetSettings().updateChoiceCopies.petBegone = true
 	end

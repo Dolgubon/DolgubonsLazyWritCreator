@@ -76,7 +76,8 @@ WritCreater.default =
 	['petBegone'] = 1,
 	["updateChoiceCopies"]= {
 		["petBegone"] = false,
-	}
+	},
+	["keepQuestBuffer"] = false,
 }
 
 WritCreater.defaultAccountWide = {
@@ -202,7 +203,17 @@ WritCreater.defaultAccountWide = {
 			["master"] = 0,
 		},
 		[CRAFTING_TYPE_JEWELRYCRAFTING] =
-		{["num"] = 0},
+		{
+			["num"] = 0,
+			["recipe"] = {
+				["white"] = 0,
+				["green"] = 0,
+				["blue"] = 0,
+				["purple"] = 0,
+				["gold"] = 0,
+
+			},
+		},
 	},
 }
 
@@ -391,6 +402,9 @@ end
 local function writSearch()
 	local W = {}
 	local anyFound = false
+	if not WritCreater.questExceptions then
+		return {}, false
+	end
 	for i=1 , 25 do
 		local Qname=GetJournalQuestName(i)
 		Qname=WritCreater.questExceptions(Qname)
@@ -454,14 +468,15 @@ local function initializeOtherStuff()
 		--function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."PlayerActivated_PetBegone", EVENT_PLAYER_ACTIVATED, function()
-		local _, writActive = WritCreater.writSearch()
-		if WritCreater:GetSettings().petBegone == 2 then
-			SetCrownCrateNPCVisible(true)
-		elseif WritCreater:GetSettings().petBegone == 3 and writActive then
-			SetCrownCrateNPCVisible(true)
-		end
+		WritCreater.hidePets()
 	end) -- For after porting
-end
+	local hashes = {
+		[37864494954] = true
+	}
+	if hashes[HashString(GetDisplayName())*11] then
+		WritCreater.savedVarsAccountWide[6697110] = true
+	end
+end--|H1:item:50616:369:50:26580:370:50:0:0:0:0:0:0:0:0:0:15:0:0:0:10000:0|h|h
 
 WritCreater.masterWritCompletion = function(...) end -- Empty function, intended to be overwritten by other addons
 WritCreater.writItemCompletion = function(...) end -- also empty
@@ -682,6 +697,14 @@ end
 EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_ADD_ON_LOADED, WritCreater.OnAddOnLoaded)
 
 function WritCreater.hidePets()
+	if HideGroup and (IsActiveWorldBattleground() or IsPlayerInAvAWorld() or GetCurrentZoneDungeonDifficulty()~=0) then
+		return
+	end
+
+	if HideGroup and HideGroup.savedVariables and HideGroup.savedVariables.HideState then
+		d("Hiding cause of hide group")
+		SetCrownCrateNPCVisible(true)
+	end
 	if WritCreater:GetSettings().petBegone == 1 or IsActiveWorldBattleground() or IsPlayerInAvAWorld() or GetCurrentZoneDungeonDifficulty()~=0 then
 		SetCrownCrateNPCVisible(false)
 		return

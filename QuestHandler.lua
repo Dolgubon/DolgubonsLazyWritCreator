@@ -16,6 +16,7 @@ local completionStrings
 local function onWritComplete()
 	local zoneIndex = GetUnitZoneIndex("player")
 	local zoneId = GetZoneId(zoneIndex)
+	WritCreater.hidePets()
 	if WritCreater.savedVarsAccountWide.writLocations[zoneId] then
 		return
 	end
@@ -27,12 +28,7 @@ end
 
 -- Handles the dialogue where we actually complete the quest
 local function HandleQuestCompleteDialog(eventCode, journalIndex)
-	if WritCreater:GetSettings().petBegone == 3 then
-		local _, writActive = WritCreater.writSearch()
-		if not writActive then
-			SetCrownCrateNPCVisible(false)
-		end
-	end
+	WritCreater.hidePets()
 	local writs = WritCreater.writSearch()
 	if not GetJournalQuestIsComplete(journalIndex) then return end
 	local currentWritDialogue 
@@ -311,12 +307,7 @@ WritCreater.OnQuestAdvanced = OnQuestAdvanced
 
 local function OnQuestAdded(eventId, questIndex)
 
-	if WritCreater:GetSettings().petBegone == 3 then
-		local _, writActive = WritCreater.writSearch()
-		if writActive then
-			SetCrownCrateNPCVisible(true)
-		end
-	end
+	WritCreater.hidePets()
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
 		return 
 	end 
@@ -331,6 +322,43 @@ local function centerScreenAnnouncingHandlerHooks()
 	hookIndexEvent(EVENT_QUEST_ADDED)
 	hookIndexEvent(EVENT_QUEST_CONDITION_COUNTER_CHANGED)
 end
+
+local id1 = GetAchievementIdFromLink("|H1:achievement:2225:1:1527019147|h|h")
+local id2 = GetAchievementIdFromLink("|H1:achievement:1145:63:1464348343|h|h")
+
+local function getBuffer()
+	local buffer = 0
+	for i = 1, 6 do
+		local _, isComplete = GetAchievementCriterion(1145, i)
+		buffer = buffer + isComplete
+	end
+	if IsAchievementComplete(2225) then
+		buffer = buffer + 1
+	end
+	return buffer
+end
+--ERROR, GetString(SI_ERROR_QUEST_LOG_FULL), SOUNDS.GENERAL_ALERT_ERROR
+local function checkIfCanAcceptQuest()
+	-- Check if they can do jewelry writs
+	if not WritCreater:GetSettings().keepQuestBuffer then
+		return false
+	end
+	if string.find(string.lower(GetChatterOption(1)), string.lower(WritCreater.writNames["G"])) ~= nil  then
+		return false
+	end
+	local numWrits = NonContiguousCount(WritCreater.writSearch())
+	if GetNumJournalQuests() == 25 then
+		return false
+	end
+	if 25 - getBuffer() + numWrits < GetNumJournalQuests() + 1 then
+		-- ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"This would eat into the writ Quest Buffer! If you still want to accept it, turn off Quest Buffer in Writ Crafter settings")
+		ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The writ Quest Buffer from Lazy Writ Crafter™ is preventing you from accepting this quest")
+		return true
+	end
+	return false
+end
+ZO_PreHook("AcceptSharedQuest", checkIfCanAcceptQuest)
+ZO_PreHook("AcceptOfferedQuest", checkIfCanAcceptQuest)
 
 function WritCreater.InitializeQuestHandling()
 	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."Pe(s)tControl", 1000, calculateDistance)

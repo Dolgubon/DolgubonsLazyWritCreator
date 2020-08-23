@@ -97,9 +97,11 @@ local saidBankIsFull = false
 
 local function moveItem( amountRequired, bag, slot, secondTry)
 	if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
-		local _, optiontype = GetChatterOption(1)
-		if optiontype == CHATTER_START_BANK then
-			SelectChatterOption(1)
+		for i= 1, GetChatterOptionCount() do
+			local _, optiontype = GetChatterOption(i)
+			if optiontype == CHATTER_START_BANK then
+				SelectChatterOption(i)
+			end
 		end
 	end
 

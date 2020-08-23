@@ -472,6 +472,12 @@ WritCreater.strings["includesStorage"] 							= "Zähle <<1>> in deinen Lagertru
 WritCreater.strings["surveys"]									= "Handwerksgutachten"
 WritCreater.strings["sealedWrits"]								= "Versiegelte Schriebe"
 WritCreater.strings["missingLibraries"]							= "Dolgubon's Lazy Writ Crafter benötigt die folgenden Standalone-Libraries. Bitte installiere oder aktiviere diese Libraries: "
+WritCreater.strings['fullBag']						= "Du hast keinen Platz mehr im Inventar. Bitte leere dein Inventar."
+WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter hat verhindert, dass du versehentlich einen Meisterschrieb annimmst. Gehe in die Erweiterungseinstellungen, um diese Option zu deaktivieren."
+WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: "
+WritCreater.strings['resetWarningMessageText']		= "Die täglichen Handwerksquests werden in <<1> Stunde und <<2>> Minute zurückgesetzt\nDu kannst diese Warnung in den Einstellungen anpassen oder deaktivieren"
+WritCreater.strings['resetWarningExampleText']		= "Die Warnung wird so aussehen"
+WritCreater.strings["withdrawItem"]					= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter entnahm "..amount.." "..link..". (Noch "..remaining.." in der Bank)" end -- in Bank for German
 
 
 local DivineMats =
@@ -565,11 +571,29 @@ WritCreater.optionStrings["hide when done"]								= "Verstecke Fenster anschlie
 WritCreater.optionStrings["hide when done tooltip"]						= "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
 WritCreater.optionStrings['reticleColour'] 								= "Fadenkreuzfarbe ändern"
 WritCreater.optionStrings['reticleColourTooltip'] 						= "Ändert die Farbe des Fadenkreuzes, falls es an der Station einen unvollständigen oder abgeschlossenen Schrieb gibt"
-WritCreater.optionStrings['autoCloseBank']								= "Automatically Exit Bank"
-WritCreater.optionStrings['autoCloseBankTooltip']						= "Automatically exit the banking dialogue when all items have been withdrawn"
+WritCreater.optionStrings['autoCloseBank']								= "Automatischer Bankdialog"
+WritCreater.optionStrings['autoCloseBankTooltip']						= "Selbstständiges Öffnen und Schließen des Bankdialoges falls Gegenstände entnommen werden müssen"
 WritCreater.optionStrings["jubilee"]									= "Jubiläumsboxen öffnen"
 WritCreater.optionStrings["jubilee tooltip"]							= "Eure Jubiläumsboxen 2020 werden automatisch geöffnet."
+WritCreater.optionStrings['despawnBanker']								= "Bankier einstecken"
+WritCreater.optionStrings['despawnBankerTooltip']						= "Bankier automatisch einstecken, nachdem Gegenstände entnommen wurden"
+WritCreater.optionStrings['dailyResetWarnTime']							= "Minuten vor der Zurücksetzung"
+WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "Wie viele Minuten vor der täglichen Zurücksetzung soll die Warnung angezeigt werden"
+WritCreater.optionStrings['dailyResetWarnType']							= "Warnung über tägliche Zurücksetzung"
+WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "Welche Art Warnung soll angezeigt werden, wenn die tägliche Zurücksetzung bevorsteht"
+WritCreater.optionStrings['dailyResetWarnTypeChoices']					= { "Keine","Typ 1", "Typ 2", "Typ 3", "Typ 4", "Alle"}
+WritCreater.optionStrings['stealingProtection']							= "Diebstahlschutz"
+WritCreater.optionStrings['stealingProtectionTooltip']					= "Verhindert, dass du etwas stehlen kannst, solange du aktive Handwerksquests im Journal hast"
+WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Einfache Schmuck-Zerstörung"
+WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Schreibt automatisch das Wort LÖSCHEN in den Bestätigungsdialog, wenn du Schmuck zerstören möchtest"
+WritCreater.optionStrings['suppressQuestAnnouncements']					= "Verstecke Handwerksquests-Hinweise"
+WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Versteckt den Text auf der Bildschirmmitte, wenn du Handwerksquests annimmst oder Gegenstände herstellst"
+WritCreater.optionStrings["pet begone"]									= "Begleiter verstecken."
+WritCreater.optionStrings["pet begone tooltip"]							= "Ob und wann Begleiter versteckt sein sollen. Begleiter können Interaktionen blockieren, aber hiermit blockieren sie keine Handwerkstische, Handwerkstruhen etc. Aktiviere diese Einstellung für reine Handwerkscharaktere, um beste Ergebnisse zu erzielen."
+WritCreater.optionStrings["pet begone choices"]							= {"Nie verstecken", "Immer verstecken", "Verstecken bei Questannahme"}
+WritCreater.optionStrings["pet begone warning"]							= "Wenn aktiviert, siehst du Pacrooti. Du siehst keine anderen Spieler oder deren Begleiter. Wenn du das aktivierst, verschwinden die Spieler nicht sofort. Wenn du das deaktivierst, erscheinen sie nicht sofort wieder. Es handelt sich nicht um Fehler, sondern unvermeidbare Nebenwirkungen."
 
+ 
 function WritCreater.langStationNames()
 	return
 	{["Schmiedestelle"] = 1, ["Schneidertisch"] = 2, 
@@ -598,4 +622,4 @@ end
 WritCreater.lang = "de"
 
 WritCreater.langIsMasterWritSupported = true
-WritCreater.needTranslations = "https://www.esoui.com/forums/showpost.php?p=41147&postcount=9"
+-- WritCreater.needTranslations = "https://www.esoui.com/forums/showpost.php?p=41147&postcount=9"
