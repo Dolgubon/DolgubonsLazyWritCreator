@@ -43,7 +43,6 @@ end
 
 --outputs the string in the crafting window
 local function out(string)
-	--d(string)
 	DolgubonsWritsBackdropOutput:SetText(string)
 end
 
@@ -400,40 +399,59 @@ function crafting(info,quest, craftItems)
 				return
 			else
 				local needed = conditions["max"][i] - conditions["cur"][i]
+				-- Since some days use the same as other days, we account for that here
+				if WritCreater:GetSettings().craftMultiplier > 1 then
+					if CRAFTING_TYPE_JEWELRYCRAFTING == GetCraftingInteractionType() then
+						if conditions["max"][i] > 1 then
+							needed =  needed + 1
+						elseif conditions["pattern"][i] == 1 then
+							needed = needed + 3
+						elseif conditions["pattern"][i] == 2 then
+							needed = needed + 2
+						end
+					elseif CRAFTING_TYPE_WOODWORKING == GetCraftingInteractionType() and conditions["pattern"][i] == 2 then
+						if conditions["max"][i] == 1 then
+							needed = needed + 2
+						elseif conditions["max"][i] == 2 then
+							needed = needed + 1
+						end
+					end
+				end
+				needed = needed*WritCreater:GetSettings().craftMultiplier
 				for s = 1, needed do
 					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], index, 0)
 					addMats(matName,numMats ,matsRequired, conditions["pattern"][i], index )
+				end
 
-					queue[#queue + 1]= 
-					function(changeRequired)
+				queue[#queue + 1]= 
+				function(changeRequired)
 
-						local station = GetCraftingInteractionType()
-						if station == 0 then return end
-						matSaver = matSaver + 1
-						local _,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
-						local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
-						if numMats<=curMats then 
-							local style, stonesOwned = maxStyle(pattern)
-							if station ~= CRAFTING_TYPE_JEWELRYCRAFTING then
-								if style == -1 then out(WritCreater.strings.moreStyle) return false end
-								if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
-								if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
-							end
-							needed = math.min(needed,  GetMaxIterationsPossibleForSmithingItem(pattern, index,numMats,style,1, false))
-							WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,LLC_FREE_STYLE_CHOICE,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
-								true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
+					local station = GetCraftingInteractionType()
+					if station == 0 then return end
+					matSaver = matSaver + 1
+					local _,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
+					local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
+					if numMats<=curMats then 
+						local style, stonesOwned = maxStyle(pattern)
+						if station ~= CRAFTING_TYPE_JEWELRYCRAFTING then
+							if style == -1 then out(WritCreater.strings.moreStyle) return false end
+							if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
+							if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
+						end
+						needed = math.min(needed,  GetMaxIterationsPossibleForSmithingItem(pattern, index,numMats,style,1, false))
+						WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,LLC_FREE_STYLE_CHOICE,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
+							true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
 
-							DolgubonsWritsBackdropCraft:SetHidden(true) 
-							if changeRequired then return true end
-							addMats(matName, -numMats ,matsRequired, conditions["pattern"][i], index )
-							createMatRequirementText(matsRequired)
+						DolgubonsWritsBackdropCraft:SetHidden(true) 
+						if changeRequired then return true end
+						addMats(matName, -numMats ,matsRequired, conditions["pattern"][i], index )
+						createMatRequirementText(matsRequired)
 
-							return true
-							
-						else 
-							return false
-						end 
-					end
+						return true
+						
+					else 
+						return false
+					end 
 
 				end
 			end
@@ -599,7 +617,12 @@ local function enchantCrafting(info, quest,add)
 				end
 				if not add then
 					if essence["bag"] and potency["bag"] and ta["bag"] then
-						out(WritCreater.strings.runeReq(GetItemName(essence["bag"], essence["slot"]),GetItemName(potency["bag"], potency["slot"])))
+						local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
+						local runeNames = {
+							proper(GetItemName(essence["bag"], essence["slot"])),
+							proper(GetItemName(potency["bag"], potency["slot"])),
+						}
+						out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)), "1", quantity))
 						DolgubonsWritsBackdropCraft:SetHidden(false)
 						DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
 					else
@@ -608,13 +631,14 @@ local function enchantCrafting(info, quest,add)
 					end
 				else
 					if essence["bag"] and potency["bag"] and ta["bag"] then
-						craftingEnchantCurrently = true
-						--d(conditions["type"][i],conditions["glyph"][i])
+						local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
 						local runeNames = {
 							proper(GetItemName(essence["bag"], essence["slot"])),
 							proper(GetItemName(potency["bag"], potency["slot"])),
 						}
-						out(WritCreater.strings.runeReq(unpack(runeNames)).."\n"..WritCreater.strings.crafting)
+						craftingEnchantCurrently = true
+						--d(conditions["type"][i],conditions["glyph"][i])
+						out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)).."\n"..WritCreater.strings.crafting, "1", quantity ))
 						DolgubonsWritsBackdropCraft:SetHidden(true)
 						--d(GetEnchantingResultingItemInfo(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]))
 
@@ -627,13 +651,13 @@ local function enchantCrafting(info, quest,add)
 								originalAlertSuppression(a, b, text, ...)
 							end
 						end
-						WritCreater.LLCInteraction:CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"])					
+						WritCreater.LLCInteraction:CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"], nil, nil,nil , quantity or 1)					
 
 						zo_callLater(function() craftingEnchantCurrently = false end,4000) 
 						craftingWrits = false
 						return
 					else
-						out("Glyph could not be crafted\n"..WritCreater.strings.runeMissing(ta,essence,potency))
+						out(WritCreater.strings.runeMissing(ta,essence,potency))
 						DolgubonsWritsBackdropCraft:SetHidden(true)
 						craftingWrits = false
 					end
@@ -648,7 +672,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100032
+	local currentAPIVersionOfAddon = 100033
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

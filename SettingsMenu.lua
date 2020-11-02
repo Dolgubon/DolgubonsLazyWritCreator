@@ -666,9 +666,123 @@ function WritCreater.Options() --Sentimental
 				WritCreater:GetSettings().keepQuestBuffer = value
 			end,
 		},
-
-		
+		{
+			type = "slider",
+			name = WritCreater.optionStrings['craftMultiplier'],--"Master Writs",
+			tooltip = WritCreater.optionStrings['craftMultiplierTooltip'],--"Craft Master Writ Items",
+			min = 1,
+			max = 8,
+			step = 1,
+			getFunc = function() return  WritCreater:GetSettings().craftMultiplier end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().craftMultiplier = value
+			end,
+		},
 	}
+
+----------------------------------------------------
+----- REWARDS SUBMENU
+	local rewardsSubmenu = {
+		-- Options: Nothing, destroy, deposit, junk (Vendor?)
+		-- Enchanting
+			-- Surveys
+			-- master writs
+			-- mats
+			-- glyphs
+			-- empty soul gems
+		-- Alchemy
+			-- Surveys
+			-- master writs
+			-- mats
+		-- provisioning
+			-- recipes
+			-- mats
+			-- psijic fragment
+
+	}
+	local function geRewardTypeOption(craftingIndex, rewardType)
+		return {
+				type = "dropdown",
+				name = WritCreater.optionStrings[rewardType.."Reward"],
+				tooltip = WritCreater.optionStrings[rewardType.."RewardTooltip"],
+				choices = WritCreater.optionStrings["rewardChoices"],
+				choicesValues = {1,2,3, 4},
+				getFunc = function()
+					-- So I don't need to ennummerate it all in the default writ creator settings
+					if not  WritCreater:GetSettings().rewardHandling[craftingIndex].rewardType then
+						WritCreater:GetSettings().rewardHandling[craftingIndex].rewardType = 1
+					end
+					return WritCreater:GetSettings().rewardHandling[craftingIndex].rewardType end ,
+				setFunc = function(value) 
+					WritCreater:GetSettings().rewardHandling[craftingIndex].rewardType = value
+					
+				end,
+			}
+	end
+	local validForReward = 
+	{
+		mats =   {1,2,3,4,5,6,7},
+		master = {1,2,3,4,5,6,7},
+		survey = {1,2,3,4,6,7},
+		ornate = {1,2,6,7},
+		intricate = {1,2,6,7},
+		repair = {1,2,6,7},
+		soulGem =   {3},
+		glyph =   {3},
+		fragment =   {5},
+		recipe =   {5},
+	}
+	local function rewardSubmenu(submenuOptions, craftingIndex)
+		local writName
+		if craftingIndex == 0 then
+			writName = "Gear Crafts"
+		else
+			writName = WritCreater.langWritNames()[craftingIndex]
+		end
+		return {
+			type = "submenu",
+			name = writName,
+			tooltip = WritCreater.optionStrings["writRewards submenu tooltip"],
+			controls = submenuOptions,
+			reference = "WritCreaterRewardsSubmenu"..craftingIndex,
+		}
+	end
+	-- local gearWrits = {1, 2, 6, 7}
+	-- for _, craftingIndex in pairs(gearWrits) do
+
+		local gearTemplateMenu =
+		{
+			geRewardTypeOption(0, "mats"),
+			geRewardTypeOption(0, "survey"),
+			geRewardTypeOption(0, "master"),
+			geRewardTypeOption(0, "repair"),
+			geRewardTypeOption(0, "ornate"),
+			geRewardTypeOption(0, "intricate"),
+		}
+		rewardsSubmenu[1] = rewardSubmenu(gearTemplateMenu, 0)
+		rewardsSubmenu[1].tooltip = "What to do with rewards from Blacksmithing, Clothing, Woodworking and Jewelry"
+	-- end
+	local enchantingSubmenu = {
+		geRewardTypeOption(CRAFTING_TYPE_ENCHANTING, "mats"),
+		geRewardTypeOption(CRAFTING_TYPE_ENCHANTING, "survey"),
+		geRewardTypeOption(CRAFTING_TYPE_ENCHANTING, "master"),
+		geRewardTypeOption(CRAFTING_TYPE_ENCHANTING, "soulGem"),
+		geRewardTypeOption(CRAFTING_TYPE_ENCHANTING, "glyph"),
+	}
+	rewardsSubmenu[2] = rewardSubmenu(enchantingSubmenu, CRAFTING_TYPE_ENCHANTING)
+	local alchemySubmenu = {
+		geRewardTypeOption(CRAFTING_TYPE_ALCHEMY, "mats"),
+		geRewardTypeOption(CRAFTING_TYPE_ALCHEMY, "survey"),
+		geRewardTypeOption(CRAFTING_TYPE_ALCHEMY, "master"),
+	}
+	rewardsSubmenu[3] = rewardSubmenu(alchemySubmenu, CRAFTING_TYPE_ALCHEMY)
+	local provisioningSubmenu = {
+		geRewardTypeOption(CRAFTING_TYPE_PROVISIONING, "mats"),
+		geRewardTypeOption(CRAFTING_TYPE_PROVISIONING, "master"),
+		geRewardTypeOption(CRAFTING_TYPE_PROVISIONING, "fragment"),
+		geRewardTypeOption(CRAFTING_TYPE_PROVISIONING, "recipe"),
+	}
+	rewardsSubmenu[4] = rewardSubmenu(provisioningSubmenu, CRAFTING_TYPE_PROVISIONING)
 	
 ----------------------------------------------------
 ----- CRAFTING SUBMENU
@@ -776,6 +890,13 @@ function WritCreater.Options() --Sentimental
 	  controls = timesaverOptions,
 	  reference = "WritCreaterTimesaverSubmenu",
 	})
+	-- table.insert(options,{
+	-- 	type = "submenu",
+	-- 	name = WritCreater.optionStrings["writRewards submenu"],
+	-- 	tooltip = WritCreater.optionStrings["writRewards submenu tooltip"],
+	-- 	controls = rewardsSubmenu,
+	-- 	reference = "WritCreaterRewardsSubmenu",
+	-- })
 	table.insert(options,{
 	  type = "submenu",
 	  name = WritCreater.optionStrings["crafting submenu"],

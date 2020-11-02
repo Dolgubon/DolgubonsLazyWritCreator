@@ -31,3 +31,5 @@ SlashCommands.lua
 Tutorial.lua
 OptionalReadMe.txt
 WizardMousedds.dds
+Crafter.lua
+bindings.xml

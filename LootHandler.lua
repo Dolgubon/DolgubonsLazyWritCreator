@@ -351,6 +351,40 @@ local function attemptOpenContainer(bag, slot)
 		openContainer(bag, slot)
 	end
 end
+-- bag, slot, itemId, action
+WritCreater.rewardList = {
+}
+
+local function rewardHandler(bag, slot)
+	local itemType, specializedType = GetItemLinkItemType(itemLink) 
+	-- if it's gear
+	if name=="" then
+	elseif itemType==ITEMTYPE_ARMOR or itemType==ITEMTYPE_WEAPON then
+		if GetItemLinkTraitInfo(itemLink)==19 then
+			updateSavedVars(vars, "ornate", quantity)
+		else
+			updateSavedVars(vars, "intricate", quantity)
+		end
+	elseif CanItemLinkBeVirtual(itemLink) then 
+		updateSavedVars(vars, GetItemIDFromLink(itemLink), quantity)
+	elseif itemType==ITEMTYPE_RECIPE then 
+		updateSavedVars(vars["recipe"], "green", quantity)
+	elseif specializedType==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
+		updateSavedVars(vars, "survey", quantity)
+	elseif specializedType ==SPECIALIZED_ITEMTYPE_TROPHY_RECIPE_FRAGMENT then
+		updateSavedVars(vars, "fragment", quantity)
+	elseif itemType ==ITEMTYPE_CONTAINER then
+		updateSavedVars(vars, "material", quantity)
+	elseif itemType ==ITEMTYPE_TOOL then
+		updateSavedVars(vars, "repair", quantity)
+	elseif itemType ==ITEMTYPE_GLYPH_JEWELRY or itemType ==ITEMTYPE_GLYPH_ARMOR or itemType ==ITEMTYPE_GLYPH_WEAPON then
+		updateSavedVars(vars, "glyph", quantity)
+	elseif itemType == ITEMTYPE_SOUL_GEM then 
+		updateSavedVars(vars, "soulGem", quantity)
+	elseif itemType == ITEMTYPE_MASTER_WRIT then
+		updateSavedVars(vars, "master", quantity)
+	end
+end
 
 -- EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."OpenAllContainers", 1000, scanBagForUnopenedContainers)
 local function slotUpdateHandler(event, bag, slot, isNew,...)

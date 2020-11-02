@@ -1,0 +1,20 @@
+<Bindings>
+<!-- 	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="Dolgubon's Lazy Writ Crafter">
+			<Action name="SET_CRAFTER_OPEN">
+				<Down>DolgubonSetCrafter.close()</Down>
+			</Action>
+		</Category>
+	</Layer> -->
+	<Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+		<Category name="Dolgubon's Lazy Writ Crafter">
+			<Action name="WRIT_CRAFTER_CRAFT_ITEMS">
+				<Down>
+					if not DolgubonsWritsBackdropCraft:IsHidden() then
+						WritCreater.craft()
+					end
+				</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -43,7 +43,7 @@ local function runeMissingFunction (ta,essence,potency)
 	local text = ""
 	for i = 1, #missing do
 		if i ==1 then
-			text = "|cf60000Glyph could not be crafted. You do not have any "..proper(missing[i])
+			text = "|cff3333Glyph could not be crafted. You do not have any "..proper(missing[i])
 		else
 			text = text.." or "..proper(missing[i])
 		end
@@ -217,7 +217,40 @@ WritCreater.optionStrings["pet begone choices"]							= {"Never hide", "Always h
 WritCreater.optionStrings["pet begone warning"]							= "When on, you will see Pacrooti. You will not see any other players, or any combat pets. If it turns on, players will not disappear instantly. If it turns off, they will not re-appear instantly. These are not bugs, but unavoidable side effects."
 WritCreater.optionStrings["questBuffer"]								= "Writ Quest Buffer"
 WritCreater.optionStrings["questBufferTooltip"]							= "Keep a buffer of quests so you can always have room to pick up writs"
+WritCreater.optionStrings["craftMultiplier"]							= "Craft multiplier"
+WritCreater.optionStrings["craftMultiplierTooltip"]						= "Craft multiple copies of each required item so that you don't need to recraft them next time the writ comes up. Note: Save approximately 37 slots for each increase above 1"
+WritCreater.optionStrings["matsReward"]									= "Mat Rewards"
+WritCreater.optionStrings["matsRewardTooltip"]							= "What to do with crafting material rewards"
+WritCreater.optionStrings["surveyReward"]								= "Survey Rewards"
+WritCreater.optionStrings["surveyRewardTooltip"]						= "What to do with survey rewards"
+WritCreater.optionStrings["masterReward"]								= "Master Writ Rewards"
+WritCreater.optionStrings["masterRewardTooltip"]						= "What to do with master writ rewards"
+WritCreater.optionStrings["repairReward"]								= "Repair Kit Rewards"
+WritCreater.optionStrings["repairRewardTooltip"]						= "What to do with repair kit rewards"
+WritCreater.optionStrings["ornateReward"]								= "Ornate Gear Rewards"
+WritCreater.optionStrings["ornateRewardTooltip"]						= "What to do with ornate gear rewards"
+WritCreater.optionStrings["intricateReward"]							= "Intricate Gear Rewards"
+WritCreater.optionStrings["intricateRewardTooltip"]						= "What to do with intricate gear rewards"
+WritCreater.optionStrings["soulGemReward"]								= "Empty Soul Gems"
+WritCreater.optionStrings["soulGemTooltip"]								= "What to do with empty soul gems"
+WritCreater.optionStrings["glyphReward"]								= "Glyphs"
+WritCreater.optionStrings["glyphRewardTooltip"]							= "What to do with glyphs"
+WritCreater.optionStrings["recipeReward"]								= "Recipes"
+WritCreater.optionStrings["recipeRewardTooltip"]						= "What to do with recipes"
+WritCreater.optionStrings["fragmentReward"]								= "Psijic Fragments"
+WritCreater.optionStrings["fragmentRewardTooltip"]						= "What to do with psijic fragments"
+
+
+WritCreater.optionStrings["writRewards submenu"]						= "Writ Reward Handling"
+WritCreater.optionStrings["writRewards submenu tooltip"]				= "What to do with all the rewards from writs"
+
+
+
+
+WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk", "Destroy"}
+
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
+ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Craft items")
 																		-- CSA, ZO_Alert, chat message, window
 

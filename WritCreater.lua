@@ -21,7 +21,7 @@ local dbug = function(...) d(...) end
 
 CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
 --DolgubonsWritsBackdropQuestOutput.SetText = function()end
-if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
+-- if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
 
 WritCreater = WritCreater or {}
 WritCreater.name = "DolgubonsLazyWritCreator"
@@ -78,6 +78,19 @@ WritCreater.default =
 		["petBegone"] = false,
 	},
 	["keepQuestBuffer"] = false,
+	["craftMultiplier"] = 1,
+	["rewardHandling"] = {
+		mats =   		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
+		master = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
+		survey = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[6]= 1,[7] = 1},
+		ornate = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
+		intricate = 	{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
+		repair = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
+		soulGem =   	{useGeneral = true, [0] = 1, },
+		glyph =   	{useGeneral = true, [0] = 1, },
+		fragment =  	{useGeneral = true, [0] = 1, },
+		recipe =   	{useGeneral = true, [0] = 1, },
+	},
 }
 
 WritCreater.defaultAccountWide = {
@@ -678,6 +691,12 @@ function WritCreater:Initialize()
 		WritCreater.InitializeRightClick()
 		WritCreater.setupScrollLists()
 	end
+	if GetDate()%10000 == 1031 then
+		DolgubonsLazyWritStatsWindowBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter")
+		DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter")
+		DolgubonsWritsBackdropHead:SetText("Dolgubon's Lazy Wraith Crafter")
+	end
+
 end
 
 

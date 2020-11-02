@@ -422,20 +422,21 @@ end
 local function runeMissingFunction(ta,essence,potency)
 	local missing = {}
 	if not ta["bag"] then
-		missing[#missing + 1] = "|rTa|cf60000"
+		missing[#missing + 1] = "|r"..ZO_CachedStrFormat("<<C:1>>","Ta").."|cf60000"
 	end
 	if not essence["bag"] then
-		missing[#missing + 1] =  "|cffcc66"..essence["slot"].."|cf60000"
+		missing[#missing + 1] =  "|cffcc66"..ZO_CachedStrFormat("<<C:1>>",essence["slot"]).."|cf60000"
 	end
 	if not potency["bag"] then
-		missing[#missing + 1] = "|c0066ff"..potency["slot"].."|r"
+		missing[#missing + 1] = "|c0066ff"..ZO_CachedStrFormat("<<C:1>>",potency["slot"]).."|r"
 	end
 	local text = ""
 	for i = 1, #missing do
 		if i ==1 then
-			text = "|cf60000Glyphe kann nicht hergestellt werden.\nNicht genügend "..missing[i]
+			ZO_CachedStrFormat("<<C:1>>",missing[i])
+			text = "|cff3333Glyphe kann nicht hergestellt werden.\nNicht genügend "..ZO_CachedStrFormat("<<C:1>>",missing[i])
 		else
-			text = text.." oder "..missing[i]
+			text = text.." oder "..ZO_CachedStrFormat("<<C:1>>",missing[i])
 		end
 	end
 	return text
@@ -460,7 +461,7 @@ WritCreater.strings["crafting"] 								= "|cffff00Herstellung...|r"
 WritCreater.strings["craftIncomplete"] 							= "|cf60000Die Herstellung konnte nicht abgeschlossen werden.\nDu benötigst mehr Materialien.|r"
 WritCreater.strings["moreStyle"] 								= "|cf60000Du hast keine der ausgewählten Stilsteine vorhanden|r"
 WritCreater.strings["moreStyleSettings"]						= "|cf60000Du hast keine verfügbaren Stylematerialien.\nWahrscheinlich musst du in den Settings weitere Handwerksstile aktivieren.|r"
-WritCreater.strings["moreStyleKnowledge"]						= "|cf600000Du hast keine verfügbaren Stylematerialien.\nVielleicht musst du mehr Handwerksstile lernen|r"
+WritCreater.strings["moreStyleKnowledge"]						= "|cf60000Du hast keine verfügbaren Stylematerialien.\nVielleicht musst du mehr Handwerksstile lernen|r"
 WritCreater.strings["dailyreset"] 								= function (till) d(till["hour"].." Stunden und "..till["minute"].." Minuten bis zum Daily Reset") end
 WritCreater.strings["complete"] 								= "|c00FF00Der Schrieb ist fertig|r"
 WritCreater.strings["craftingstopped"] 							= "Herstellung gestoppt. Bitte überprüfe, ob das AddOn den richtigen Gegenstand herstellt."

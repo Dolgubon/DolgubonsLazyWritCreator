@@ -418,9 +418,9 @@ end
 -- you're boring, and also that's how you can disable it. )
 local DivineMats =
 {
-	{"Ghost Eyes", "Vampire Hearts", "Werewolf Claws", "'Special' Candy", "Chopped Hands", "Zombie Guts", "Bat Livers", "Lizard Brains", "Witches Hats", "Distilled Boos", "Singing Toads"},
-	{"Sock Puppets", "Jester Hats","Otter Noses", "Red Herrings", "Rotten Tomatoes","Fake Oil of Life", "Crowned Imposters", "Mudpies"},
-	{"Fireworks", "Presents", "Crackers", "Reindeer Bells", "Elven Hats", "Pine Needles", "Essences of Time", "Ephemeral Lights"},
+	{"Rusted Nails", "Ghost Robes", "","","", "Rotten Branches","Cursed Gold", "Chopped Liver", "Crumbled Gravestones", "Toad Eyes", "Werewolf Claws", "Zombie Guts", "Lizard Brains"},
+	{"","Sock Puppets", "Jester Hats","Otter Noses", "Red Herrings", "Rubber Snakes", "Crowned Imposters", "Mudpies"},
+	{"Coal", "Stockings", "","","","Evergreen Branches", "Golden Rings", "Bottled Time", "Reindeer Bells", "Elven Hats", "Pine Needles", "Cups of Snow"},
 }
 
 -- confetti?
@@ -442,11 +442,23 @@ local l = shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhatev
 if l then
 	DivineMats = DivineMats[l]
 	local DivineMat = wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed()
-
-	WritCreater.strings.smithingReqM = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
-	WritCreater.strings.smithingReqM2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
-	WritCreater.strings.smithingReq = function (amount, _,more) return zo_strformat( "Crafting will use <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
-	WritCreater.strings.smithingReq2 = function (amount, _,more) return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
+	
+	WritCreater.strings.smithingReqM = function (amount, _,more)
+		local craft = GetCraftingInteractionType()
+		DivineMat = DivineMats[craft]
+		return zo_strformat( "Crafting will use <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReqM2 = function (amount, _,more)
+		local craft = GetCraftingInteractionType()
+		DivineMat = DivineMats[craft]
+		return zo_strformat( "As well as <<1>> <<4>> (|cf60000You need <<3>>|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReq = function (amount, _,more) 
+		local craft = GetCraftingInteractionType()
+		DivineMat = DivineMats[craft]
+		return zo_strformat( "Crafting will use <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
+	WritCreater.strings.smithingReq2 = function (amount, _,more) 
+		local craft = GetCraftingInteractionType()
+		DivineMat = DivineMats[craft]
+		return zo_strformat( "As well as <<1>> <<4>> (|c2dff00<<3>> available|r)" ,amount, type, more, DivineMat) end
 end
 
 
