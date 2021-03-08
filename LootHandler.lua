@@ -12,6 +12,14 @@
 
 WritCreater = WritCreater or {}
 
+local lootedItemLinks = {}
+-- {itemLink, bag, slot}
+local pendingItemActions = {}
+WritCreater.pendingItemActions = pendingItemActions
+-- if GetDisplayName() == "@Dolgubon" then
+-- 	lootedItemLinks["|H0:item:57781:4:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = true
+-- end
+
 --Saves what the user got from the writ rewards
 
 local function round(f)
@@ -88,7 +96,7 @@ local function lootOutput(itemLink, itemType, quantity)
 		local amountBag, amountBank, amountCraft = GetItemLinkStacks( itemLink)
 		local amount = amountCraft + amountBank + amountBag + quantity
 		if itemType then 
-			d(zo_strformat( WritCreater.strings.lootReceivedM.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink))
+			d(zo_strformat( "1 "..WritCreater.strings.lootReceivedM.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink))
 		else
 			d(zo_strformat( WritCreater.strings.lootReceived, itemLink, amount, quantity))
 		end
@@ -118,7 +126,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 			end
 		elseif CanItemLinkBeVirtual(itemLink) then 
 			updateSavedVars(vars, GetItemIDFromLink(itemLink), quantity)
-			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or GetItemIDFromLink(itemLink) ==135153 then
+			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or GetItemIDFromLink(itemLink) ==135153 or GetItemIDFromLink(itemLink) == 135149 then
 				lootOutput(itemLink, nil, quantity)
 			end
 		elseif itemType==ITEMTYPE_RECIPE then 
@@ -157,6 +165,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 			if vars["other"]==nil then vars["other"] = {} end
 			updateSavedVars(vars, "other", quantity)
 		end
+		lootedItemLinks[itemLink] = true
 	end
 	WritCreater.updateList()
 	--saveStats(loot,boxType,boxRank)
@@ -386,6 +395,7 @@ local function rewardHandler(bag, slot)
 	end
 end
 
+
 -- EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."OpenAllContainers", 1000, scanBagForUnopenedContainers)
 local function slotUpdateHandler(event, bag, slot, isNew,...)
 
@@ -396,14 +406,68 @@ local function slotUpdateHandler(event, bag, slot, isNew,...)
 	else
 		autoLoot = GetSetting(SETTING_TYPE_LOOT,LOOT_SETTING_AUTO_LOOT) == "1"
 	end
-	if not isNew then return end
-	if not bag or not slot then return end
 	local link = GetItemLink(bag, slot)
+	if isNew then
+		if not bag or not slot then return end
 
-	if not WritCreater:GetSettings().lootContainerOnReceipt then return end
-	if shouldOpenContainer(bag, slot) then
-		attemptOpenContainer(bag, slot)
-		if not autoLoot then return end
+		if not WritCreater:GetSettings().lootContainerOnReceipt then return end
+		if shouldOpenContainer(bag, slot) then
+			attemptOpenContainer(bag, slot)
+			if not autoLoot then return end
+		end
+	end
+	------
+	-- REWARD HANDLING
+	if isNew then --or GetDisplayName() == "@Dolgubon" then
+		if lootedItemLinks[link] then
+			lootedItemLinks[link] = nil
+			local itemType, specializedType = GetItemLinkItemType(link) 
+			local itemName = GetItemLinkName(link)
+			if itemType == ITEMTYPE_MASTER_WRIT or specializedType == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
+
+				local kernels = WritCreater.langCraftKernels()
+				local craftType
+				for craft, kernel in pairs(kernels) do
+					if string.find(itemName, kernel) then
+						craftType = craft
+					end
+				end
+				if craftType == nil then
+					return
+				end
+				local actionSource
+				local action
+				if itemType == ITEMTYPE_MASTER_WRIT then
+					actionSource = WritCreater:GetSettings().rewardHandling["master"]
+				elseif specializedType == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
+					actionSource = WritCreater:GetSettings().rewardHandling["survey"]
+				end
+				if actionSource.sameForAllCrafts then
+					action = actionSource.all
+				else
+					action = actionSource[craftType]
+				end
+				if action == 1 then
+					-- do nothing
+				elseif action == 2 then
+					table.insert(pendingItemActions, {link, 2, bag, slot})
+				elseif action == 3 then
+					SetItemIsJunk(bag, slot, true)
+				elseif action == 4 then
+					 DestroyItem(bag , slot)
+				else
+				end
+				-- 1 nothing
+				-- 2 deposit
+				-- 3 Destroy
+				-- 4 junk
+
+			end
+			-- determine type of item to find what we can do with it
+			-- Can we do action right now?
+				-- yes - do it
+				-- No - queue it
+		end
 	end
 end
 

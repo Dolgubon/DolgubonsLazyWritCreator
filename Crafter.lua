@@ -438,7 +438,7 @@ function crafting(info,quest, craftItems)
 							if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
 							if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
 						end
-						needed = math.min(needed,  GetMaxIterationsPossibleForSmithingItem(pattern, index,numMats,style,1, false))
+						needed = math.min(needed,  GetMaxIterationsPossibleForSmithingItem(pattern, index,numMats,style,1, false), 100000)
 						WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,LLC_FREE_STYLE_CHOICE,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
 							true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
 
@@ -672,7 +672,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100033
+	local currentAPIVersionOfAddon = 100034
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

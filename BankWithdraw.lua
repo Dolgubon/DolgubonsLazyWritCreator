@@ -330,16 +330,51 @@ local validItemTypes =
 	--]]
 }
 
+local function runProcessDeposits()
+	if #WritCreater.pendingItemActions > 0 then
+		for k, itemInfo in pairs(WritCreater.pendingItemActions) do
+			if itemInfo[1] == GetItemLink(itemInfo[3], itemInfo[4]) then
+				if itemInfo[2] == 2 then
+					if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
+						for i= 1, GetChatterOptionCount() do
+							local _, optiontype = GetChatterOption(i)
+							if optiontype == CHATTER_START_BANK then
+								SelectChatterOption(i)
+							end
+						end
+					end
+					local bag
+					local destinationSlot = FindFirstEmptySlotInBag(BAG_BANK) or FindFirstEmptySlotInBag(BAG_SUBSCRIBER_BANK)
+					if FindFirstEmptySlotInBag(BAG_BANK) then
+						bag = BAG_BANK
+					elseif FindFirstEmptySlotInBag(BAG_SUBSCRIBER_BANK) then
+						bag = BAG_SUBSCRIBER_BANK
+					end
+					if not bag then
+						return
+					end
+					if IsProtectedFunction("RequestMoveItem") then
+						CallSecureProtected("RequestMoveItem", itemInfo[3], itemInfo[4], bag,destinationSlot,1)
+					else
+						RequestMoveItem(itemInfo[3], itemInfo[4], bag,destinationSlot,1)
+					end
+					d("Writ Crafter: Depositing "..itemInfo[1])
+					WritCreater.pendingItemActions[k] = nil
+					return runProcessDeposits()
+				end
+			end
+		end
+	end
+end
 
 alchGrab = function (event, bag) 
-	
 	findEmptySlots(BAG_BACKPACK)
 	if WritCreater.lang =="jp" then return end
 	if WritCreater:GetSettings().shouldGrab then
 		local writs = WritCreater.writSearch()
-		for craft, validTYpes in pairs(validItemTypes) do
+		for craft, validTypes in pairs(validItemTypes) do
 			if writs[craft] and  (WritCreater:GetSettings()[craft] or WritCreater:GetSettings()[craft]==nil) then
-				addToQueue(writs[craft], validTYpes)
+				addToQueue(writs[craft], validTypes)
 			end
 		end
 		if #queue>0 then
@@ -348,6 +383,7 @@ alchGrab = function (event, bag)
 			zo_callLater(queueRun,WritCreater:GetSettings().delay)
 		end
 	end
+	runProcessDeposits()
 
 end
 

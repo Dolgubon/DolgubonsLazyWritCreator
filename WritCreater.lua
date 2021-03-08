@@ -20,7 +20,7 @@
 local dbug = function(...) d(...) end
 
 CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
---DolgubonsWritsBackdropQuestOutput.SetText = function()end
+DolgubonsWritsBackdropQuestOutput.SetText = function()end
 -- if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
 
 WritCreater = WritCreater or {}
@@ -80,16 +80,16 @@ WritCreater.default =
 	["keepQuestBuffer"] = false,
 	["craftMultiplier"] = 1,
 	["rewardHandling"] = {
-		mats =   		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
-		master = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
-		survey = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[6]= 1,[7] = 1},
-		ornate = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
-		intricate = 	{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
-		repair = 		{useGeneral = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
-		soulGem =   	{useGeneral = true, [0] = 1, },
-		glyph =   	{useGeneral = true, [0] = 1, },
-		fragment =  	{useGeneral = true, [0] = 1, },
-		recipe =   	{useGeneral = true, [0] = 1, },
+		mats =   		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
+		master = 		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
+		survey = 		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[6]= 1,[7] = 1},
+		ornate = 		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
+		intricate = 	{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
+		repair = 		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
+		soulGem =   	{sameForAllCrafts = true, [0] = 1, },
+		glyph =   		{sameForAllCrafts = true, [0] = 1, },
+		fragment = 	 	{sameForAllCrafts = true, [0] = 1, },
+		recipe =   		{sameForAllCrafts = true, [0] = 1, },
 	},
 }
 
@@ -609,8 +609,11 @@ local function initializeLocalization()
 		if langs[GetCVar("language.2")] then
 			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing your language file. Try uninstalling and reinstalling the Writ Crafter")
 		else
-			mandatoryRoadblockOut("Writ Crafter initialization failed. Your game is currently set to the language "..GetCVar("language.2").." but you do not have the patch for that language installed (if it exists). To fix, in chat type /script SetCVar('language.2', 'en') (replace with 'de' or 'fr' if applicable)")
-
+			mandatoryRoadblockOut("Writ Crafter initialization failed. Your game is currently set to the language "..GetCVar("language.2")..
+				" but you do not have the patch for that language installed (if it exists). Uninstall all "..GetCVar("language.2").." addons or patches, then click the button")
+			WritCreater.autoFix = true
+			DolgubonsWritsBackdropCraft:SetHidden(false)
+			DolgubonsWritsBackdropCraft:SetText("Apply Auto Fix")
 		end
 		return 
 	end

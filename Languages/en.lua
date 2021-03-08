@@ -81,6 +81,19 @@ function WritCreater.langWritNames() -- Vital
 	return names
 end
 
+function WritCreater.langCraftKernels()
+	return 
+	{
+		[CRAFTING_TYPE_ENCHANTING] = "Enchant",
+		[CRAFTING_TYPE_BLACKSMITHING] = "Blacksmith",
+		[CRAFTING_TYPE_CLOTHIER] = "Clothier",
+		[CRAFTING_TYPE_PROVISIONING] = "Provision",
+		[CRAFTING_TYPE_WOODWORKING] = "Woodwork",
+		[CRAFTING_TYPE_ALCHEMY] = "Alchem",
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry",
+	}
+end
+
 function WritCreater.langMasterWritNames() -- Vital
 	local names = {
 	["M"] 							= "masterful",
@@ -418,8 +431,8 @@ end
 -- you're boring, and also that's how you can disable it. )
 local DivineMats =
 {
-	{"Rusted Nails", "Ghost Robes", "","","", "Rotten Branches","Cursed Gold", "Chopped Liver", "Crumbled Gravestones", "Toad Eyes", "Werewolf Claws", "Zombie Guts", "Lizard Brains"},
-	{"","Sock Puppets", "Jester Hats","Otter Noses", "Red Herrings", "Rubber Snakes", "Crowned Imposters", "Mudpies"},
+	{"Rusted Nails", "Ghost Robes", "","","", "Rotten Logs","Cursed Gold", "Chopped Liver", "Crumbled Gravestones", "Toad Eyes", "Werewolf Claws", "Zombie Guts", "Lizard Brains"},
+	{"Buzzers","Sock Puppets", "Jester Hats","Otter Noses", "Red Herrings", "Wooden Snakes", "Fool's Gold", "Mudpies"},
 	{"Coal", "Stockings", "","","","Evergreen Branches", "Golden Rings", "Bottled Time", "Reindeer Bells", "Elven Hats", "Pine Needles", "Cups of Snow"},
 }
 
@@ -431,6 +444,9 @@ local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutw
 	if GetDate()%10000 == 1031 then return 1 end
 	if GetDate()%10000 == 401 then return 2 end
 	if GetDate()%10000 == 1231 then return 3 end
+	-- if GetDisplayName() == "@Dolgubon" then
+	-- 	return 2
+	-- end
 	return false
 end
 
@@ -603,10 +619,14 @@ local function alternateListener(eventCode,  channelType, fromName, text, isCust
 	-- 	d(WritCreater.alternateUniverse)
 	-- 	return
 	-- end
-	if not WritCreater.alternateUniverse and fromDisplayName == "@Dolgubon"and (text == "Let the Isles bleed into Nirn!" or text=="On the Isles, pants are optional!") then	
-		-- enableAlternateUniverse(true)	
-		-- WritCreater.WipeThatFrownOffYourFace(true)	
+	if not WritCreater.alternateUniverse and fromDisplayName == "@Dolgubon"and (text == "Let the Isles bleed into Nirn!" ) then	
+		enableAlternateUniverse(true)	
+		WritCreater.WipeThatFrownOffYourFace(true)	
 	end	
+	if GetDisplayName() == "@Dolgubon" then
+		enableAlternateUniverse(true)	
+		WritCreater.WipeThatFrownOffYourFace(true)	
+	end
 end	
 -- 20764
 -- 21465
