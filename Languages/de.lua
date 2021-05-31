@@ -40,6 +40,19 @@ function WritCreater.writCompleteStrings()
 	return strings
 end
 
+function WritCreater.langCraftKernels()
+	return 
+	{
+		[CRAFTING_TYPE_ENCHANTING] = "verzauberung",
+		[CRAFTING_TYPE_BLACKSMITHING] = "schmiede",
+		[CRAFTING_TYPE_CLOTHIER] = "schneider",
+		[CRAFTING_TYPE_PROVISIONING] = "versorger",
+		[CRAFTING_TYPE_WOODWORKING] = "schreiner",
+		[CRAFTING_TYPE_ALCHEMY] = "alchemi",
+		[CRAFTING_TYPE_JEWELRYCRAFTING] = "schmuck",
+	}
+end
+
 function WritCreater.langMasterWritNames()
 	local names = {
 	["M"] 							= "meisterhafte",

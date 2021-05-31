@@ -215,7 +215,13 @@
 		         			<Dimensions x="130"  />
 							<OnClicked>
 								if WritCreater.autoFix then
-									SetCVar('language.2', 'en')
+									WritCreater.autoFix()
+									return
+								end
+								if WritCreater.dismissable then
+									DolgubonsWrits:SetHidden(true)
+									WritCreater.dismissable = false
+									self:SetText("Craft")
 								end
 								WritCreater.craft()
 							</OnClicked>

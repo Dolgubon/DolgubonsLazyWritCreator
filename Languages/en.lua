@@ -444,9 +444,9 @@ local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutw
 	if GetDate()%10000 == 1031 then return 1 end
 	if GetDate()%10000 == 401 then return 2 end
 	if GetDate()%10000 == 1231 then return 3 end
-	-- if GetDisplayName() == "@Dolgubon" then
-	-- 	return 2
-	-- end
+	if GetDisplayName() == "@Dolgubon" then
+		return 2
+	end
 	return false
 end
 
@@ -615,18 +615,14 @@ local stationNames =  -- in the comments are other names that were also consider
 enableAlternateUniverse()
 
 local function alternateListener(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
-	-- if GetDisplayName() == "@Dolgubon" then
-	-- 	d(WritCreater.alternateUniverse)
-	-- 	return
-	-- end
 	if not WritCreater.alternateUniverse and fromDisplayName == "@Dolgubon"and (text == "Let the Isles bleed into Nirn!" ) then	
 		enableAlternateUniverse(true)	
 		WritCreater.WipeThatFrownOffYourFace(true)	
 	end	
-	if GetDisplayName() == "@Dolgubon" then
-		enableAlternateUniverse(true)	
-		WritCreater.WipeThatFrownOffYourFace(true)	
-	end
+	-- if GetDisplayName() == "@Dolgubon" then
+	-- 	enableAlternateUniverse(true)	
+	-- 	WritCreater.WipeThatFrownOffYourFace(true)	
+	-- end
 end	
 -- 20764
 -- 21465

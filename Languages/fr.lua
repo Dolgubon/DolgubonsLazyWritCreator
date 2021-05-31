@@ -37,6 +37,38 @@ function WritCreater.writCompleteStrings()
 	return strings
 end
 
+
+local function myLower(str)
+	return zo_strformat("<<z:1>>",str)
+end
+
+function WritCreater.langCraftKernels()
+	return 
+	{
+		["enchante"] = CRAFTING_TYPE_ENCHANTING,
+		["forge"] = CRAFTING_TYPE_BLACKSMITHING,
+		["couture"] = CRAFTING_TYPE_CLOTHIER,
+		["tailleur"] = CRAFTING_TYPE_CLOTHIER,
+		["cuisine"] = CRAFTING_TYPE_PROVISIONING,
+		["bois"] = CRAFTING_TYPE_WOODWORKING,
+		["alchimi"] = CRAFTING_TYPE_ALCHEMY,
+		["joaillier"] = CRAFTING_TYPE_JEWELRYCRAFTING,
+	}
+end
+
+function WritCreater.getWritAndSurveyType()
+	if not WritCreater.langCraftKernels then return end
+	
+	local kernels = WritCreater.langCraftKernels()
+	local craftType
+	for kernel, craft in pairs(kernels) do
+		if string.find(myLower(itemName), myLower(kernel)) then
+			craftType = craft
+		end
+	end
+	return craftType
+end
+
 function WritCreater.langMasterWritNames()
 	local names = {
 	["M"] 							= "magistral",

@@ -584,6 +584,9 @@ local function enchantCrafting(info, quest,add)
 			end
 		elseif conditions["text"][i] =="" then
 
+		elseif conditions["cur"][i] == conditions["max"][i] and conditions["cur"][i] == 1 then
+			writCompleteUIHandle()
+			return
 		else
 			if FindFirstEmptySlotInBag(BAG_BACKPACK) ==nil then
 				writCompleteUIHandle()
@@ -672,7 +675,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100034
+	local currentAPIVersionOfAddon = 100035
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

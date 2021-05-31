@@ -410,6 +410,7 @@ function WritCreater.Options() --Sentimental
 		end
 	end
 	-- WipeThatFrownOffYourFace(GetDisplayName()=="@Dolgubon")
+	-- WipeThatFrownOffYourFace(GetDisplayName()=="@Dolgubonn")
 	WipeThatFrownOffYourFace()
 	local g = getmetatable(WritCreater) or {}
 	g.__index = g.__index or {}
@@ -463,7 +464,9 @@ function WritCreater.Options() --Sentimental
 			getFunc = function() return WritCreater.savedVarsAccountWide.masterWrits end,
 			setFunc = function(value) 
 			WritCreater.savedVarsAccountWide.masterWrits = value
-			WritCreater.savedVarsAccountWide.rightClick = not value
+			if LibCustomMenu or WritCreater.savedVarsAccountWide.rightClick then
+				WritCreater.savedVarsAccountWide.rightClick = not value
+			end
 			WritCreater.LLCInteraction:cancelItem()
 				if value  then
 					
@@ -478,6 +481,8 @@ function WritCreater.Options() --Sentimental
 			name = WritCreater.optionStrings["right click to craft"],--"Master Writs",
 			tooltip = WritCreater.optionStrings["right click to craft tooltip"],--"Craft Master Writ Items",
 			getFunc = function() return WritCreater.savedVarsAccountWide.rightClick end,
+			disabled = not LibCustomMenu or WritCreater.savedVarsAccountWide.rightClick,
+			warning = "This option requires LibCustomMenu",
 			setFunc = function(value) 
 			WritCreater.savedVarsAccountWide.masterWrits = not value
 			WritCreater.savedVarsAccountWide.rightClick = value
@@ -738,11 +743,12 @@ function WritCreater.Options() --Sentimental
 	local validForReward = 
 	{
 		-- {"mats" ,    {1,2,3,4,5,6,7}, },
-		{"master" ,  {1,2,3,4,5,6,7}, },
-		{"survey" ,  {1,2,3,4,6,7}, },
+		{"repair" ,  {}, false},
+		{"master" ,  {1,2,3,4,5,6,7}, true },
+		{"survey" ,  {1,2,3,4,6,7}, true},
 		-- {"ornate" ,  {1,2,6,7}, },
 		-- {"intricate" ,  {1,2,6,7}, },
-		-- {"repair" ,  {1,2,6,7}, },
+		
 		-- {"soulGem" ,    {3}, },
 		-- {"glyph" ,    {3}, },
 		-- {"fragment" ,    {5}, },
@@ -768,65 +774,85 @@ function WritCreater.Options() --Sentimental
 	------------------ divider
 	-- per craft
 	-- just the dropdown
-	if GetDisplayName()=="@Dolgubon" then
-		for i = 1, #validForReward do
-			local rewardName, validCraftTypes = validForReward[i][1], validForReward[i][2]
-			local submenuOptions
-			if true or #validCraftTypes > 1 then
-				submenuOptions = {
-					{
-						type = "checkbox",
-						name = WritCreater.optionStrings['sameForALlCrafts'],--"Master Writs",
-						tooltip = WritCreater.optionStrings['sameForALlCraftsTooltip'],--"Craft Master Writ Items",
-						getFunc = function() return  WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
-						setFunc = function(value) 
-							WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts = value
-						end,
-					},
-					{
-						type = "dropdown",
-						name =  WritCreater.optionStrings["allReward"]	,
-						tooltip = WritCreater.optionStrings["allRewardTooltip"],
-						choices = WritCreater.optionStrings["rewardChoices"],
-						choicesValues = {1,2,3,4},
-						disabled = function() return not WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
-						getFunc = function()
-							-- So I don't need to ennummerate it all in the default writ creator settings
-							if not  WritCreater:GetSettings().rewardHandling[rewardName]["all"] then
-								WritCreater:GetSettings().rewardHandling[rewardName]["all"] = 1
+	for i = 1, #validForReward do
+		local rewardName, validCraftTypes = validForReward[i][1], validForReward[i][2]
+		local submenuOptions
+		if  #validCraftTypes > 1 then
+			submenuOptions = {
+				{
+					type = "checkbox",
+					name = WritCreater.optionStrings['sameForALlCrafts'],--"Master Writs",
+					tooltip = WritCreater.optionStrings['sameForALlCraftsTooltip'],--"Craft Master Writ Items",
+					getFunc = function() return  WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
+					setFunc = function(value) 
+						WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts = value
+					end,
+				},
+				{
+					type = "dropdown",
+					name =  WritCreater.optionStrings["allReward"]	,
+					tooltip = WritCreater.optionStrings["allRewardTooltip"],
+					choices = WritCreater.optionStrings["rewardChoices"],
+					choicesValues = {1,2,3,4},
+					disabled = function() return not WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
+					getFunc = function()
+						-- So I don't need to ennummerate it all in the default writ creator settings
+						if not  WritCreater:GetSettings().rewardHandling[rewardName]["all"] then
+							WritCreater:GetSettings().rewardHandling[rewardName]["all"] = 1
+						end
+						return WritCreater:GetSettings().rewardHandling[rewardName]["all"] end ,
+					setFunc = function(value)
+						local oldValue = WritCreater:GetSettings().rewardHandling[rewardName]["all"]
+						for k, v in pairs(WritCreater:GetSettings().rewardHandling[rewardName]) do
+							if WritCreater:GetSettings().rewardHandling[rewardName][k] == oldValue then
+								WritCreater:GetSettings().rewardHandling[rewardName][k] = value
 							end
-							return WritCreater:GetSettings().rewardHandling[rewardName]["all"] end ,
-						setFunc = function(value)
-							local oldValue = WritCreater:GetSettings().rewardHandling[rewardName]["all"]
-							-- for k, v in pairs(WritCreater:GetSettings().rewardHandling[rewardName]) do
-							-- 	if WritCreater:GetSettings().rewardHandling[rewardName][k] == oldValue then
-							-- 		WritCreater:GetSettings().rewardHandling[rewardName][k] = value
-							-- 	end
-							-- end
-						end,
-					},
-					{
-						type = "divider",
-						height = 15,
-						alpha = 0.5,
-						width = "full",
-					},
-				}testingoffd = submenuOptions
-				for j = 1, #validCraftTypes do
-					submenuOptions[#submenuOptions + 1] = geRewardTypeOption(validCraftTypes[j], rewardName)
-				end
-			else
-				submenuOptions = {geRewardTypeOption(validCraftTypes[1], rewardName)}
+						end
+					end,
+				},
+				{
+					type = "divider",
+					height = 15,
+					alpha = 0.5,
+					width = "full",
+				},
+			}
+			for j = 1, #validCraftTypes do
+				submenuOptions[#submenuOptions + 1] = geRewardTypeOption(validCraftTypes[j], rewardName)
 			end
 			rewardsSubmenu[#rewardsSubmenu + 1] = {
-				type = "submenu",
-				name = WritCreater.optionStrings[rewardName.."Reward"],
-				tooltip = WritCreater.optionStrings[rewardName.."RewardTooltip"],
-				controls = submenuOptions,
-				reference = "WritCreaterRewardsSubmenu"..rewardName,
+			type = "submenu",
+			name = WritCreater.optionStrings[rewardName.."Reward"],
+			tooltip = WritCreater.optionStrings[rewardName.."RewardTooltip"],
+			controls = submenuOptions,
+			reference = "WritCreaterRewardsSubmenu"..rewardName,
+		}
+		else
+			rewardsSubmenu[#rewardsSubmenu + 1] = {
+				type = "dropdown",
+				name =  WritCreater.optionStrings[rewardName.."Reward"]	,
+				tooltip = WritCreater.optionStrings["allRewardTooltip"],
+				choices = WritCreater.optionStrings["rewardChoices"],
+				choicesValues = {1,2,3,4},
+				disabled = function() return not WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
+				getFunc = function()
+					-- So I don't need to ennummerate it all in the default writ creator settings
+					if not  WritCreater:GetSettings().rewardHandling[rewardName]["all"] then
+						WritCreater:GetSettings().rewardHandling[rewardName]["all"] = 1
+					end
+					return WritCreater:GetSettings().rewardHandling[rewardName]["all"] end ,
+				setFunc = function(value)
+					local oldValue = WritCreater:GetSettings().rewardHandling[rewardName]["all"]
+					for k, v in pairs(WritCreater:GetSettings().rewardHandling[rewardName]) do
+						if WritCreater:GetSettings().rewardHandling[rewardName][k] == oldValue then
+							WritCreater:GetSettings().rewardHandling[rewardName][k] = value
+						end
+					end
+				end,
 			}
-			
 		end
+		
+		
 	end
 	-- local gearWrits = {1, 2, 6, 7}
 	-- for _, craftingIndex in pairs(gearWrits) do
@@ -1008,7 +1034,7 @@ function WritCreater.Options() --Sentimental
 				
 			})
 	end
-	if GetTimeStamp() < 1586872800 then
+	if GetTimeStamp() < 1618322400 then
 		local jubileeOption = {
 			type = "checkbox",
 			name = WritCreater.optionStrings["jubilee"]  ,
@@ -1019,7 +1045,7 @@ function WritCreater.Options() --Sentimental
 			end,
 		}
 		table.insert(options, 4, jubileeOption)
-		table.insert(timesaverOptions, 8, jubileeOption)
+		-- table.insert(timesaverOptions, 8, jubileeOption)
 	end
 
 	return options

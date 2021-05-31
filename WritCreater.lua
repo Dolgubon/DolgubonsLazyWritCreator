@@ -101,6 +101,7 @@ WritCreater.defaultAccountWide = {
 		-- ["petBegone"] = 1,
 	},
 	["notifyWiped"] = true,
+	["alternateUniverse"] = true,
 	["accountWideProfile"] = WritCreater.default,
 	["masterWrits"] = true,
 	["identifier"] = math.random(1000),
@@ -273,12 +274,19 @@ local backdrop = DolgubonsWrits
 local craftInfo
 
 
-local function mandatoryRoadblockOut(string)
+local function mandatoryRoadblockOut(string, showCraftButton)
 	DolgubonsWritsBackdropOutput:SetText(string)
 	DolgubonsWrits:SetHidden(false)
 	DolgubonsWritsBackdropOutput.SetText = function() end
-	DolgubonsWritsBackdropCraft:SetHidden (true)
+	DolgubonsWritsBackdropCraft:SetHidden (not showCraftButton)
 	DolgubonsWritsBackdropCraft.SetHidden = function() end
+end
+
+local function dismissableRoadblock(string, showCraftButton)
+	DolgubonsWritsBackdropOutput:SetText(string)
+	DolgubonsWrits:SetHidden(false)
+	DolgubonsWritsBackdropCraft:SetHidden (not showCraftButton)
+	WritCreater.dismissable = true
 end
 
 -- Method for @silvereyes to overwrite and cancel exiting the station
@@ -536,6 +544,25 @@ local function initializeLibraries()
 
 		mandatoryRoadblockOut("You have an old version of LibLazyCrafting loaded. Please obtain the newest version of the library by downloading it from esoui or minion")
 	end
+
+	if WritCreater.savedVarsAccountWide.rightClick and not LibCustomMenu then
+		-- WritCreater.savedVarsAccountWide.rightClick = false
+		-- WritCreater.savedVarsAccountWide.masterWrits = true
+		dismissableRoadblock("To use the master writ right click to craft option, you must have LIbCustomMenu turned on. The option has been turned off, and to re-enable it, you'll need to install and turn on LibCustomMenu", true)
+		-- dismissableRoadblock("It looks like you had the right click to craft option turned ON. Unfortunately, this feature has been discontinued. ")
+		-- WritCreater.autoFix = function() 
+		-- 	local manager = GetAddOnManager()
+		-- 	for i =1 , manager:GetNumAddOns() do
+		-- 		if manager:GetAddOnInfo(i) =="LibCustomMenu" then
+		-- 			manager:SetAddOnEnabled(i, true)
+		-- 			ReloadUI()
+		-- 			return
+		-- 		end
+		-- 	end
+		-- 	d("Could not find LibCustomMenu")
+		-- end
+		DolgubonsWritsBackdropCraft:SetText("Close")
+	end
 	
 	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(event, station, result)
 	if event == LLC_CRAFT_SUCCESS then 
@@ -548,15 +575,21 @@ local function initializeLibraries()
 	if event == LLC_CRAFT_SUCCESS then 
 		WritCreater.writItemCompletion(event, station, result,...) 
 	 end end, nil, function()return WritCreater:GetSettings().styles end )
-
+	
 	local buttonInfo = 
 	{0,5000,50000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url",{"https://www.patreon.com/Dolgubon", "Patreon"}
 	}
+	if WritCreater.savedVarsAccountWide.total > 50000 then
+		table.insert(buttonInfo, 4, {WritCreater.savedVarsAccountWide.total, "1g/writ completed", true})
+	end
+	if WritCreater.savedVarsAccountWide.total > 5000 then
+		table.insert(buttonInfo,3,  {WritCreater.savedVarsAccountWide.total, "1g/writ completed", true})
+	end
 	local feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also donate through Paypal or on Patreon"
 	if GetWorldName() == "NA Megaserver" then
-		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit Maze 1"}
-		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 9) end, "Visit Maze 2"}
-		feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house, or donate through Paypal or on Patreon."
+		-- buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit Maze 1"}
+		-- buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 9) end, "Visit Maze 2"}
+		-- feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house, or donate through Paypal or on Patreon."
 	end
 	local orP=JumpToSpecificHouse
 	local function rep(f, c)
@@ -610,9 +643,8 @@ local function initializeLocalization()
 			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing your language file. Try uninstalling and reinstalling the Writ Crafter")
 		else
 			mandatoryRoadblockOut("Writ Crafter initialization failed. Your game is currently set to the language "..GetCVar("language.2")..
-				" but you do not have the patch for that language installed (if it exists). Uninstall all "..GetCVar("language.2").." addons or patches, then click the button")
-			WritCreater.autoFix = true
-			DolgubonsWritsBackdropCraft:SetHidden(false)
+				" but you do not have the patch for that language installed (if it exists). Uninstall all "..GetCVar("language.2").." addons or patches, then click the button", true)
+			WritCreater.autoFix = function() SetCVar('language.2', 'en') end
 			DolgubonsWritsBackdropCraft:SetText("Apply Auto Fix")
 		end
 		return 
@@ -671,7 +703,7 @@ function WritCreater:Initialize()
 	DolgubonsWrits:SetHidden(true)
 	
 	initializeLocalization()
-
+	initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
 	local fail,c = pcall(initializeLibraries)
 	if not fail then
 		dbug(fail)
@@ -681,7 +713,7 @@ function WritCreater:Initialize()
 		dbug(" - To uninstall, right click the addon in Minion, and choose uninstall")
 		dbug("2. Then, reinstall the Writ Crafter, and reinstall the RU patch if desired.")
 	else
-		initializeOtherStuff() -- Catch all for a ton of stuff to make this function less cluttered
+		
 		initializeUI()
 		initializeMainEvents()
 		WritCreater.setupAlchGrabEvents()

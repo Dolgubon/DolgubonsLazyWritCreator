@@ -16,6 +16,23 @@ function WritCreater.language()
 
 end
 
+local function myLower(str)
+	return zo_strformat("<<z:1>>",str)
+end
+
+function WritCreater.getWritAndSurveyType()
+	if not WritCreater.langCraftKernels then return end
+
+	local kernels = WritCreater.langCraftKernels()
+	local craftType
+	for craft, kernel in pairs(kernels) do
+		if string.find(myLower(itemName), myLower(kernel)) then
+			craftType = craft
+		end
+	end
+	return craftType
+end
+
 local function proper(str)
 	if type(str)== "string" then
 		return zo_strformat("<<C:1>>",str)
@@ -178,7 +195,7 @@ WritCreater.optionStrings["new container tooltip"]						= "Keep the new status f
 WritCreater.optionStrings["master"]										= "Master Writs"
 WritCreater.optionStrings["master tooltip"]								= "If this is ON the addon will craft Master Writs you have active"
 WritCreater.optionStrings["right click to craft"]						= "Right Click to Craft"
-WritCreater.optionStrings["right click to craft tooltip"]				= "If this is ON the addon will craft Master Writs you tell it to craft after right clicking a sealed writ"
+WritCreater.optionStrings["right click to craft tooltip"]				= "If this is ON the addon will craft Master Writs you tell it to craft after right clicking a sealed writ. Turn LibCustomMenu on to enable"
 WritCreater.optionStrings["crafting submenu"]							= "Trades to Craft"
 WritCreater.optionStrings["crafting submenu tooltip"]					= "Turn the addon off for specific crafts"
 WritCreater.optionStrings["timesavers submenu"]							= "Timesavers"
@@ -258,7 +275,8 @@ WritCreater.optionStrings["fragmentRewardTooltip"]						= "What to do with psiji
 WritCreater.optionStrings["writRewards submenu"]						= "Writ Reward Handling"
 WritCreater.optionStrings["writRewards submenu tooltip"]				= "What to do with all the rewards from writs"
 
-
+WritCreater.optionStrings["jubilee"]									= "Loot Anniversary Boxes"
+WritCreater.optionStrings["jubilee tooltip"]							= "Auto Loot Anniversary Boxes"
 
 
 WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk", "Destroy"}

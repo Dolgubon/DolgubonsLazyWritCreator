@@ -4,10 +4,10 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Writ Creator v3.0.0
-## APIVersion: 100034 100033
+## Title: Dolgubon's Lazy Writ Creator v3.0.7
+## APIVersion: 100035
 ## Author: Dolgubon
-## Version: 3.0.0
+## Version: 3.0.7
 ## DependsOn: LibAddonMenu-2.0 LibLazyCrafting
 ## OptionalDependsOn: LibAddonMenu-2.0 pChat LibLazyCrafting LibStub LibFeedback LibCustomMenu 
 ## SavedVariables: DolgubonsWritCrafterSavedVars
@@ -15,8 +15,6 @@
 libs\LibCustomTitles\LibCustomTitles.lua
 
 libs\LibFeedback\feedback.lua
-
-libs\LibCustomMenu\LibCustomMenu.lua
 
 HelperFunctions.lua
 LootHandler.lua

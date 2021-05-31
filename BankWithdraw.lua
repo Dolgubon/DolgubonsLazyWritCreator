@@ -356,7 +356,7 @@ local function runProcessDeposits()
 					if IsProtectedFunction("RequestMoveItem") then
 						CallSecureProtected("RequestMoveItem", itemInfo[3], itemInfo[4], bag,destinationSlot,1)
 					else
-						RequestMoveItem(itemInfo[3], itemInfo[4], bag,destinationSlot,1)
+						RequestMoveItem(itemInfo[3], itemInfo[4], bag,destinationSlot,itemInfo[5])
 					end
 					d("Writ Crafter: Depositing "..itemInfo[1])
 					WritCreater.pendingItemActions[k] = nil
