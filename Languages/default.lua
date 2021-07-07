@@ -20,9 +20,9 @@ local function myLower(str)
 	return zo_strformat("<<z:1>>",str)
 end
 
-function WritCreater.getWritAndSurveyType()
+function WritCreater.getWritAndSurveyType(link)
 	if not WritCreater.langCraftKernels then return end
-
+	local itemName = GetItemLinkName(link)
 	local kernels = WritCreater.langCraftKernels()
 	local craftType
 	for craft, kernel in pairs(kernels) do

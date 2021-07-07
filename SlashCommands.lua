@@ -353,6 +353,10 @@ SLASH_COMMANDS['/dlwcfindwrit'] = findWrits
 if WritCreater.needTranslations and GetTimeStamp()<1590361774 then
 	SLASH_COMMANDS['/writcraftertranslations'] = goToTranslationSite
 end
+if GetDisplayName() == "@Dolgubon" then
+	SLASH_COMMANDS['/loothirelings'] = function() SLASH_COMMANDS['/dcsbar']("lootmail") end
+end
+
 -- local bags2 = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 -- 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 -- local function newBagTable()

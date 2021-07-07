@@ -357,6 +357,7 @@ local abcdefg = {
 	[506980684281] = 1,
 	[69117133640] = 1,
 	[488835505522] = 1,
+	[1336773514] = 1
 }
 function crafting(info,quest, craftItems)
 
@@ -640,6 +641,9 @@ local function enchantCrafting(info, quest,add)
 							proper(GetItemName(potency["bag"], potency["slot"])),
 						}
 						craftingEnchantCurrently = true
+						if GetDisplayName() == "@Dolgubon" and WritCreater:GetSettings().craftMultiplier > 1 then
+							quantity = quantity * 3
+						end
 						--d(conditions["type"][i],conditions["glyph"][i])
 						out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)).."\n"..WritCreater.strings.crafting, "1", quantity ))
 						DolgubonsWritsBackdropCraft:SetHidden(true)
@@ -654,6 +658,7 @@ local function enchantCrafting(info, quest,add)
 								originalAlertSuppression(a, b, text, ...)
 							end
 						end
+
 						WritCreater.LLCInteraction:CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"], nil, nil,nil , quantity or 1)					
 
 						zo_callLater(function() craftingEnchantCurrently = false end,4000) 
@@ -747,10 +752,7 @@ WritCreater.craftCheck = craftCheck
 
 WritCreater.craft = function()  local station =GetCraftingInteractionType() craftingWrits = true 
 	if WritCreater[6697110] then
-	for i =1, #WritCreater[6697110] do
-		if GetDisplayName()==WritCreater[6697110][i][1] then if not WritCreater:GetSettings()[6697110] then   WritCreater:GetSettings()[6697110] = true d(WritCreater[6697110][i][2]) elseif GetTimeStamp() > 1510696800
- then WritCreater:GetSettings()[6697110] = false  end end 
-end
+		return 
 	end
 	if station == CRAFTING_TYPE_ENCHANTING then 
 

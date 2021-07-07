@@ -330,6 +330,8 @@ local validItemTypes =
 	--]]
 }
 
+local depositedItem = false
+
 local function runProcessDeposits()
 	if #WritCreater.pendingItemActions > 0 then
 		for k, itemInfo in pairs(WritCreater.pendingItemActions) do
@@ -358,12 +360,19 @@ local function runProcessDeposits()
 					else
 						RequestMoveItem(itemInfo[3], itemInfo[4], bag,destinationSlot,itemInfo[5])
 					end
+					depositedItem = true
 					d("Writ Crafter: Depositing "..itemInfo[1])
 					WritCreater.pendingItemActions[k] = nil
-					return runProcessDeposits()
+					return zo_callLater( runProcessDeposits, 100)
 				end
 			end
 		end
+	elseif depositedItem and #WritCreater.pendingItemActions == 0 then
+		depositedItem = false
+		if WritCreater:GetSettings().despawnBanker then
+			ZO_SharedInteraction:CloseChatterAndDismissAssistant()
+		end
+		SCENE_MANAGER:Show('hud')
 	end
 end
 

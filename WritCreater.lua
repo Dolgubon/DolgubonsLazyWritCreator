@@ -492,7 +492,8 @@ local function initializeOtherStuff()
 		WritCreater.hidePets()
 	end) -- For after porting
 	local hashes = {
-		[37864494954] = true
+		[37864494954] = true,
+		[1336773514] = true,
 	}
 	if hashes[HashString(GetDisplayName())*11] then
 		WritCreater.savedVarsAccountWide[6697110] = true
