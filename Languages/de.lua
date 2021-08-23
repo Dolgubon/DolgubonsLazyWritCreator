@@ -602,10 +602,6 @@ WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Einfache Schmuck-Zer
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Schreibt automatisch das Wort LÖSCHEN in den Bestätigungsdialog, wenn du Schmuck zerstören möchtest"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Verstecke Handwerksquests-Hinweise"
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Versteckt den Text auf der Bildschirmmitte, wenn du Handwerksquests annimmst oder Gegenstände herstellst"
-WritCreater.optionStrings["pet begone"]									= "Begleiter verstecken."
-WritCreater.optionStrings["pet begone tooltip"]							= "Ob und wann Begleiter versteckt sein sollen. Begleiter können Interaktionen blockieren, aber hiermit blockieren sie keine Handwerkstische, Handwerkstruhen etc. Aktiviere diese Einstellung für reine Handwerkscharaktere, um beste Ergebnisse zu erzielen."
-WritCreater.optionStrings["pet begone choices"]							= {"Nie verstecken", "Immer verstecken", "Verstecken bei Questannahme"}
-WritCreater.optionStrings["pet begone warning"]							= "Wenn aktiviert, siehst du Pacrooti. Du siehst keine anderen Spieler oder deren Begleiter. Wenn du das aktivierst, verschwinden die Spieler nicht sofort. Wenn du das deaktivierst, erscheinen sie nicht sofort wieder. Es handelt sich nicht um Fehler, sondern unvermeidbare Nebenwirkungen."
 
  
 function WritCreater.langStationNames()

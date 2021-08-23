@@ -73,9 +73,7 @@ WritCreater.default =
 	['EZJewelryDestroy'] = true,
 	['suppressQuestAnnouncements'] = true,
 	['despawnBanker'] = true,
-	['petBegone'] = 1,
 	["updateChoiceCopies"]= {
-		["petBegone"] = false,
 	},
 	["keepQuestBuffer"] = false,
 	["craftMultiplier"] = 1,
@@ -95,10 +93,8 @@ WritCreater.default =
 
 WritCreater.defaultAccountWide = {
 	["updateNoticesShown"]={
-		["petBegone"] = false,
 	},
 	["updateDefaultCopyValue"]= {
-		-- ["petBegone"] = 1,
 	},
 	["notifyWiped"] = true,
 	["alternateUniverse"] = true,
@@ -488,9 +484,6 @@ local function initializeOtherStuff()
 	--if GetDisplayName() == "@Dolgubon" then EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_MAIL_READABLE, 
 		--function(event, code) local displayName,_,subject =  GetMailItemInfo(code) WritCreater.savedVarsAccountWide["mails"]  d(displayName) d(subject) d(ReadMail(code)) end) end
 
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."PlayerActivated_PetBegone", EVENT_PLAYER_ACTIVATED, function()
-		WritCreater.hidePets()
-	end) -- For after porting
 	local hashes = {
 		[37864494954] = true,
 		[1336773514] = true,
@@ -750,36 +743,6 @@ function WritCreater.OnAddOnLoaded(event, addonName)
 end
 
 EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_ADD_ON_LOADED, WritCreater.OnAddOnLoaded)
-
-function WritCreater.hidePets()
-	if HideGroup and (IsActiveWorldBattleground() or IsPlayerInAvAWorld() or GetCurrentZoneDungeonDifficulty()~=0) then
-		return
-	end
-
-	if HideGroup and HideGroup.savedVariables and HideGroup.savedVariables.HideState then
-		d("Hiding cause of hide group")
-		SetCrownCrateNPCVisible(true)
-	end
-	if WritCreater:GetSettings().petBegone == 1 or IsActiveWorldBattleground() or IsPlayerInAvAWorld() or GetCurrentZoneDungeonDifficulty()~=0 then
-		SetCrownCrateNPCVisible(false)
-		return
-	end
-
-	if WritCreater:GetSettings().petBegone == 2 then
-		SetCrownCrateNPCVisible(true)
-		return
-	end
-	if WritCreater:GetSettings().petBegone == 3 then
-		local _, writActive = WritCreater.writSearch()
-		if writActive then
-			SetCrownCrateNPCVisible(true)
-			return
-		else
-			SetCrownCrateNPCVisible(false)
-		end
-	end
-
-end
 
 
 

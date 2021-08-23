@@ -664,21 +664,6 @@ function WritCreater.Options() --Sentimental
 			end,
 		},
 		{
-			type = "dropdown",
-			name = WritCreater.optionStrings["pet begone"]	,
-			tooltip = WritCreater.optionStrings["pet begone tooltip"],
-			choices = WritCreater.optionStrings["pet begone choices"],
-			warning = WritCreater.optionStrings["pet begone warning"],
-			choicesValues = {1,2,3},
-			getFunc = function() return WritCreater:GetSettings().petBegone end ,
-			setFunc = function(value) 
-				WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone = value
-				WritCreater:GetSettings().petBegone = value
-				WritCreater.hidePets()
-				
-			end,
-		},
-		{
 			type = "checkbox",
 			name = WritCreater.optionStrings['questBuffer'],--"Master Writs",
 			tooltip = WritCreater.optionStrings['questBufferTooltip'],--"Craft Master Writ Items",

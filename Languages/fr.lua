@@ -582,10 +582,6 @@ WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Destruction de joail
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Ajouter automatiquement le texte de confirmation DETRUIRE à la boîte de dialogue de destruction de joaillerie"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Cacher les annonces de quête des commandes"
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Cache le texte au centre de l’écran quand vous commencez une commande, ou que vous créez un objet pour une commande."
-WritCreater.optionStrings["pet begone"]									= "Cacher les familiers"
-WritCreater.optionStrings["pet begone tooltip"]							= "Contrôle si et quand les familiers doivent être cachés. Les familiers peuvent bloquer les interactions ; cette option les empêchera de bloquer les interactions avec les ateliers, les caisses de livraison des commandes, etc. Pour de meilleurs résultats, laissez-la toujours activée pour les personnages qui ne font que des commandes d’artisanat."
-WritCreater.optionStrings["pet begone choices"]							= {"Ne jamais cacher", "Toujours cacher", "Cacher lorsqu’on prend une quête"}
-WritCreater.optionStrings["pet begone warning"]							= "Quand cette option est activée, vous verrez Pacrooti. Vous ne verrez pas les autres joueurs, ni aucun familier de combat. Les joueurs ne disparaîtront pas instantanément au moment où cette option est activée, pas plus qu’il ne réapparaîtront immédiatement quand elle est désactivée. Ce ne sont pas des bugs, mais des effets de bord inévitables."
 
 
 function WritCreater.langStationNames()
