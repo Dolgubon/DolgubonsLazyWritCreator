@@ -245,9 +245,6 @@ local function queueRun()
 		zo_callLater(queueRun, 10)
 		--queueRun()
 	else
-		if wasItemInQueue then
-			WritCreater.DismissPets()
-		end
 		if wasItemInQueue and  WritCreater:GetSettings().autoCloseBank then
 			local function recursiveCall() 
 				zo_callLater(
@@ -371,8 +368,8 @@ local function runProcessDeposits()
 		depositedItem = false
 		if WritCreater:GetSettings().despawnBanker then
 			ZO_SharedInteraction:CloseChatterAndDismissAssistant()
+			SCENE_MANAGER:Show('hud')
 		end
-		SCENE_MANAGER:Show('hud')
 	end
 end
 

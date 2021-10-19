@@ -152,13 +152,11 @@ local function getPrice(itemInfo,estimateKey, craft)
 			end
 		end
 		if MasterMerchant then
-			local itemID = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
-			local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
-			local price = MasterMerchant:toolTipStats(itemID, itemIndex, true, nil, false)['avgPrice']
-			if price then
-				return price
-			end 
-		end
+        local itemStats = MasterMerchant:itemStats(itemLink, false)
+        if itemStats and itemStats.avgPrice then
+            return itemStats.avgPrice
+        end 
+    end
 		if TamrielTradeCentrePrice then
 			local t = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
 			if t and t.SuggestedPrice then

@@ -16,7 +16,6 @@ local completionStrings
 local function onWritComplete()
 	local zoneIndex = GetUnitZoneIndex("player")
 	local zoneId = GetZoneId(zoneIndex)
-	WritCreater.hidePets()
 	if WritCreater.savedVarsAccountWide.writLocations[zoneId] then
 		return
 	end
@@ -28,7 +27,6 @@ end
 
 -- Handles the dialogue where we actually complete the quest
 local function HandleQuestCompleteDialog(eventCode, journalIndex)
-	WritCreater.hidePets()
 	local writs = WritCreater.writSearch()
 	if not GetJournalQuestIsComplete(journalIndex) then return end
 	local currentWritDialogue 
@@ -186,52 +184,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 	end
 end
 
--- All the abilityIDs for pets that should not be near writ containers. Grrr
-local petIds = { 
-[23304]=true, [30631]=true, [30636]=true, [30641]=true, [23319]=true, [30647]=true, 
-[30652]=true, [30657]=true, [23316]=true, [30664]=true, [30669]=true, [30674]=true , 
-[24613]=true, [30581]=true, [30584]=true, [30587]=true, [24636]=true, [30592]=true, 
-[30595]=true, [30598]=true, [24639]=true, [30618]=true, [30622]=true, [30626]=true, 
-[85982]=true, [85983]=true, [85984]=true, [85985]=true, [85986]=true, [85987]=true, 
-[85988]=true, [85989]=true, [85990]=true, [85991]=true, [85992]=true, [85993]=true, }
 
-local function DismissPets()
-
-	-- Walk through the player's active buffs
-	for i = 1, GetNumBuffs("player") do
-		local _, _, _, buffSlot, _, _, _, _, _, _, abilityId, _ = GetUnitBuffInfo("player", i)
-		-- Compare each buff's abilityID to the list of IDs we were given
-		if petIds[abilityId] then
-			-- Cancel the buff if we got a match
-			CancelBuff(buffSlot)
-		end
-	end
-end
-
-WritCreater.DismissPets = DismissPets
-
-local function calculateDistance()
-	local watchedZones=	WritCreater.savedVarsAccountWide.writLocations
-	local zoneIndex = GetUnitZoneIndex("player")
-	local zoneId = GetZoneId(zoneIndex)
-	if not watchedZones[zoneId] then
-		return
-	end
-	if not watchedZones[zoneId][2] then return end
-	-- Pretty sure that means we're in a tracked zone so let's calculate!
-	local _,x,_, y = GetUnitWorldPosition("player")
-	x = watchedZones[zoneId][2] - x
-	y = watchedZones[zoneId][3] - y
-	local dist = x*x + y*y
-	local _, hasWrit = WritCreater.writSearch()
-	if not hasWrit then
-		dist = dist *2
-	end
-	if dist<(watchedZones[zoneId][4] or 0) then
-		DismissPets()
-	end
-	return dist
-end
 --[[
 WritCreater.savedVarsAccountWide.writLocations={
 WritCreater.savedVarsAccountWide.writLocations[645] =  {1011 , 146161, 341851, 1000000}, -- summerset
@@ -307,7 +260,6 @@ WritCreater.OnQuestAdvanced = OnQuestAdvanced
 
 local function OnQuestAdded(eventId, questIndex)
 
-	WritCreater.hidePets()
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
 		return 
 	end 
@@ -361,7 +313,6 @@ ZO_PreHook("AcceptSharedQuest", checkIfCanAcceptQuest)
 ZO_PreHook("AcceptOfferedQuest", checkIfCanAcceptQuest)
 
 function WritCreater.InitializeQuestHandling()
-	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."Pe(s)tControl", 1000, calculateDistance)
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CHATTER_BEGIN, HandleChatterBegin)
 	completionStrings = WritCreater.writCompleteStrings()
 	local original = AcceptOfferedQuest

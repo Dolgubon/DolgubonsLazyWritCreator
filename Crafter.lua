@@ -594,7 +594,6 @@ local function enchantCrafting(info, quest,add)
 				out("Your inventory is full!")
 				return
 			end
-			WritCreater.DismissPets()
 			incomplete = true
 			DolgubonsWritsBackdropQuestOutput:AddText(conditions["text"][i])
 			DolgubonsWritsBackdropCraft:SetHidden(false)
@@ -680,7 +679,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 100035
+	local currentAPIVersionOfAddon = 101032
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 
@@ -723,7 +722,6 @@ local function craftCheck(eventcode, station)
 			writs = WritCreater.writSearch()
 
 			if WritCreater:GetSettings()[station] and writs[station] then
-				WritCreater.DismissPets()
 				if station == CRAFTING_TYPE_ENCHANTING then
 
 					DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
@@ -758,7 +756,6 @@ WritCreater.craft = function()  local station =GetCraftingInteractionType() craf
 
 		local writs, hasWrits = WritCreater.writSearch()
 		if hasWrits then
-			WritCreater.DismissPets()
 			enchantCrafting(craftInfo[CRAFTING_TYPE_ENCHANTING],writs[CRAFTING_TYPE_ENCHANTING],craftingWrits)
 		end
 

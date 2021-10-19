@@ -103,8 +103,9 @@ local function lootOutput(itemLink, itemType, quantity, isAnniversary)
 		end
 		if isAnniversary then
 			text = text.. " (Anniversary Box)"
+		else
+			d(text)
 		end
-		d(text)
 	end
 end
 
@@ -561,13 +562,6 @@ function WritCreater.LootHandlerInitialize()
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
 			end )	
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
-	if false and not WritCreater.savedVarsAccountWide.updateNoticesShown.petBegone then
-		WritCreater.savedVarsAccountWide.updateNoticesShown.petBegone = true
-		WritCreater.showSettingsChoice("There's a new option to hide pets! Check it out in the settings menu in the timesavers section")
-	elseif false and  not WritCreater:GetSettings().updateChoiceCopies.petBegone and WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone then
-		WritCreater:GetSettings().petBegone = WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone
-		WritCreater:GetSettings().updateChoiceCopies.petBegone = true
-	end
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end

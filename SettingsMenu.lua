@@ -364,21 +364,6 @@ end
 			end,
 		},
 		{
-			type = "dropdown",
-			name = WritCreater.optionStrings["pet begone"]	,
-			tooltip = WritCreater.optionStrings["pet begone tooltip"],
-			choices = WritCreater.optionStrings["pet begone choices"],
-			warning = WritCreater.optionStrings["pet begone warning"],
-			choicesValues = {1,2,3},
-			getFunc = function() return WritCreater:GetSettings().petBegone end ,
-			setFunc = function(value) 
-				WritCreater.savedVarsAccountWide.updateDefaultCopyValue.petBegone = value
-				WritCreater:GetSettings().petBegone = value
-				WritCreater.hidePets()
-				
-			end,
-		},
-		{
 			type = "checkbox",
 			name = WritCreater.optionStrings['questBuffer'],--"Master Writs",
 			tooltip = WritCreater.optionStrings['questBufferTooltip'],--"Craft Master Writ Items",
@@ -397,6 +382,26 @@ end
 			getFunc = function() return  WritCreater:GetSettings().craftMultiplier end,
 			setFunc = function(value) 
 				WritCreater:GetSettings().craftMultiplier = value
+			end,
+		},
+		{
+			type = "dropdown",
+			name = WritCreater.optionStrings["hireling behaviour"]	,
+			tooltip = WritCreater.optionStrings["hireling behaviour tooltip"],
+			choices = WritCreater.optionStrings["hireling behaviour choices"],
+			choicesValues = {1,2,3},
+			getFunc = function() if WritCreater:GetSettings().mail.delete then return 2 elseif WritCreater:GetSettings().mail.loot then return 3 else return 1 end end,
+			setFunc = function(value) 
+				if value == 1 then 
+					WritCreater:GetSettings().mail.delete = false
+					WritCreater:GetSettings().mail.loot = false
+				elseif value == 2 then  
+					WritCreater:GetSettings().mail.delete = true
+					WritCreater:GetSettings().mail.loot = true
+				elseif value == 3 then
+					WritCreater:GetSettings().mail.delete = false
+					WritCreater:GetSettings().mail.loot = true
+				end
 			end,
 		},
 	}

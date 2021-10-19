@@ -41,6 +41,25 @@ local function proper(str)
 	end
 end
 
+WritCreater.hirelingMailSubjects = 
+{
+	["Raw Enchanter Materials"] = true ,
+	["Raw Clothier Materials"] = true ,
+	["Raw Blacksmith Materials"] = true ,
+	["Raw Woodworker Materials"] = true ,
+	["Raw Provisioner Materials"] = true ,
+	["Schreinermaterial"] = true,
+	["Versorgerzutaten"] = true,
+	["Schneidermaterial"] = true,
+	["Verzauberermaterial"] = true,
+	["Schmiedematerial"] = true,
+	["Matériaux bruts d'enchantement"] = true,
+	["Matériaux bruts de forge"] = true,
+	["Matériaux bruts de travail du bois"] = true,
+	["Matériaux bruts de couture"] = true,
+	["Matériaux bruts de cuisine"] = true,
+}
+
 WritCreater.lang = "none"
 
 -- This is in the default, so that if a new setting is added an error is not thrown, 
@@ -228,14 +247,14 @@ WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Writ De
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete Jewelry Writ dialog box"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Hide Writ Quest Announcements"
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Hides the text in the center of the screen when you start a writ or create an item for it"
-WritCreater.optionStrings["pet begone"]									= "Pet hiding"
-WritCreater.optionStrings["pet begone tooltip"]							= "Whether and when pets should be hidden. Pets can block interaction, but this will stop them from blocking interactions with crafting stations, writ turn-ins, etc. For best results, have it always on for writ-only toons"
-WritCreater.optionStrings["pet begone choices"]							= {"Never hide", "Always hide", "Hide on quest pickup"}
-WritCreater.optionStrings["pet begone warning"]							= "When on, you will see Pacrooti. You will not see any other players, or any combat pets. If it turns on, players will not disappear instantly. If it turns off, they will not re-appear instantly. These are not bugs, but unavoidable side effects."
 WritCreater.optionStrings["questBuffer"]								= "Writ Quest Buffer"
 WritCreater.optionStrings["questBufferTooltip"]							= "Keep a buffer of quests so you can always have room to pick up writs"
 WritCreater.optionStrings["craftMultiplier"]							= "Craft multiplier"
 WritCreater.optionStrings["craftMultiplierTooltip"]						= "Craft multiple copies of each required item so that you don't need to recraft them next time the writ comes up. Note: Save approximately 37 slots for each increase above 1"
+WritCreater.optionStrings['hireling behaviour']							= "Hireling Mail Actions"
+WritCreater.optionStrings['hireling behaviour tooltip']					= "What should be done with hireling mails"
+WritCreater.optionStrings['hireling behaviour choices']					= { "Nothing","Loot and Delete", "Loot only"}
+
 
 WritCreater.optionStrings["allReward"]									= "All Crafts"
 WritCreater.optionStrings["allRewardTooltip"]							= "Action to take for all crafts"
