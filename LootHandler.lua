@@ -103,8 +103,9 @@ local function lootOutput(itemLink, itemType, quantity, isAnniversary)
 		end
 		if isAnniversary then
 			text = text.. " (Anniversary Box)"
+		else
+			d(text)
 		end
-		d(text)
 	end
 end
 

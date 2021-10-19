@@ -684,6 +684,26 @@ function WritCreater.Options() --Sentimental
 				WritCreater:GetSettings().craftMultiplier = value
 			end,
 		},
+		{
+			type = "dropdown",
+			name = WritCreater.optionStrings["hireling behaviour"]	,
+			tooltip = WritCreater.optionStrings["hireling behaviour tooltip"],
+			choices = WritCreater.optionStrings["hireling behaviour choices"],
+			choicesValues = {1,2,3},
+			getFunc = function() if WritCreater:GetSettings().mail.delete then return 2 elseif WritCreater:GetSettings().mail.loot then return 3 else return 1 end end,
+			setFunc = function(value) 
+				if value == 1 then 
+					WritCreater:GetSettings().mail.delete = false
+					WritCreater:GetSettings().mail.loot = false
+				elseif value == 2 then  
+					WritCreater:GetSettings().mail.delete = true
+					WritCreater:GetSettings().mail.loot = true
+				elseif value == 3 then
+					WritCreater:GetSettings().mail.delete = false
+					WritCreater:GetSettings().mail.loot = true
+				end
+			end,
+		},
 	}
 
 ----------------------------------------------------

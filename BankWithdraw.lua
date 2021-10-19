@@ -368,8 +368,8 @@ local function runProcessDeposits()
 		depositedItem = false
 		if WritCreater:GetSettings().despawnBanker then
 			ZO_SharedInteraction:CloseChatterAndDismissAssistant()
+			SCENE_MANAGER:Show('hud')
 		end
-		SCENE_MANAGER:Show('hud')
 	end
 end
 

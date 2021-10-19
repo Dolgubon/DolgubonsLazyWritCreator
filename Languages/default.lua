@@ -41,6 +41,25 @@ local function proper(str)
 	end
 end
 
+WritCreater.hirelingMailSubjects = 
+{
+	["Raw Enchanter Materials"] = true ,
+	["Raw Clothier Materials"] = true ,
+	["Raw Blacksmith Materials"] = true ,
+	["Raw Woodworker Materials"] = true ,
+	["Raw Provisioner Materials"] = true ,
+	["Schreinermaterial"] = true,
+	["Versorgerzutaten"] = true,
+	["Schneidermaterial"] = true,
+	["Verzauberermaterial"] = true,
+	["Schmiedematerial"] = true,
+	["Matériaux bruts d'enchantement"] = true,
+	["Matériaux bruts de forge"] = true,
+	["Matériaux bruts de travail du bois"] = true,
+	["Matériaux bruts de couture"] = true,
+	["Matériaux bruts de cuisine"] = true,
+}
+
 WritCreater.lang = "none"
 
 -- This is in the default, so that if a new setting is added an error is not thrown, 
@@ -232,6 +251,10 @@ WritCreater.optionStrings["questBuffer"]								= "Writ Quest Buffer"
 WritCreater.optionStrings["questBufferTooltip"]							= "Keep a buffer of quests so you can always have room to pick up writs"
 WritCreater.optionStrings["craftMultiplier"]							= "Craft multiplier"
 WritCreater.optionStrings["craftMultiplierTooltip"]						= "Craft multiple copies of each required item so that you don't need to recraft them next time the writ comes up. Note: Save approximately 37 slots for each increase above 1"
+WritCreater.optionStrings['hireling behaviour']							= "Hireling Mail Actions"
+WritCreater.optionStrings['hireling behaviour tooltip']					= "What should be done with hireling mails"
+WritCreater.optionStrings['hireling behaviour choices']					= { "Nothing","Loot and Delete", "Loot only"}
+
 
 WritCreater.optionStrings["allReward"]									= "All Crafts"
 WritCreater.optionStrings["allRewardTooltip"]							= "Action to take for all crafts"

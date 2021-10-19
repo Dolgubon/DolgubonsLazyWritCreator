@@ -602,6 +602,9 @@ WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Einfache Schmuck-Zer
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Schreibt automatisch das Wort LÖSCHEN in den Bestätigungsdialog, wenn du Schmuck zerstören möchtest"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Verstecke Handwerksquests-Hinweise"
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Versteckt den Text auf der Bildschirmmitte, wenn du Handwerksquests annimmst oder Gegenstände herstellst"
+WritCreater.optionStrings['hireling behaviour']							= "Mitarbeiter Mail Aktionen"
+WritCreater.optionStrings['hireling behaviour tooltip']					= "Was sollte mit Mitarbeitermails geschehen?"
+WritCreater.optionStrings['hireling behaviour choices']					= { "Nichts", "Aufnehmen und löschen", "Nur aufnehmen"}
 
  
 function WritCreater.langStationNames()
