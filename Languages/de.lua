@@ -605,6 +605,9 @@ WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Versteckt de
 WritCreater.optionStrings['hireling behaviour']							= "Mitarbeiter Mail Aktionen"
 WritCreater.optionStrings['hireling behaviour tooltip']					= "Was sollte mit Mitarbeitermails geschehen?"
 WritCreater.optionStrings['hireling behaviour choices']					= { "Nichts", "Aufnehmen und löschen", "Nur aufnehmen"}
+WritCreater.optionStrings["skin"]										= "Writ Crafter Aussehen"
+WritCreater.optionStrings["skinTooltip"]								= "Das Aussehen der Writ Crafter Oberfläche"
+WritCreater.optionStrings["skinOptions"]								= {"Default", "Käsig"}
 
  
 function WritCreater.langStationNames()
@@ -612,6 +615,34 @@ function WritCreater.langStationNames()
 	{["Schmiedestelle"] = 1, ["Schneidertisch"] = 2, 
 	 ["Verzauberungstisch"] = 3,["Alchemietisch"] = 4, ["Feuerstelle"] = 5, ["Schreinerbank"] = 6, ["Schmuckhandwerkstisch"] = 7, }
 end
+
+WritCreater.cheeseyLocalizations
+=
+{
+	['reward'] = "-1 Vernunft",
+	['rewardStylized'] = "-1 |cFFFFFF[Vernunft]|",
+	['finalReward'] = "Vervollständige sie alle und finde es heraus!",
+	['menuName'] = "Käsigen",
+	['endeavorName'] = "Käsigen Bemühungen",
+	['tasks']={
+		{name="Bekenne deine Liebe zum Käse",completion = "Jetzt weiß die ganze Welt, wie sehr du Käse liebst!",
+			description="Sage 'Ich liebe Käse!' im Chat"},
+		{name = "Besuche Onkel Sheo", completion = "Onkel Sheo hat sich gefreut, dich zu sehen! Und er wr traurig. Und käsig. Und flott!",
+			description="Finde und sprich mit Sheogorath. Er ist ziemlich einsam und will dich wiedersehen!"},
+		{name = "Spiele etwas schreckliche Musik", completion = "Aua! Deine Ohren tun weh von dieser schrecklichen Musik.",
+			description="Benutze ein Musik emote"},
+		{name = "Wirf etwas Käse weg", completion = "Du hast etwas Käse weggeworfen. Es war wahrscheinlich sowieso schimmelig...",
+			description="Zerstöre 1 |H1:item:27057:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h. Ja, es ist verrückt, aber genau darum geht es!"},
+		{name = "Lies ein käsiges Buch", completion = "Was für eine herzerwärmende Socke. Käse - ach so, ich meinte Buch!",
+			description="Lies das Buch |H0:item:121046:364:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h"},
+		{name = "Schließe alle anderen käsigen Bemühungen ab", completion = "Käse! Käse! Überall Käse! Sogar... beim Schrieb herstellen?",
+		description="Sheogorath wird sich sehr freuen, wenn du alle vervollständigst!"},
+	},
+	['allComplete'] = "Alle käsigen Bemühungen abgeschlossen",
+	['chatbingo'] = "ichliebekase",
+	["cheatyCheeseBook"] = "Vielleicht wirst du verrückt, aber du scheinst dich nicht an dieses Buch zu erinnern..."
+
+}
 
 
 --"<<1>> erhalten"

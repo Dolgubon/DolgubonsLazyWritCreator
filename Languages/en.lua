@@ -432,7 +432,7 @@ end
 local DivineMats =
 {
 	{"Rusted Nails", "Ghost Robes", "","","", "Rotten Logs","Cursed Gold", "Chopped Liver", "Crumbled Gravestones", "Toad Eyes", "Werewolf Claws", "Zombie Guts", "Lizard Brains"},
-	{"Buzzers","Sock Puppets", "Jester Hats","Otter Noses", "Red Herrings", "Wooden Snakes", "Fool's Gold", "Mudpies"},
+	{"Buzzers","Sock Puppets", "Jester Hats","Otter Noses", "Red Herrings", "Wooden Snakes", "Gold Teeth", "Mudpies"},
 	{"Coal", "Stockings", "","","","Evergreen Branches", "Golden Rings", "Bottled Time", "Reindeer Bells", "Elven Hats", "Pine Needles", "Cups of Snow"},
 }
 
@@ -444,12 +444,12 @@ local function shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutw
 	if GetDate()%10000 == 1031 then return 1 end
 	if GetDate()%10000 == 401 then return 2 end
 	if GetDate()%10000 == 1231 then return 3 end
-	if GetDisplayName() == "@Dolgubon" then
+	if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Gitaelia" or GetDisplayName() == "@mithra62" or GetDisplayName() == "@PacoHasPants" then
 		return 2
 	end
 	return false
 end
-
+WritCreater.shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit = shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit
 
 
 local function wellWeShouldUseADivineMatButWeHaveNoClueWhichOneItIsSoWeNeedToAskTheGodsWhichDivineMatShouldBeUsed() local a= math.random(1, #DivineMats ) return DivineMats[a] end
@@ -616,7 +616,7 @@ enableAlternateUniverse()
 
 local function alternateListener(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
 	if not WritCreater.alternateUniverse and fromDisplayName == "@Dolgubon"and (text == "Let the Isles bleed into Nirn!" ) then	
-		enableAlternateUniverse(true)	
+		enableAlternateUniverse(true)
 		WritCreater.WipeThatFrownOffYourFace(true)	
 	end	
 	-- if GetDisplayName() == "@Dolgubon" then

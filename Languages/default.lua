@@ -296,7 +296,9 @@ WritCreater.optionStrings["writRewards submenu tooltip"]				= "What to do with a
 
 WritCreater.optionStrings["jubilee"]									= "Loot Anniversary Boxes"
 WritCreater.optionStrings["jubilee tooltip"]							= "Auto Loot Anniversary Boxes"
-
+WritCreater.optionStrings["skin"]										= "Writ Crafter Skin"
+WritCreater.optionStrings["skinTooltip"]								= "The skin for the Writ Crafter UI"
+WritCreater.optionStrings["skinOptions"]								= {"Default", "Cheesy"}
 
 WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk", "Destroy"}
 
@@ -305,3 +307,34 @@ findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.miss
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Craft items")
 																		-- CSA, ZO_Alert, chat message, window
 
+WritCreater.cheeseyLocalizations
+=
+{
+	['reward'] = "-1 Sanity",
+	['rewardStylized'] = "-1 |cFFFFFF[Sanity]|",
+	['finalReward'] = "Complete them all and find out!",
+	['menuName'] = "Cheesy",
+	['endeavorName'] = "Cheesy Endeavors",
+	['tasks']={
+		{name="Profess your love for cheese",completion = "Now the whole world knows how much you love cheese!",
+			description="Say 'I love cheese!' in chat"},
+		{name = "Visit Uncle Sheo", completion = "Uncle Sheo was happy to see you! And sad. And cheesy. And punchy!",
+			description="Find and talk to Sheogorath. He's pretty lonely and wants to see you again!"},
+		{name = "Play some terrible music", completion = "Ouch! Your ears hurt from that terrible music.",
+			description="Use a music emote"},
+		{name = "Throw away some cheese", completion = "You threw away some cheese. It was probably moldy anyway...",
+			description="Destroy 1 |H1:item:27057:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h. Yes, it's crazy, but that's the point!"},
+		{name = "Read a cheesy book", completion = "What a heartwarming sock. Cheese - no, I mean book!",
+			description="Read the book |H0:item:121046:364:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h"},
+		{name = "Complete all other Cheesy Endeavours", completion = "Cheese! Cheese! Cheese everywhere! Even... while doing writs?",
+		description="Sheogorath will be very pleased if you complete them all!"},
+	},
+	['allComplete'] = "All cheesy endeavors completed!",
+	['chatbingo'] = "ilovecheese",
+	["cheatyCheeseBook"] = "Maybe you're going crazy, but you don't seem to remember that book...",
+}
+WritCreater.cheeseBingos=
+{
+	["ichliebekase"] = true,
+	["ilovecheese"] = true,
+}

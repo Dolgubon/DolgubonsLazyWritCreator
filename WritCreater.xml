@@ -196,8 +196,14 @@
 					<Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="80"/>
 					<Dimensions x="500" y="400"/>
 					<Edge edgeSize="1"/>
-					<Center file="esoui/art/crafting/crafting_alchemy_slottingbg.dds"/>
+					<Center file="/esoui/art/icons/heraldrycrests_misc_blank_01.dds"/>
 					<Controls>
+						<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000">
+							<Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+							<Dimensions x="500" y="400"/>
+							<Edge edgeSize="1"/>
+							<Center file="esoui/art/crafting/crafting_alchemy_slottingbg.dds"/>
+						</Backdrop>
 						<Label name="$(parent)Head" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
 							<Anchor  relativePoint="TOP" relativeTo="$(parent)" offsetY="55" offsetX="-85"/>
 						</Label>
