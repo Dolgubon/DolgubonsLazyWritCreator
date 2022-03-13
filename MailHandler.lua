@@ -63,7 +63,7 @@ end
 local lootReadMail
 local function deleteLootedMail(mailId)
 	local  _,_,subject, _,_,system,customer, _, numAtt, money = GetMailItemInfo(mailId)
-	if numAtt > 0 then
+	if numAtt > 0 and FindFirstEmptySlotInBag() then
 		-- d("Tried deleting but still attachments")
 		lootReadMail(1, mailId)
 		return
@@ -93,6 +93,8 @@ function lootReadMail(event, mailId)
 			-- d("Writ Crafter: Looting "..subject)
 			ZO_MailInboxShared_TakeAll(mailId)
 			zo_callLater(function() deleteLootedMail(mailId) end, 250)
+			return
+		elseif FindFirstEmptySlotInBag() == nil and numAtt > 0 then
 			return
 		else
 			-- d("Mail empty. Delete it")
