@@ -333,8 +333,10 @@ WritCreater.cheeseyLocalizations
 	['chatbingo'] = "ilovecheese",
 	["cheatyCheeseBook"] = "Maybe you're going crazy, but you don't seem to remember that book...",
 }
+
 WritCreater.cheeseBingos=
 {
 	["ichliebekase"] = true,
 	["ilovecheese"] = true,
+	["jadorelefromage"] = true,
 }

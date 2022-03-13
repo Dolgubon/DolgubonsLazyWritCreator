@@ -114,7 +114,16 @@ local function styleCompiler()
 	return submenuTable
 end
 local function isCheeseOn()
-	return GetDate()%10000 == 401 or GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Gitaelia" or GetDisplayName() == "@mithra62" or GetDisplayName() == "@PacoHasPants" or GetDisplayName() == "@Architecture"
+	local enableNames = {
+		["@Dolgubon"]=1,
+		["@mithra62"]=1,
+		["@Gitaelia"]=1,
+		["@PacoHasPants"]=1,
+		["@Architecture"]=1,
+		["@K3VLOL99"]=1,
+	}
+	local dateCheck = GetDate()%10000 == 401 or false or GetTimeStamp()
+	return dateCheck or enableNames[GetDisplayName()]
 	-- return WritCreater.shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit and WritCreater.shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 2
 end
 if isCheeseOn() then
@@ -172,7 +181,7 @@ if isCheeseOn() then
 	end
 	GROUP_MENU_KEYBOARD.navigationTree:Reset()
 	table.insert(GROUP_MENU_KEYBOARD.nodeList[2]["children"] , {
-		priority = ZO_ACTIVITY_FINDER_SORT_PRIORITY.TIMED_ACTIVITIES + 30,
+		priority = ZO_ACTIVITY_FINDER_SORT_PRIORITY.TIMED_ACTIVITIES + cheesyActivityTypeIndex * 10 + 10,
 		name = il8n.menuName,
 		categoryFragment = TIMED_ACTIVITIES_KEYBOARD.sceneFragment,
 		onTreeEntrySelected = onCheesyEndeavorsSelected,
@@ -217,7 +226,7 @@ if isCheeseOn() then
 	end
 
 	local activityDataObjects = {}
-	function addNewTimedActivities()
+	local function addNewTimedActivities()
 
 		for k, v in pairs(timedActivityData) do
 			local newData = ZO_TimedActivityData:New(2000 + k)
@@ -230,7 +239,6 @@ if isCheeseOn() then
 			newData.timedActivityId = 1000 + k
 			table.insert(TIMED_ACTIVITIES_MANAGER.activitiesData, newData)
 			activityDataObjects[1000 + k] = newData
-			d("ADD")
 		end
 	end
 	local originalNewTimedActivityData = ZO_TimedActivityData.New
@@ -317,9 +325,7 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 
 	local originalMasterList = TIMED_ACTIVITIES_MANAGER.RefreshMasterList
 	TIMED_ACTIVITIES_MANAGER.RefreshMasterList = function(...)
-	d("Clkear")
 		originalMasterList(...)
-		d("Add")
 		addNewTimedActivities()
 	end
 	TIMED_ACTIVITIES_MANAGER.availableActivityTypes[cheesyActivityTypeIndex] = true
@@ -370,7 +376,7 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 	local function cheeseEndeavorCompleted(subHeading)
 		TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex].completed = TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex].completed + 1
 		WritCreater.savedVarsAccountWide.cheesyProgress["cheeseCompletion"] = WritCreater.savedVarsAccountWide.cheesyProgress["cheeseCompletion"] + 1
-		TIMED_ACTIVITIES_KEYBOARD:Refresh()
+		pcall(function()TIMED_ACTIVITIES_KEYBOARD:Refresh() end )
 		local activityTypeName = "CHEESY ENDEAVOR" --GetString("SI_TIMEDACTIVITYTYPE", 2)
 	    -- local _, maxNumActivities = TIMED_ACTIVITIES_MANAGER:GetTimedActivityTypeLimitInfo(2)
 	    local messageTitle = zo_strformat(SI_TIMED_ACTIVITY_TYPE_COMPLETED_CSA,  WritCreater.savedVarsAccountWide.cheesyProgress["cheeseCompletion"], #timedActivityData - 1, il8n.menuName)
@@ -397,6 +403,7 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 		    WritCreater.savedVarsAccountWide.skin = "cheese"
 		    WritCreater.savedVarsAccountWide.unlockedCheese = true
 	    end
+	    PlaySound(SOUNDS.ENDEAVOR_COMPLETED)
 	end
 	-- listeners
 	-- Chese profession
@@ -408,6 +415,7 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 			text = text:gsub(" ", "")
 			text = text:gsub("!", "")
 			text = text:gsub("%.", "")
+			text = text:gsub("'", "")
 			text = text:gsub("ä", "a")
 			if WritCreater.cheeseBingos[text] then
 				WritCreater.savedVarsAccountWide.cheesyProgress["cheeseProfession"] = 1
@@ -421,11 +429,15 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 	-- /script local a = PlayEmoteByIndex PlayEmoteByIndex = function(...) d(...) a(...) end
 	local terribleMusicEmotes = 
 	{
+		[4] = '/horn',
 		[5] = '/lute',
 		[6] = '/drum',
 		[7] = '/flute',
+		[251] = '/festivebellring',
 		[271] = '/esraj',
+		[272] = '/qanun',
 	}
+	-- /playtinyviolin, /festivebellring
 	local originalEmoteFunction = PlayEmoteByIndex
 	PlayEmoteByIndex = function(index, ...)
 		originalEmoteFunction(index, ...)
@@ -532,13 +544,13 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 		end 
 		WritCreater.savedVarsAccountWide.cheesyProgress["cheeseProfession"] = 0
 		WritCreater.savedVarsAccountWide.cheesyProgress["cheeseCompletion"] = 4
-		TIMED_ACTIVITIES_KEYBOARD:Refresh() 
+		pcall(function()TIMED_ACTIVITIES_KEYBOARD:Refresh() end )
 	end
 	SLASH_COMMANDS['/resetcheeseprogresscomplete'] = function() 
 		for k, v in pairs (WritCreater.savedVarsAccountWide.cheesyProgress) do 
 			WritCreater.savedVarsAccountWide.cheesyProgress[k] = 0
 		end 
-		TIMED_ACTIVITIES_KEYBOARD:Refresh() 
+		pcall(function()TIMED_ACTIVITIES_KEYBOARD:Refresh() end )
 	end
 	
 end

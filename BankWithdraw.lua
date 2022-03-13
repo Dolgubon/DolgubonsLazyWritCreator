@@ -256,7 +256,7 @@ local function queueRun()
 							SCENE_MANAGER:Show('hud')
 							recursiveCall()
 						end
-					end , 100) 
+					end , 200) 
 				end
 			recursiveCall()
 		end

@@ -584,6 +584,69 @@ WritCreater.optionStrings['suppressQuestAnnouncements']					= "Cacher les annonc
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Cache le texte au centre de l’écran quand vous commencez une commande, ou que vous créez un objet pour une commande."
 
 
+
+WritCreater.optionStrings["questBuffer"]								= "Tampon Quête de Commande"
+WritCreater.optionStrings["questBufferTooltip"]							= "Conserver un tampon de quêtes pour que vous puissiez toujours avoir de l’espace pour prendre des commandes"
+WritCreater.optionStrings["craftMultiplier"]							= "Multiplicateur Fabrication"
+WritCreater.optionStrings["craftMultiplierTooltip"]						= "Fabriquer plusieurs copies de chaque objet requis pour que vous n’ayez pas besoin de les refabriquer la prochaine fois que la commande apparait. Note: Sauvegarder approximativement 37 espaces pour chaque augmentation au-dessus de 1"
+WritCreater.optionStrings['hireling behaviour']							= "Actions Courrier Fournisseur"
+WritCreater.optionStrings['hireling behaviour tooltip']					= "Ce qui devrait être fait avec les courriers de fournisseur"
+WritCreater.optionStrings['hireling behaviour choices']					= { "Rien","Piller et Supprimer ", "Piller seulement"}
+
+
+WritCreater.optionStrings["allReward"]									= "Tous les Artisanats"
+WritCreater.optionStrings["allRewardTooltip"]							= "Action à prendre pour tous artisanats"
+
+WritCreater.optionStrings['sameForALlCrafts']							= "Utiliser la même option pour tout"
+WritCreater.optionStrings['sameForALlCraftsTooltip']					= "Utiliser la même option pour les récompenses de ce type pour tous les artisanats"
+WritCreater.optionStrings['1Reward']									= "Forge"
+WritCreater.optionStrings['2Reward']									= "Utiliser pour tout"
+WritCreater.optionStrings['3Reward']									= "Utiliser pour tout"
+WritCreater.optionStrings['4Reward']									= "Utiliser pour tout"
+WritCreater.optionStrings['5Reward']									= "Utiliser pour tout"
+WritCreater.optionStrings['6Reward']									= "Utiliser pour tout"
+WritCreater.optionStrings['7Reward']									= "Utiliser pour tout"
+
+WritCreater.optionStrings["matsReward"]									= "Récompenses Matériel d'artisanat"
+WritCreater.optionStrings["matsRewardTooltip"]							= "Quoi faire avec les récompenses de matériel d’artisanat "
+WritCreater.optionStrings["surveyReward"]								= "Récompenses Repérages"
+WritCreater.optionStrings["surveyRewardTooltip"]						= "Quoi faire avec les récompenses repéragess"
+WritCreater.optionStrings["masterReward"]								= "Récompenses Commande de Maître"
+WritCreater.optionStrings["masterRewardTooltip"]						= "Quoi faire avec les récompenses de commande de maître"
+WritCreater.optionStrings["repairReward"]								= "Récompenses Nécessaires de Réparation"
+WritCreater.optionStrings["repairRewardTooltip"]						= "Quoi faire avec les récompenses de nécessaires de réparation"
+WritCreater.optionStrings["ornateReward"]								= "Récompenses d’Équipement Orné"
+WritCreater.optionStrings["ornateRewardTooltip"]						= "Quoi faire avec les récompenses d’équipement orné"
+WritCreater.optionStrings["intricateReward"]							= "Récompenses Équipement Complexe"
+WritCreater.optionStrings["intricateRewardTooltip"]						= "Quoi faire avec les récompenses d’équipement complexe"
+WritCreater.optionStrings["soulGemReward"]								= "Pierres d’âme vides"
+WritCreater.optionStrings["soulGemTooltip"]								= "Quoi faire avec des pierres d’âme vides"
+WritCreater.optionStrings["glyphReward"]								= "Glyphes"
+WritCreater.optionStrings["glyphRewardTooltip"]							= "Quoi faire avec des glyphes"
+WritCreater.optionStrings["recipeReward"]								= "Recettes"
+WritCreater.optionStrings["recipeRewardTooltip"]						= "Quoi faire avec les recettes"
+WritCreater.optionStrings["fragmentReward"]								= "Fragments Psijiques"
+WritCreater.optionStrings["fragmentRewardTooltip"]						= "Quoi faire avec les fragments psijiques"
+
+
+WritCreater.optionStrings["writRewards submenu"]						= "Gestion Récompense Commande"
+WritCreater.optionStrings["writRewards submenu tooltip"]				= "Quoi faire avec toutes les récompenses de commandes"
+
+WritCreater.optionStrings["jubilee"]									= "Piller Boîtes d’Anniversaire"
+WritCreater.optionStrings["jubilee tooltip"]							= "Piller Automatiquement Boîtes d’Anniversaire"
+WritCreater.optionStrings["skin"]										= "Peau Writ Crafter"
+WritCreater.optionStrings["skinTooltip"]								= "La peau pour l'interface Writ Crafter"
+WritCreater.optionStrings["skinOptions"]								= {"Défaut", "Gratiné"}
+
+WritCreater.optionStrings["rewardChoices"]								= {"Rien","Déposer","Rebut", "Détruire"}
+
+
+"Peau Writ Crafter"
+"La peau pour l'interface Writ Crafter"
+{"Défaut", "Gratiné"}
+"Gratiné"
+"Efforts Gratinés"
+
 function WritCreater.langStationNames()
 	return
 	{["Atelier de forge"] = 1, ["Atelier de couture"] = 2, 
@@ -601,6 +664,35 @@ function WritCreater.langWritRewardBoxes () return {
 	[8] = "cargaison",
 }
 end
+
+WritCreater.cheeseyLocalizations
+=
+{
+	['reward'] = "-1 Santé mentale",
+	['rewardStylized'] = "-1 |cFFFFFF[Santé mentale]|",
+	['finalReward'] = "Complétez-les tous et découvrez par vous-même!",
+	['menuName'] = "Gratiné",
+	['endeavorName'] = "Efforts Gratinés",
+	['tasks']={
+		{name = "Professez votre amour pour le fromage", completion = "Maintenant le monde entier sait combien vous adorez le fromage!", 
+			description="Dites 'J’adore le fromage!' dans le chat", },
+		{name = "Visitez l’Oncle Shéo", completion = "L’Oncle Shéo est heureux de vous avoir vu! Et triste. Et gratiné. Et dynamique!", 
+			description="Trouvez et parlez à Shéogorath. Il se sent seul et a envie de vous revoir!"}
+		{name = "Jouez de la musique terrible", completion = "Aouch! Vos oreilles ont mal dû à cette terrible musique.", description="Utilisez une émote de musique", 
+},
+		{name = "Jetez du fromage", completion = "Vous avez jeté du fromage. Il était probablement moisi de toute façon...", description="Détruisez 1 |H1:item:27057:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h. Oui, c’est fou, mais c’est le but!", 
+},
+		{ name = "Lisez un livre gratiné", completion = "Quelle chaussette réconfortante. Fromage - non, je veux dire livre!",
+            description="Lisez le livre <lien d’objet pour le livre |H0:item:121046:364:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h",},
+		{name = "Complétez tous les autres Efforts Gratinés", completion = "Fromage! Fromage! Du fromage partout! Même... en faisant des commandes?", description="Shéogorath sera très heureux si vous les complétez tous!"
+},
+	},
+	['allComplete'] = "Tous les efforts gratinés complétés!",
+	['chatbingo'] = "jadorelefromage",
+	["cheatyCheeseBook"] = "Peut-être devenez-vous fou, mais vous ne semblez pas reconnaître ce livre...",
+}
+
+
 
 function WritCreater.getTaString()
 	return "ta"
