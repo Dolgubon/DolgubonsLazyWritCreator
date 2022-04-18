@@ -383,7 +383,6 @@ end
 
 alchGrab = function (event, bag) 
 	findEmptySlots(BAG_BACKPACK)
-	if WritCreater.lang =="jp" then return end
 	if WritCreater:GetSettings().shouldGrab then
 		local writs = WritCreater.writSearch()
 		for craft, validTypes in pairs(validItemTypes) do

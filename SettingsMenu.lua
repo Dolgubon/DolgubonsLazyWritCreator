@@ -1522,7 +1522,6 @@ function WritCreater.Options() --Sentimental
 	},
 }
 
-  if WritCreater.lang ~="jp" then
   table.insert(options, 7,{
 	type = "checkbox",
 	name = WritCreater.optionStrings["writ grabbing"] ,
@@ -1542,7 +1541,6 @@ function WritCreater.Options() --Sentimental
 	end,
 	disabled = function() return not WritCreater:GetSettings().shouldGrab end,
   })]]
-  end
 
 	if false --[[GetWorldName() == "NA Megaserver" and WritCreater.lang =="en" ]] then
 	  table.insert(options,8, {
