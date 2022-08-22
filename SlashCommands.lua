@@ -247,7 +247,7 @@ local function outputStats(showChances)
 	local daysSinceReset = math.floor((GetTimeStamp() - WritCreater.savedVarsAccountWide.timeSinceReset)/86400*100)/100
 	d("Total Writs Completed: "..WritCreater.savedVarsAccountWide.total.." in the past "..tostring(daysSinceReset).." days")
 end
-
+WritCreater.ShowStatsWindow = function() outputStats(false) end
 -- Resets the user's writ reward statistics
 
 local function resetStats() 

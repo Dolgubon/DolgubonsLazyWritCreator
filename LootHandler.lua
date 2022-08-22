@@ -83,7 +83,7 @@ function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d
 
 local function updateSavedVars(vars, location, quantity)
 	-- d("Saving "..location.." #"..quantity)
-	if vars and vars[location] then
+	if vars and vars[location]  then
 		vars[location] = vars[location] + quantity
 	elseif vars then
 		vars[location] = quantity
@@ -171,8 +171,12 @@ local function LootAllHook(boxType) -- technically not a hook.
 			lootOutput(itemLink, nil, quantity)
 		elseif specializedType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then
 			lootOutput(itemLink, nil, quantity)
+		elseif specializedType == SPECIALIZED_ITEMTYPE_NONE then -- assume it's a lead I guess
+			lootOutput(itemLink, nil, 1)
+			vars["lead"] = vars["lead"] or 0
+			updateSavedVars(vars, "lead", quantity)
 		else
-			if vars["other"]==nil then vars["other"] = {} end
+			if vars["other"]==nil then vars["other"] = 0 end
 			updateSavedVars(vars, "other", quantity)
 		end
 	end
@@ -219,7 +223,7 @@ local function OnLootUpdated(event)
 	local writRewardNames = WritCreater.langWritRewardBoxes ()
 	if not writRewardNames[9] then
 		-- |H1:item:171779:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h
-		writRewardNames[9] = GetItemLinkName("|H1:item:171779:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+		writRewardNames[9] = GetItemLinkName("|H1:item:183890:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h") -- anniversary box/jubilee
 		writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
 		writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
 	end
@@ -277,7 +281,7 @@ local function OnLootUpdated(event)
 				if numLootTransmute==0 or numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
 					if numLootTransmute > 0 then
 						d(numLootTransmute.." Transmute Stone recieved (You have "..(numTransmute + numLootTransmute)..")")
-						if numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) * 0.8 < numTransmute then
+						if GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) * 0.8 < numTransmute + numLootTransmute then
 							d("You are approaching the transmute stone limit. If a box would put you over the transmute stone limit, Writ Crafter will not loot the stones.")
 						end
 					end
@@ -311,15 +315,16 @@ local flavours = {
 	[GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward
 	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
+	
 }
-local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:171779:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:183890:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local plunderSkulls = GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local flavourTexts = {}
 setmetatable(flavourTexts, {__index = function(t, i)
 	if flavours[i] then return true end
-	-- if i == anniversaryBoxie then
-	-- 	return WritCreater:GetSettings().lootJubileeBoxes
-	-- end
+	if i == anniversaryBoxie then
+		return WritCreater:GetSettings().lootJubileeBoxes
+	end
 	if i==plunderSkulls and GetDisplayName()=="@Dolgubon" then
 		return true
 	end
@@ -526,7 +531,7 @@ function scanBagForUnopenedContainers( ... )
 	end
 	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootRescan")
 end
-
+WritCreater.scanForUnopenedContainers = scanBagForUnopenedContainers
 
 
 

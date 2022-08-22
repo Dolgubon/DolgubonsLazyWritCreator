@@ -242,7 +242,7 @@ WritCreater.optionStrings['dailyResetWarnType']							= "Daily Reset Warning"
 WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "What type of warning should be displayed when the daily reset is about to occur"
 WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "None","Type 1", "Type 2", "Type 3", "Type 4", "All"}
 WritCreater.optionStrings['stealingProtection']							= "Stealing Protection"
-WritCreater.optionStrings['stealingProtectionTooltip']					= "Prevent you from stealing while near a writ turn in location"
+WritCreater.optionStrings['stealingProtectionTooltip']					= "Prevent you from stealing while you have a writ in your journal"
 WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Writ Destruction"
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "Automatically add the DELETE text confirmation to the delete Jewelry Writ dialog box"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "Hide Writ Quest Announcements"
@@ -301,10 +301,13 @@ WritCreater.optionStrings["skinTooltip"]								= "The skin for the Writ Crafter
 WritCreater.optionStrings["skinOptions"]								= {"Default", "Cheesy"}
 
 WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk", "Destroy"}
+WritCreater.optionStrings["scan for unopened"]							= "Open containers on Login"
+WritCreater.optionStrings["scan for unopened tooltip"]					= "When you login, scan the bag for unopened writ containers and attempt to open them"
 
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Craft items")
+ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_OPEN", "Show Writ Crafter Stats window")
 																		-- CSA, ZO_Alert, chat message, window
 
 WritCreater.cheeseyLocalizations

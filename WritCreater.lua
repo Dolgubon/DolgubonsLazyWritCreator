@@ -92,7 +92,8 @@ WritCreater.default =
 	["mail"] = {
 		delete = false,
 		loot = IsESOPlusSubscriber(),
-	}
+	},
+	["scanForUnopened"] = false,
 }
 
 WritCreater.defaultAccountWide = {
@@ -498,7 +499,11 @@ local function initializeOtherStuff()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function() 
 
 		if  newlyLoaded then  
-			newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) end 
+			newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) 
+			if WritCreater:GetSettings().scanForUnopened then
+				WritCreater.scanForUnopenedContainers()
+			end
+		end 
 	end )
 
 	WritCreater.initializeResetWarnings()

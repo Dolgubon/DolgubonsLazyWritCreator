@@ -412,7 +412,7 @@ function crafting(info,quest, craftItems)
 						end
 					elseif CRAFTING_TYPE_WOODWORKING == GetCraftingInteractionType() and conditions["pattern"][i] == 2 then
 						if conditions["max"][i] == 1 then
-							needed = needed + 2
+							needed = needed + 1
 						elseif conditions["max"][i] == 2 then
 							needed = needed + 1
 						end
@@ -679,7 +679,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101033
+	local currentAPIVersionOfAddon = 101035
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

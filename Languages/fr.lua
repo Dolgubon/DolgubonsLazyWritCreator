@@ -641,12 +641,6 @@ WritCreater.optionStrings["skinOptions"]								= {"Défaut", "Gratiné"}
 WritCreater.optionStrings["rewardChoices"]								= {"Rien","Déposer","Rebut", "Détruire"}
 
 
-"Peau Writ Crafter"
-"La peau pour l'interface Writ Crafter"
-{"Défaut", "Gratiné"}
-"Gratiné"
-"Efforts Gratinés"
-
 function WritCreater.langStationNames()
 	return
 	{["Atelier de forge"] = 1, ["Atelier de couture"] = 2, 
@@ -677,7 +671,7 @@ WritCreater.cheeseyLocalizations
 		{name = "Professez votre amour pour le fromage", completion = "Maintenant le monde entier sait combien vous adorez le fromage!", 
 			description="Dites 'J’adore le fromage!' dans le chat", },
 		{name = "Visitez l’Oncle Shéo", completion = "L’Oncle Shéo est heureux de vous avoir vu! Et triste. Et gratiné. Et dynamique!", 
-			description="Trouvez et parlez à Shéogorath. Il se sent seul et a envie de vous revoir!"}
+			description="Trouvez et parlez à Shéogorath. Il se sent seul et a envie de vous revoir!"},
 		{name = "Jouez de la musique terrible", completion = "Aouch! Vos oreilles ont mal dû à cette terrible musique.", description="Utilisez une émote de musique", 
 },
 		{name = "Jetez du fromage", completion = "Vous avez jeté du fromage. Il était probablement moisi de toute façon...", description="Détruisez 1 |H1:item:27057:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h. Oui, c’est fou, mais c’est le but!", 

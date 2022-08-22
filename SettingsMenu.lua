@@ -121,8 +121,9 @@ local function isCheeseOn()
 		["@PacoHasPants"]=1,
 		["@Architecture"]=1,
 		["@K3VLOL99"]=1,
+		
 	}
-	local dateCheck = GetDate()%10000 == 401 or false or GetTimeStamp()
+	local dateCheck = GetDate()%10000 == 401 or false 
 	return dateCheck or enableNames[GetDisplayName()]
 	-- return WritCreater.shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit and WritCreater.shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 2
 end
@@ -868,6 +869,15 @@ function WritCreater.Options() --Sentimental
 				end
 			end,
 		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings["scan for unopened"]	,
+			tooltip = WritCreater.optionStrings["scan for unopened tooltip"],
+			getFunc = function() return  WritCreater:GetSettings().scanForUnopened end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().scanForUnopened = value
+			end,
+		},
 	}
 
 ----------------------------------------------------
@@ -1203,7 +1213,7 @@ function WritCreater.Options() --Sentimental
 				
 			})
 	end
-	if GetTimeStamp() < 1618322400 then
+	if true then
 		local jubileeOption = {
 			type = "checkbox",
 			name = WritCreater.optionStrings["jubilee"]  ,
