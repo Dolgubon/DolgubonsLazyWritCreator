@@ -374,6 +374,7 @@ local cooldownTimer = 300
 local function prepareToInteract()
 	if IsUnitSwimming("player") then return true end
 	if IsUnitInCombat("player") then return true end
+	if not TRIBUTE.gameFlowState == TRIBUTE_GAME_FLOW_STATE_INACTIVE then return true end
 	if IsLooting() then return true end
 	if GetGameTimeMilliseconds() - cooldown < cooldownTimer then return true end
 	local _, interact = GetGameCameraInteractableActionInfo()
