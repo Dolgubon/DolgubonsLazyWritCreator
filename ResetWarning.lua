@@ -1,23 +1,23 @@
 
 local function dailyReset()
-	stamp = GetTimeStamp()
-	local date = {}
-	local day = 86400
-	local hour = 3600
-	local till = {}
-	stamp = stamp-1451606400
-	stamp = stamp%day
-	date["hour"] = math.floor(stamp/3600)
-	stamp = stamp%hour
-	date["minute"] = math.floor(stamp/60)
-	stamp = stamp%60
-	if date["hour"]>5 then 
-		till["hour"] = 24-date["hour"]+5
-	else
-		till["hour"] = 6- date["hour"] -1
-	end
-	till["minute"] = 60-date["minute"]
-	return till["hour"], till["minute"]
+  local currentTime, secondsSinceMidnight = GetTimeStamp(), GetSecondsSinceMidnight()
+  local midnightToday = currentTime - secondsSinceMidnight
+  local midnightTomorrow = midnightToday + ZO_ONE_DAY_IN_SECONDS
+  local cutoffOffset
+  if GetWorldName() == 'NA Megaserver' then cutoffOffset = (6 * ZO_ONE_HOUR_IN_SECONDS) -- 06:00
+  else cutoffOffset = (3 * ZO_ONE_HOUR_IN_SECONDS) end -- 03:00
+  local resetTimeToday = midnightToday + cutoffOffset
+  local resetTimeTomorrow = midnightTomorrow + cutoffOffset
+  local secondsRemainingUntilReset
+  local hasReset = currentTime >  resetTimeToday
+  if hasReset then secondsRemainingUntilReset = resetTimeTomorrow - currentTime
+  else secondsRemainingUntilReset = resetTimeToday - currentTime end
+
+  local hours = math.floor(math.modf(secondsRemainingUntilReset / ZO_ONE_HOUR_IN_SECONDS))
+  local remainingSeconds = secondsRemainingUntilReset - (hours * ZO_ONE_HOUR_IN_SECONDS)
+  local minutes, remainder = math.modf(remainingSeconds / ZO_ONE_MINUTE_IN_SECONDS)
+  if remainder > 0.5 then minutes = minutes + 1 end
+  return hours, minutes
 end
 
 -- local msg = {}
@@ -28,7 +28,7 @@ local warningText = ""
 local testingText = ""
 
 function showAnnouncement(msgText, sound)
-	local secondText 
+	local secondText
 	local split = string.find(msgText, "\n")
 	if split then secondText = "|c"..colour..string.sub(msgText, split + 1) msgText = string.sub(msgText, 1,split).."|r" end
 	sound = sound or SOUNDS.CHAMPION_POINT_GAINED
@@ -56,7 +56,7 @@ local function windowWarning(msgText)
 	DolgubonsLazyWritResetWarnerBackdropClose:SetAnchor(BOTTOM,DolgubonsLazyWritResetWarnerBackdrop, BOTTOM, 0, -15 )
 	DolgubonsLazyWritResetWarnerBackdropButton2:SetHidden(true)
 end
-local warningFunctions = 
+local warningFunctions =
 {
 	["alert"] = showAlert,
 	["chat"] = chatWarning,
@@ -74,22 +74,23 @@ local function showWarnings(isExample)
 	end
 	local warningType = WritCreater:GetSettings().dailyResetWarnType
 	if warningType == "all" then
-		for k, v in pairs(warningFunctions) do 
+		for k, v in pairs(warningFunctions) do
 			v(msgText)
 		end
 	else
 		if not warningFunctions[warningType] then return end
 		warningFunctions[warningType](msgText)
 	end
-	
+
 end
 
 WritCreater.showDailyResetWarnings = showWarnings
 
 function WritCreater.refreshWarning()
-	local warnTime = WritCreater:GetSettings().dailyResetWarnTime
+  -- dailyResetWarnTime is in minutes
+	local warnTime = WritCreater:GetSettings().dailyResetWarnTime * ZO_ONE_MINUTE_IN_SECONDS
 	local hour, minute = dailyReset()
-	local timeToWarning = hour*3600 + minute*60 - warnTime*60
+	local timeToWarning = hour*ZO_ONE_HOUR_IN_SECONDS + minute*ZO_ONE_MINUTE_IN_SECONDS - warnTime
 	if timeToWarning < 0 then
 		EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."DailyResetWarning", 5000, showWarnings)
 	else
