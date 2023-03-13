@@ -117,6 +117,46 @@ local function dailyResetFunction(till, stamp) -- You can translate the followin
 	end 
 end
 
+function WritCreater.langWritNames() -- Vital to translate
+	-- Exact!!!  I know for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
+	local names = {
+	["G"] = "Writ",
+	[CRAFTING_TYPE_ENCHANTING] = "Enchanter",
+	[CRAFTING_TYPE_BLACKSMITHING] = "Blacksmith",
+	[CRAFTING_TYPE_CLOTHIER] = "Clothier",
+	[CRAFTING_TYPE_PROVISIONING] = "Provisioner",
+	[CRAFTING_TYPE_WOODWORKING] = "Woodworker",
+	[CRAFTING_TYPE_ALCHEMY] = "Alchemist",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry",
+	}
+	return names
+end
+
+function WritCreater.writCompleteStrings() -- Vital for translation
+	local strings = {
+	["place"] = "Place the goods",
+	["sign"] = "Sign the Manifest",
+	["masterPlace"] = "I've finished the ",
+	["masterSign"] = "<Finish the job.>",
+	["masterStart"] = "<Accept the contract.>",
+	["Rolis Hlaalu"] = "Rolis Hlaalu", -- This is the same in most languages but ofc chinese and japanese
+	["Deliver"] = "Deliver",
+	}
+	return strings
+end
+
+function WritCreater.langWritRewardBoxes () return {
+	[CRAFTING_TYPE_ALCHEMY] = "Alchemist's Vessel",
+	[CRAFTING_TYPE_ENCHANTING] = "Enchanter's Coffer",
+	[CRAFTING_TYPE_PROVISIONING] = "Provisioner's Pack",
+	[CRAFTING_TYPE_BLACKSMITHING] = "Blacksmith's Crate",
+	[CRAFTING_TYPE_CLOTHIER] = "Clothier's Satchel",
+	[CRAFTING_TYPE_WOODWORKING] = "Woodworker's Case",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry Crafter's Coffer",
+	[8] = "Shipment",
+}
+end
+
 local function masterWritEnchantToCraft (pat,set,trait,style,qual,mat,writName,Mname,generalName)
 	local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and style <<t:4>> at <<t:5>> quality",pat,set,trait,style,qual,mat)
 	return zo_strformat("<<t:2>> <<t:3>> <<t:4>>: <<1>>",partialString,writName,Mname,generalName )
@@ -304,6 +344,8 @@ WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk",
 WritCreater.optionStrings["scan for unopened"]							= "Open containers on Login"
 WritCreater.optionStrings["scan for unopened tooltip"]					= "When you login, scan the bag for unopened writ containers and attempt to open them"
 
+WritCreater.optionStrings["smart style slot save"]							= "Smart Style Slot Save"
+WritCreater.optionStrings["smart style slot save tooltip"]					= "Will attempt to minimize slots used if non ESO+ by using smaller stacks of style stones first"
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Craft items")
@@ -313,33 +355,47 @@ ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_OPEN", "Show Writ Crafter Stats 
 WritCreater.cheeseyLocalizations
 =
 {
-	['reward'] = "-1 Sanity",
-	['rewardStylized'] = "-1 |cFFFFFF[Sanity]|",
-	['finalReward'] = "Complete them all and find out!",
-	['menuName'] = "Cheesy",
-	['endeavorName'] = "Cheesy Endeavors",
+	['menuName'] = "Ritual",
+	['endeavorName'] = "Ritual Endeavors",
 	['tasks']={
-		{name="Profess your love for cheese",completion = "Now the whole world knows how much you love cheese!",
-			description="Say 'I love cheese!' in chat"},
-		{name = "Visit Uncle Sheo", completion = "Uncle Sheo was happy to see you! And sad. And cheesy. And punchy!",
-			description="Find and talk to Sheogorath. He's pretty lonely and wants to see you again!"},
-		{name = "Play some terrible music", completion = "Ouch! Your ears hurt from that terrible music.",
-			description="Use a music emote"},
-		{name = "Throw away some cheese", completion = "You threw away some cheese. It was probably moldy anyway...",
-			description="Destroy 1 |H1:item:27057:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h. Yes, it's crazy, but that's the point!"},
-		{name = "Read a cheesy book", completion = "What a heartwarming sock. Cheese - no, I mean book!",
-			description="Read the book |H0:item:121046:364:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h"},
-		{name = "Complete all other Cheesy Endeavours", completion = "Cheese! Cheese! Cheese everywhere! Even... while doing writs?",
-		description="Sheogorath will be very pleased if you complete them all!"},
-	},
-	['allComplete'] = "All cheesy endeavors completed!",
-	['chatbingo'] = "ilovecheese",
-	["cheatyCheeseBook"] = "Maybe you're going crazy, but you don't seem to remember that book...",
-}
+		{original="You found a strange pamphlet... Maybe you should /read it",name="You read some instructions on a ritual for luck", completion = "You learned how to do a ritual for luck!",
+			description="Use the /read emote"},
 
-WritCreater.cheeseBingos=
-{
-	["ichliebekase"] = true,
-	["ilovecheese"] = true,
-	["jadorelefromage"] = true,
+		{original="???", name = "Obtain an innocent goat's guts", completion = "You monster! Anything for luck, I guess",
+			description="Loot guts from a dead livestock goat. You don't have be the one to kill it... but that's the easiest way"},
+
+		{original="???", name = "Head to the ritual site, Arananga", completion = "You made it! It seems like a very industrious place",
+			description="Not sure where Arananga is? Maybe it's a 'gifted' crafting station..."},
+
+		{original="???", name = "Destroy the goat guts", completion = "You 'burnt' the sacrifice",
+			description="Destroy the |H1:item:42870:30:1:0:0:0:0:0:0:0:0:0:0:0:16:0:0:0:1:0:0|h|h you looted"},
+
+		{original="???", name = "Praise RNGesus in chat", completion = "You feel strangely lucky, but maybe it's just a feeling...",
+			description="You can't really tell what it actually said, but it's your best guess"},
+				-- Or Nocturnal, or Fortuna, Tyche as easter eggs?
+
+		-- {original="???", name = "Complete the ritual", completion = "Maybe you'll be just a little bit luckier... And Writ Crafter has a new skin!",
+		-- description="Sheogorath will be very pleased if you complete them all!"},
+	},
+	["completePrevious"] = "You should probably complete the previous steps first",
+	['allComplete'] = "You completed the ritual!",
+	['allCompleteSubheading'] = "Even if RNGesus doesn't favour you next year, at least Writ Crafter has a new look!",
+	["goatContextTextText"] = "Goat",
+	["bookText"] = 
+[[
+This ritual  |L0:0:0:45%%:8%%:ignore|lwill|l might give you great luck. Make sure to follow these steps exactly!
+1. Obtain some guts from a |L0:0:0:45%%:8%%:ignore|lsheep|l goat
+2. Go to |L0:0:0:45%%:8%%:ignore|lOblivion|l Arananga
+3. Burn the guts
+4. Praise [the name here is illegible]
+
+- Sincerely,
+|L0:0:0:45%%:8%%:ignore|lSheogorath|l Not Sheogorath]],
+["bookTitle"] = "A ritual for luck",
+["outOfRange"] = "You're not in the ritual area anymore!",
+["closeEnough"] = "Close enough",
+["praiseHint "] = "Maybe you need to say something about RNGesus?",
 }
+--/esoui/art/icons/pet_041.dds
+--/esoui/art/icons/pet_042.dds
+--/esoui/art/icons/pet_sheepbrown.dds

@@ -662,31 +662,43 @@ end
 WritCreater.cheeseyLocalizations
 =
 {
-	['reward'] = "-1 Santé mentale",
-	['rewardStylized'] = "-1 |cFFFFFF[Santé mentale]|",
-	['finalReward'] = "Complétez-les tous et découvrez par vous-même!",
-	['menuName'] = "Gratiné",
-	['endeavorName'] = "Efforts Gratinés",
+	['menuName'] = "Rituel",
+	['endeavorName'] = "Rituel volontés",
 	['tasks']={
-		{name = "Professez votre amour pour le fromage", completion = "Maintenant le monde entier sait combien vous adorez le fromage!", 
-			description="Dites 'J’adore le fromage!' dans le chat", },
-		{name = "Visitez l’Oncle Shéo", completion = "L’Oncle Shéo est heureux de vous avoir vu! Et triste. Et gratiné. Et dynamique!", 
-			description="Trouvez et parlez à Shéogorath. Il se sent seul et a envie de vous revoir!"},
-		{name = "Jouez de la musique terrible", completion = "Aouch! Vos oreilles ont mal dû à cette terrible musique.", description="Utilisez une émote de musique", 
-},
-		{name = "Jetez du fromage", completion = "Vous avez jeté du fromage. Il était probablement moisi de toute façon...", description="Détruisez 1 |H1:item:27057:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h. Oui, c’est fou, mais c’est le but!", 
-},
-		{ name = "Lisez un livre gratiné", completion = "Quelle chaussette réconfortante. Fromage - non, je veux dire livre!",
-            description="Lisez le livre <lien d’objet pour le livre |H0:item:121046:364:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h",},
-		{name = "Complétez tous les autres Efforts Gratinés", completion = "Fromage! Fromage! Du fromage partout! Même... en faisant des commandes?", description="Shéogorath sera très heureux si vous les complétez tous!"
-},
+		{original = "Vous avez trouvé un feuillet étrange... Peut-être que vous devriez la /lire", name="Vous avez lu des instructions sur un rituel pour la chance", 
+			completion = "Vous avez appris à faire un rituel pour la chance!",
+			description="Utiliser /lire l'emote"},
+		{name = "Obtenez les tripes d'une chèvre innocente", completion = "Espèce de monstre! Tout pour la chance, je suppose",
+			description="Ramasser les tripes d'une chèvre morte. Vous n'avez pas à être celui qui tue... mais c'est le moyen le plus simple"},
+		{original="???", name = "Dirigez-vous vers le site rituel, Arananga", completion = "Vous avez réussi! Cela semble être un endroit très industrieux",
+			description="Vous ne savez pas où se trouve Arananga ? C'est peut-être une station d'artisanat 'surdouée'..."},
+
+		{original="???", name = "Détruisez les tripes de chèvre", completion = "Vous avez 'brûlé' le sacrifice",
+			description="Détruisez le |H1:item:42870:30:1:0:0:0:0:0:0:0:0:0:0:0:16:0:0:0:1:0:0|h|h vous ramassez"},
+
+		{original="???", name = "Félicitez RNGesus dans le chat", completion = "Vous vous sentez étrangement chanceux, mais peut-être que ce n'est qu'un sentiment...",
+			description="Vous ne pouvez pas vraiment dire ce qu'il a réellement dit, mais c'est votre meilleure supposition"},
 	},
-	['allComplete'] = "Tous les efforts gratinés complétés!",
-	['chatbingo'] = "jadorelefromage",
-	["cheatyCheeseBook"] = "Peut-être devenez-vous fou, mais vous ne semblez pas reconnaître ce livre...",
+	['allComplete'] = "Vous avez terminé le rituel!",
+	['allCompleteSubheading'] = "Même si RNGesus ne vous favorise pas l'année prochaine, au moins Writ Crafter a un nouveau look!",
+	["goatContextTextText"] = "chèvre^f",
+	["extraGoatyContextTextText"] = "Chèvre",
+	["bookText"] = 
+[[
+Ce rituel |L0:0:0:45%%:8%%:ignore|lpeut|Je pourrais vous porter chance. Assurez-vous de suivre ces étapes à la lettre!
+1. Obtenir des tripes |L0:0:0:45%%:8%%:ignore|ld'un mouton|l d'une chèvre
+2. Allez à |L0:0:0:45%%:8%%:ignore|lOblivion|l Arananga
+3. Brûlez les tripes
+4. Louanger [vous ne pouvez pas dire ce qui est écrit ici]
+
+- Sincèrement,
+|L0:0:0:45%%:8%%:ignore|lSheogorath|l Pas Shéogorath]],
+["bookTitle"] = "Un rituel pour la chance",
+["outOfRange"] = "Vous n'êtes plus dans la zone rituelle !",
+["closeEnough"] = "Assez proche",
+["praiseHint "] = "Peut-être avez-vous besoin de dire quelque chose à propos de RNGesus ?",
+["extraSlash"] = "/lire",
 }
-
-
 
 function WritCreater.getTaString()
 	return "ta"

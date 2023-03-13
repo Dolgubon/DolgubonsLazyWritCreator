@@ -75,7 +75,8 @@ end
 
 
 local function maxStyle (piece) -- Searches to find the style that the user has the most style stones for. Only searches basic styles. User must know style
- 
+-- Currently not actually used!!
+ 	
     local bagId = BAG_BACKPACK
     SHARED_INVENTORY:RefreshInventory(bagId)
     local bagCache = SHARED_INVENTORY:GetOrCreateBagCache(bagId)
@@ -85,6 +86,7 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
     local numAllowed = 0
     local maxStack = -1
     local useStolen = AreAnyItemsStolen(BAG_BACKPACK) and false
+    local useMinimum = WritCreater:GetSettings().styles.smartStyleSlotSave
     for i, v in pairs(WritCreater:GetSettings().styles) do
         if v then
             numAllowed = numAllowed + 1
@@ -359,13 +361,45 @@ local abcdefg = {
 	[488835505522] = 1,
 	[1336773514] = 1
 }
+local specialStart = false
+-- Was literally asked for it sooooooo
+local function specialGuestStuff(e,_,returnedTable)
+	if e == LLC_CRAFT_SUCCESS  then
+		if returnedTable then
+			zo_callLater(function()DestroyItem(1, returnedTable.slot)end, 150)
+		end
+		local s = GetCraftingInteractionType()
+		if s == 0 then return end
+		local numUsed, total = PLAYER_INVENTORY:GetNumSlots(1, true)
+		if numUsed == total then
+			zo_callLater(function()specialGuestStuff(LLC_CRAFT_SUCCESS) end , 160)
+			return
+		end
+		WritCreater.specialLLC:CraftSmithingItemByLevel(1, true,160,maxStyle(1),1, false, GetCraftingInteractionType(), 0, 4, true, tostring(GetTimeStamp()), nil, nil, nil, 1)--total-numUsed)
+	end
+end
 function crafting(info,quest, craftItems)
 
 	--if #queue>0 then return end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
 	out("If you see this, something is wrong.\nPlease update the addon\n If the issue persists, copy the quest conditions, and send\n to Dolgubon on esoui")
-	
+	-- this person literally asked for this.
+	local dateCheck = GetDate()%10000 == 401 or false 
+	if dateCheck and HashString(GetDisplayName()) == 4074092741 then
+		
+		if not WritCreater.specialLLC then
+			WritCreater.specialLLC = LibLazyCrafting:AddRequestingAddon("SpecialGuest",true, specialGuestStuff)
+		end
+		out("Crafing will use 28 Ancestor Silk")
+		EVENT_MANAGER:RegisterForEvent("Special", EVENT_END_CRAFTING_STATION_INTERACT, function() specialStart = false end)
+		if not specialStart then
+			specialStart = true
+			specialGuestStuff(LLC_CRAFT_SUCCESS)
+		end
+		EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED)
+		return
+	end
 	local indexTableToUse
 
 	if GetCraftingInteractionType() == CRAFTING_TYPE_JEWELRYCRAFTING then
@@ -433,7 +467,7 @@ function crafting(info,quest, craftItems)
 					local _,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
 					local curMats = GetCurrentSmithingMaterialItemCount(pattern, index)
 					if numMats<=curMats then 
-						local style, stonesOwned = maxStyle(pattern)
+						local style, stonesOwned = maxStyle(pattern)  -- Only used now for help purposes
 						if station ~= CRAFTING_TYPE_JEWELRYCRAFTING then
 							if style == -1 then out(WritCreater.strings.moreStyle) return false end
 							if style == -2 then out(WritCreater.strings.moreStyleKnowledge) return false end
@@ -679,7 +713,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101036
+	local currentAPIVersionOfAddon = 101037
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

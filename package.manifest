@@ -26,6 +26,8 @@ Languages/en.lua
 Languages/de.lua
 Languages/fr.lua
 Languages/jp.lua
+Languages/zh.lua
+Languages/ru.lua
 SettingsMenu.lua
 SlashCommands.lua
 Tutorial.lua

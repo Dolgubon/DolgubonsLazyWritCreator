@@ -232,6 +232,7 @@ WritCreater.defaultAccountWide = {
 	},
 	["skin"] = "default",
 	["unlockedCheese"] = false,
+	["unlockedGoat"] = false,
 	["cheesyProgress"] = {
 		["cheeseProfession"]=0,
 		["sheoVisit"] =0,
@@ -240,6 +241,16 @@ WritCreater.defaultAccountWide = {
 		["cheeseNerd"] = 0,
 		["cheeseCompletion"] = 0,
 	},
+	["luckyProgress"] = {
+		["readInstructions"] = 0,
+		["luckCompletion"] = 0,
+		["lootGut"]=0,
+		["shootingOnLocation"] =0,
+		["rngesus"] = 0,
+		["gutDestruction"] = 0,
+		["cheeseNerd"] = 0,
+		["cheeseCompletion"] = 0,
+	}
 }
 
 function WritCreater.resetSettings()
@@ -452,7 +463,12 @@ local function writSearch()
 	return W , anyFound
 end
 WritCreater.writSearch = writSearch
-
+WritCreater.applyGoatSkin = function()
+	DolgubonsWritsBackdropBackdrop:SetCenterTexture("/esoui/art/icons/pet_042.dds")
+	DolgubonsWritsBackdropBackdrop:ClearAnchors()
+	DolgubonsWritsBackdropBackdrop:SetAnchor(BOTTOM, DolgubonsWritsBackdrop, BOTTOM, 30, -115)
+	DolgubonsWritsBackdropBackdrop:SetDimensions(575,375)
+end
 
 local function initializeUI()
 	
@@ -468,11 +484,14 @@ local function initializeUI()
 		DolgubonsWritsFeedbackLarge:SetHidden(true)
 		DolgubonsWritsFeedbackNote:SetText("If you found a bug, have a request or a suggestion, send me a mail. Note that mails with no attachments will expire within three days. Consider attaching 1g.")
 	end
-	if WritCreater.savedVarsAccountWide.skin == "cheese" or GetDisplayName() == "@Dolgubon" then
+	if WritCreater.savedVarsAccountWide.skin == "cheese"  then
 		DolgubonsWritsBackdropBackdrop:SetCenterTexture("/esoui/art/icons/housing_gen_inc_cheesewheel001.dds")
 		DolgubonsWritsBackdropBackdrop:ClearAnchors()
 		DolgubonsWritsBackdropBackdrop:SetAnchor(BOTTOM, DolgubonsWritsBackdrop, BOTTOM, 0, -125)
 		DolgubonsWritsBackdropBackdrop:SetDimensions(500,300)
+	end
+	if WritCreater.savedVarsAccountWide.skin == "goat" then
+		WritCreater.applyGoatSkin()
 	end
 
 	-- 

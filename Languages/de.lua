@@ -619,29 +619,46 @@ end
 WritCreater.cheeseyLocalizations
 =
 {
-	['reward'] = "-1 Vernunft",
-	['rewardStylized'] = "-1 |cFFFFFF[Vernunft]|",
-	['finalReward'] = "Vervollständige sie alle und finde es heraus!",
-	['menuName'] = "Käsigen",
-	['endeavorName'] = "Käsigen Bemühungen",
+	--German, by Baertram, 2023-03-09
+	['menuName'] = "Ritual",
+	['endeavorName'] = "Ritual Bestrebungen",
 	['tasks']={
-		{name="Bekenne deine Liebe zum Käse",completion = "Jetzt weiß die ganze Welt, wie sehr du Käse liebst!",
-			description="Sage 'Ich liebe Käse!' im Chat"},
-		{name = "Besuche Onkel Sheo", completion = "Onkel Sheo hat sich gefreut, dich zu sehen! Und er wr traurig. Und käsig. Und flott!",
-			description="Finde und sprich mit Sheogorath. Er ist ziemlich einsam und will dich wiedersehen!"},
-		{name = "Spiele etwas schreckliche Musik", completion = "Aua! Deine Ohren tun weh von dieser schrecklichen Musik.",
-			description="Benutze ein Musik emote"},
-		{name = "Wirf etwas Käse weg", completion = "Du hast etwas Käse weggeworfen. Es war wahrscheinlich sowieso schimmelig...",
-			description="Zerstöre 1 |H1:item:27057:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h. Ja, es ist verrückt, aber genau darum geht es!"},
-		{name = "Lies ein käsiges Buch", completion = "Was für eine herzerwärmende Socke. Käse - ach so, ich meinte Buch!",
-			description="Lies das Buch |H0:item:121046:364:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:10000:0|h|h"},
-		{name = "Schließe alle anderen käsigen Bemühungen ab", completion = "Käse! Käse! Überall Käse! Sogar... beim Schrieb herstellen?",
-		description="Sheogorath wird sich sehr freuen, wenn du alle vervollständigst!"},
-	},
-	['allComplete'] = "Alle käsigen Bemühungen abgeschlossen",
-	['chatbingo'] = "ichliebekase",
-	["cheatyCheeseBook"] = "Vielleicht wirst du verrückt, aber du scheinst dich nicht an dieses Buch zu erinnern..."
+		{original="Du hast eine seltsame Broschüre gefunden ... Vielleicht solltest du sie /lesen",name="Du hast einige Anweisungen zu einem Glücksritual gelesen", completion = "Du hast gelernt wie das Glücksritual durchgeführt wird!",
+			description="Verwende das /lesen Emote"},
 
+		{original="???", name = "Beschaffe die Eingeweide einer unschuldigen Ziege", completion = "Du Monster! Alles ist für's Glück erlaubt, denke ich...",
+			description="Loote Eingeweide von einer toten Ziege. Du musst nicht derjenige sein, der sie tötet ... aber das ist der einfachste Weg"},
+
+		{original="???", name = "Begib dich zum Ritualort, Arananga", completion = "Du hast es geschafft! Es scheint ein sehr strebsamer Ort zu sein",
+			description="Nicht sicher, wo Arananga liegt? Vielleicht ist es eine 'begabte' Handwerksstation ..."},
+
+		{original="???", name = "Zerstöre die Eingeweide der Ziege", completion = "Du hast das Opfer \'verbrannt\'.",
+			description="Zerstöre die |H1:item:42870:30:1:0:0:0:0:0:0:0:0:0:0:0:16:0:0:0:1:0:0|h|h welche du gelooted hast"},
+
+		{original="???", name = "Loben Sie RNGesus im Chat", completion = "Du fühlst dich seltsam glücklich, aber vielleicht ist es nur ein Gefühl...",
+			description="Sie können nicht wirklich sagen, was es tatsächlich gesagt hat, aber es ist Ihre beste Vermutung"},
+
+		-- {original="???", name = "Complete the ritual", completion = "Maybe you'll be just a little bit luckier... And Writ Crafter has a new skin!",
+		-- description="Sheogorath will be very pleased if you complete them all!"},
+	},
+	["goatContextTextText"] = "Ziege^f",
+	["extraGoatyContextTextText"] = "Ziege",
+	["extraSlash"] = "/lesen",
+	['allComplete'] = "Du hast das Ritual vollendet!",
+	['allCompleteSubheading'] = "Auch wenn RNGesus Sie nächstes Jahr nicht bevorzugt, hat zumindest WritCrafter einen neuen Look!",
+	["bookText"] = 
+[[Dieses Ritual |L0:0:0:45%%:8%%:ignore|lwird|l könnte Ihnen viel Glück bringen. Achten Sie darauf, die folgenden Schritte genau zu befolgen!
+1. Beschaffe Eingeweide von |L0:0:0:45%%:8%%:ignore|leinem Schaf|l einer Ziege
+2. Suche den Ort |L0:0:0:45%%:8%%:ignore|lOblivion|l Arananga auf
+3. Verbrenne die Eingeweide
+4. Lobe [man kann nicht sagen, was hier geschrieben steht]
+
+- Hochachtungsvoll,
+|L0:0:0:45%%:8%%:ignore|lSheogorath|l Nicht Sheogorath]],
+	["bookTitle"] = "Ein Ritual für Glück",
+	["outOfRange"] = "Du bist nicht mehr innerhalb des Ritual Bereiches!",
+	["closeEnough"] = "Du bist nah dran",
+	["praiseHint "] = "Vielleicht musst du etwas über RNGesus sagen?",
 }
 
 
