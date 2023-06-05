@@ -44,10 +44,11 @@ WritCreater.styleNames = {}
 for i = 1, GetNumValidItemStyles() do
 
 	local styleItemIndex = GetValidItemStyleId(i)
-	local  itemName = GetItemStyleName(styleItemIndex)
-	local styleItem = GetSmithingStyleItemInfo(styleItemIndex)
+	local itemName = GetItemStyleName(styleItemIndex)
+	local styleItem = GetItemStyleMaterialLink(styleItemIndex, 0)
+	local amount = GetCurrentSmithingStyleItemCount(styleItemIndex)
 	if styleItemIndex ~=36 then
-		table.insert(WritCreater.styleNames,{styleItemIndex,itemName, styleItem})
+		table.insert(WritCreater.styleNames,{styleItemIndex,itemName, styleItem, amount})
 	end
 end
 
@@ -121,7 +122,7 @@ local function styleCompiler()
 
 		local option = {
 			type = "checkbox",
-			name = zo_strformat("<<1>>", v[2]),
+			name = zo_strformat("<<1>> (<<2>> x<<3>>)", v[2], GetItemLinkName(v[3]), v[4]),
 			tooltip = optionStrings["style tooltip"](v[2], v[3]),
 			getFunc = function() return WritCreater:GetSettings().styles[v[1]] end,
 			setFunc = function(value)
@@ -136,7 +137,7 @@ local function styleCompiler()
 end
 local function isCheeseOn()
 	local enableNames = {
-		-- ["@Dolgubon"]=1,
+		["@Dolgubon"]=1,
 		["@mithra62"]=1,
 		["@Gitaelia"]=1,
 		["@PacoHasPants"]=1,
@@ -537,8 +538,8 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 				WritCreater.savedVarsAccountWide.luckyProgress['readInstructions'] = 1
 				cheeseEndeavorCompleted(timedActivityData[1].completion, 2)
 			-- end
-			LORE_READER:Show(il8n.bookTitle, il8n.bookText, BOOK_MEDIUM_SCROLL, true, 
-				"Goats and guts and idk what this does. Actually it does nothing. Literally nothing. idk why zos had this param when they called it but they did. And because it does nothing I can ramble. Should probably stop tho")
+			LORE_READER:Show(il8n.bookTitle, il8n.bookText, BOOK_MEDIUM_SCROLL, true)
+			-- ,				"Goats and guts and idk what this does. Actually it does nothing. Literally nothing. idk why zos had this param when they called it but they did. And because it does nothing I can ramble. Should probably stop tho")
 		end
 	end
 	if il8n.extraSlash then
@@ -659,7 +660,7 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 
 
 
-	-- /esraj /lute /drum /flute 
+	-- /esraj /lute /drum /flute  /keyharp /trumpetsolo /panflute  /qunan /ragnarthered /
 	-- if GetDisplayName() == "@Dolgubon" then
 	-- 	enableAlternateUniverse(true)	
 	-- 	WritCreater.WipeThatFrownOffYourFace(true)	
@@ -828,8 +829,15 @@ function WritCreater.Options() --Sentimental
 
 	if WritCreater.savedVarsAccountWide.unlockedCheese or WritCreater.savedVarsAccountWide.unlockedGoat then
 		local skinOptions = {"default"}
-		if WritCreater.savedVarsAccountWide.unlockedCheese then table.insert(skinOptions, "cheese") end
-		if WritCreater.savedVarsAccountWide.unlockedGoat then table.insert(skinOptions, "goat") end
+		local skinChoices = {WritCreater.optionStrings["defaultSkin"]}
+		if WritCreater.savedVarsAccountWide.unlockedCheese then 
+			table.insert(skinOptions, "cheese") 
+			table.insert(skinChoices, WritCreater.optionStrings["cheeseSkin"])
+		end
+		if WritCreater.savedVarsAccountWide.unlockedGoat then 
+			table.insert(skinOptions, "goat") 
+			table.insert(skinChoices, WritCreater.optionStrings["goatSkin"])
+		end
 		table.insert(options, 4,
 		{
 			type = "divider",
@@ -842,8 +850,8 @@ function WritCreater.Options() --Sentimental
 			type = "dropdown",
 			name = WritCreater.optionStrings["skin"],--"Master Writs",
 			tooltip =WritCreater.optionStrings["skinTooltip"],--"Craft Master Writ Items",
-			choices = WritCreater.optionStrings["skinOptions"],
-			choicesValues = {"default","cheese", "goat"},
+			choices = skinChoices,
+			choicesValues = skinOptions,
 			getFunc = function() return WritCreater.savedVarsAccountWide.skin end,
 			setFunc = function(value) 
 				WritCreater.savedVarsAccountWide.skin  = value
@@ -1261,7 +1269,21 @@ function WritCreater.Options() --Sentimental
 		WritCreater:GetSettings()[CRAFTING_TYPE_JEWELRYCRAFTING] = value 
 	  end,
 	},
-
+	{
+		type = "checkbox",
+		name = WritCreater.optionStrings["provisioning"],
+		tooltip = WritCreater.optionStrings["provisioning tooltip"]  ,
+		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] end,
+		setFunc = function(value) 
+			WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] = value 
+		end,
+	},
+	{
+		type = "divider",
+		height = 15,
+		alpha = 0.5,
+		width = "full",
+	},
 	{
 		type = "checkbox",
 		name = WritCreater.optionStrings["enchanting"],
@@ -1273,12 +1295,31 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["provisioning"],
-		tooltip = WritCreater.optionStrings["provisioning tooltip"]  ,
-		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] end,
+		name = zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:45850:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"), -- Ta
+		width = "half",
+		disabled = function() return not WritCreater:GetSettings()[CRAFTING_TYPE_ENCHANTING] end,
+		tooltip = zo_strformat(WritCreater.optionStrings["abandon quest for item tooltip"] ,"|H1:item:45850:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h") , 
+		getFunc = function() return WritCreater:GetSettings().skipItemQuests["|H1:item:45850:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] end,
 		setFunc = function(value) 
-			WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] = value 
+			WritCreater:GetSettings().skipItemQuests["|H1:item:45850:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] = value 
 		end,
+	},
+	{
+		type = "checkbox",
+		name = zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:45831:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"), -- Oko
+		width = "half",
+		disabled = function() return not WritCreater:GetSettings()[CRAFTING_TYPE_ENCHANTING] end,
+		tooltip = zo_strformat(WritCreater.optionStrings["abandon quest for item tooltip"] ,"|H1:item:45831:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h") , 
+		getFunc = function() return WritCreater:GetSettings().skipItemQuests["|H1:item:45831:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] end,
+		setFunc = function(value) 
+			WritCreater:GetSettings().skipItemQuests["|H1:item:45831:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] = value 
+		end,
+	},
+	{
+		type = "divider",
+		height = 15,
+		alpha = 0.5,
+		width = "full",
 	},
 	{
 		type = "checkbox",
@@ -1288,7 +1329,49 @@ function WritCreater.Options() --Sentimental
 		setFunc = function(value) 
 			WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] = value 
 		end,
-	},}
+	},
+
+	{
+		type = "checkbox",
+		name = zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:30152:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"), -- violet coprinus
+		width = "half",
+		disabled = function() return not WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] end,
+		tooltip = zo_strformat(WritCreater.optionStrings["abandon quest for item tooltip"] ,"|H1:item:30152:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h") , 
+		getFunc = function() return WritCreater:GetSettings().skipItemQuests["|H1:item:30152:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] end,
+		setFunc = function(value) 
+			WritCreater:GetSettings().skipItemQuests["|H1:item:30152:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] = value 
+		end,
+	},
+	{
+		type = "checkbox",
+		name = zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:30165:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"), -- nirnroot
+		width = "half",
+		disabled = function() return not WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] end,
+		tooltip = zo_strformat(WritCreater.optionStrings["abandon quest for item tooltip"] ,"|H1:item:30165:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h") , 
+		getFunc = function() return WritCreater:GetSettings().skipItemQuests["|H1:item:30165:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] end,
+		setFunc = function(value) 
+			WritCreater:GetSettings().skipItemQuests["|H1:item:30165:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] = value 
+		end,
+	},
+	{
+		type = "checkbox",
+		name = zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:77591:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"), -- mudcrab
+		width = "half",
+		disabled = function() return not WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] end,
+		tooltip = zo_strformat(WritCreater.optionStrings["abandon quest for item tooltip"] ,"|H1:item:77591:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h") ,
+		getFunc = function() return WritCreater:GetSettings().skipItemQuests["|H1:item:77591:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] end,
+		setFunc = function(value) 
+			WritCreater:GetSettings().skipItemQuests["|H1:item:77591:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"] = value 
+		end,
+	},
+	{
+		type = "divider",
+		height = 15,
+		alpha = 0.5,
+		width = "full",
+	},
+
+}
 
   if WritCreater.lang ~="jp" then
   table.insert(options, {

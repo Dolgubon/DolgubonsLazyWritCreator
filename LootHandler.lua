@@ -296,6 +296,7 @@ local function OnLootUpdated(event)
 					-- Then add the container to a 'blacklist' so we don't try to open it in a loop
 					if lastInteractedSlot then
 						containerHasTransmute[lastInteractedSlot] = true
+						WritCreater:GetSettings().transmuteBlock[Id64ToString(GetItemUniqueId(1, lastInteractedSlot))] = numLootTransmute
 					end
 					d("Looting these transmute stones would put you over the maximum, so "..numLootTransmute.." transmute stones were not looted")
 					EndLooting()
@@ -317,7 +318,7 @@ local flavours = {
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
 	
 }
-local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:183890:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:194428:124:1:0:0:0:2023:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local plunderSkulls = GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local flavourTexts = {}
 setmetatable(flavourTexts, {__index = function(t, i)
@@ -341,13 +342,37 @@ local scanBagForUnopenedContainers
 
 local lootClosedTime
 local slotUpdateHandler
-
+-- _G[savedVariablesName][GetWorldName()][GetDisplayName()][characterName]
+SLASH_COMMANDS['/transmuteboxtotal'] = function()
+	local sum = 0
+	for toon, v in pairs(_G["DolgubonsWritCrafterSavedVars"]["Default"][GetDisplayName()]) do
+		local toonSum = 0
+		if v.transmuteBlock then
+			for boxId, numTransmutes in pairs(v.transmuteBlock) do
+				sum = sum + numTransmutes
+				toonSum = toonSum + numTransmutes
+			end
+			d("Total transmutes for "..tostring(v["$LastCharacterName"]).." : "..toonSum)
+		end
+	end
+	d("Total transmutes for account : "..sum)
+end
 local function shouldOpenContainer(bag, slot)
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
 
 	if FindFirstEmptySlotInBag(BAG_BACKPACK) == nil then return false end
 
 	if containerHasTransmute[slot] then return false end
+
+	local uniqueId = Id64ToString(GetItemUniqueId(bag, slot))
+	if WritCreater:GetSettings().transmuteBlock[uniqueId] then
+		local maxTransmutes = GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT)
+		local currentTransmutes = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
+		local transmuteSpace = maxTransmutes - currentTransmutes
+		if WritCreater:GetSettings().transmuteBlock[uniqueId] > transmuteSpace then
+			return false 
+		end
+	end
 
 	local itemType, specialItemType = GetItemType(bag, slot)
 	if itemType ~=ITEMTYPE_CONTAINER or specialItemType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then return false end

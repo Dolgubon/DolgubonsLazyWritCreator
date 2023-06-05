@@ -636,7 +636,10 @@ WritCreater.optionStrings["jubilee"]									= "Piller Boîtes d’Anniversaire"
 WritCreater.optionStrings["jubilee tooltip"]							= "Piller Automatiquement Boîtes d’Anniversaire"
 WritCreater.optionStrings["skin"]										= "Peau Writ Crafter"
 WritCreater.optionStrings["skinTooltip"]								= "La peau pour l'interface Writ Crafter"
-WritCreater.optionStrings["skinOptions"]								= {"Défaut", "Gratiné"}
+WritCreater.optionStrings["skinOptions"]								= {"Défaut", "Gratiné", "Chèvre"}
+WritCreater.optionStrings["goatSkin"]									= "Chèvre"
+WritCreater.optionStrings["cheeseSkin"]									= "Gratiné"
+WritCreater.optionStrings["defaultSkin"]								= "Défaut"
 
 WritCreater.optionStrings["rewardChoices"]								= {"Rien","Déposer","Rebut", "Détruire"}
 

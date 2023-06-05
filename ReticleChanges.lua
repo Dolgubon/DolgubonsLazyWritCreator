@@ -52,33 +52,35 @@ function WritCreater.initializeReticleChanges()
 	setupReplacement(ZO_ReticleContainerInteractContext, "SetText")
 end
 
-local oldInteract = FISHING_MANAGER.StartInteraction
+local interactionManager = FISHING_MANAGER or INTERACTIVE_WHEEL_MANAGER
+local oldInteract = interactionManager.StartInteraction
+if oldInteract then
 
-
-local function hook(...)
-	if WritCreater and WritCreater.GetSettings and WritCreater:GetSettings() and WritCreater:GetSettings().stealProtection and not NoAccidentalStealing then
-		local _, hasWrits = WritCreater.writSearch()
-		if not hasWrits then
-			return oldInteract(...)
-		end
-		local action, _, isBlocked, isOwned, additional,_,_,isCriminal = GetGameCameraInteractableActionInfo()
-		if isBlocked then
-			return oldInteract(...)
-		end
-		if isCriminal then
-			local isStealthed = GetUnitStealthState("player")
-			if isStealthed == 3 or isStealthed == 5 then
+	local function hook(...)
+		if WritCreater and WritCreater.GetSettings and WritCreater:GetSettings() and WritCreater:GetSettings().stealProtection and not NoAccidentalStealing then
+			local _, hasWrits = WritCreater.writSearch()
+			if not hasWrits then
 				return oldInteract(...)
-			else
-				ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The Lazy Writ Crafter™ has saved you from stealing while doing writs!")
-				return isCriminal
 			end
+			local action, _, isBlocked, isOwned, additional,_,_,isCriminal = GetGameCameraInteractableActionInfo()
+			if isBlocked then
+				return oldInteract(...)
+			end
+			if isCriminal then
+				local isStealthed = GetUnitStealthState("player")
+				if isStealthed == 3 or isStealthed == 5 then
+					return oldInteract(...)
+				else
+					ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The Lazy Writ Crafter™ has saved you from stealing while doing writs!")
+					return isCriminal
+				end
+			end
+			return oldInteract(...)
 		end
 		return oldInteract(...)
 	end
-	return oldInteract(...)
+	interactionManager.StartInteraction = hook
 end
-FISHING_MANAGER.StartInteraction = hook
 
 
 local jewelryName =zo_strformat("<<1>>",GetItemLinkName("|H1:item:138799:6:1:0:0:0:24:255:5:325:28:0:0:0:0:0:0:0:0:0:4320001|h|h"))

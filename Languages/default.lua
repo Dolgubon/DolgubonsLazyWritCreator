@@ -207,6 +207,7 @@ WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has sav
 WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: "
 WritCreater.strings['resetWarningMessageText']		= "The daily reset for writs will be in <<1>> hour and <<2>> minutes\nYou can customize or turn off this warning in the settings"
 WritCreater.strings['resetWarningExampleText']		= "The warning will look like this"
+WritCreater.strings['lowInventory']					= "\nYou only have <<1>> free slots left and may not have enough free slots"
 
 
 
@@ -220,7 +221,7 @@ WritCreater.optionStrings.accountWide                  = "Account Wide"
 WritCreater.optionStrings.characterSpecific            = "Character Specific"
 WritCreater.optionStrings.useCharacterSettings         = "Use character settings" -- de
 WritCreater.optionStrings.useCharacterSettingsTooltip  = "Use character specific settings on this character only" --de
-WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the <<2>> style stone, to be used for crafting",styleName, styleStone) end 
+WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("Allow the <<1>> style, which uses the "..styleStone.." style stone, to be used for crafting",styleName, styleStone) end 
 WritCreater.optionStrings["show craft window"]							= "Show Craft Window"
 WritCreater.optionStrings["show craft window tooltip"]					= "Shows the crafting window when a crafting station is open"
 WritCreater.optionStrings["autocraft"]									= "AutoCraft"
@@ -255,7 +256,7 @@ WritCreater.optionStrings["master"]										= "Master Writs"
 WritCreater.optionStrings["master tooltip"]								= "If this is ON the addon will craft Master Writs you have active"
 WritCreater.optionStrings["right click to craft"]						= "Right Click to Craft"
 WritCreater.optionStrings["right click to craft tooltip"]				= "If this is ON the addon will craft Master Writs you tell it to craft after right clicking a sealed writ. Turn LibCustomMenu on to enable"
-WritCreater.optionStrings["crafting submenu"]							= "Trades to Craft"
+WritCreater.optionStrings["crafting submenu"]							= "Writs to Craft"
 WritCreater.optionStrings["crafting submenu tooltip"]					= "Turn the addon off for specific crafts"
 WritCreater.optionStrings["timesavers submenu"]							= "Timesavers"
 WritCreater.optionStrings["timesavers submenu tooltip"]					= "Various small timesavers"
@@ -338,14 +339,19 @@ WritCreater.optionStrings["jubilee"]									= "Loot Anniversary Boxes"
 WritCreater.optionStrings["jubilee tooltip"]							= "Auto Loot Anniversary Boxes"
 WritCreater.optionStrings["skin"]										= "Writ Crafter Skin"
 WritCreater.optionStrings["skinTooltip"]								= "The skin for the Writ Crafter UI"
-WritCreater.optionStrings["skinOptions"]								= {"Default", "Cheesy"}
-
+WritCreater.optionStrings["skinOptions"]								= {"Default", "Cheesy", "Goaty"}
+WritCreater.optionStrings["goatSkin"]									= "Goaty"
+WritCreater.optionStrings["cheeseSkin"]									= "Cheesy"
+WritCreater.optionStrings["defaultSkin"]								= "Default"
 WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk", "Destroy"}
 WritCreater.optionStrings["scan for unopened"]							= "Open containers on Login"
 WritCreater.optionStrings["scan for unopened tooltip"]					= "When you login, scan the bag for unopened writ containers and attempt to open them"
 
-WritCreater.optionStrings["smart style slot save"]							= "Smart Style Slot Save"
-WritCreater.optionStrings["smart style slot save tooltip"]					= "Will attempt to minimize slots used if non ESO+ by using smaller stacks of style stones first"
+WritCreater.optionStrings["smart style slot save"]						= "Lowest amount first"
+WritCreater.optionStrings["smart style slot save tooltip"]				= "Will attempt to minimize slots used if non ESO+ by using smaller stacks of style stones first"
+WritCreater.optionStrings["abandon quest for item"]						= "Writs requiring <<1>>"
+WritCreater.optionStrings["abandon quest for item tooltip"]				= "Abandon writs that require <<1>>"
+
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Craft items")

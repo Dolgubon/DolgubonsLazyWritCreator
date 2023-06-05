@@ -607,7 +607,10 @@ WritCreater.optionStrings['hireling behaviour tooltip']					= "Was sollte mit Mi
 WritCreater.optionStrings['hireling behaviour choices']					= { "Nichts", "Aufnehmen und löschen", "Nur aufnehmen"}
 WritCreater.optionStrings["skin"]										= "Writ Crafter Aussehen"
 WritCreater.optionStrings["skinTooltip"]								= "Das Aussehen der Writ Crafter Oberfläche"
-WritCreater.optionStrings["skinOptions"]								= {"Default", "Käsig"}
+WritCreater.optionStrings["skinOptions"]								= {"Default", "Käsig", "Ziege"}
+WritCreater.optionStrings["goatSkin"]									= "Ziege"
+WritCreater.optionStrings["cheeseSkin"]									= "Käsig"
+WritCreater.optionStrings["defaultSkin"]								= "Default"
 
  
 function WritCreater.langStationNames()

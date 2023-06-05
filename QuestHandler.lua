@@ -257,9 +257,26 @@ local function OnQuestAdvanced(eventId, questIndex, questName, isPushed, isCompl
     end
 end
 WritCreater.OnQuestAdvanced = OnQuestAdvanced
-
+local function rejectQuest(questIndex)
+	for itemLink, _ in pairs(WritCreater:GetSettings().skipItemQuests) do
+		if not WritCreater:GetSettings().skipItemQuests[itemLink] then
+			for i = 1, GetJournalQuestNumConditions(questIndex) do
+				if DoesItemLinkFulfillJournalQuestCondition(itemLink, questIndex, 1, i)  then
+					return itemLink
+				end
+			end
+		end
+	end
+	return false
+end
+-- ta, oko, nirnroot, coprinus, mudcrab
 local function OnQuestAdded(eventId, questIndex)
-
+	local rejectedMat = rejectQuest(questIndex)
+	if rejectedMat then
+		d("Writ Crafter abandoned the "..GetJournalQuestName(questIndex).." because it requires "..rejectedMat.." which was disallowed for use in the settings")
+		zo_callLater(function() AbandonQuest(questIndex) end , 500)
+		return
+	end
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
 		return 
 	end 

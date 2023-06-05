@@ -88,7 +88,7 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
     local useStolen = AreAnyItemsStolen(BAG_BACKPACK) and false
     local useMinimum = WritCreater:GetSettings().styles.smartStyleSlotSave
     for i, v in pairs(WritCreater:GetSettings().styles) do
-        if v then
+        if v and type(i)=="number" then
             numAllowed = numAllowed + 1
 	        
 	        if IsSmithingStyleKnown(i, piece) then
@@ -140,7 +140,7 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
 	local numAllowed = 0
 	local maxStones = 0 
 	for i, v in pairs(WritCreater:GetSettings().styles) do
-		if v then 
+		if v and type(i)=="number" then 
 			numAllowed = numAllowed + 1
 		
 			if IsSmithingStyleKnown(i, piece) then
@@ -425,6 +425,7 @@ function crafting(info,quest, craftItems)
 				fullInventorySpaceUIHandle()
 				return
 			end
+
 			 -- pattern is are we making gloves, chest, etc. Index is level.
 			--_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index)
 			_,_, numMats = GetSmithingPatternMaterialItemInfo(pattern, index) --WritCreater.LLCInteraction.GetMatRequirements(pattern, index)
@@ -496,7 +497,10 @@ function crafting(info,quest, craftItems)
 	end
 
 	createMatRequirementText(matsRequired)
-
+	if GetNumBagFreeSlots(BAG_BACKPACK) < 3*WritCreater:GetSettings().craftMultiplier then
+					
+		out(getOut()..zo_strformat(WritCreater.strings['lowInventory'], GetNumBagFreeSlots(BAG_BACKPACK)))
+	end
 
 	queue.updateCraftRequirements = function() 
 		createMatRequirementText(matsRequired)
@@ -713,7 +717,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101037
+	local currentAPIVersionOfAddon = 101038
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

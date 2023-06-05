@@ -1,24 +1,15 @@
-
+WritCreater = WritCreater or {}
 local function dailyReset()
-	stamp = GetTimeStamp()
-	local date = {}
-	local day = 86400
-	local hour = 3600
 	local till = {}
-	stamp = stamp-1451606400
-	stamp = stamp%day
-	date["hour"] = math.floor(stamp/3600)
-	stamp = stamp%hour
-	date["minute"] = math.floor(stamp/60)
+	local stamp = GetTimeUntilNextDailyLoginRewardClaimS()
+	till["hour"] = math.floor(stamp/3600)
+	stamp = stamp%3600
+	till["minute"] = math.floor(stamp/60)
 	stamp = stamp%60
-	if date["hour"]>5 then 
-		till["hour"] = 24-date["hour"]+5
-	else
-		till["hour"] = 6- date["hour"] -1
-	end
-	till["minute"] = 60-date["minute"]
 	return till["hour"], till["minute"]
 end
+
+WritCreater.dailyReset = dailyReset
 
 -- local msg = {}
 -- msg.GetCategory = function () return CSA_CATEGORY_LARGE_TEXT end--CSA_CATEGORY_MAJOR_TEXT, CSA_CATEGORY_RAID_COMPLETE_TEXT
