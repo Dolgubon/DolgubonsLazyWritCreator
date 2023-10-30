@@ -262,6 +262,27 @@
 	    		</Button>
 			</Controls>
 		</TopLevelControl>
-	
+		<TopLevelControl name="DolgubonsLazyWritStatus" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="120" y="37" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="850"/>
+			<OnMoveStop>
+				WritCreater:GetSettings().statusBarY = self:GetTop()
+				WritCreater:GetSettings().statusBarX = self:GetRight() 
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop" mouseEnabled="false">
+					<AnchorFill/>
+					<Edge edgeSize="1"/>
+					<Controls>
+
+						<Label name="$(parent)Output" font="ZoFontHeader2" color="FFFF33" wrapMode="TRUNCATE" horizontalAlignment="CENTER" 
+							verticalAlignment="CENTER" text="BCWJ  AEP" mouseEnabled="false">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+
+					    </Label>
+			    	</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
 	</Controls>
 </GuiXml>

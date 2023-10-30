@@ -500,7 +500,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 				-- d("Passed first check")
 				local craftType
 				craftType = WritCreater.getWritAndSurveyType(link)
-				if craftType == nil then
+				if craftType == nil and not GetItemLinkItemId(link) == 44879  then
 					-- d("Craft type nil?")
 					return
 				end
@@ -510,7 +510,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 					actionSource = WritCreater:GetSettings().rewardHandling["master"]
 				elseif specializedType == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
 					actionSource = WritCreater:GetSettings().rewardHandling["survey"]
-				elseif specializedType == SPECIALIZED_ITEMTYPE_TOOL then
+				elseif GetItemLinkItemId(link) == 44879 and specializedType == SPECIALIZED_ITEMTYPE_TOOL then
 					actionSource = WritCreater:GetSettings().rewardHandling["repair"]
 				end
 

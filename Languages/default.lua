@@ -350,7 +350,18 @@ WritCreater.optionStrings["scan for unopened tooltip"]					= "When you login, sc
 WritCreater.optionStrings["smart style slot save"]						= "Lowest amount first"
 WritCreater.optionStrings["smart style slot save tooltip"]				= "Will attempt to minimize slots used if non ESO+ by using smaller stacks of style stones first"
 WritCreater.optionStrings["abandon quest for item"]						= "Writs requiring <<1>>"
-WritCreater.optionStrings["abandon quest for item tooltip"]				= "Abandon writs that require <<1>>"
+WritCreater.optionStrings["abandon quest for item tooltip"]				= "If OFF, will auto abandon writs requiring <<1>>"
+WritCreater.optionStrings["status bar submenu"]							= "Status Bar Options"
+WritCreater.optionStrings["status bar submenu tooltip"]					= "Status Bar Options"
+WritCreater.optionStrings['showStatusBar']								= "Show Status Bar"
+WritCreater.optionStrings['showStatusBarTooltip']						= "Show or hide quest status bar"
+WritCreater.optionStrings['statusBarIcons']								= "Use Icons"
+WritCreater.optionStrings['statusBarIconsTooltip']						= "Shows Crafting Icons instead of letters for each writ type"
+WritCreater.optionStrings['transparentStatusBar']						= "Transparent Status Bar"
+WritCreater.optionStrings['transparentStatusBarTooltip']				= "Make the status bar transparent"
+WritCreater.optionStrings['statusBarInventory']							= "Inventory Tracker"
+WritCreater.optionStrings['statusBarInventoryTooltip']					= "Add an inventory tracker to the status bar"
+
 
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end

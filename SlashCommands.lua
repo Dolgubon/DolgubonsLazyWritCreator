@@ -238,7 +238,7 @@ WritCreater.ShowStatsWindow = function() outputStats(false) end
 -- Resets the user's writ reward statistics
 
 local function resetStats() 
-	for k, v in pairs(WritCreater.defaultAccountWide) do
+	for k, v in pairs(WritCreater.defaultAccountWide.rewards) do
 		if k == "masterWrits" then
 		else
 			WritCreater.savedVarsAccountWide[k] = WritCreater.defaultAccountWide[k]
@@ -280,7 +280,7 @@ end
 -- Abandons all writs
 
 local function abandonWrits()
-	local a = WritCreater.writSearch() d("Abandon Ship!!!") for i = 1, 7 do AbandonQuest(a[i]) end
+	local a = WritCreater.writSearch() d("Abandon Ship!!!") for i, v in pairs(a) do AbandonQuest(a[i]) end
 end
 
 -- Outputs the indexes of all the writs the user has. This is another debug function. It has not been used in a while, but 

@@ -239,6 +239,7 @@ local function setupConditionsTable(quest, info,indexTableToUse)
 	return conditionsTable
 end
 
+
 function isCurrentStationsWritComplete()
 	local questIndex = WritCreater.writSearch()[GetCraftingInteractionType()]
 	for i = 0, 7 do
@@ -717,7 +718,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101038
+	local currentAPIVersionOfAddon = 101040
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

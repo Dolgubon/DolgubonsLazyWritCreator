@@ -162,7 +162,7 @@ if isCheeseOn() then
 	function ZO_TimedActivities_Keyboard:InitializeActivityFinderCategory()
 		local returnValue = originalInitializeKeyboardFinderCategory(self)
 
-		GROUP_MENU_KEYBOARD.nodeList[2].children[cheesyActivityTypeIndex] = 
+		GROUP_MENU_KEYBOARD.nodeList[3].children[cheesyActivityTypeIndex] = 
 		{
             priority = CATEGORY_PRIORITY + 20,
             name = "RNGesus Sacrifice",
@@ -204,7 +204,7 @@ if isCheeseOn() then
 	    TIMED_ACTIVITIES_KEYBOARD:SetCurrentActivityType(cheesyActivityTypeIndex)
 	end
 	GROUP_MENU_KEYBOARD.navigationTree:Reset()
-	table.insert(GROUP_MENU_KEYBOARD.nodeList[2]["children"] , {
+	table.insert(GROUP_MENU_KEYBOARD.nodeList[3]["children"] , {
 		priority = ZO_ACTIVITY_FINDER_SORT_PRIORITY.TIMED_ACTIVITIES + cheesyActivityTypeIndex * 10 + 10,
 		name = il8n.menuName,
 		categoryFragment = TIMED_ACTIVITIES_KEYBOARD.sceneFragment,
@@ -660,7 +660,7 @@ local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
 
 
 
-	-- /esraj /lute /drum /flute  /keyharp /trumpetsolo /panflute  /qunan /ragnarthered /
+	-- /esraj /lute /drum /flute   /trumpetsolo /keyharp /panflute  /qunan /ragnarthered /sukun
 	-- if GetDisplayName() == "@Dolgubon" then
 	-- 	enableAlternateUniverse(true)	
 	-- 	WritCreater.WipeThatFrownOffYourFace(true)	
@@ -748,10 +748,47 @@ function WritCreater.Options() --Sentimental
 			end,
 		},
 		
-		
 		{
 			type = "checkbox",
-			name = WritCreater.optionStrings["master"],--"Master Writs",
+			name = WritCreater.optionStrings['stealingProtection'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().stealProtection end,
+			setFunc = function(value) WritCreater:GetSettings().stealProtection = value end,
+			tooltip = WritCreater.optionStrings['stealingProtectionTooltip'], -- or string id or function returning a string (optional)
+		} ,
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['suppressQuestAnnouncements'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().suppressQuestAnnouncements end,
+			setFunc = function(value) WritCreater:GetSettings().suppressQuestAnnouncements = value end,
+			tooltip = WritCreater.optionStrings['suppressQuestAnnouncementsTooltip'], -- or string id or function returning a string (optional)
+		} ,
+		{
+			type = "dropdown",
+			name = WritCreater.optionStrings['dailyResetWarnType'],--"Master Writs",
+			tooltip = WritCreater.optionStrings['dailyResetWarnTypeTooltip'],--"Craft Master Writ Items",
+			choices = WritCreater.optionStrings["dailyResetWarnTypeChoices"],
+			choicesValues = {"none","announcement","alert","chat","window","all"},
+			getFunc = function() return WritCreater:GetSettings().dailyResetWarnType end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().dailyResetWarnType = value 
+				WritCreater.showDailyResetWarnings("Example") -- Show the example warnings
+			end
+		},
+		{
+		    type = "slider",
+		    name = WritCreater.optionStrings['dailyResetWarnTime'], -- or string id or function returning a string
+		    getFunc = function() return WritCreater:GetSettings().dailyResetWarnTime end,
+		    setFunc = function(value) WritCreater:GetSettings().dailyResetWarnTime = math.max(0,value) WritCreater.refreshWarning() end,
+		    min = 0,
+		    max = 300,
+		    step = 1, --(optional)
+		    clampInput = false, -- boolean, if set to false the input won't clamp to min and max and allow any number instead (optional)
+		    tooltip = WritCreater.optionStrings['dailyResetWarnTimeTooltip'], -- or string id or function returning a string (optional)
+		    requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
+		} ,
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings["master"].." (Unsupported, use Writ Worthy)",--"Master Writs",
 			tooltip = WritCreater.optionStrings["master tooltip"],--"Craft Master Writ Items",
 			getFunc = function() return WritCreater.savedVarsAccountWide.masterWrits end,
 			setFunc = function(value) 
@@ -785,44 +822,6 @@ function WritCreater.Options() --Sentimental
 				end
 			end,
 		},
-		{
-			type = "dropdown",
-			name = WritCreater.optionStrings['dailyResetWarnType'],--"Master Writs",
-			tooltip = WritCreater.optionStrings['dailyResetWarnTypeTooltip'],--"Craft Master Writ Items",
-			choices = WritCreater.optionStrings["dailyResetWarnTypeChoices"],
-			choicesValues = {"none","announcement","alert","chat","window","all"},
-			getFunc = function() return WritCreater:GetSettings().dailyResetWarnType end,
-			setFunc = function(value) 
-				WritCreater:GetSettings().dailyResetWarnType = value 
-				WritCreater.showDailyResetWarnings("Example") -- Show the example warnings
-			end
-		},
-		{
-		    type = "slider",
-		    name = WritCreater.optionStrings['dailyResetWarnTime'], -- or string id or function returning a string
-		    getFunc = function() return WritCreater:GetSettings().dailyResetWarnTime end,
-		    setFunc = function(value) WritCreater:GetSettings().dailyResetWarnTime = math.max(0,value) WritCreater.refreshWarning() end,
-		    min = 0,
-		    max = 300,
-		    step = 1, --(optional)
-		    clampInput = false, -- boolean, if set to false the input won't clamp to min and max and allow any number instead (optional)
-		    tooltip = WritCreater.optionStrings['dailyResetWarnTimeTooltip'], -- or string id or function returning a string (optional)
-		    requiresReload = false, -- boolean, if set to true, the warning text will contain a notice that changes are only applied after an UI reload and any change to the value will make the "Apply Settings" button appear on the panel which will reload the UI when pressed (optional)
-		} ,
-		{
-			type = "checkbox",
-			name = WritCreater.optionStrings['stealingProtection'], -- or string id or function returning a string
-			getFunc = function() return WritCreater:GetSettings().stealProtection end,
-			setFunc = function(value) WritCreater:GetSettings().stealProtection = value end,
-			tooltip = WritCreater.optionStrings['stealingProtectionTooltip'], -- or string id or function returning a string (optional)
-		} ,
-		{
-			type = "checkbox",
-			name = WritCreater.optionStrings['suppressQuestAnnouncements'], -- or string id or function returning a string
-			getFunc = function() return WritCreater:GetSettings().suppressQuestAnnouncements end,
-			setFunc = function(value) WritCreater:GetSettings().suppressQuestAnnouncements = value end,
-			tooltip = WritCreater.optionStrings['suppressQuestAnnouncementsTooltip'], -- or string id or function returning a string (optional)
-		} ,
 
 			
 	}
@@ -1039,6 +1038,51 @@ function WritCreater.Options() --Sentimental
 			end,
 		},
 	}
+	local statusBarOptions = {
+	{
+			type = "checkbox",
+			name = WritCreater.optionStrings['showStatusBar'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().showStatusBar end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().showStatusBar = value
+				WritCreater.toggleQuestStatusWindow()
+			end,
+			tooltip = WritCreater.optionStrings['showStatusBarTooltip'], -- or string id or function returning a string (optional)
+		} ,
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['statusBarInventory'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().statusBarInventory end,
+			disabled = function() return not WritCreater:GetSettings().showStatusBar end,
+			setFunc = function(value) WritCreater:GetSettings().statusBarInventory = value
+				WritCreater.updateQuestStatus()
+			end,
+			tooltip = WritCreater.optionStrings['statusBarInventoryTooltip'], -- or string id or function returning a string (optional)
+			default = WritCreater.default.statusBarIcons,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['statusBarIcons'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().statusBarIcons end,
+			disabled = function() return not WritCreater:GetSettings().showStatusBar end,
+			setFunc = function(value) WritCreater:GetSettings().statusBarIcons = value
+				WritCreater.updateQuestStatus()
+			end,
+			tooltip = WritCreater.optionStrings['statusBarIconsTooltip'], -- or string id or function returning a string (optional)
+			default = WritCreater.default.statusBarIcons,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['transparentStatusBar'], -- or string id or function returning a string
+			getFunc = function() return WritCreater:GetSettings().transparentStatusBar end,
+			disabled = function() return not WritCreater:GetSettings().showStatusBar end,
+			setFunc = function(value) WritCreater:GetSettings().transparentStatusBar = value
+				WritCreater.updateQuestStatus()
+			end,
+			tooltip = WritCreater.optionStrings['transparentStatusBarTooltip'], -- or string id or function returning a string (optional)
+			default = WritCreater.default.transparentStatusBar,
+		} ,
+	}
 
 ----------------------------------------------------
 ----- REWARDS SUBMENU
@@ -1235,7 +1279,7 @@ function WritCreater.Options() --Sentimental
 
 	local craftSubmenu = {{
 		type = "checkbox",
-		name = WritCreater.optionStrings["blackmithing"]   ,
+		name = WritCreater.optionStrings["blackmithing"].." (All features supported)"   ,
 		tooltip = WritCreater.optionStrings["blacksmithing tooltip"] ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_BLACKSMITHING] end,
 		setFunc = function(value) 
@@ -1244,7 +1288,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["clothing"]  ,
+		name = WritCreater.optionStrings["clothing"].." (All features supported)"  ,
 		tooltip = WritCreater.optionStrings["clothing tooltip"] ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_CLOTHIER] end,
 		setFunc = function(value) 
@@ -1253,7 +1297,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 	  type = "checkbox",
-	  name = WritCreater.optionStrings["woodworking"]    ,
+	  name = WritCreater.optionStrings["woodworking"].." (All features supported)"    ,
 	  tooltip = WritCreater.optionStrings["woodworking tooltip"],
 	  getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_WOODWORKING] end,
 	  setFunc = function(value) 
@@ -1262,7 +1306,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 	  type = "checkbox",
-	  name = WritCreater.optionStrings["jewelry crafting"]    ,
+	  name = WritCreater.optionStrings["jewelry crafting"].." (All features supported)"    ,
 	  tooltip = WritCreater.optionStrings["jewelry crafting tooltip"],
 	  getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_JEWELRYCRAFTING] end,
 	  setFunc = function(value) 
@@ -1271,7 +1315,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["provisioning"],
+		name = WritCreater.optionStrings["provisioning"].." (Crafting not supported)",
 		tooltip = WritCreater.optionStrings["provisioning tooltip"]  ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] end,
 		setFunc = function(value) 
@@ -1286,7 +1330,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["enchanting"],
+		name = WritCreater.optionStrings["enchanting"].." (All features supported)",
 		tooltip = WritCreater.optionStrings["enchanting tooltip"]  ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_ENCHANTING] end,
 		setFunc = function(value) 
@@ -1323,7 +1367,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["alchemy"],
+		name = WritCreater.optionStrings["alchemy"].." (Crafting not supported)",
 		tooltip = WritCreater.optionStrings["alchemy tooltip"]  ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] end,
 		setFunc = function(value) 
@@ -1374,7 +1418,7 @@ function WritCreater.Options() --Sentimental
 }
 
   if WritCreater.lang ~="jp" then
-  table.insert(options, {
+  table.insert(options, 7,{
 	type = "checkbox",
 	name = WritCreater.optionStrings["writ grabbing"] ,
 	tooltip = WritCreater.optionStrings["writ grabbing tooltip"] ,
@@ -1410,6 +1454,13 @@ function WritCreater.Options() --Sentimental
 	  tooltip = WritCreater.optionStrings["timesavers submenu tooltip"],
 	  controls = timesaverOptions,
 	  reference = "WritCreaterTimesaverSubmenu",
+	})
+	table.insert(options,{
+	  type = "submenu",
+	  name = WritCreater.optionStrings["status bar submenu"],
+	  tooltip = WritCreater.optionStrings["status bar submenu tooltip"],
+	  controls = statusBarOptions,
+	  reference = "WritCreaterStatusBarSubmenu",
 	})
 	table.insert(options,{
 		type = "submenu",

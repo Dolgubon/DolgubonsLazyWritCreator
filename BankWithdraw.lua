@@ -256,7 +256,7 @@ local function queueRun()
 							SCENE_MANAGER:Show('hud')
 							recursiveCall()
 						end
-					end , 200) 
+					end , GetLatency()+50) 
 				end
 			recursiveCall()
 		end
@@ -324,13 +324,20 @@ local validItemTypes =
 		[ITEMTYPE_ARMOR] = {true,equipmentCheck},
 	
 	},
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = {
+		[ITEMTYPE_ARMOR] = {true,equipmentCheck},
+	}
 	--]]
 }
 
 local depositedItem = false
 
 local function runProcessDeposits()
-	if #WritCreater.pendingItemActions > 0 then
+	local numItems = 0
+	for k, v in pairs(WritCreater.pendingItemActions) do 
+		numItems = numItems + 1
+	end
+	if numItems > 0 then
 		for k, itemInfo in pairs(WritCreater.pendingItemActions) do
 			if itemInfo[1] == GetItemLink(itemInfo[3], itemInfo[4]) then
 				if itemInfo[2] == 2 then
@@ -359,12 +366,12 @@ local function runProcessDeposits()
 					end
 					depositedItem = true
 					d("Writ Crafter: Depositing "..itemInfo[1])
-					WritCreater.pendingItemActions[k] = nil
-					return zo_callLater( runProcessDeposits, 100)
+					table.remove(WritCreater.pendingItemActions, k)
+					return zo_callLater( runProcessDeposits, GetLatency()+50)
 				end
 			end
 		end
-	elseif depositedItem and #WritCreater.pendingItemActions == 0 then
+	elseif depositedItem and numItems == 0 then
 		depositedItem = false
 		if WritCreater:GetSettings().despawnBanker then
 			ZO_SharedInteraction:CloseChatterAndDismissAssistant()
@@ -386,7 +393,7 @@ alchGrab = function (event, bag)
 		if #queue>0 then
 
 			--queueRun()
-			zo_callLater(queueRun,WritCreater:GetSettings().delay)
+			zo_callLater(queueRun,GetLatency()+50)
 		end
 	end
 	runProcessDeposits()

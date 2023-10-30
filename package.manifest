@@ -37,3 +37,4 @@ WizardMousedds.dds
 Crafter.lua
 bindings.xml
 MailHandler.lua
+StatusBar.lua
