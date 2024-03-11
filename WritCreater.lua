@@ -247,6 +247,7 @@ WritCreater.defaultAccountWide = {
 	["skin"] = "default",
 	["unlockedCheese"] = false,
 	["unlockedGoat"] = false,
+	["resetCheeseFor2024"] = false,
 	["cheesyProgress"] = {
 		["cheeseProfession"]=0,
 		["sheoVisit"] =0,
@@ -525,6 +526,10 @@ local function initializeOtherStuff()
 	WritCreater.savedVars = ZO_SavedVars:NewCharacterIdSettings(
 		"DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.savedVarsAccountWide.accountWideProfile)
 
+	if not WritCreater.savedVarsAccountWide.resetCheeseFor2024 then
+		WritCreater.savedVarsAccountWide.cheesyProgress = WritCreater.defaultAccountWide.cheesyProgress
+		WritCreater.savedVarsAccountWide.resetCheeseFor2024 = true
+	end
 	if HodorReflexes and HodorReflexes.users then 
 		HodorReflexes.users["@Dolgubon"] = {"Dolgubon", "|cDABD01Dolgubon|r", "DolgubonsLazyWritCreator/WizardMousedds.dds"} 
 	end
