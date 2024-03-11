@@ -207,7 +207,7 @@
 						<Label name="$(parent)Head" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
 							<Anchor  relativePoint="TOP" relativeTo="$(parent)" offsetY="55" offsetX="-85"/>
 						</Label>
-						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" width="400" height="400" mouseEnabled="true">
+						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" width="400" height="400" mouseEnabled="false">
 							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="80" offsetX="10"/>
 				        	<Dimensions x="450"/>
 					    </Label>

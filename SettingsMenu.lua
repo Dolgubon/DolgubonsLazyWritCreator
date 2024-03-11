@@ -918,7 +918,23 @@ function WritCreater.Options() --Sentimental
 				elseif value == 3 then
 					WritCreater:GetSettings().ignoreAuto = true
 					WritCreater:GetSettings().autoLoot = false
+					WritCreater:GetSettings().lootContainerOnReceipt  = false
 				end
+			end,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings["loot container"],
+			tooltip = WritCreater.optionStrings["loot container tooltip"],
+			disabled = function() return not WritCreater:GetSettings().autoLoot end,
+			getFunc = function() 
+				if not WritCreater:GetSettings().autoLoot then
+					WritCreater:GetSettings().lootContainerOnReceipt  = false
+				end
+				return WritCreater:GetSettings().lootContainerOnReceipt 
+			end,
+			setFunc = function(value) 
+			WritCreater:GetSettings().lootContainerOnReceipt = value					
 			end,
 		},
 		{
@@ -928,15 +944,6 @@ function WritCreater.Options() --Sentimental
 			getFunc = function() return WritCreater:GetSettings().keepNewContainer end,
 			setFunc = function(value) 
 			WritCreater:GetSettings().keepNewContainer = value			
-			end,
-		},
-		{
-			type = "checkbox",
-			name = WritCreater.optionStrings["loot container"],
-			tooltip = WritCreater.optionStrings["loot container tooltip"],
-			getFunc = function() return WritCreater:GetSettings().lootContainerOnReceipt end,
-			setFunc = function(value) 
-			WritCreater:GetSettings().lootContainerOnReceipt = value					
 			end,
 		},
 		--[[{

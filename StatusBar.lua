@@ -117,7 +117,7 @@ local function updateQuestStatus(event)
 	local anyActive = false
 	local size = 25
 	if WritCreater:GetSettings().statusBarInventory then
-		workingString = workingString.." |cFFFFFF"..string.format("|t%d:%d:%s:inheritColor|t",18,18,"EsoUI/Art/Tooltips/icon_bag.dds").." "..GetNumBagUsedSlots(1).."/"..GetBagSize(1).."|r"
+		workingString = workingString.." |cFFFFFF"..string.format("|t%d:%d:%s:inheritColor|t",18,18,"EsoUI/Art/Tooltips/icon_bag.dds").." "..GetNumBagUsedSlots(1).."/"..GetBagSize(1).."|r "
 	end
 	for i = 1, 7 do
 		local nextOrder = statusOrder[i]

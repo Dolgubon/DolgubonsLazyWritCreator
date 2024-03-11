@@ -193,6 +193,16 @@ local function shouldSaveStats(boxType)
 	return true
 end
 
+local function shouldAutoLootContainerFromSettings()
+	local autoLoot
+	if WritCreater:GetSettings().ignoreAuto then
+		autoLoot = WritCreater:GetSettings().autoLoot
+	else
+		autoLoot = GetSetting(SETTING_TYPE_LOOT,LOOT_SETTING_AUTO_LOOT) == "1"
+	end
+	return autoLoot
+end
+
 local fatiguedLoot = 
 {
 
@@ -211,13 +221,7 @@ local containerHasTransmute = {}
 local lastInteractedSlot = nil
 local function OnLootUpdated(event)
 	local ignoreAuto = WritCreater:GetSettings().ignoreAuto
-	local autoLoot 
-	if WritCreater:GetSettings().ignoreAuto then
-		autoLoot = WritCreater:GetSettings().autoLoot
-	else
-		autoLoot = GetSetting(SETTING_TYPE_LOOT,LOOT_SETTING_AUTO_LOOT) == "1"
-	end
-	if calledFromQuest then autoLoot = true end
+	local autoLoot  = shouldAutoLootContainerFromSettings()
 
 	local lootInfo = {GetLootTargetInfo()}
 	local writRewardNames = WritCreater.langWritRewardBoxes ()
@@ -359,6 +363,8 @@ SLASH_COMMANDS['/transmuteboxtotal'] = function()
 end
 local function shouldOpenContainer(bag, slot)
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
+
+	if not shouldAutoLootContainerFromSettings() then return false end
 
 	if FindFirstEmptySlotInBag(BAG_BACKPACK) == nil then return false end
 

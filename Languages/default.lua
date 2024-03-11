@@ -173,15 +173,15 @@ local findMissingTranslationsMetatable =
 WritCreater.strings = {}
 setmetatable(WritCreater.strings, findMissingTranslationsMetatable)
 
-WritCreater.strings["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end
-WritCreater.strings["runeMissing"] 				= runeMissingFunction 
+WritCreater.strings["runeReq"] 						= function (essence, potency) return zo_strformat("|c2dff00Crafting will require 1 |rTa|c2dff00, 1 |cffcc66<<1>>|c2dff00 and 1 |c0066ff<<2>>|r", essence, potency) end
+WritCreater.strings["runeMissing"] 					= runeMissingFunction 
 WritCreater.strings["notEnoughSkill"]				= "You do not have a high enough crafting skill to make the required equipment"
-WritCreater.strings["smithingMissing"] 			= "\n|cf60000You do not have enough mats|r"
-WritCreater.strings["craftAnyway"] 				= "Craft anyway"
+WritCreater.strings["smithingMissing"] 				= "\n|cf60000You do not have enough mats|r"
+WritCreater.strings["craftAnyway"] 					= "Craft anyway"
 WritCreater.strings["smithingEnough"] 				= "\n|c2dff00You have enough mats|r"
 WritCreater.strings["craft"] 						= "|c00ff00Craft|r"
 WritCreater.strings["crafting"] 					= "|c00ff00Crafting...|r"
-WritCreater.strings["craftIncomplete"] 			= "|cf60000Crafting could not be completed.\nYou need more mats.|r"
+WritCreater.strings["craftIncomplete"] 				= "|cf60000Crafting could not be completed.\nYou need more mats.|r"
 WritCreater.strings["moreStyle"] 					= "|cf60000You do not have any usable style stones.\nCheck your inventory, achievements, and settings|r"
 WritCreater.strings["moreStyleSettings"]			= "|cf60000You do not have any usable style stones.\nYou likely need to allow more in the Settings Menu|r"
 WritCreater.strings["moreStyleKnowledge"]			= "|cf60000You do not have any usable style stones.\nYou might need to learn to craft more styles|r"
@@ -189,22 +189,23 @@ WritCreater.strings["dailyreset"] 					= dailyResetFunction
 WritCreater.strings["complete"] 					= "|c00FF00Writ complete.|r"
 WritCreater.strings["craftingstopped"]				= "Crafting stopped. Please check to make sure the addon is crafting the correct item."
 WritCreater.strings["smithingReqM"] 				= function (amount, type, more) return zo_strformat( "Crafting will use <<1>> <<2>> (|cf60000You need <<3>>|r)" ,amount, type, more) end
-WritCreater.strings["smithingReq"] 				= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, current) end
-WritCreater.strings["lootReceived"]				= "<<3>> <<1>> was received (You have <<2>>)"
+WritCreater.strings["smithingReq"] 					= function (amount,type, current) return zo_strformat( "Crafting will use <<1>> <<2>> (|c2dff00<<3>> available|r)"  ,amount, type, 
+														zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(current, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES))) end
+WritCreater.strings["lootReceived"]					= "<<3>> <<1>> was received (You have <<2>>)"
 WritCreater.strings["lootReceivedM"]				= "<<1>> was received "
-WritCreater.strings["countSurveys"]				= "You have <<1>> surveys"
+WritCreater.strings["countSurveys"]					= "You have <<1>> surveys"
 WritCreater.strings["countVouchers"]				= "You have <<1>> unearned Writ Vouchers"
 WritCreater.strings["includesStorage"]				= function(type) local a= {"Surveys", "Master Writs"} a = a[type] return zo_strformat("Count includes <<1>> in house storage", a) end
 WritCreater.strings["surveys"]						= "Crafting Surveys"
 WritCreater.strings["sealedWrits"]					= "Sealed Writs"
-WritCreater.strings["masterWritEnchantToCraft"]	= function(lvl, type, quality, writCraft, writName, generalName) 
-										return zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality",lvl, type, quality,
-											writCraft,writName, generalName) end
+WritCreater.strings["masterWritEnchantToCraft"]		= function(lvl, type, quality, writCraft, writName, generalName) 
+														return zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality",lvl, type, quality,
+															writCraft,writName, generalName) end
 WritCreater.strings["masterWritSmithToCraft"]		= masterWritEnchantToCraft
-WritCreater.strings["withdrawItem"]				= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link..". ("..remaining.." in bank)" end -- in Bank for German
+WritCreater.strings["withdrawItem"]					= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link..". ("..remaining.." in bank)" end -- in Bank for German
 WritCreater.strings['fullBag']						= "You have no open bag spaces. Please empty your bag."
 WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option."
-WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: "
+WritCreater.strings['missingLibraries']				= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: "
 WritCreater.strings['resetWarningMessageText']		= "The daily reset for writs will be in <<1>> hour and <<2>> minutes\nYou can customize or turn off this warning in the settings"
 WritCreater.strings['resetWarningExampleText']		= "The warning will look like this"
 WritCreater.strings['lowInventory']					= "\nYou only have <<1>> free slots left and may not have enough free slots"
@@ -349,8 +350,8 @@ WritCreater.optionStrings["scan for unopened tooltip"]					= "When you login, sc
 
 WritCreater.optionStrings["smart style slot save"]						= "Lowest amount first"
 WritCreater.optionStrings["smart style slot save tooltip"]				= "Will attempt to minimize slots used if non ESO+ by using smaller stacks of style stones first"
-WritCreater.optionStrings["abandon quest for item"]						= "Writs requiring <<1>>"
-WritCreater.optionStrings["abandon quest for item tooltip"]				= "If OFF, will auto abandon writs requiring <<1>>"
+WritCreater.optionStrings["abandon quest for item"]						= "Writs with 'deliver <<1>>'"
+WritCreater.optionStrings["abandon quest for item tooltip"]				= "If OFF, will auto abandon writs requiring you to deliver <<1>>. Quests which require you to craft an item requireing <<1>> will not be abandoned"
 WritCreater.optionStrings["status bar submenu"]							= "Status Bar Options"
 WritCreater.optionStrings["status bar submenu tooltip"]					= "Status Bar Options"
 WritCreater.optionStrings['showStatusBar']								= "Show Status Bar"
@@ -361,7 +362,6 @@ WritCreater.optionStrings['transparentStatusBar']						= "Transparent Status Bar
 WritCreater.optionStrings['transparentStatusBarTooltip']				= "Make the status bar transparent"
 WritCreater.optionStrings['statusBarInventory']							= "Inventory Tracker"
 WritCreater.optionStrings['statusBarInventoryTooltip']					= "Add an inventory tracker to the status bar"
-
 
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
