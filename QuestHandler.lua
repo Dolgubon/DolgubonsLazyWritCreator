@@ -210,10 +210,9 @@ end
 local function hookIndexEvent(event)
 	local originalAdded = ZO_CenterScreenAnnounce_GetEventHandlers()[ event]
 	ZO_CenterScreenAnnounce_GetEventHandlers()[ event] = function(...)
-	originalAdded(...)
 		local params={...} 
 		local questIndex = params[1]
-		if isQuestWritQuest(questIndex) then 
+		if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
 			return 
 		end 
 		return originalAdded(...)
@@ -278,8 +277,8 @@ local function OnQuestAdded(eventId, questIndex)
 		return
 	end
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
-		return 
-	end 
+		return
+	end
     OnQuestAdvanced(EVENT_QUEST_ADVANCED, questIndex, nil, nil, nil, true)
 end
 

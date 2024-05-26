@@ -650,18 +650,6 @@ function WritCreater.langStationNames()
 	 ["Table d'enchantement"] = 3,["Établi d'alchimie"] = 4, ["Feu de cuisine"] = 5, ["Atelier de travail du bois"] = 6, ["Atelier de joaillerie"] = 7, }
 end
 
-function WritCreater.langWritRewardBoxes () return {
-	[1] = "Récipient d'alchimiste",
-	[2] = "coffre d'enchanteur",
-	[3] = "paquet de cuisinier",
-	[4] = "caisse de forgeron",
-	[5] = "sacoche de tailleur",
-	[6] = "caisse de travailleur du bois",
-	[7] = "coffre de joailler",
-	[8] = "cargaison",
-}
-end
-
 WritCreater.cheeseyLocalizations
 =
 {
@@ -689,9 +677,6 @@ WritCreater.cheeseyLocalizations
 	["cheatyCheeseBook"] = "Peut-être devenez-vous fou, mais vous ne semblez pas reconnaître ce livre...",
 }
 
-function WritCreater.getTaString()
-	return "ta"
-end
 
 WritCreater.lang = "fr"
 

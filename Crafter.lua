@@ -248,6 +248,14 @@ function isCurrentStationsWritComplete()
 			return true
 		end
 	end
+	-- Need a special exception for enchanting, since the second 'withdraw an item' 
+	if GetCraftingInteractionType() == CRAFTING_TYPE_ENCHANTING then
+		local text, currentAmount,_,_,_,_,_, conditionType = GetJournalQuestConditionInfo(questIndex, 1, 2)
+		if currentAmount == 1 then
+			return true
+		end
+	end
+	return false
 end
 
 local function writCompleteUIHandle()
@@ -612,10 +620,10 @@ local function enchantCrafting(info, quest,add)
 		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
 		conditions["text"][i] = WritCreater.enchantExceptions(conditions["text"][i])
 		if conditions["cur"][i]>0 then conditions["text"][i] = "" end
-		if string.find(myLower(conditions["text"][i]),"deliver") then
+		if string.find(myLower(conditions["text"][i]),"deliver") or string.find(myLower(conditions["text"][i]),WritCreater.writCompleteStrings()["Deliver"]) then
 			writCompleteUIHandle()
 			return
-		elseif string.find(myLower(conditions["text"][i]),"acquire")   then
+		elseif string.find(myLower(conditions["text"][i]),"acquire") or string.find(myLower(conditions["text"][i]),WritCreater.writCompleteStrings()["Acquire"])   then
 
 			conditions["text"][i] = false
 			if not incomplete then
@@ -637,76 +645,73 @@ local function enchantCrafting(info, quest,add)
 			DolgubonsWritsBackdropQuestOutput:AddText(conditions["text"][i])
 			DolgubonsWritsBackdropCraft:SetHidden(false)
 			DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
-				local ta={}
-				local essence={}
-				local potency={}
-				local taString
+			local ta={}
+			local essence={}
+			local potency={}
 
-				taString = WritCreater.getTaString()
+			ta["bag"],ta["slot"] = findItem(45850)
+			local essenceId , potencyId = enchantSearch(nil,nil, nil,nil,quest)
+			if not essenceId and not potency then
+				out("Could not determine which glyphs to use")
+				return
+			end
+			essence["bag"], essence["slot"] = findItem(essenceId)
+			potency["bag"], potency["slot"] = findItem(potencyId)
 
-				ta["bag"],ta["slot"] = findItem(45850)
-				local essenceId , potencyId = enchantSearch(nil,nil, nil,nil,quest)
-				if not essenceId and not potency then
-					out("Could not determine which glyphs to use")
-					return
-				end
-				essence["bag"], essence["slot"] = findItem(essenceId)
-				potency["bag"], potency["slot"] = findItem(potencyId)
-
-				if essence["slot"] == nil or potency["slot"] == nil  or ta["slot"]== nil then -- should never actually be run, but whatever
-					out("An error was encountered.")
-					return
-				end
-				if not add then
-					if essence["bag"] and potency["bag"] and ta["bag"] then
-						local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
-						local runeNames = {
-							proper(GetItemName(essence["bag"], essence["slot"])),
-							proper(GetItemName(potency["bag"], potency["slot"])),
-						}
-						out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)), "1", quantity))
-						DolgubonsWritsBackdropCraft:SetHidden(false)
-						DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
-					else
-						out(WritCreater.strings.runeMissing(proper(ta),proper(essence),proper(potency)))
-						DolgubonsWritsBackdropCraft:SetHidden(true)
-					end
+			if essence["slot"] == nil or potency["slot"] == nil  or ta["slot"]== nil then -- should never actually be run, but whatever
+				out("An error was encountered.")
+				return
+			end
+			if not add then
+				if essence["bag"] and potency["bag"] and ta["bag"] then
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
+					local runeNames = {
+						proper(GetItemName(essence["bag"], essence["slot"])),
+						proper(GetItemName(potency["bag"], potency["slot"])),
+					}
+					out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)), "1", quantity))
+					DolgubonsWritsBackdropCraft:SetHidden(false)
+					DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
 				else
-					if essence["bag"] and potency["bag"] and ta["bag"] then
-						local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
-						local runeNames = {
-							proper(GetItemName(essence["bag"], essence["slot"])),
-							proper(GetItemName(potency["bag"], potency["slot"])),
-						}
-						craftingEnchantCurrently = true
-						if GetDisplayName() == "@Dolgubon" and WritCreater:GetSettings().craftMultiplier > 1 then
-							quantity = quantity * 3
-						end
-						--d(conditions["type"][i],conditions["glyph"][i])
-						out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)).."\n"..WritCreater.strings.crafting, "1", quantity ))
-						DolgubonsWritsBackdropCraft:SetHidden(true)
-						--d(GetEnchantingResultingItemInfo(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]))
-
-						closeOnce = true
-
-						ZO_AlertNoSuppression = function(a, b, text, ...)
-							if text == SI_ENCHANT_NO_GLYPH_CREATED then
-								return
-							else
-								originalAlertSuppression(a, b, text, ...)
-							end
-						end
-
-						WritCreater.LLCInteraction:CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"], nil, nil,nil , quantity or 1)					
-
-						zo_callLater(function() craftingEnchantCurrently = false end,4000) 
-						craftingWrits = false
-						return
-					else
-						out(WritCreater.strings.runeMissing(ta,essence,potency))
-						DolgubonsWritsBackdropCraft:SetHidden(true)
-						craftingWrits = false
+					out(WritCreater.strings.runeMissing(proper(ta),proper(essence),proper(potency)))
+					DolgubonsWritsBackdropCraft:SetHidden(true)
+				end
+			else
+				if essence["bag"] and potency["bag"] and ta["bag"] then
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
+					local runeNames = {
+						proper(GetItemName(essence["bag"], essence["slot"])),
+						proper(GetItemName(potency["bag"], potency["slot"])),
+					}
+					craftingEnchantCurrently = true
+					if GetDisplayName() == "@Dolgubon" and WritCreater:GetSettings().craftMultiplier > 1 then
+						quantity = quantity * 3
 					end
+					--d(conditions["type"][i],conditions["glyph"][i])
+					out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)).."\n"..WritCreater.strings.crafting, "1", quantity ))
+					DolgubonsWritsBackdropCraft:SetHidden(true)
+					--d(GetEnchantingResultingItemInfo(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]))
+
+					closeOnce = true
+
+					ZO_AlertNoSuppression = function(a, b, text, ...)
+						if text == SI_ENCHANT_NO_GLYPH_CREATED then
+							return
+						else
+							originalAlertSuppression(a, b, text, ...)
+						end
+					end
+
+					WritCreater.LLCInteraction:CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"], nil, nil,nil , quantity or 1)					
+
+					zo_callLater(function() craftingEnchantCurrently = false end,4000) 
+					craftingWrits = false
+					return
+				else
+					out(WritCreater.strings.runeMissing(ta,essence,potency))
+					DolgubonsWritsBackdropCraft:SetHidden(true)
+					craftingWrits = false
+				end
 			end
 		end
 	end
@@ -718,7 +723,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101041
+	local currentAPIVersionOfAddon = 101042
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 

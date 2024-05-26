@@ -145,18 +145,6 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	return strings
 end
 
-function WritCreater.langWritRewardBoxes () return {
-	[CRAFTING_TYPE_ALCHEMY] = "Alchemist's Vessel",
-	[CRAFTING_TYPE_ENCHANTING] = "Enchanter's Coffer",
-	[CRAFTING_TYPE_PROVISIONING] = "Provisioner's Pack",
-	[CRAFTING_TYPE_BLACKSMITHING] = "Blacksmith's Crate",
-	[CRAFTING_TYPE_CLOTHIER] = "Clothier's Satchel",
-	[CRAFTING_TYPE_WOODWORKING] = "Woodworker's Case",
-	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry Crafter's Coffer",
-	[8] = "Shipment",
-}
-end
-
 local function masterWritEnchantToCraft (pat,set,trait,style,qual,mat,writName,Mname,generalName)
 	local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and style <<t:4>> at <<t:5>> quality",pat,set,trait,style,qual,mat)
 	return zo_strformat("<<t:2>> <<t:3>> <<t:4>>: <<1>>",partialString,writName,Mname,generalName )
@@ -344,7 +332,7 @@ WritCreater.optionStrings["skinOptions"]								= {"Default", "Cheesy", "Goaty"}
 WritCreater.optionStrings["goatSkin"]									= "Goaty"
 WritCreater.optionStrings["cheeseSkin"]									= "Cheesy"
 WritCreater.optionStrings["defaultSkin"]								= "Default"
-WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk", "Destroy"}
+WritCreater.optionStrings["rewardChoices"]								= {"Nothing","Deposit","Junk", "Destroy", "Deconstruct"}
 WritCreater.optionStrings["scan for unopened"]							= "Open containers on Login"
 WritCreater.optionStrings["scan for unopened tooltip"]					= "When you login, scan the bag for unopened writ containers and attempt to open them"
 

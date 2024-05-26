@@ -323,42 +323,6 @@ function WritCreater.masterWritQuality()
 	return {{"episch",4},{"legendär",5}}
 end
 
-function WritCreater.langEssenceNames() --exact!
-
-local essenceNames =  
-	{
-		[1] = "Oko", --health
-		[2] = "Deni", --stamina
-		[3] = "Makko", --magicka
-	}
-	return essenceNames
-end
-
-function WritCreater.langPotencyNames() --exact!! Also, these are all the positive runestones - no negatives needed.
-	local potencyNames = 
-	{
-		[1] = "Jora", --Lowest potency stone lvl
-		[2] = "Porade",
-		[3] = "Jera",
-		[4] = "Jejora",
-		[5] = "Odra",
-		[6] = "Pojora",
-		[7] = "Edora",
-		[8] = "Jaera",
-		[9] = "Pora",
-		[10]= "Denara",
-		[11]= "Rera",
-		[12]= "Derado",
-		[13]= "Rekura",
-		[14]= "Kura",
-		[15]= "Rejera",
-		[16]= "Repora", --v16 potency stone
-		
-	}
-	return potencyNames
-end
-
-
 
 local enExceptions = -- This is a slight misnomer. Not all are corrections - some are changes into english so that future functions will work
 {
@@ -646,25 +610,6 @@ WritCreater.cheeseyLocalizations
 	["cheatyCheeseBook"] = "Vielleicht wirst du verrückt, aber du scheinst dich nicht an dieses Buch zu erinnern..."
 
 }
-
-
---"<<1>> erhalten"
-function WritCreater.langWritRewardBoxes () return {
-	[1] = "Alchemistengefäß",
-	[2] = "Verzaubererkassette",
-	[3] = "Versorgerbeutel",
-	[4] = "Schmiedetruhe",
-	[5] = "Schneidertasche",
-	[6] = "Schreinerkästchen",
-	[7] = "Schmuckhandwerkerkassette",
-	[8] = "Lieferung",
-}
-end
-
-
-function WritCreater.getTaString()
-	return "ta"
-end
 
 WritCreater.lang = "de"
 

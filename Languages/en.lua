@@ -17,13 +17,16 @@
 -- If you are not looking to translate the addon you can ignore this. :D
 --
 -- If you ARE looking to translate this to something else then anything with a comment of Vital beside it is 
--- REQUIRED for the addon to function properly. These strings MUST BE TRANSLATED EXACTLY!
--- If only going for functionality, ctrl+f for Vital. Otherwise, you should just translate everything. Note that some strings 
--- Note that if you are going for a full translation, you must also translate defualt.lua and paste it into your localization file.
+-- REQUIRED for a main feature to work properly. These strings MUST BE TRANSLATED EXACTLY!
+-- If only going for functionality, ctrl+f for Vital. Otherwise, you can just translate everything.
+-- If you are going for a full translation, you must also translate defualt.lua and paste it into your localization file.
+-- Some functions are marked as only required for master writs.
+-- Master writs are not really supported anymore and are only kept to not remove a feature. It is highly recommended to not translate those functions, 
+-- and instead point users torwards writ worthy.
 --
 -- For languages that do not use the Latin Alphabet, there is also an optional langParser() function. IF the language you are translating
 -- requires some changes to the WritCreater.parser() function then write the optional langParser() function here, and the addon
--- will use that instead. Just below is a commented out langParser for English. Be sure to remove the comments if rewriting it. [[  ]]
+-- will use that instead. Just below is a commented out langParser for English. Be sure to remove the surrounding comment if rewriting it. [[  ]]
 --
 -- If you run into problems, please feel free to contact me on ESOUI.
 --
@@ -67,7 +70,7 @@ local function proper(str)
 end
 
 function WritCreater.langWritNames() -- Vital
-	-- Exact!!!  I know for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
+	-- Exact!!!  For example, for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
 	local names = {
 	["G"] = "Writ",
 	[CRAFTING_TYPE_ENCHANTING] = "Enchanter",
@@ -94,7 +97,7 @@ function WritCreater.langCraftKernels()
 	}
 end
 
-function WritCreater.langMasterWritNames() -- Vital
+function WritCreater.langMasterWritNames() -- Note for translations: Skip this, unless you reaaaaally want to make master writs work, which I do not recommend
 	local names = {
 	["M"] 							= "masterful",
 	["M1"]							= "master",
@@ -118,14 +121,16 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	["masterPlace"] = "I've finished the ",
 	["masterSign"] = "<Finish the job.>",
 	["masterStart"] = "<Accept the contract.>",
-	["Rolis Hlaalu"] = "Rolis Hlaalu", -- This is the same in most languages but ofc chinese and japanese
+	["Rolis Hlaalu"] = "Rolis Hlaalu", -- This is the same in most languages but ofc chinese and japanese are different
 	["Deliver"] = "Deliver",
+	["Acquire"] = "acquire",
 	}
 	return strings
 end
 
 
-function WritCreater.languageInfo() -- Vital
+function WritCreater.languageInfo() 
+-- Note for translations: Skip this, unless you reaaaaally want to make master writs work, which I do not recommend
 
 local craftInfo = 
 	{
@@ -328,48 +333,8 @@ local craftInfo =
 	return craftInfo
 
 end
-
-function WritCreater.masterWritQuality() -- Vital . This is probably not necessary, but it stays for now because it works
+function WritCreater.masterWritQuality() -- Note for translations: Skip this, unless you reaaaaally want to make master writs work, which I do not recommend
 	return {{"Epic",4},{"Legendary",5}}
-end
-
-
-
-
-function WritCreater.langEssenceNames() -- Vital
-
-local essenceNames =  
-	{
-		[1] = "Oko", --health
-		[2] = "Deni", --stamina
-		[3] = "Makko", --magicka
-	}
-	return essenceNames
-end
-
-function WritCreater.langPotencyNames() -- Vital
-	--exact!! Also, these are all the positive runestones - no negatives needed.
-	local potencyNames = 
-	{
-		[1] = "Jora", --Lowest potency stone lvl
-		[2] = "Porade",
-		[3] = "Jera",
-		[4] = "Jejora",
-		[5] = "Odra",
-		[6] = "Pojora",
-		[7] = "Edora",
-		[8] = "Jaera",
-		[9] = "Pora",
-		[10]= "Denara",
-		[11]= "Rera",
-		[12]= "Derado",
-		[13]= "Rekura",
-		[14]= "Kura",
-		[15]= "Rejera",
-		[16]= "Repora", --v16 potency stone
-		
-	}
-	return potencyNames
 end
 
 function WritCreater.questExceptions(condition)
@@ -395,7 +360,7 @@ function WritCreater.langTutorial(i)
 	return t[i]
 end
 
-function WritCreater.langTutorialButton(i,onOrOff) -- sentimental and short please. These must fit on a small button
+function WritCreater.langTutorialButton(i,onOrOff) -- Should be short, as these must fit on a small button
 	local tOn = 
 	{
 		[1]="Use Defaults",
@@ -416,6 +381,10 @@ function WritCreater.langTutorialButton(i,onOrOff) -- sentimental and short plea
 		return tOff[i]
 	end
 end
+
+--------------------------------------------------------------------------------------------------------------------
+-- Translators can skip these, if you want.
+-- These are April 1 strings, so don't need to be translated, unless you really want to.
 
 function WritCreater.langStationNames()
 	return
@@ -633,23 +602,6 @@ EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_CHAT_MESSAGE_CHANNEL, alte
 --"Verstecke Fenster anschließend",
 -- [tooltip ] = "Verstecke das Writ Crafter Fenster an der Handwerksstation automatisch, nachdem die Gegenstände hergestellt wurden"
 
-function WritCreater.langWritRewardBoxes () return {
-	[CRAFTING_TYPE_ALCHEMY] = "Alchemist's Vessel",
-	[CRAFTING_TYPE_ENCHANTING] = "Enchanter's Coffer",
-	[CRAFTING_TYPE_PROVISIONING] = "Provisioner's Pack",
-	[CRAFTING_TYPE_BLACKSMITHING] = "Blacksmith's Crate",
-	[CRAFTING_TYPE_CLOTHIER] = "Clothier's Satchel",
-	[CRAFTING_TYPE_WOODWORKING] = "Woodworker's Case",
-	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry Crafter's Coffer",
-	[8] = "Shipment",
-}
-end
-
-
-function WritCreater.getTaString()
-	return "ta"
-end
-
 WritCreater.optionStrings["alternate universe"] = "Turn off April"
 WritCreater.optionStrings["alternate universe tooltip"] = "Turn off the renaming of crafts, crafting stations, and other interactables"
 
@@ -659,10 +611,3 @@ WritCreater.langIsMasterWritSupported = true
 WritCreater.cheeseyLocalizations["alreadyUnlocked"] = "Writ Crafter Skin unlocked"
 WritCreater.cheeseyLocalizations["alreadyUnlockedTooltip"] = "You already unlocked the skin on April 1, 2022. Doing it again is just for fun!"
 WritCreater.cheeseyLocalizations["settingsChooseSkin"] = "You can change the skin in the settings menu"
-
---[[
-SLASH_COMMANDS['/opencontainers'] = function()local a=WritCreater.langWritRewardBoxes() for i=1,200 do for j=1,6 do if a[j]==GetItemName(1,i) then if IsProtectedFunction("endUseItem") then
-	CallSecureProtected("endUseItem",1,i)
-else
-	UseItem(1,i)
-end end end end end]]

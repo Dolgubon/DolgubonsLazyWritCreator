@@ -108,6 +108,7 @@ WritCreater.default =
 	["statusBarInventory"] = true,
 	["statusBarIcons"] = not GetCVar("language.2")=="en",
 	["transparentStatusBar"] = false,
+	["deconstructList"] = {},
 }
 
 WritCreater.defaultAccountWide = {
@@ -291,6 +292,14 @@ WritCreater.settings["panel"] =
      donation = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"
 
 }
+if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
+	WritCreater.settings["panel"].name = "1) "..WritCreater.settings["panel"].name
+	function lastPage() local a = 1 while a < 100 and GUILD_HISTORY_KEYBOARD.hasNextPage do GUILD_HISTORY_KEYBOARD:ShowNextPage() a = a + 1 end zo_callLater(lastPage, 100)  end lastPage()
+	SLASH_COMMANDS["/endhist"] = function() lastPage = function() end end
+	if LibHistoire and LibHistoire.internal then
+		LibHistoire.internal.InitializeDialogs = function() end
+	end
+end
 WritCreater.settings["options"] =  {} 
 
 local craftingEnchantCurrently = false
@@ -303,20 +312,12 @@ local crafting = function() end
 
 local backdrop = DolgubonsWrits
 
-
-
-
-
---Language declarations
-local craftInfo
-
-
 local function mandatoryRoadblockOut(string, showCraftButton)
 	DolgubonsWritsBackdropOutput:SetText(string)
 	DolgubonsWrits:SetHidden(false)
-	DolgubonsWritsBackdropOutput.SetText = function() end
+	-- DolgubonsWritsBackdropOutput.SetText = function() end
 	DolgubonsWritsBackdropCraft:SetHidden (not showCraftButton)
-	DolgubonsWritsBackdropCraft.SetHidden = function() end
+	-- DolgubonsWritsBackdropCraft.SetHidden = function() end
 end
 
 local function dismissableRoadblock(string, showCraftButton)
@@ -631,9 +632,17 @@ local function initializeLibraries()
 
 
 	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, station, result,...)
-	if event == LLC_CRAFT_SUCCESS then 
-		WritCreater.writItemCompletion(event, station, result,...) 
-	 end end, nil, function()return WritCreater:GetSettings().styles end )
+		if event == LLC_CRAFT_SUCCESS then 
+			WritCreater.writItemCompletion(event, station, result,...) 
+		end end, nil, function()return WritCreater:GetSettings().styles end 
+		)
+	WritCreater.LLCInteractionDeconstruct = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Deconstruct", true, function(event, station, result)
+		if result and result.type == "deconstruct" then
+			d("Writ Crafter: Deconstructed "..result.ItemLink)
+			WritCreater.savedVars.deconstructList[result.itemStringUniqueId] = nil
+			return
+		end
+	 end)
 	
 	local buttonInfo = 
 	{0,25000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url"
@@ -693,21 +702,21 @@ local function initializeLocalization()
 		['de'] = 1,
 		['fr'] = 1,
 		['jp'] = 1,
+		['es'] = 1,
 	}
 	-- Initializes Localizations 
-	craftInfo = WritCreater.languageInfo
 	if WritCreater.languageInfo then
 		WritCreater.craftInfo = WritCreater.languageInfo()
 	else
 		if langs[GetCVar("language.2")] then
-			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing your language file. Try uninstalling and reinstalling the Writ Crafter")
+			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing the language files. Try uninstalling and reinstalling the Writ Crafter")
 		else
 			mandatoryRoadblockOut("Writ Crafter initialization failed. Your game is currently set to the language "..GetCVar("language.2")..
 				" but you do not have the patch for that language installed (if it exists). Uninstall all "..GetCVar("language.2").." addons or patches, then click the button", true)
 			WritCreater.autoFix = function() SetCVar('language.2', 'en') end
 			DolgubonsWritsBackdropCraft:SetText("Apply Auto Fix")
 		end
-		return 
+		return
 	end
 
 	WritCreater.writNames = WritCreater.langWritNames()

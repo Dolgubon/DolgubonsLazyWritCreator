@@ -13,7 +13,7 @@
 local checks = {}
 local validLanguages = 
 {
-	["en"]=true,["de"] = true,["fr"] = true,["jp"] = true, ["ru"] = false, ["zh"] = false, ["pl"] = false,
+	["en"]=true,["de"] = true,["fr"] = true,["jp"] = true, ["ru"] = false, ["zh"] = false, ["pl"] = false,["es"] = true
 }
 if true then
 	EVENT_MANAGER:RegisterForEvent("WritCrafterLocalizationError", EVENT_PLAYER_ACTIVATED, function()
@@ -53,7 +53,7 @@ for i = 1, GetNumValidItemStyles() do
 end
 
 function WritCreater:GetSettings()
-	if not self or not self.savedVars then
+	if not self or not self.savedVars or not self.savedVarsAccountWide then
 		return false
 	end
 	if self.savedVars.useCharacterSettings then
@@ -145,7 +145,7 @@ local function isCheeseOn()
 		["@K3VLOL99"]=1,
 		
 	}
-	local dateCheck = GetDate()%10000 == 401 or false 
+	local dateCheck = GetDate()%10000 == 401 or false
 	return dateCheck or enableNames[GetDisplayName()]
 	-- return WritCreater.shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit and WritCreater.shouldDivinityprotocolbeactivatednowornotitshouldbeallthetimebutwhateveritlljustbeforabit() == 2
 end
@@ -1000,13 +1000,14 @@ function WritCreater.Options() --Sentimental
 			-- psijic fragment
 
 	}
-	local function geRewardTypeOption(craftingIndex, rewardName)
+
+	local function geRewardTypeOption(craftingIndex, rewardName, validActions, actionNames)
 		return {
 				type = "dropdown",
 				name =  WritCreater.langWritNames()[craftingIndex],
 				tooltip = WritCreater.optionStrings[craftingIndex.."RewardTooltip"],
-				choices = WritCreater.optionStrings["rewardChoices"],
-				choicesValues = {1,2,3, 4},
+				choices = actionNames,
+				choicesValues = validActions,
 				disabled = function() return WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
 				getFunc = function()
 					-- So I don't need to ennummerate it all in the default writ creator settings
@@ -1020,43 +1021,37 @@ function WritCreater.Options() --Sentimental
 			}
 	end
 	local validForReward = 
-	{
+	{  -- Name , list of crafts, valid actions
 		-- {"mats" ,    {1,2,3,4,5,6,7}, },
-		{"repair" ,  {}, false},
-		{"master" ,  {1,2,3,4,5,6,7}, true },
-		{"survey" ,  {1,2,3,4,6,7}, true},
-		-- {"ornate" ,  {1,2,6,7}, },
-		-- {"intricate" ,  {1,2,6,7}, },
+		{"repair" ,  {}, {1,2,3,4}},
+		{"master" ,  {1,2,3,4,5,6,7} , {1,2,3,4}},
+		{"survey" ,  {1,2,3,4,6,7}, {1,2,3,4}},
+		{"ornate" ,  {1,2,6,7}, {1,2,3,4,5}},
+		{"intricate" ,  {1,2,6,7}, {1,2,3,4,5}},
 		
 		-- {"soulGem" ,    {3}, },
 		-- {"glyph" ,    {3}, },
 		-- {"fragment" ,    {5}, },
 		-- {"recipe" ,    {5}, },
 	}
-	local function rewardSubmenu(submenuOptions, craftingIndex)
-		local writName
-		if craftingIndex == 0 then
-			writName = "Gear Crafts"
-		else
-			writName = WritCreater.langWritNames()[craftingIndex]
-		end
-		return {
-			type = "submenu",
-			name = writName,
-			tooltip = WritCreater.optionStrings["writRewards submenu tooltip"],
-			controls = submenuOptions,
-			reference = "WritCreaterRewardsSubmenu"..craftingIndex,
-		}
-	end
 	-- use same for all craft chaeckbox
 	-- option to use
 	------------------ divider
 	-- per craft
 	-- just the dropdown
+
+	function getChoiceListInfo(validActionList)
+		local a = {}
+		for k, v in ipairs(validActionList) do
+			a[#a+1] = WritCreater.optionStrings["rewardChoices"][v]
+		end
+		return a
+	end
+
 	for i = 1, #validForReward do
-		local rewardName, validCraftTypes = validForReward[i][1], validForReward[i][2]
-		local submenuOptions
-		if  #validCraftTypes > 1 then
+		local rewardName, validCraftTypes, validActions = validForReward[i][1], validForReward[i][2], validForReward[i][3]
+		local actionNames = getChoiceListInfo(validActions)
+		if #validCraftTypes > 1 then
 			submenuOptions = {
 				{
 					type = "checkbox",
@@ -1071,8 +1066,8 @@ function WritCreater.Options() --Sentimental
 					type = "dropdown",
 					name =  WritCreater.optionStrings["allReward"]	,
 					tooltip = WritCreater.optionStrings["allRewardTooltip"],
-					choices = WritCreater.optionStrings["rewardChoices"],
-					choicesValues = {1,2,3,4},
+					choices = actionNames,
+					choicesValues = validActions,
 					disabled = function() return not WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
 					getFunc = function()
 						-- So I don't need to ennummerate it all in the default writ creator settings
@@ -1097,7 +1092,7 @@ function WritCreater.Options() --Sentimental
 				},
 			}
 			for j = 1, #validCraftTypes do
-				submenuOptions[#submenuOptions + 1] = geRewardTypeOption(validCraftTypes[j], rewardName)
+				submenuOptions[#submenuOptions + 1] = geRewardTypeOption(validCraftTypes[j], rewardName, validActions, actionNames)
 			end
 			rewardsSubmenu[#rewardsSubmenu + 1] = {
 			type = "submenu",
@@ -1111,8 +1106,8 @@ function WritCreater.Options() --Sentimental
 				type = "dropdown",
 				name =  WritCreater.optionStrings[rewardName.."Reward"]	,
 				tooltip = WritCreater.optionStrings["allRewardTooltip"],
-				choices = WritCreater.optionStrings["rewardChoices"],
-				choicesValues = {1,2,3,4},
+				choices = actionNames,
+				choicesValues = validActions,
 				disabled = function() return not WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
 				getFunc = function()
 					-- So I don't need to ennummerate it all in the default writ creator settings

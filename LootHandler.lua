@@ -37,50 +37,6 @@ end
 
 WritCreater.toVoucherCount = toVoucherCount
 
-
-local function saveStats(loot, boxType, boxRank)
-	local vars = WritCreater.savedVarsAccountWide -- shortcut
-	local location = boxType
-
-	vars = vars["rewards"][location]
-	if vars["level"] > boxRank then -- If it's a higher level of writ, then wipe all the old saved data
-		WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] - vars["num"]
-		vars = WritCreater.defaultAccountWide["rewards"][location]
-		vars["level"] = boxRank
-	elseif vars["level"] == boxRank then -- otherwise, add one to total
-		WritCreater.savedVarsAccountWide["total"] = WritCreater.savedVarsAccountWide["total"] + 1
-		vars["num"] = vars["num"] + 1
-	else
-		WritCreater.savedVarsAccountWide["skipped"] = WritCreater.savedVarsAccountWide["skipped"] + 1
-		return
-	end
-
-	WritCreater.savedVarsAccountWide["rewards"][location] = vars
-end
-
--- Converts a roman nummeral from 1 to 10 into an integer
-function romanNumeral(number)
-	if number == "X" then
-		return 10
-	elseif number == "IX" then
-		return 9
-	elseif string.sub(number,1,1) == "V" then
-		return 5 + romanNumeral(string.sub(number,2))
-	elseif number == "IV" then
-		return 4
-	elseif number == "III" then
-		return 3
-	elseif number == "II" then
-		return 2
-	elseif number =="I" then
-		return 1
-	else 
-		return 0
-	end
-end
-
-function GetItemIDFromLink(itemLink) return tonumber(string.match(itemLink,"|H%d:item:(%d+)")) end
-
 local function updateSavedVars(vars, location, quantity)
 	-- d("Saving "..location.." #"..quantity)
 	if vars and vars[location]  then
@@ -131,8 +87,8 @@ local function LootAllHook(boxType) -- technically not a hook.
 				updateSavedVars(vars, "intricate", quantity)
 			end
 		elseif CanItemLinkBeVirtual(itemLink) then 
-			updateSavedVars(vars, GetItemIDFromLink(itemLink), quantity)
-			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or GetItemIDFromLink(itemLink) ==135153 or GetItemIDFromLink(itemLink) == 135149 then
+			updateSavedVars(vars, GetItemLinkItemId(itemLink), quantity)
+			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or GetItemLinkItemId(itemLink) ==135153 or GetItemLinkItemId(itemLink) == 135149 then
 				lootOutput(itemLink, nil, quantity)
 			end
 		elseif itemType==ITEMTYPE_RECIPE then 
@@ -188,7 +144,7 @@ end
 
 local function shouldSaveStats(boxType)
 	if GetNumLootItems() < 2 then return false end
-	if boxType == 9 then return false end
+	if boxType == 0 then return false end -- then it's an anniversary box
 
 	return true
 end
@@ -224,92 +180,85 @@ local function OnLootUpdated(event)
 	local autoLoot  = shouldAutoLootContainerFromSettings()
 
 	local lootInfo = {GetLootTargetInfo()}
-	local writRewardNames = WritCreater.langWritRewardBoxes ()
-	if not writRewardNames[9] then
-		-- |H1:item:171779:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h
-		writRewardNames[9] = GetItemLinkName("|H1:item:183890:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h") -- anniversary box/jubilee
-		writRewardNames[9] = string.gsub(writRewardNames[9], "%(","%%%(")
-		writRewardNames[9] = string.gsub(writRewardNames[9], "%)","%%%)")
-	end
+	local writRewardNames = WritCreater.boxNames
 	if lootInfo[1] == "" and ((GetGameTimeMilliseconds() - cooldown) < 1000 )then
 		-- zo_callLater(EndLooting, 100)
 		return true
 	end
-	for i = 1, #writRewardNames  do
-		local a, b = string.find(string.lower(lootInfo[1]), string.lower(writRewardNames[i]))
-		if a then
-			if i == 8 then 
-				local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
-				if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
-					return false
-				end
-			elseif i == 9 then
-				if not WritCreater:GetSettings().lootJubileeBoxes then 
-					return false
-				end
-			end
-			--LOOT_SHARED:LootAllItems()
-			local n = SCENE_MANAGER:GetCurrentScene().name
-			
-			local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
-			local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
-
-			EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
-			EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootSavingFatigue", 10000, clearLootFatigue)
-
-			if shouldSaveStats(i,boxRank) and not fatiguedLoot[i] and i~= 9 then 
-				LootAllHook(i,boxRank)
-			else
-				local loot = {}
-				for j = 1, GetNumLootItems() do
-
-					local lootId, name, _, quantity = GetLootItemInfo(j)
-					local itemLink = GetLootItemLink(lootId, 0)
-					local itemId = GetItemIDFromLink(itemLink)
-					--d(itemLink)
-					local quality = GetItemLinkQuality(itemLink)
-					local itemType, specializedType = GetItemLinkItemType(itemLink) 
-					if specializedType == SPECIALIZED_ITEMTYPE_RACIAL_STYLE_MOTIF_CHAPTER then
-						lootOutput(itemLink, nil, quantity, true)
-					elseif specializedType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then
-						lootOutput(itemLink, nil, quantity, true)
-					elseif quality>=ITEM_QUALITY_ARCANE then
-						lootOutput(itemLink, nil, quantity, true)
-					elseif itemId == 56863 or itemId == 56862 then
-						lootOutput(itemLink, nil, quantity, true)
-					end
-				end
-			end
-			fatiguedLoot[i] = true
-			if autoLoot then
-				if numLootTransmute==0 or numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
-					if numLootTransmute > 0 then
-						d(numLootTransmute.." Transmute Stone recieved (You have "..(numTransmute + numLootTransmute)..")")
-						if GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) * 0.8 < numTransmute + numLootTransmute then
-							d("You are approaching the transmute stone limit. If a box would put you over the transmute stone limit, Writ Crafter will not loot the stones.")
-						end
-					end
-					LootAll()
-				else
-					-- GetLootItemInfo(number lootIndex)
-					-- do not loot the transmute if it would go over max
-					for i = 1, GetNumLootItems() do
-						local lootId, name,_,_,_,_,_,_,lootType = GetLootItemInfo(i)
-						LootItemById(lootId)
-					end
-					-- Then add the container to a 'blacklist' so we don't try to open it in a loop
-					if lastInteractedSlot then
-						containerHasTransmute[lastInteractedSlot] = true
-						WritCreater:GetSettings().transmuteBlock[Id64ToString(GetItemUniqueId(1, lastInteractedSlot))] = numLootTransmute
-					end
-					d("Looting these transmute stones would put you over the maximum, so "..numLootTransmute.." transmute stones were not looted")
-					EndLooting()
-				end
-			else
+	local boxInfo = writRewardNames[lootInfo[1]]
+	if boxInfo then
+		local boxRank = boxInfo[1]
+		local boxCraft = boxInfo[2]
+		if boxCraft == 0 and boxCraft > 0 then 
+			local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
+			if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
 				return false
 			end
-			return true
+		elseif boxCraft == 0 then
+			if not WritCreater:GetSettings().lootJubileeBoxes then 
+				return false
+			end
 		end
+		--LOOT_SHARED:LootAllItems()
+		local n = SCENE_MANAGER:GetCurrentScene().name
+		
+		local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
+		local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
+
+		EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
+		EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootSavingFatigue", 10000, clearLootFatigue)
+		if shouldSaveStats(boxCraft) and not fatiguedLoot[boxCraft] and boxCraft~= 0 then 
+			LootAllHook(boxCraft)
+		else
+			local loot = {}
+			for j = 1, GetNumLootItems() do
+
+				local lootId, name, _, quantity = GetLootItemInfo(j)
+				local itemLink = GetLootItemLink(lootId, 0)
+				local itemId = GetItemLinkItemId(itemLink)
+				--d(itemLink)
+				local quality = GetItemLinkQuality(itemLink)
+				local itemType, specializedType = GetItemLinkItemType(itemLink) 
+				if specializedType == SPECIALIZED_ITEMTYPE_RACIAL_STYLE_MOTIF_CHAPTER then
+					lootOutput(itemLink, nil, quantity, true)
+				elseif specializedType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then
+					lootOutput(itemLink, nil, quantity, true)
+				elseif quality>=ITEM_QUALITY_ARCANE then
+					lootOutput(itemLink, nil, quantity, true)
+				elseif itemId == 56863 or itemId == 56862 then
+					lootOutput(itemLink, nil, quantity, true)
+				end
+			end
+		end
+		fatiguedLoot[boxCraft] = true
+		if autoLoot then
+			if numLootTransmute==0 or numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
+				if numLootTransmute > 0 then
+					d(numLootTransmute.." Transmute Stone recieved (You have "..(numTransmute + numLootTransmute)..")")
+					if GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) * 0.8 < numTransmute + numLootTransmute then
+						d("You are approaching the transmute stone limit. If a box would put you over the transmute stone limit, Writ Crafter will not loot the stones.")
+					end
+				end
+				LootAll()
+			else
+				-- GetLootItemInfo(number lootIndex)
+				-- do not loot the transmute if it would go over max
+				for i = 1, GetNumLootItems() do
+					local lootId, name,_,_,_,_,_,_,lootType = GetLootItemInfo(i)
+					LootItemById(lootId)
+				end
+				-- Then add the container to a 'blacklist' so we don't try to open it in a loop
+				if lastInteractedSlot then
+					containerHasTransmute[lastInteractedSlot] = true
+					WritCreater:GetSettings().transmuteBlock[Id64ToString(GetItemUniqueId(1, lastInteractedSlot))] = numLootTransmute
+				end
+				d("Looting these transmute stones would put you over the maximum, so "..numLootTransmute.." transmute stones were not looted")
+				EndLooting()
+			end
+		else
+			return false
+		end
+		return true
 	end
 	calledFromQuest = false
 	return false
@@ -409,7 +358,7 @@ local function prepareToInteract()
 	if IsLooting() then return true end
 	if GetGameTimeMilliseconds() - cooldown < cooldownTimer then return true end
 	local _, interact = GetGameCameraInteractableActionInfo()
-	if interact then
+	if interact and WritCreater.langWritNames() then
 		local names =WritCreater.langWritNames()
 		for i = 1, #WritCreater.langWritNames() do
 			if string.find(interact, names[i]) then
@@ -447,7 +396,7 @@ local function rewardHandler(bag, slot)
 			updateSavedVars(vars, "intricate", quantity)
 		end
 	elseif CanItemLinkBeVirtual(itemLink) then 
-		updateSavedVars(vars, GetItemIDFromLink(itemLink), quantity)
+		updateSavedVars(vars, GetItemLinkItemId(itemLink), quantity)
 	elseif itemType==ITEMTYPE_RECIPE then 
 		updateSavedVars(vars["recipe"], "green", quantity)
 	elseif specializedType==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
@@ -467,6 +416,19 @@ local function rewardHandler(bag, slot)
 	end
 end
 
+local handledItemTypes = 
+{
+	[ITEMTYPE_MASTER_WRIT] = "master",
+	[SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT] = "survey",
+	[44879] = "repair",
+	-- Subtracting 100 so that an item with an item type matching the item trait does not return intricate
+	[ITEM_TRAIT_TYPE_ARMOR_INTRICATE-100] = "intricate",
+	[ITEM_TRAIT_TYPE_JEWELRY_INTRICATE-100] = "intricate",
+	[ITEM_TRAIT_TYPE_WEAPON_INTRICATE-100] = "intricate",
+	[ITEM_TRAIT_TYPE_ARMOR_ORNATE-100] = "ornate",
+	[ITEM_TRAIT_TYPE_JEWELRY_ORNATE-100] = "ornate",
+	[ITEM_TRAIT_TYPE_WEAPON_ORNATE-100] = "ornate",
+}
 
 -- EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."OpenAllContainers", 1000, scanBagForUnopenedContainers)
 local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,...)
@@ -487,38 +449,30 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 			-- if not autoLoot then return end
 		end
 	end
+	--|H1:item:194428:123:1:0:0:0:2024:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h
 	------
 	-- REWARD HANDLING
-	if isNew and WritCreater.langCraftKernels then --or GetDisplayName() == "@Dolgubon" then
+	if isNew then --or GetDisplayName() == "@Dolgubon" then
 		-- d(link.." "..tostring(isNew).." "..tostring(lootedItemLinks[link]))
-	-- if WritCreater.langCraftKernels then --or GetDisplayName() == "@Dolgubon" then
-		if lootedItemLinks[GetItemLinkItemId(link)] then
+		local itemId = GetItemLinkItemId(link)
+		if lootedItemLinks[itemId] then
 			-- d("Looted ".. link)
-			if lootedItemLinks[GetItemLinkItemId(link)] == nil then
+			if lootedItemLinks[itemId] == nil then
 				-- d("Wasn't logged yet! "..link)
 			else
 				-- d("Was logged "..link)
 			end
-			lootedItemLinks[link] = false
+			lootedItemLinks[itemId] = false
 			local itemType, specializedType = GetItemLinkItemType(link) 
 			local itemName = GetItemLinkName(link)
-			if itemType == ITEMTYPE_MASTER_WRIT or specializedType == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
+			local itemTrait = GetItemLinkTraitInfo(link)
+			local actionSourceName = handledItemTypes[itemType] or handledItemTypes[specializedType] or handledItemTypes[itemId] or handledItemTypes[itemTrait-100]
+			if actionSourceName then
 				-- d("Passed first check")
 				local craftType
 				craftType = WritCreater.getWritAndSurveyType(link)
-				if craftType == nil and not GetItemLinkItemId(link) == 44879  then
-					-- d("Craft type nil?")
-					return
-				end
-				local actionSource
+				local actionSource = WritCreater:GetSettings().rewardHandling[actionSourceName]
 				local action
-				if itemType == ITEMTYPE_MASTER_WRIT then
-					actionSource = WritCreater:GetSettings().rewardHandling["master"]
-				elseif specializedType == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
-					actionSource = WritCreater:GetSettings().rewardHandling["survey"]
-				elseif GetItemLinkItemId(link) == 44879 and specializedType == SPECIALIZED_ITEMTYPE_TOOL then
-					actionSource = WritCreater:GetSettings().rewardHandling["repair"]
-				end
 
 				if actionSource.sameForAllCrafts then
 					action = actionSource.all
@@ -538,7 +492,18 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 				elseif action == 4 then
 					 DestroyItem(bag , slot)
 					 d("Writ Crafter: Destroyed "..link.." because you told it to in the settings menu")
-				else
+				elseif action == 5 then
+					local id64 = GetItemUniqueId(bag, slot)
+					local id64String = Id64ToString(id64)
+					WritCreater.savedVars.deconstructList[id64String] = 
+					{ 	
+						["uniqueId"] = id64String , 
+						["bag"] = bag, 
+						["slot"] = slot,
+						["timestamp"] = GetTimeStamp()
+					}
+					d("Writ Crafter: Queued "..link.." for deconstruction")
+					WritCreater.LLCInteractionDeconstruct:DeconstructSmithingItem(bag, slot, true, id64String)
 				end
 				-- 1 nothing
 				-- 2 deposit
@@ -599,6 +564,21 @@ function WritCreater.LootHandlerInitialize()
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
 			end )	
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
+	
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED,function() 
+
+		for k, v in pairs(WritCreater.savedVars.deconstructList) do
+			if v.timestamp and GetTimeStamp() - 60*60*24*30 > v.timestamp then
+				WritCreater.savedVars.deconstructList[k] = nil
+			elseif Id64ToString(GetItemUniqueId(v.bag, v.slot)) == v.uniqueId then
+				local link = GetItemLink(v.bag, v.slot)
+				d("Writ Crafter: Queued "..link.." for deconstruction")
+				WritCreater.LLCInteractionDeconstruct:DeconstructSmithingItem(v.bag, v.slot, true, k)
+			end
+		end
+		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED)
+	end )
+	
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
@@ -652,6 +632,142 @@ function CA.PrintBufferedXP()
     EVENT_MANAGER:UnregisterForUpdate(moduleName .. "BufferedXP")
     g_xpCombatBufferValue = 0
 end
-
-
 ]]
+
+
+WritCreater.rewardBoxes = { --To get exact name strings of boxes
+	[57851] =  {1, CRAFTING_TYPE_BLACKSMITHING} , -- Blacksmithing
+	[58131] =  {2, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58503] =  {3, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58504] =  {4, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58505] =  {5, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58506] =  {6, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58507] =  {7, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58508] =  {8, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58509] =  {9, CRAFTING_TYPE_BLACKSMITHING} ,
+	[71234] =  {10, CRAFTING_TYPE_BLACKSMITHING} ,
+	[121298] = {10, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142134] = {0, CRAFTING_TYPE_BLACKSMITHING} , -- shipments
+	[142135] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142136] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142137] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142138] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142139] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142140] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142141] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142142] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[142174] = {0, CRAFTING_TYPE_BLACKSMITHING} ,
+	[58519] =  {1, CRAFTING_TYPE_CLOTHIER} , -- clothier, cloth
+	[58520] =  {2, CRAFTING_TYPE_CLOTHIER} ,
+	[58521] =  {3, CRAFTING_TYPE_CLOTHIER} ,
+	[58522] =  {4, CRAFTING_TYPE_CLOTHIER} ,
+	[58523] =  {5, CRAFTING_TYPE_CLOTHIER} ,
+	[58524] =  {6, CRAFTING_TYPE_CLOTHIER} ,
+	[58525] =  {7, CRAFTING_TYPE_CLOTHIER} ,
+	[58526] =  {8, CRAFTING_TYPE_CLOTHIER} ,
+	[58527] =  {9, CRAFTING_TYPE_CLOTHIER} ,
+	[71233] =  {10, CRAFTING_TYPE_CLOTHIER} ,
+	[121297] = {10, CRAFTING_TYPE_CLOTHIER} ,
+	[142143] = {0, CRAFTING_TYPE_CLOTHIER } , -- shipments
+	[142144] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142145] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142146] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142147] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142148] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142149] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142150] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142151] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142176] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[147607] = {1, CRAFTING_TYPE_CLOTHIER } , -- leather
+	[147608] = {2, CRAFTING_TYPE_CLOTHIER } ,
+	[147609] = {3, CRAFTING_TYPE_CLOTHIER } ,
+	[147610] = {4, CRAFTING_TYPE_CLOTHIER } ,
+	[147611] = {5, CRAFTING_TYPE_CLOTHIER } ,
+	[147612] = {6, CRAFTING_TYPE_CLOTHIER } ,
+	[147613] = {7, CRAFTING_TYPE_CLOTHIER } ,
+	[147614] = {8, CRAFTING_TYPE_CLOTHIER } ,
+	[147615] = {9, CRAFTING_TYPE_CLOTHIER } ,
+	[147616] = {10, CRAFTING_TYPE_CLOTHIER } ,
+	[142152] = {0, CRAFTING_TYPE_CLOTHIER } , -- shipments
+	[142153] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142154] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142155] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142156] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142157] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142158] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142159] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142160] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[142177] = {0, CRAFTING_TYPE_CLOTHIER } ,
+	[58528] = {1, CRAFTING_TYPE_ENCHANTING }, -- enchanting
+	[58529] = {2, CRAFTING_TYPE_ENCHANTING },
+	[58530] = {3, CRAFTING_TYPE_ENCHANTING },
+	[58531] = {4, CRAFTING_TYPE_ENCHANTING },
+	[58532] = {5, CRAFTING_TYPE_ENCHANTING },
+	[58533] = {6, CRAFTING_TYPE_ENCHANTING },
+	[58534] = {7, CRAFTING_TYPE_ENCHANTING },
+	[59735] = {8, CRAFTING_TYPE_ENCHANTING },
+	[59736] = {9, CRAFTING_TYPE_ENCHANTING },
+	[71236] = {10, CRAFTING_TYPE_ENCHANTING },
+	[59705] = {1, CRAFTING_TYPE_ALCHEMY } , -- alchemy
+	[59706] = {2, CRAFTING_TYPE_ALCHEMY } ,
+	[59707] = {3, CRAFTING_TYPE_ALCHEMY } ,
+	[59708] = {4, CRAFTING_TYPE_ALCHEMY } ,
+	[59709] = {5, CRAFTING_TYPE_ALCHEMY } ,
+	[59710] = {6, CRAFTING_TYPE_ALCHEMY } ,
+	[71238] = {7, CRAFTING_TYPE_ALCHEMY } ,
+	[121302] ={7, CRAFTING_TYPE_ALCHEMY } ,
+	[59714] =  {1, CRAFTING_TYPE_PROVISIONING} , -- provisioning
+	[59715] =  {1, CRAFTING_TYPE_PROVISIONING} ,
+	[59716] =  {1, CRAFTING_TYPE_PROVISIONING} ,
+	[59717] =  {2, CRAFTING_TYPE_PROVISIONING} ,
+	[59718] =  {2, CRAFTING_TYPE_PROVISIONING} ,
+	[59719] =  {2, CRAFTING_TYPE_PROVISIONING} ,
+	[59720] =  {3, CRAFTING_TYPE_PROVISIONING} ,
+	[59721] =  {3, CRAFTING_TYPE_PROVISIONING} ,
+	[59723] =  {4, CRAFTING_TYPE_PROVISIONING} ,
+	[59724] =  {5, CRAFTING_TYPE_PROVISIONING} ,
+	[59725] =  {6, CRAFTING_TYPE_PROVISIONING} ,
+	[71237] =  {7, CRAFTING_TYPE_PROVISIONING} ,
+	[121301] = {7, CRAFTING_TYPE_PROVISIONING} ,
+	[58510] =  {1, CRAFTING_TYPE_WOODWORKING} , -- woodworking
+	[58511] =  {2, CRAFTING_TYPE_WOODWORKING} ,
+	[58512] =  {3, CRAFTING_TYPE_WOODWORKING} ,
+	[58513] =  {4, CRAFTING_TYPE_WOODWORKING} ,
+	[58514] =  {5, CRAFTING_TYPE_WOODWORKING} ,
+	[58515] =  {6, CRAFTING_TYPE_WOODWORKING} ,
+	[58516] =  {7, CRAFTING_TYPE_WOODWORKING} ,
+	[58517] =  {8, CRAFTING_TYPE_WOODWORKING} ,
+	[58518] =  {9, CRAFTING_TYPE_WOODWORKING} ,
+	[71235] =  {10, CRAFTING_TYPE_WOODWORKING} ,
+	[121299] = {10, CRAFTING_TYPE_WOODWORKING} ,
+	[142161] = { 0, CRAFTING_TYPE_WOODWORKING} , -- shipments
+	[142162] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142163] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142164] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142165] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142166] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142167] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142168] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142169] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[142175] = { 0, CRAFTING_TYPE_WOODWORKING} ,
+	[138801] = {1, CRAFTING_TYPE_JEWELRYCRAFTING} ,-- jewelry
+	[138802] = {2, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[138803] = {3, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[138804] = {4, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[138805] = {5, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[142170] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} , -- shipments
+	[142171] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[142172] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[142173] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[147603] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+}
+WritCreater.boxNames = {}
+for boxId, boxRank in pairs (WritCreater.rewardBoxes) do 
+	local name = GetItemLinkName(getItemLinkFromItemId(boxId))
+	WritCreater.boxNames[name] = boxRank
+end
+
+local anniversaryBox = GetItemLinkName("|H1:item:183890:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h") -- anniversary box/jubilee
+anniversaryBox = string.gsub(anniversaryBox, "%(","%%%(")
+anniversaryBox = string.gsub(anniversaryBox, "%)","%%%)")
+WritCreater.boxNames[anniversaryBox] = {0, 0}

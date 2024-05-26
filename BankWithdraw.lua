@@ -96,6 +96,13 @@ end
 local saidBankIsFull = false
 
 local function moveItem( amountRequired, bag, slot, secondTry)
+	if not FindFirstEmptySlotInBag(BAG_BACKPACK) then
+		if not saidBankIsFull then
+			saidBankIsFull = true
+			d(WritCreater.strings.fullBag)
+		end
+		return
+	end
 	if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
 		for i= 1, GetChatterOptionCount() do
 			local _, optiontype = GetChatterOption(i)
@@ -123,10 +130,7 @@ local function moveItem( amountRequired, bag, slot, secondTry)
 		end
 		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0) , math.max(0,remainingInBank - amountRequired )))
 	else
-		if not saidBankIsFull then
-			d(WritCreater.strings.fullBag)
-			saidBankIsFull = true
-		end
+		
 
 		return false
 	end
@@ -337,7 +341,7 @@ local function runProcessDeposits()
 	for k, v in pairs(WritCreater.pendingItemActions) do 
 		numItems = numItems + 1
 	end
-	if numItems > 0 then
+	if numItems > 0 and (FindFirstEmptySlotInBag(BAG_BANK) or FindFirstEmptySlotInBag(BAG_SUBSCRIBER_BANK)) then
 		for k, itemInfo in pairs(WritCreater.pendingItemActions) do
 			if itemInfo[1] == GetItemLink(itemInfo[3], itemInfo[4]) then
 				if itemInfo[2] == 2 then
