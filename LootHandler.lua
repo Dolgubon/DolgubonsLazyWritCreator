@@ -181,6 +181,7 @@ local function OnLootUpdated(event)
 
 	local lootInfo = {GetLootTargetInfo()}
 	local writRewardNames = WritCreater.boxNames
+	local writRewardIds = WritCreater.rewardBoxes
 	if lootInfo[1] == "" and ((GetGameTimeMilliseconds() - cooldown) < 1000 )then
 		-- zo_callLater(EndLooting, 100)
 		return true
@@ -760,11 +761,23 @@ WritCreater.rewardBoxes = { --To get exact name strings of boxes
 	[142172] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
 	[142173] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
 	[147603] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+
+["|H1:item:147616:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {10, CRAFTING_TYPE_CLOTHIER },
+["|H1:item:58510:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_WOODWORKING},
+["|H1:item:59705:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ALCHEMY},
+["|H1:item:58131:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {2, CRAFTING_TYPE_BLACKSMITHING},
+["|H1:item:59717:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {2, CRAFTING_TYPE_PROVISIONING},
+["|H1:item:57851:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_BLACKSMITHING},
+["|H1:item:58528:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ENCHANTING},
 }
 WritCreater.boxNames = {}
 for boxId, boxRank in pairs (WritCreater.rewardBoxes) do 
-	local name = GetItemLinkName(getItemLinkFromItemId(boxId))
-	WritCreater.boxNames[name] = boxRank
+	if type(boxId) == "number" then
+		local name = GetItemLinkName(getItemLinkFromItemId(boxId))
+		WritCreater.boxNames[name] = boxRank
+	elseif type(boxId) == "string" then
+		WritCreater.boxNames[GetItemLinkName(name)] = boxRank
+	end
 end
 
 local anniversaryBox = GetItemLinkName("|H1:item:183890:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h") -- anniversary box/jubilee

@@ -240,6 +240,7 @@ WritCreater.ShowStatsWindow = function() outputStats(false) end
 local function resetStats() 
 	WritCreater.savedVarsAccountWide["rewards"] = WritCreater.defaultAccountWide["rewards"]
 	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp()
+	WritCreater.savedVarsAccountWide.total = 0
 	WritCreater.updateList()
 	d("Writ statistics reset.")
 end

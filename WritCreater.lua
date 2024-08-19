@@ -36,9 +36,9 @@ WritCreater.versionAccount = 20
 WritCreater.savedVars = {}
 WritCreater.default = 
 {
-	["tutorial"]	= true,
+	["tutorial"]	= false,
 	["ignoreAuto"] = false,
-	["autoCraft"]	= false,
+	["autoCraft"]	= true,
 	["showWindow"]	= true,
 	[1]	= true,
 	[2]	= true,
@@ -527,6 +527,7 @@ local function initializeOtherStuff()
 	WritCreater.savedVars = ZO_SavedVars:NewCharacterIdSettings(
 		"DolgubonsWritCrafterSavedVars", WritCreater.version, nil, WritCreater.savedVarsAccountWide.accountWideProfile)
 
+	WritCreater:GetSettings().despawnBankerDeposits = WritCreater:GetSettings().despawnBankerDeposits or WritCreater:GetSettings().despawnBanker or true
 	if not WritCreater.savedVarsAccountWide.resetCheeseFor2024 then
 		WritCreater.savedVarsAccountWide.cheesyProgress = WritCreater.defaultAccountWide.cheesyProgress
 		WritCreater.savedVarsAccountWide.resetCheeseFor2024 = true
@@ -705,8 +706,12 @@ local function initializeLocalization()
 		['es'] = 1,
 	}
 	-- Initializes Localizations 
-	if WritCreater.languageInfo then
-		WritCreater.craftInfo = WritCreater.languageInfo()
+	if WritCreater.langWritNames then
+		if WritCreater.languageInfo then
+			WritCreater.craftInfo = WritCreater.languageInfo()
+		else
+			-- The language does not support master writs
+		end
 	else
 		if langs[GetCVar("language.2")] then
 			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing the language files. Try uninstalling and reinstalling the Writ Crafter")
@@ -801,7 +806,6 @@ function WritCreater:Initialize()
 		DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter")
 		DolgubonsWritsBackdropHead:SetText("Dolgubon's Lazy Wraith Crafter")
 	end
-
 end
 
 

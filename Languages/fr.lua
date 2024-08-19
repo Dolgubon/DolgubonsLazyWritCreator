@@ -544,7 +544,7 @@ WritCreater.optionStrings["automatic complete tooltip"]				  = "Accepte et valid
 WritCreater.optionStrings["new container"]							  = "Conserver le statut nouveau"
 WritCreater.optionStrings["new container tooltip"]					  = "Conserver le statut nouveau pour les conteneurs de récompenses de commande"
 WritCreater.optionStrings["master"]									  = "Commandes de maître"
-WritCreater.optionStrings["master tooltip"]							  = "Désactiver l’extension pour les Commandes de maître"
+WritCreater.optionStrings["master tooltip"]							  = "Fabriquer les Commandes de maître"
 WritCreater.optionStrings["right click to craft"]						= "Clic-Droit pour Fabriquer"
 WritCreater.optionStrings["right click to craft tooltip"]				= "Si cela est sur ON, l’extension fabriquera les commandes de maître que vous lui dites de faire après avoir clic-droit sur une commande scellée"
 WritCreater.optionStrings["crafting submenu"]							= "Fabrication des objets de commande"
@@ -641,7 +641,7 @@ WritCreater.optionStrings["goatSkin"]									= "Chèvre"
 WritCreater.optionStrings["cheeseSkin"]									= "Gratiné"
 WritCreater.optionStrings["defaultSkin"]								= "Défaut"
 
-WritCreater.optionStrings["rewardChoices"]								= {"Rien","Déposer","Rebut", "Détruire"}
+WritCreater.optionStrings["rewardChoices"]								= {"Rien","Déposer","Rebut", "Détruire", "Démontage"}
 
 
 function WritCreater.langStationNames()

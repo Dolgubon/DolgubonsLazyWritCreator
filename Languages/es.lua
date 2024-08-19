@@ -890,7 +890,7 @@ WritCreater.optionStrings["skinOptions"]								= {"Por Defecto", "Cheesy", "Goa
 WritCreater.optionStrings["goatSkin"]									= "Goaty"
 WritCreater.optionStrings["cheeseSkin"]									= "Cheesy"
 WritCreater.optionStrings["defaultSkin"]								= "Por Defecto"
-WritCreater.optionStrings["rewardChoices"]                              = { "Nada", "Guardar en el inventario", "Marcar como Basura", "Destruir" }
+WritCreater.optionStrings["rewardChoices"]                              = { "Nada", "Guardar en el inventario", "Marcar como Basura", "Destruir", "Deconstruct" }
 WritCreater.optionStrings["scan for unopened"]							= "Abrir contenedor al iniciar sesión"
 WritCreater.optionStrings["scan for unopened tooltip"]					= "Cuando inicias sesión, se escanea la mochila en busca de contenedores de encargo no abiertos y se intenta abrirlos"
 

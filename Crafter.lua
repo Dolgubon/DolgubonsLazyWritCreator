@@ -286,7 +286,6 @@ local matSaver = 0
 local function craftNextQueueItem(calledFromCrafting)
 	
 	if matSaver > 10 then return end
-	if  WritCreater:GetSettings().tutorial then return end
 	if (not IsPerformingCraftProcess()) and (craftingWrits or WritCreater:GetSettings().autoCraft ) then
 
 		if queue[1] then
@@ -555,7 +554,11 @@ local function enchantSearch(info,conditions, position,parity,questId)
 	for i = 1, #glyphIds do
 		for j = 1, #itemLinkLevel do
 			local link = createItemLink(glyphIds[i][1], itemLinkLevel[j][1],itemLinkLevel[j][2])
-			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,2,true) or DoesItemLinkFulfillJournalQuestCondition(link,questId,1,1,true) then
+			local _,cur, max = GetJournalQuestConditionInfo(questId, 1, 2) 
+			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,2,true) and GetJournalQuestConditionValues(questId, 1, 2) == 0  then
+				return glyphIds[i][2], itemLinkLevel[j][3]
+			end
+			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,1,true) and GetJournalQuestConditionValues(questId, 1, 1) == 0  then
 				return glyphIds[i][2], itemLinkLevel[j][3]
 			end
 		end
@@ -594,6 +597,11 @@ end
 
 local originalAlertSuppression = ZO_AlertNoSuppression
 
+local function getItemTotalStackCount(bag, slot)
+	local backpack, bank, craftBag = GetItemLinkStacks(GetItemLink(bag, slot))
+	return backpack + bank + craftBag
+end
+
 local function enchantCrafting(info, quest,add)
 	out("")
 	
@@ -616,14 +624,16 @@ local function enchantCrafting(info, quest,add)
 	}
 	local incomplete = false
 	for i = 1, numConditions do
-
+		local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
+		local acquireString = WritCreater.writCompleteStrings()["Acquire"] or "acquire"
 		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
 		conditions["text"][i] = WritCreater.enchantExceptions(conditions["text"][i])
 		if conditions["cur"][i]>0 then conditions["text"][i] = "" end
-		if string.find(myLower(conditions["text"][i]),"deliver") or string.find(myLower(conditions["text"][i]),WritCreater.writCompleteStrings()["Deliver"]) then
+		-- Second hardcoded dliver is for backwards compatability with localizations that expect it
+		if string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
 			writCompleteUIHandle()
 			return
-		elseif string.find(myLower(conditions["text"][i]),"acquire") or string.find(myLower(conditions["text"][i]),WritCreater.writCompleteStrings()["Acquire"])   then
+		elseif string.find(myLower(conditions["text"][i]),acquireString) or string.find(myLower(conditions["text"][i]),"acquire") then
 
 			conditions["text"][i] = false
 			if not incomplete then
@@ -687,6 +697,10 @@ local function enchantCrafting(info, quest,add)
 					if GetDisplayName() == "@Dolgubon" and WritCreater:GetSettings().craftMultiplier > 1 then
 						quantity = quantity * 3
 					end
+					runeNames[#runeNames + 1 ] = getItemTotalStackCount( ta["bag"], ta["slot"])
+					runeNames[#runeNames + 1 ] = getItemTotalStackCount(essence["bag"], essence["slot"])
+					runeNames[#runeNames + 1 ] = getItemTotalStackCount(potency["bag"], potency["slot"])
+					
 					--d(conditions["type"][i],conditions["glyph"][i])
 					out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)).."\n"..WritCreater.strings.crafting, "1", quantity ))
 					DolgubonsWritsBackdropCraft:SetHidden(true)
@@ -723,7 +737,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101042
+	local currentAPIVersionOfAddon = 101043
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 
@@ -754,38 +768,33 @@ local function craftCheck(eventcode, station)
 	end
 
 	local writs
-	if WritCreater:GetSettings().tutorial then
-		DolgubonsWrits:SetHidden(false)
-		WritCreater.tutorial()
-	else
-		craftInfo = WritCreater.languageInfo()
-		if craftInfo then
-			if WritCreater:GetSettings().autoCraft then
-				craftingWrits = true
-			end
-			writs = WritCreater.writSearch()
-
-			if WritCreater:GetSettings()[station] and writs[station] then
-				if station == CRAFTING_TYPE_ENCHANTING then
-
-					DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
-					enchantCrafting(craftInfo[station],writs[station],craftingWrits)
-				elseif station == CRAFTING_TYPE_PROVISIONING then
-				elseif station== CRAFTING_TYPE_ALCHEMY then
-				else
-
-					DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
-					crafting(craftInfo[station],writs[station],craftingWrits)
-				end
-			end
-		else
-			DolgubonsWrits:SetHidden(false)
-			local text = "The current client language is not supported. \nPlease contact Dolgubon on esoui if you are interested in translating for this language.\n"
-			out(text)
+	craftInfo = WritCreater.languageInfo()
+	if craftInfo then
+		if WritCreater:GetSettings().autoCraft then
+			craftingWrits = true
 		end
-		-- Prevent UI bug due to fast Esc
-		CALLBACK_MANAGER:FireCallbacks("CraftingAnimationsStopped")
+		writs = WritCreater.writSearch()
+
+		if WritCreater:GetSettings()[station] and writs[station] then
+			if station == CRAFTING_TYPE_ENCHANTING then
+
+				DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
+				enchantCrafting(craftInfo[station],writs[station],craftingWrits)
+			elseif station == CRAFTING_TYPE_PROVISIONING then
+			elseif station== CRAFTING_TYPE_ALCHEMY then
+			else
+
+				DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
+				crafting(craftInfo[station],writs[station],craftingWrits)
+			end
+		end
+	else
+		DolgubonsWrits:SetHidden(false)
+		local text = "The current client language is not supported. \nPlease contact Dolgubon on esoui if you are interested in translating for this language.\n"
+		out(text)
 	end
+	-- Prevent UI bug due to fast Esc
+	CALLBACK_MANAGER:FireCallbacks("CraftingAnimationsStopped")
 end
 
 WritCreater.craftCheck = craftCheck
@@ -848,3 +857,37 @@ EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTE
 
 
 end
+-- This is just me expounding about self, dots, colons, and functions in lua.
+if false then
+	-- Self is a lua syntax shortcut, that is unfortunately a little confusing.
+	-- When you call or define a function that is in a table, you can do it in two ways:
+	local exTable = {}
+	function exTable.dotCall(...)
+		-- If you define or call a function with a dot, then there is no self.
+		d(self) -- outputs nil
+	end
+	function exTable:colonCall(...)
+		-- But if you define or call a function with a colon, then the table containing the function is self
+		d(self) -- outputs exTable
+	end
+	-- You can also define a function with an explicit self argument
+	-- Behind the senes, this function definition is exactly the same as the colonCall function!
+	-- Since it's the same, it can help to mentally translate any function definition with a colon to this format
+	function exTable.equivalentDotCall(self, ...)
+		d(self) -- outputs self, whatever that is
+	end
+
+	-- And, since it's the same, you can call both of them with a colon, and it'll do the same thing:
+	exTable:colonCall() -- Outputs exTable
+	exTable:equivalentDotCall() -- Also outputs exTable
+
+	-- If you define a function with a colon, but then call it with a dot instead, the first argument becomes self
+	-- If there's no arguments, that means self will just be nil
+	exTable.colonCall() -- outputs nil, since it's called with a dot
+	-- If you do pass in an argument, then the first argument will be self
+	local similarTable = {}
+	exTable.colonCall(similarTable) -- self == similarTable, so outputs similarTable
+	-- An example use could be:
+	-- UIElement.SetText(OtherUIElement, "The text on OtherUIElement will change, since this was a dot call")
+end
+

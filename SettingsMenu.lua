@@ -773,7 +773,6 @@ function WritCreater.Options() --Sentimental
 				end
 			end,
 		},
-
 		{
 			type = "checkbox",
 			name = WritCreater.optionStrings['despawnBanker'],
@@ -783,6 +782,15 @@ function WritCreater.Options() --Sentimental
 				WritCreater:GetSettings().despawnBanker = value
 			end,
 			disabled = function() return not WritCreater:GetSettings().autoCloseBank end,
+		},
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['despawnBankerDeposit'],
+			tooltip = WritCreater.optionStrings['despawnBankerDepositTooltip'],
+			getFunc = function() return  WritCreater:GetSettings().despawnBankerDeposits end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().despawnBankerDeposits = value
+			end,
 		},
 		{
 			type = "checkbox",

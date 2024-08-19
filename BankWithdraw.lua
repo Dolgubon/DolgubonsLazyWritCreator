@@ -377,7 +377,7 @@ local function runProcessDeposits()
 		end
 	elseif depositedItem and numItems == 0 then
 		depositedItem = false
-		if WritCreater:GetSettings().despawnBanker then
+		if WritCreater:GetSettings().despawnBankerDeposits then
 			ZO_SharedInteraction:CloseChatterAndDismissAssistant()
 			SCENE_MANAGER:Show('hud')
 		end
