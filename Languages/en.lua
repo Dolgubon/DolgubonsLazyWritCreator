@@ -609,5 +609,7 @@ WritCreater.lang = "en"
 WritCreater.langIsMasterWritSupported = true
 
 WritCreater.cheeseyLocalizations["alreadyUnlocked"] = "Writ Crafter Skin unlocked"
-WritCreater.cheeseyLocalizations["alreadyUnlockedTooltip"] = "You already unlocked the skin on April 1, 2022. Doing it again is just for fun!"
+WritCreater.cheeseyLocalizations["alreadyUnlockedTooltip"] = "You already unlocked the skin on April 1, 2023. Doing it again is just for fun!"
 WritCreater.cheeseyLocalizations["settingsChooseSkin"] = "You can change the skin in the settings menu"
+
+

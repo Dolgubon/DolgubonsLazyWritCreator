@@ -21,7 +21,7 @@ local function lootMails()
 				if currentWorkingMail == mailId and not IsReadMailInfoReady(mailId) then
 					RequestReadMail(mailId)
 				end 
-			end, 100)
+			end, math.max(GetLatency()+10, 100))
 	end
 end
 

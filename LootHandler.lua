@@ -770,13 +770,15 @@ WritCreater.rewardBoxes = { --To get exact name strings of boxes
 ["|H1:item:57851:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_BLACKSMITHING},
 ["|H1:item:58528:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ENCHANTING},
 }
+
+
 WritCreater.boxNames = {}
 for boxId, boxRank in pairs (WritCreater.rewardBoxes) do 
 	if type(boxId) == "number" then
 		local name = GetItemLinkName(getItemLinkFromItemId(boxId))
 		WritCreater.boxNames[name] = boxRank
 	elseif type(boxId) == "string" then
-		WritCreater.boxNames[GetItemLinkName(name)] = boxRank
+		WritCreater.boxNames[GetItemLinkName(boxId)] = boxRank
 	end
 end
 

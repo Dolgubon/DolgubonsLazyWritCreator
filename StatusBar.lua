@@ -21,7 +21,7 @@ end
 
 local colours={
 	notAccepted = "8D8D8D",
-	incomplete = "FFFF33",
+	incomplete = "ff6666",
 	deliver = "32CD32",
 }
 

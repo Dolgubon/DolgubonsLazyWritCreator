@@ -917,48 +917,6 @@ WritCreater.optionStrings["alternate universe tooltip"]                 = "Desac
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Artículos de artesanía")
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_OPEN", "Muestra los stats de los artículos de artesanía en una ventana")
 
--- @todo Falta traducir endeavors
-WritCreater.cheeseyLocalizations = {
-    ['menuName'] = "Ritual",
-    ['endeavorName'] = "Ritual Endeavors",
-    ['tasks'] = {
-        { original = "You found a strange pamphlet... Maybe you should /read it", name = "You read some instructions on a ritual for luck", completion = "You learned how to do a ritual for luck!",
-          description = "Use the /read emote" },
-
-        { original = "???", name = "Obtain an innocent goat's guts", completion = "You monster! Anything for luck, I guess",
-          description = "Loot guts from a dead livestock goat. You don't have be the one to kill it... but that's the easiest way" },
-
-        { original = "???", name = "Head to the ritual site, Arananga", completion = "You made it! It seems like a very industrious place",
-          description = "Not sure where Arananga is? Maybe it's a 'gifted' crafting station..." },
-
-        { original = "???", name = "Destroy the goat guts", completion = "You 'burnt' the sacrifice",
-          description = "Destroy the |H1:item:42870:30:1:0:0:0:0:0:0:0:0:0:0:0:16:0:0:0:1:0:0|h|h you looted" },
-
-        { original = "???", name = "Praise RNGesus in chat", completion = "You feel strangely lucky, but maybe it's just a feeling...",
-          description = "You can't really tell what it actually said, but it's your best guess" },
-        -- Or Nocturnal, or Fortuna, Tyche as easter eggs?
-
-        -- {original="???", name = "Complete the ritual", completion = "Maybe you'll be just a little bit luckier... And Writ Crafter has a new skin!",
-        -- description="Sheogorath will be very pleased if you complete them all!"},
-    },
-    ["completePrevious"] = "You should probably complete the previous steps first",
-    ['allComplete'] = "You completed the ritual!",
-    ['allCompleteSubheading'] = "Even if RNGesus doesn't favour you next year, at least Writ Crafter has a new look!",
-    ["goatContextTextText"] = "Goat",
-    ["bookText"] = [[
-    This ritual  |L0:0:0:45%%:8%%:ignore|lwill|l might give you great luck. Make sure to follow these steps exactly!
-    1. Obtain some guts from a |L0:0:0:45%%:8%%:ignore|lsheep|l goat
-    2. Go to |L0:0:0:45%%:8%%:ignore|lOblivion|l Arananga
-    3. Burn the guts
-    4. Praise [the name here is illegible]
-
-    - Sincerely,
-    |L0:0:0:45%%:8%%:ignore|lSheogorath|l Not Sheogorath]],
-    ["bookTitle"] = "A ritual for luck",
-    ["outOfRange"] = "You're not in the ritual area anymore!",
-    ["closeEnough"] = "Close enough",
-    ["praiseHint "] = "Maybe you need to say something about RNGesus?",
-}
 
 WritCreater.lang = "es"
 WritCreater.langIsMasterWritSupported = true
