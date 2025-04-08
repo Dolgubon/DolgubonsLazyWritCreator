@@ -7,7 +7,7 @@
 -- File Name: LootHandler.lua
 -- File Description: This file handles the loot received from Writs. It opens containers, and logs the rewards
 -- Load Order Requirements: None
--- 
+--
 -----------------------------------------------------------------------------------
 
 WritCreater = WritCreater or {}
@@ -52,7 +52,7 @@ local function lootOutput(itemLink, itemType, quantity, isAnniversary)
 		local amountBag, amountBank, amountCraft = GetItemLinkStacks( itemLink)
 		local amount = amountCraft + amountBank + amountBag + quantity
 		local text
-		if itemType then 
+		if itemType then
 			text = zo_strformat( "1 "..WritCreater.strings.lootReceivedM.." ("..tostring(toVoucherCount(itemLink)).." v)", itemLink)
 		else
 			text = zo_strformat( WritCreater.strings.lootReceived, itemLink, amount, quantity)
@@ -77,7 +77,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 		local itemLink = GetLootItemLink(lootId, 0)
 		lootedItemLinks[GetItemLinkItemId(itemLink)] = true
 		--d(itemLink)
-		local itemType, specializedType = GetItemLinkItemType(itemLink) 
+		local itemType, specializedType = GetItemLinkItemType(itemLink)
 		-- if it's gear
 		if name=="" then
 		elseif itemType==ITEMTYPE_ARMOR or itemType==ITEMTYPE_WEAPON then
@@ -86,12 +86,12 @@ local function LootAllHook(boxType) -- technically not a hook.
 			else
 				updateSavedVars(vars, "intricate", quantity)
 			end
-		elseif CanItemLinkBeVirtual(itemLink) then 
+		elseif CanItemLinkBeVirtual(itemLink) then
 			updateSavedVars(vars, GetItemLinkItemId(itemLink), quantity)
 			if GetItemLinkQuality(itemLink) == ITEM_QUALITY_LEGENDARY or GetItemLinkItemId(itemLink) ==135153 or GetItemLinkItemId(itemLink) == 135149 then
 				lootOutput(itemLink, nil, quantity)
 			end
-		elseif itemType==ITEMTYPE_RECIPE then 
+		elseif itemType==ITEMTYPE_RECIPE then
 			local quality = GetItemLinkQuality(itemLink)
 			if quality==ITEM_QUALITY_MAGIC then
 				updateSavedVars(vars["recipe"], "green", quantity)
@@ -117,7 +117,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 			updateSavedVars(vars, "repair", quantity)
 		elseif itemType ==ITEMTYPE_GLYPH_JEWELRY or itemType ==ITEMTYPE_GLYPH_ARMOR or itemType ==ITEMTYPE_GLYPH_WEAPON then
 			updateSavedVars(vars, "glyph", quantity)
-		elseif itemType == ITEMTYPE_SOUL_GEM then 
+		elseif itemType == ITEMTYPE_SOUL_GEM then
 			updateSavedVars(vars, "soulGem", quantity)
 		elseif itemType == ITEMTYPE_MASTER_WRIT then
 			lootOutput(itemLink, ITEMTYPE_MASTER_WRIT, quantity)
@@ -159,7 +159,7 @@ local function shouldAutoLootContainerFromSettings()
 	return autoLoot
 end
 
-local fatiguedLoot = 
+local fatiguedLoot =
 {
 
 }
@@ -190,25 +190,25 @@ local function OnLootUpdated(event)
 	if boxInfo then
 		local boxRank = boxInfo[1]
 		local boxCraft = boxInfo[2]
-		if boxCraft == 0 and boxCraft > 0 then 
+		if boxCraft == 0 and boxCraft > 0 then
 			local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
 			if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
 				return false
 			end
 		elseif boxCraft == 0 then
-			if not WritCreater:GetSettings().lootJubileeBoxes then 
+			if not WritCreater:GetSettings().lootJubileeBoxes then
 				return false
 			end
 		end
 		--LOOT_SHARED:LootAllItems()
 		local n = SCENE_MANAGER:GetCurrentScene().name
-		
+
 		local numTransmute = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
 		local numLootTransmute = GetLootCurrency(CURT_CHAOTIC_CREATIA)
 
 		EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."LootSavingFatigue")
 		EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootSavingFatigue", 10000, clearLootFatigue)
-		if shouldSaveStats(boxCraft) and not fatiguedLoot[boxCraft] and boxCraft~= 0 then 
+		if shouldSaveStats(boxCraft) and not fatiguedLoot[boxCraft] and boxCraft~= 0 then
 			LootAllHook(boxCraft)
 		else
 			local loot = {}
@@ -219,7 +219,7 @@ local function OnLootUpdated(event)
 				local itemId = GetItemLinkItemId(itemLink)
 				--d(itemLink)
 				local quality = GetItemLinkQuality(itemLink)
-				local itemType, specializedType = GetItemLinkItemType(itemLink) 
+				local itemType, specializedType = GetItemLinkItemType(itemLink)
 				if specializedType == SPECIALIZED_ITEMTYPE_RACIAL_STYLE_MOTIF_CHAPTER then
 					lootOutput(itemLink, nil, quantity, true)
 				elseif specializedType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then
@@ -270,7 +270,7 @@ local flavours = {
 	[GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward
 	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
-	
+
 }
 local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:194428:124:1:0:0:0:2023:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local plunderSkulls = GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
@@ -326,7 +326,7 @@ local function shouldOpenContainer(bag, slot)
 		local currentTransmutes = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
 		local transmuteSpace = maxTransmutes - currentTransmutes
 		if WritCreater:GetSettings().transmuteBlock[uniqueId] > transmuteSpace then
-			return false 
+			return false
 		end
 	end
 
@@ -345,7 +345,7 @@ local function openContainer(bag, slot)
 		CallSecureProtected("UseItem", bag, slot)
 	else
 		UseItem(bag, slot)
-	end 
+	end
 	calledFromQuest = true
 	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootRescan", 100, scanBagForUnopenedContainers)
 end
@@ -375,7 +375,7 @@ local function prepareToInteract()
 end
 
 local function attemptOpenContainer(bag, slot)
-	
+
 	if GetSlotCooldownInfo( 1 )>0 or IsInteractionUsingInteractCamera() or SCENE_MANAGER:GetCurrentScene().name=='interact' or prepareToInteract() then
 		zo_callLater(function()attemptOpenContainer(bag, slot) end , math.max(GetSlotCooldownInfo( 1 ) + cooldownTimer,300))
 	else
@@ -387,7 +387,7 @@ WritCreater.rewardList = {
 }
 
 local function rewardHandler(bag, slot)
-	local itemType, specializedType = GetItemLinkItemType(itemLink) 
+	local itemType, specializedType = GetItemLinkItemType(itemLink)
 	-- if it's gear
 	if name=="" then
 	elseif itemType==ITEMTYPE_ARMOR or itemType==ITEMTYPE_WEAPON then
@@ -396,9 +396,9 @@ local function rewardHandler(bag, slot)
 		else
 			updateSavedVars(vars, "intricate", quantity)
 		end
-	elseif CanItemLinkBeVirtual(itemLink) then 
+	elseif CanItemLinkBeVirtual(itemLink) then
 		updateSavedVars(vars, GetItemLinkItemId(itemLink), quantity)
-	elseif itemType==ITEMTYPE_RECIPE then 
+	elseif itemType==ITEMTYPE_RECIPE then
 		updateSavedVars(vars["recipe"], "green", quantity)
 	elseif specializedType==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
 		updateSavedVars(vars, "survey", quantity)
@@ -410,14 +410,14 @@ local function rewardHandler(bag, slot)
 		updateSavedVars(vars, "repair", quantity)
 	elseif itemType ==ITEMTYPE_GLYPH_JEWELRY or itemType ==ITEMTYPE_GLYPH_ARMOR or itemType ==ITEMTYPE_GLYPH_WEAPON then
 		updateSavedVars(vars, "glyph", quantity)
-	elseif itemType == ITEMTYPE_SOUL_GEM then 
+	elseif itemType == ITEMTYPE_SOUL_GEM then
 		updateSavedVars(vars, "soulGem", quantity)
 	elseif itemType == ITEMTYPE_MASTER_WRIT then
 		updateSavedVars(vars, "master", quantity)
 	end
 end
 
-local handledItemTypes = 
+local handledItemTypes =
 {
 	[ITEMTYPE_MASTER_WRIT] = "master",
 	[SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT] = "survey",
@@ -464,7 +464,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 				-- d("Was logged "..link)
 			end
 			lootedItemLinks[itemId] = false
-			local itemType, specializedType = GetItemLinkItemType(link) 
+			local itemType, specializedType = GetItemLinkItemType(link)
 			local itemName = GetItemLinkName(link)
 			local itemTrait = GetItemLinkTraitInfo(link)
 			local actionSourceName = handledItemTypes[itemType] or handledItemTypes[specializedType] or handledItemTypes[itemId] or handledItemTypes[itemTrait-100]
@@ -496,10 +496,10 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 				elseif action == 5 then
 					local id64 = GetItemUniqueId(bag, slot)
 					local id64String = Id64ToString(id64)
-					WritCreater.savedVars.deconstructList[id64String] = 
-					{ 	
-						["uniqueId"] = id64String , 
-						["bag"] = bag, 
+					WritCreater.savedVars.deconstructList[id64String] =
+					{
+						["uniqueId"] = id64String ,
+						["bag"] = bag,
 						["slot"] = slot,
 						["timestamp"] = GetTimeStamp()
 					}
@@ -510,7 +510,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 				-- 2 deposit
 				-- 3 Destroy
 				-- 4 junk
-				
+
 			end
 			-- determine type of item to find what we can do with it
 			-- Can we do action right now?
@@ -522,7 +522,7 @@ end
 
 function scanBagForUnopenedContainers( ... )
 	if not FindFirstEmptySlotInBag(BAG_BACKPACK) then return end
-	for i = 0, GetBagSize(BAG_BACKPACK) do 
+	for i = 0, GetBagSize(BAG_BACKPACK) do
 		if shouldOpenContainer(BAG_BACKPACK, i) then
 			slotUpdateHandler(1, BAG_BACKPACK, i, true)
 		end
@@ -536,21 +536,21 @@ WritCreater.scanForUnopenedContainers = scanBagForUnopenedContainers
 WritCreater.OnLootUpdated = OnLootUpdated
 
 function WritCreater.LootHandlerInitialize()
-	
+
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, slotUpdateHandler)
 	local oldfunc = ZO_SharedInventoryManager.ClearNewStatus
-	ZO_SharedInventoryManager.ClearNewStatus = function(self, bag, slot) 
+	ZO_SharedInventoryManager.ClearNewStatus = function(self, bag, slot)
 
 		if WritCreater:GetSettings().keepNewContainer and flavourTexts[ GetItemLinkFlavorText(GetItemLink(bag,slot))]then
 
 		else
-			oldfunc(self, bag, slot) 
-		end 
+			oldfunc(self, bag, slot)
+		end
 	end
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED, 
-		function(e, first) 
-			for k, v in pairs(PLAYER_INVENTORY.inventories[1].slots[1] ) do 
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED,
+		function(e, first)
+			for k, v in pairs(PLAYER_INVENTORY.inventories[1].slots[1] ) do
 				if flavourTexts[ GetItemLinkFlavorText(GetItemLink(BAG_BACKPACK, v.searchData.slotIndex))] then
 					v.brandNew = true
 					v.age = 1
@@ -561,12 +561,12 @@ function WritCreater.LootHandlerInitialize()
 					-- DestroyItem(BAG_BACKPACK, v.searchData.slotIndex)
 				end
 			end
-			-- PLAYER_INVENTORY.inventories[1].slots[1][149].brandNew = true 
+			-- PLAYER_INVENTORY.inventories[1].slots[1][149].brandNew = true
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
-			end )	
+			end )
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
-	
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED,function() 
+
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED,function()
 
 		for k, v in pairs(WritCreater.savedVars.deconstructList) do
 			if v.timestamp and GetTimeStamp() - 60*60*24*30 > v.timestamp then
@@ -579,7 +579,7 @@ function WritCreater.LootHandlerInitialize()
 		end
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED)
 	end )
-	
+
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end
@@ -597,7 +597,7 @@ function LootAll(id)
 end
 --[[
 local f=true
-local o=ZO_ActionBar_OnActionButtonDown 
+local o=ZO_ActionBar_OnActionButtonDown
 ZO_ActionBar_OnActionButtonDown=function(s)if GetSlotName(s)=="Flames of Oblivion" then f=false else o(s)end end
 z="ZO_ActionBar_OnActionButtonUp"
 local p=_G[z]
@@ -761,6 +761,7 @@ WritCreater.rewardBoxes = { --To get exact name strings of boxes
 	[142172] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
 	[142173] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
 	[147603] = {0, CRAFTING_TYPE_JEWELRYCRAFTING} ,
+	[204459] = {0, 0} , -- Glorious Anniversary Jubilee Gift Box
 
 ["|H1:item:147616:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {10, CRAFTING_TYPE_CLOTHIER },
 ["|H1:item:58510:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_WOODWORKING},
@@ -773,7 +774,7 @@ WritCreater.rewardBoxes = { --To get exact name strings of boxes
 
 
 WritCreater.boxNames = {}
-for boxId, boxRank in pairs (WritCreater.rewardBoxes) do 
+for boxId, boxRank in pairs (WritCreater.rewardBoxes) do
 	if type(boxId) == "number" then
 		local name = GetItemLinkName(getItemLinkFromItemId(boxId))
 		WritCreater.boxNames[name] = boxRank
