@@ -20,8 +20,8 @@ end
 
 
 local colours={
-	notAccepted = "8D8D8D",
-	incomplete = "ff6666",
+	notAccepted = {0.5,0.5,0.5},
+	incomplete = "c67615",
 	deliver = "32CD32",
 }
 
@@ -39,6 +39,9 @@ local function isQuestDeliverable(questIndex)
 		["pattern"] = {},
 		["mats"] = {},
 	}
+	if IsJournalQuestStepEnding(questIndex, 1,1) then
+		return QUEST_DELIVER
+	end
 	for condition = 1, GetJournalQuestNumConditions(questIndex,1) do
 		conditionsTable["text"][condition], conditionsTable["cur"][condition], conditionsTable["max"][condition],_,conditionsTable["complete"][condition] = GetJournalQuestConditionInfo(questIndex, 1, condition)
 		-- Check if the condition is complete or empty or at the deliver step
@@ -110,6 +113,8 @@ end
 
 
 local function updateQuestStatus(event)
+	colours["incomplete"] = WritCreater:GetSettings().incompleteColour
+	colours["deliver"] = WritCreater:GetSettings().completeColour
 	-- StatusBar:SetDimensions(statusBarWidth(), 37)
 	DolgubonsLazyWritStatusBackdrop:SetCenterColor(255, 255, 255, WritCreater:GetSettings().transparentStatusBar and 0 or 255)
 	local status = computeQuestStatus()
@@ -123,13 +128,13 @@ local function updateQuestStatus(event)
 		local nextOrder = statusOrder[i]
 		local nextStatus = status[nextOrder]
 		local colour = colours[nextStatus]
-		local colorObj = ZO_ColorDef:New(colour)
+		local colorObj = ZO_ColorDef:New(unpack(colour))
 		if WritCreater:GetSettings().statusBarIcons then
 			local iconStr = string.format("|t%d:%d:%s:inheritColor|t",size,size,statusIcons[nextOrder])
 			iconStr = colorObj:Colorize(iconStr)
 			workingString = workingString..iconStr
 		else
-			workingString = workingString.."|c"..colour..writLetters[nextOrder].."|r"
+			workingString = workingString..colorObj:Colorize(writLetters[nextOrder])
 		end
 		if i == 4 and not WritCreater:GetSettings().statusBarIcons then
 			workingString = workingString.."  "

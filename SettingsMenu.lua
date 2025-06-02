@@ -1110,6 +1110,26 @@ function WritCreater.Options() --Sentimental
 			tooltip = WritCreater.optionStrings['transparentStatusBarTooltip'], -- or string id or function returning a string (optional)
 			default = WritCreater.default.transparentStatusBar,
 		} ,
+		{
+			type = "colorpicker",
+			name = WritCreater.optionStrings['incompleteColour'], 
+			getFunc = function() return unpack(WritCreater:GetSettings().incompleteColour) end,
+			disabled = function() return not WritCreater:GetSettings().showStatusBar end,
+			setFunc = function(...) WritCreater:GetSettings().incompleteColour = {...}
+				WritCreater.updateQuestStatus()
+			end,
+			default = WritCreater.default.incompleteColour,
+		} ,
+		{
+			type = "colorpicker",
+			name = WritCreater.optionStrings['completeColour'], 
+			getFunc = function() return unpack(WritCreater:GetSettings().completeColour) end,
+			disabled = function() return not WritCreater:GetSettings().showStatusBar end,
+			setFunc = function(...) WritCreater:GetSettings().completeColour = {...}
+				WritCreater.updateQuestStatus()
+			end,
+			default = WritCreater.default.completeColour,
+		} ,
 	}
 
 ----------------------------------------------------
