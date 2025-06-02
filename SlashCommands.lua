@@ -18,7 +18,7 @@ local function dailyReset()
 	local till = {}
 
 	till["hour"],till["minute"] =  WritCreater.dailyReset()
-	output = WritCreater.strings.dailyreset(till, stamp)
+	local output = WritCreater.strings.dailyreset(till, stamp)
 	d(output)
 end
 
@@ -146,6 +146,7 @@ local function countVouchers()
     local craftTotals = {}
     local sealedTotals = {}
     local totalSealed = 0
+    local storageIncluded
     for j, bankNum in ipairs(bags) do
         for i = 1, GetBagSize(bankNum) do
             local itemType =  GetItemType(bankNum, i)
@@ -186,11 +187,20 @@ local function round(num, numDecimalPlaces)
   return math.floor(num * mult + 0.5) / mult
 end
 
-
+local created = false
 local function outputStats(showChances)
+
+	if IsConsoleUI() and DolgubonsLazyWritStatsWindow:IsHidden() then
+		SCENE_MANAGER:Show("hud")
+	end
+
 	if not showChances  then
 		WritCreater.updateList()
-		DolgubonsLazyWritStatsWindow:SetHidden(not DolgubonsLazyWritStatsWindow:IsHidden())
+		if WritCreater.writStatsScene:IsShowing() then
+			SCENE_MANAGER:Hide(WritCreater.writStatsScene:GetName())
+		else
+			SCENE_MANAGER:Show(WritCreater.writStatsScene:GetName())
+		end
 		return
 	end
 	for k, v in pairs(WritCreater.savedVarsAccountWide["rewards"]) do 
@@ -326,12 +336,22 @@ SLASH_COMMANDS['/rerunmasterwrits'] = WritCreater.scanAllQuests
 	-- Resets character specific settings settings
 SLASH_COMMANDS['/resetwritcraftersettings'] = WritCreater.resetSettings
 	-- Activates debug mode. Debug mode is not comprehensive.
-SLASH_COMMANDS['/dlwcdebug'] = activateDebug
-SLASH_COMMANDS['/dlwcstatwindowdebug'] = activateStatWindowDebug
+
+
 	-- Abandons all currently active writs.
 SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function
-SLASH_COMMANDS['/dlwcfindwrit'] = findWrits
+if GetDisplayName() == "@Dolgubon" then
+	SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
+	-- SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
+	SLASH_COMMANDS['/dlwcstatwindowdebug'] = activateStatWindowDebug
+	SLASH_COMMANDS['/dlwcdebug'] = activateDebug
+	SLASH_COMMANDS['/listquest'] = function() for i = 1, 25 do local n = GetJournalQuestName(i) if n~="" then d(i..": "..n) end end end
+	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
+	SLASH_COMMANDS['/findwrit'] = findWrits
+
+	IsEnlightenedAvailableForCharacter = function() return false end
+end
 
 if WritCreater.needTranslations and GetTimeStamp()<1590361774 then
 	SLASH_COMMANDS['/writcraftertranslations'] = goToTranslationSite

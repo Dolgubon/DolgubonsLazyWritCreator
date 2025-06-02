@@ -334,7 +334,7 @@ function RewardsScroll:BuildMasterList()
 				elseif type(reward)== "number" then
 					local link = getItemLinkFromItemId(reward)
 					local trait = GetItemLinkItemType(link)
-					if trait == ITEMTYPE_WEAPON_TRAIT or trait==ITEMTYPE_JEWELRY_TRAIT or trait == ITEMTYPE_ARMOR_TRAIT or (trait == ITEMTYPE_INGREDIENT and GetItemLinkQuality(link)==1) then
+					if trait == ITEMTYPE_WEAPON_TRAIT or trait==ITEMTYPE_JEWELRY_TRAIT or trait == ITEMTYPE_ARMOR_TRAIT or (trait == ITEMTYPE_INGREDIENT and GetItemLinkFunctionalQuality(link)==1) then
 						traitMatTable.amount = traitMatTable.amount + amount
 					elseif trait == ITEMTYPE_JEWELRY_RAW_TRAIT then
 						pulverizedTraitMatTable.amount = pulverizedTraitMatTable.amount + amount
@@ -401,12 +401,6 @@ end
 
 function WritCreater.setupScrollLists()
 	WritCreater.rewardsScrollManager = RewardsScroll:New(DolgubonsLazyWritStatsWindowRewardScroll) -- check
-	
-	if WritCreater:GetSettings().debugMode then
-		DolgubonsLazyWritStatsWindow:SetHidden(false)
-		WritCreater.rewardsScrollManager.viewType =	WritCreater:GetSettings().defaultViewType or 1
-	end
-	WritCreater.updateList()
 end
 
 local function updateNonScrollElements()
@@ -418,7 +412,7 @@ local function updateNonScrollElements()
 	local estimateWarning = GetControl(DolgubonsLazyWritStatsWindowBackdrop, "EstimateWarning")
 end
 
-updateList = function () 
+local updateList = function () 
 	WritCreater.rewardsScrollManager:RefreshData()
 	updateNonScrollElements()
 end
@@ -429,3 +423,29 @@ function WritCreater.changeStatView()
 	WritCreater.updateList()
 end
 WritCreater.updateList = updateList
+
+function WritCreater.initializeStatsScene()
+	if not WritCreater.writStatsScene  then
+		local writStatsScene = ZO_Scene:New("dlwcwritstats", SCENE_MANAGER)
+		WritCreater.writStatsScene = writStatsScene
+		WritCreater.writStatsScene:AddFragment(ZO_SimpleSceneFragment:New(DolgubonsLazyWritStatsWindow))
+		-- local myButtonGroup = {
+		-- {
+		-- 	name = "Craft Writ",
+		-- 	keybind = "UI_SHORTCUT_QUATERNARY",
+		-- 	callback = function()WritCreater.ShowStatsWindow() end,
+		-- }}
+		-- KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup)
+		-- KEYBIND_STRIP_GAMEPAD_BACKDROP_FRAGMENT:AddKeybindButtonGroup(myButtonGroup)
+		if IsInGamepadPreferredMode() then
+			-- WritCreater.writStatsScene:AddFragment(KEYBIND_STRIP_GAMEPAD_BACKDROP_FRAGMENT)
+		else
+			WritCreater.writStatsScene:AddFragment(KEYBIND_STRIP_FADE_FRAGMENT)
+		end
+	end
+	WritCreater.updateList()
+	if WritCreater:GetSettings().debugMode then
+		SCENE_MANAGER:Show(WritCreater.writStatsScene:GetName())
+		WritCreater.rewardsScrollManager.viewType =	WritCreater:GetSettings().defaultViewType or 1
+	end
+end

@@ -12,7 +12,9 @@ HelperFunctions.lua
 LootHandler.lua
 QuestHandler.lua
 
-WritCreater.xml
+Keyboard/WritCreater.xml
+Console/ConsoleWritCreater.xml
+Console/ConsoleSettingsMenu.lua
 WritCreater.lua
 MasterWrits.lua
 BankWithdraw.lua

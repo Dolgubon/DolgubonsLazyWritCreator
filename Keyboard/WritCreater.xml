@@ -207,7 +207,7 @@
 						<Label name="$(parent)Head" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
 							<Anchor relativePoint="TOP" relativeTo="$(parent)" offsetY="55" offsetX="-85" />
 						</Label>
-						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" mouseEnabled="true" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" mouseEnabled="false">
+						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" mouseEnabled="false">
 							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="80" offsetX="10" />
 							<Dimensions x="450" />
 						</Label>
@@ -262,7 +262,7 @@
 				</Button>
 			</Controls>
 		</TopLevelControl>
-		<TopLevelControl name="DolgubonsLazyWritStatus" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+		<TopLevelControl name="DolgubonsLazyWritStatus" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
 			<Dimensions x="120" y="37" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="850" />
 			<OnMoveStop>

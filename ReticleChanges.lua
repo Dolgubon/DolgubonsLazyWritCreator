@@ -71,7 +71,7 @@ if oldInteract then
 				if isStealthed == 3 or isStealthed == 5 then
 					return oldInteract(...)
 				else
-					ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The Lazy Writ Crafter™ has saved you from stealing while doing writs!")
+					ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The Lazy Writ Crafter™ has saved you from stealing while doing writs!")
 					return isCriminal
 				end
 			end

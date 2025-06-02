@@ -8,12 +8,12 @@ if not exist "%zip%" goto :zipnotfound
 
 for %%* in (.) do set name=%%~nx*
 
-if not exist %name%.txt (
+if not exist %name%.addon (
   echo * Please enter the name of your add-on:
   set /P name=^>
 )
 
-for /F "tokens=3" %%i in ('findstr /C:"## Version:" %name%.txt') do set version=%%i
+for /F "tokens=3" %%i in ('findstr /C:"## Version:" %name%.addon') do set version=%%i
 
 set archive=%name%-%version%.zip
 
@@ -21,9 +21,9 @@ echo * Packaging %archive%...
 
 md .package\%name%
 
-set files=%name%.txt
+set files=%name%.addon
 
-for /F %%i in ('findstr /B /R "[^#;]" %name%.txt') do (
+for /F %%i in ('findstr /B /R "[^#;]" %name%.addon') do (
   set file=%%~nxi
   set files=!files! !file:$^(language^)=*!
 )

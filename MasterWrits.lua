@@ -11,9 +11,14 @@
 -----------------------------------------------------------------------------------
 
 local DolgubonDebugRunningDebugString = ""
-DolgubonGlobalDebugToggle = false
+local DolgubonGlobalDebugToggle = false
 local localDebugToggle = false
-
+-- Not real crafting types, but used to help differentiate different sealed writ types
+local CRAFTING_TYPE_WITCHES = 100
+local CRAFTING_TYPE_NEWLIFE = 200
+local CRAFTING_TYPE_CHARITY = 300
+local CRAFTING_TYPE_DEEPWINTER = 400
+local CRAFTING_TYPE_IMPERIAL = 500
 -- Debug function. Has the ability to save stuff and then later send it in a mail rather than outputting it in chat. Mail currently not enabled.
 
 function DolgubonGlobalDebugOutput(...)
@@ -32,34 +37,6 @@ function DolgubonGlobalDebugOutput(...)
 	end
 end
 
--- Sends the saved debug lines
-local function sendDebug()
-	d("Sending mails")
-	local len = string.len(DolgubonDebugRunningDebugString)
-	local t = {}
-	-- Is this a good way to do it? well no ofc not but it was quickest at the time
-	-- At the moment, this function is restricted from use, so I'll keep it as is for now.
-	if len<700 then
-		RequestOpenMailbox()
-		zo_callLater(function() SendMail("@Dolgubon", "WRIT DEBUG OUTPUT", DolgubonDebugRunningDebugString)end , 500)
-		DolgubonDebugRunningDebugString = ''
-		zo_callLater( CloseMailbox, 1000)
-	elseif len<1400 then
-		RequestOpenMailbox()
-		zo_callLater(function() SendMail("@Dolgubon", "WRIT DEBUG OUTPUT2", string.sub(DolgubonDebugRunningDebugString,700))end , 500)
-		zo_callLater(function() SendMail("@Dolgubon", "WRIT DEBUG OUTPUT1", string.sub(DolgubonDebugRunningDebugString,1,700))end , 1500)
-		DolgubonDebugRunningDebugString = ""
-		zo_callLater( CloseMailbox, 2000)
-	else
-		RequestOpenMailbox()
-		zo_callLater(function() SendMail("@Dolgubon", "WRIT DEBUG OUTPUT3", string.sub(DolgubonDebugRunningDebugString, 1400,2100))end , 500)
-		zo_callLater(function() SendMail("@Dolgubon", "WRIT DEBUG OUTPUT2", string.sub(DolgubonDebugRunningDebugString, 700,1400))end , 1500)
-		zo_callLater(function() SendMail("@Dolgubon", "WRIT DEBUG OUTPUT1", string.sub(DolgubonDebugRunningDebugString, 1,700))end , 2500)
-		DolgubonDebugRunningDebugString = ""
-		zo_callLater( CloseMailbox, 3000)
-	end
-
-end
 
 local function dbug(...)
 	DolgubonGlobalDebugOutput(...)
@@ -68,452 +45,227 @@ end
 --SLASH_COMMANDS['/senddebug'] = sendDebug
 --SLASH_COMMANDS['/sendebug']  = sendDebug
 local trackedSealedWrits = {}
---------------------------------------------------
--- HACKING OF USEITEM
 
 ---------------------------------------------------
 -- MASTER WRITS PROPER
 
 
--- Capitalize the first letter, lowercase for the rest
-local function proper(str)
-	if type(str)== "string" then
-		return zo_strformat("<<C:1>>",str)
+local function EnchantingMasterWrit(itemId, levelId, quality, reference, name)
+	local level
+	if levelId == 207 then
+		level = 150
+	elseif levelId == 225 then
+		level = 160
 	else
-		return str
+		d("Couldn't match levelId "..levelId)
 	end
+	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
+	WritCreater.LLCInteractionMaster:CraftEnchantingGlyphDesiredResult(true, level, itemId, quality, true, reference)
+	local resultLink = LLC_GetEnchantingResultItemLinkByAttributes(true, level, itemId, quality)
+	d(zo_strformat("<<t:1>>: Crafting <<t:2>>", name, resultLink))
 end
 
--- Lowers everything. Uses the ZO function because theirs is more robust
-
-local function myLower(str)
-	return zo_strformat("<<z:1>>",str)-- "Rüstung der Verführung^f"
+local function calculateRequiredProvisioningAmount(needed, itemId)
+	local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(itemId)
+	local resultAmount = GetRecipeResultQuantity(recipeList,recipeIndex)
+	if resultAmount == 0 then return 0 end
+	local timesToCraft = math.ceil(needed/resultAmount)
+	local total = timesToCraft * resultAmount
+	return timesToCraft, total
 end
 
--- Remove various special characters, lowers the strings, and removes the dash which messes with string.find.
-
-local function standardizeString(str)
-	str = myLower(str)
-	str = string.gsub(str,"-"," ")
-	str = string.gsub(str,"ä","a")
-	str = string.gsub(str,"ü","u")
-	str = string.gsub(str,"ö","o")
-	return str
-end
-
-local function strFind(str, str2find, a, b, c)
-	
-	str = standardizeString(str)
-	str2find = standardizeString(str2find)
-	return string.find(str, str2find, a, b, c)
-
-
-end
-
-local weaponTraits ={}
-local armourTraits = {}
-------------------------------------
--- TRAIT DECLARATION
-
--- Run once on addon load. Grabs the name of traits and the trait constant
-
-
-armourTraits = {}
-weaponTraits ={}
-for i = 0, 8 do --create the weapon trait table
-	--Takes the strings starting at SI_ITEMTRAITTYPE0 == no trait, # 897 to SI_ITEMTRAITTYPE8 === Divines, #905
-	--Then saves the proper trait index used for crafting to it. The offset of 1 is due to ZOS; the offset of STURDY is so they start at 12
-	weaponTraits[i + 1] = {[2]  = i + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE0 + i)),}
+local function ProvisioningMasterWrit(resultItemId, quantity, reference, name)
+	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
+	local known = GetRecipeInfo(recipeList, recipeIndex)
+	if not known then
+		d(zo_strformat("<<t:1>>: Could not queue as you do not know the recipe for <<t:2>>", name, resultLink))
+		return
+	end
+	WritCreater.LLCInteractionMaster:CraftProvisioningItemByResultItemId(resultItemId, quantity, true, reference)
+	local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(resultItemId)
+	local resultAmount = GetRecipeResultQuantity(recipeList,recipeIndex)
+	local amountToCreate = quantity*resultAmount
+	local resultLink = getItemLinkFromItemId(resultItemId)
+	d(zo_strformat("<<t:1>>: Crafting <<t:3>>x<<t:2>>", name, resultLink, amountToCreate))
 end
 
 
-for i = 0, 7 do --create the armour trait table
-	--Takes the strings starting at SI_ITEMTRAITTYPE11 == Sturdy, # 908 to SI_ITEMTRAITTYPE18 === Divines, #915
-	--Then saves the proper trait index used for crafting to it. The offset of 1 is due to ZOS; the offset of STURDY is so they start at 12
-	armourTraits[i + 1] = {[2] = i + 1 + ITEM_TRAIT_TYPE_ARMOR_STURDY, [1] = myLower(GetString(SI_ITEMTRAITTYPE11 + i))}
-end
---Add a few missing traits to the tables - i.e., nirnhoned, and no trait
-armourTraits[#armourTraits + 1] = {[2] = ITEM_TRAIT_TYPE_NONE + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE0))} -- No Trait to armour traits
-armourTraits[#armourTraits + 1] = {[2] = ITEM_TRAIT_TYPE_ARMOR_NIRNHONED + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE26))} -- Nirnhoned
-weaponTraits[#weaponTraits + 1] = {[2] = ITEM_TRAIT_TYPE_WEAPON_NIRNHONED + 1, [1] = myLower(GetString(SI_ITEMTRAITTYPE25))}  -- Nirnhoned
-
--- Deals with styles and style constants
-
-styles = {}
-for i = 1, GetNumValidItemStyles() do
-	local styleItemIndex = GetValidItemStyleId(i)
-	local itemName = GetItemStyleName(styleItemIndex)
-	styles[#styles + 1] = {itemName,styleItemIndex }
-end
-
--- Input:
---	table: {{ string traitName, traitItemId }...}
---	string journalQuestCondition
--- Output:
---	nilable table: {string matchingTraitName, matchingTraitItemId}
-
-local function enchantSearch(info,condition)
-	for i = 1, #info do
-		if strFind(condition, info[i][1]) then
-			
-			return info[i]
-		end
-
-	end
-
-	return nil
-end
-
--- Checks if all the traits of the glyph required were found. If one is not found, outputs an error message to chat.
-
-local function foundAllEnchantingRequirements(essence, potency, aspect)
-	if not WritCreater.langIsMasterWritSupported then return false end
-	local foundAll = true
-	if not essence then
-		foundAll = false
-		d("Error: Essence/Effect not found")
-	end
-	if not potency then
-		foundAll = false
-		d("Error: Level not found")
-	end
-	if not aspect or aspect[1]=="" then
-		foundAll = false
-		d("Error: Quality not found")
-	end
-	return foundAll
-end
-
--- Tells LLC to craft a glyph for the given master writ.
--- Writs can be specified by the journal index or the text of the sealed writ
--- Reference should be the journal index or the uniqueItemId of the sealed writ.
-
-local function EnchantingMasterWrit(journalIndex, sealedText, reference)
-	--d(journalIndex, sealedText, reference)
-	dbug("FUNCTION:EnchantingMasterHandler")
-	if not reference then reference = journalIndex end
-	
-	local condition, complete
-	if sealedText then
-		condition, complete = sealedText, false
-	else
-		condition, complete, outOf = GetJournalQuestConditionInfo(journalIndex, 1)
-	end
-	-- If it's a journal quest and the quest is complete exit
-	if complete == outOf then return end
-	-- If the condition is empty exit
-	if condition =="" then return end
-
-	local craftInfo = WritCreater.craftInfo[CRAFTING_TYPE_ENCHANTING]
-
-	local essence = enchantSearch(craftInfo["pieces"], condition)
-	local potency = enchantSearch(craftInfo["match"], condition)
-	local aspect = enchantSearch(craftInfo["quality"], condition)
-
-	if foundAllEnchantingRequirements(essence, potency, aspect) then
-		local lvl = potency[1]
-		-- Output what we're making.
-		if potency[1]=="truly" then lvl = "truly superb" end
-		-- Actually add the glyph to the queue
-		
-		d(WritCreater.strings.masterWritEnchantToCraft( lvl, essence[1], aspect[1],
-			WritCreater.langWritNames()[CRAFTING_TYPE_ENCHANTING],
-			WritCreater.langMasterWritNames()["M1"],
-			WritCreater.langWritNames()["G"]))
-		if not WritWorthy then 
-			d("The Master Writ crafting feature of Dolgubon's Lazy Writ Crafter will no longer be supported. Please download and use Writ Worthy by Ziggr from Minion or Esoui if you wish to do Master Writs.")
-		end
-
-		WritCreater.LLCInteractionMaster:CraftEnchantingItemId(potency[2][essence[3]], essence[2], aspect[2], true, reference)
-
-		dbug("CALL:LLCENchantCraft")
-		
-	else
-	end
-end
-
--- Smithing Search function
-
--- Input: string condition, table info {{itemName, itemValue}...}
--- Outputs a table of {itemName, itemValue}. The output is the pair for the longest itemName found in the condition
-
--- TODO: Change the function so that it finds the longest string in one pass only, without the if statements at the end.
-
--- debug is used so that I can output a specific d() but only for one call of the function (e.g. when we're looking for quality)
-local function smithingSearch(condition, info, debug)
-
-	--if debug then d(info) end
-	-- Inital run through: Check to see if each itemName is found in the condition. Save it to a placeholder table
-	local matches = {}
-	for i, v in pairs(info) do
-		local str = string.gsub(info[i][1], "-"," ")
-		if strFind(condition, str) then
-			matches[#matches+1] = {info[i] , i}
-		end
-	end
-	-- Check the matches. If no matches return a default value
-	-- If one match, return that.
-	-- If two or more matches, find the longest one.
-	if #matches== 0 then
-		return {"",0} , -1
-	elseif #matches==1 then
-		return matches[1][1], matches[1][2]
-	else
-		local longest = 0
-		local position = 0
-		for i = 1, #matches do
-			if ZoUTF8StringLength(matches[i][1][1])>longest then
-				longest = ZoUTF8StringLength(matches[i][1][1])
-				position = i
-			end
-		end
-		return matches[position][1], matches[position][2]
-	end
-
-end
-
--- Checks to see if all the parameters are valid
-
-local function foundAllRequirements(pattern, style, setIndex, trait, quality)
-	local foundAllRequirements = true
-	if setIndex==-1 then 
-		foundAllRequirements = false
-		d("Set not found") 
-	end
-	if pattern[1] =="" then 
-		foundAllRequirements = false
-		d("Pattern not found")
-	end
-	if trait[1]=="" then
-		foundAllRequirements = false
-		d("Trait not found")
-	end
-	if style[1]=="" then
-		foundAllRequirements = false
-		d("Style not found")
-	end
-	if quality[1]=="" then
-		foundAllRequirements = false
-		d("Quality not found")
-	end
-	return foundAllRequirements
-end
-
-local function germanRemoveEN (str)
-	str = standardizeString(str)
-	return string.sub(str, 1 , string.len(str) - 2)
-
-end
-
-
--- Split the quest condition up into parts, each of which contains one writ requirement.
--- This will help to reduce false positives. Probably doesn't reduce it by much, but it gives me
--- more peace of mind
-local function splitCondition(condition, isQuest)
-	local seperator = "A"
-	if isQuest or WritCreater.lang=="de" then seperator = "\n" else seperator = ";" end
-	local a = 1
-	local t = {}
-	while strFind(condition , seperator) and a<50 do
-		a = a+1
-		t[#t+1] = string.gsub(string.sub(condition, 1, strFind(condition, seperator)),"\n","")
-		condition = string.sub(condition, strFind(condition,seperator) + 1, string.len(condition) ) 
-		if string.len(t[#t])<5 then t[#t] = nil end
-	end
-	t[#t+1] = condition
-	if WritCreater.lang =="de" and not isQuest then table.remove(t, 1 ) end
-	return unpack(t)
-end
-
--- Adds a master writ crafting request to the LLC queue
--- Either journalIndex, or sealedText and reference must be passed. The reference should be 
--- either the journalquestindex or the unique itemid of the sealed writ.
--- table info is {{itemName, itemValue}...}
--- station is the station that the writ is associated with (or a best guess for woodworking/blacksmithing weapons)
--- isArmour is a boolean
--- material is the string name of the material used. Not necessary; will be used for output only
-
-
-local function SmithingMasterWrit(journalIndex, info, station, isArmour, material, reference, sealedText)
-	dbug("FUNCTION:SmithingMasterHandler")
-	-- If this is nil, then the language the game is currently in is not supported.
-	if not WritCreater.masterWritQuality then d("Language not supported for Master Writs") return end 
-	if WritCreater.lang == "de" then for i = 1, #info do  info[i][1] = germanRemoveEN(info[i][1])   end end
-	local condition, complete =GetJournalQuestConditionInfo(journalIndex, 1)
-	condition = standardizeString(condition)
-	local isQuest = true
-	-- if the sealedText was passed then it's not a journal quest
-	if sealedText then
-		isQuest = false
-		condition, complete = sealedText, false
-	else
-	if WritCreater.savedVarsAccountWide[6697110] then return -1 end -- no comment
-	end
-	-- Text condition value
-	--"Craft a Rubedite Greataxe with the following Properties:\n • Quality: Epic\n • Trait: Powered\n • Set: Oblivion's Foe\n • Style: Imperial\n • Progress: 0 / 1", false--
-	condition = string.gsub(condition, "-" , " ")
-
-	if complete == 1 then return end
-	if condition =="" then return end
-	local conditionStrings = {}
-	local a= splitCondition(condition, isQuest)
-	-- The order of the conditions are different in German for some reason.
-	if WritCreater.lang =="de" then
-		conditionStrings["pattern"], conditionStrings["set"], conditionStrings["style"],
-		  conditionStrings["trait"], conditionStrings["quality"] = splitCondition(condition, isQuest)
-	else
-		conditionStrings["pattern"], conditionStrings["quality"], conditionStrings["trait"],
-		  conditionStrings["set"], conditionStrings["style"] = splitCondition(condition, isQuest)
-	end
-
-	--for k, v in pairs(conditionStrings) do
-	--	d(k, v)
-	--end
-	--d(conditionStrings["pattern"])
-	local pattern =  smithingSearch(conditionStrings["pattern"], info) --search pattern
-
-	-- If armour, uses one trait table, otherwise uses the weapont trait table
-	local trait
-	if isArmour then
-		trait = smithingSearch(conditionStrings["trait"], armourTraits )
-	else
-		trait = smithingSearch(conditionStrings["trait"], weaponTraits)
-	end
-	local style = smithingSearch(conditionStrings["style"], styles)
-	local _,setIndex = smithingSearch(conditionStrings["set"], GetSetIndexes())
-	
-	local quality = smithingSearch(conditionStrings["quality"],WritCreater.masterWritQuality()) --search quality
-
-	if foundAllRequirements(pattern, style, setIndex, trait, quality) then
-		-- too many variable stuff so need to do multiple calls to zo_strformat
-		d(WritCreater.strings.masterWritSmithToCraft(
-			pattern[1], 
-			GetSetIndexes()[setIndex][1],
-			trait[1],
-			style[1], 
-			quality[1],
-			material,
-			WritCreater.langWritNames()[station],
-			WritCreater.langMasterWritNames()["M1"],
-			WritCreater.langWritNames()["G"]
-			))
-		if not WritWorthy then 
-			d("The Master Writ crafting feature of Dolgubon's Lazy Writ Crafter will no longer be supported. Please download and use Writ Worthy by Ziggr from Minion or Esoui if you wish to do Master Writs.")
-		end
-		dbug("CALL:LLCCraftSmithing")
-		-- Cancel any previously added items with the same reference so we don't craft twice
-		WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
-		-- Add to queue
-		WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( pattern[2], true , 150, style[2], trait[2], false, station, setIndex, quality[2], true, reference)
-		return true
-	else
-		dbug("ERROR:RequirementMissing")
-	end
-end
-
--- Since some of the info tables are not in the proper format, this changes it so that they are:
--- Input table:
---{  [itemTraitValue] = "itemtraitString"}
--- output:
--- { [1] = {"itemTraitString", itemTraitValue}}
-
-local function keyValueTable(t)
-	local temp = {}
-	for k, v in pairs(t) do
-
-		temp[#temp + 1] = {myLower(v),k}
-
-	end
-	return temp
-end
-
--- Cuts a table, from start to ending
--- start inclusive
-
-local function partialTable(t, start, ending)
-
-	local temp = {}
-	for i = start or 1, ending or #t do 
-		temp[i] = t[i]
-	end
-	return temp
-end
 
 --/script for 1, 25 do if GetJournalQuestName(i) == "A Masterful Weapon" then d(i, GetJournalQuestConditionInfo(i,1,1))  end end
 --QuestID: 1
 
 -- Called when the player receives a new quest. Determines if the quest is a master writ, and if so, which craft and if it is a weapon or armour or glyph.
 
+local function queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, name, reference)
+	local patternIndex = WritCreater.LLCInteractionMaster.GetItemTemplateIdPatternIndex(itemTemplateId)
+	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
+	-- (setId, trait, pattern, station,level, isCP, quality,style,  potencyId, essenceId , aspectId)
+	local expectedItemLink = WritCreater.LLCInteractionMaster.getItemLinkFromParticulars(setIndex, itemTraitType+1, patternIndex, station, 150, true, itemQuality, itemStyleId)
+	-- if DoesItemLinkFulfillJournalQuestCondition(expectedItemLink, journalIndex, 1, 1, true) then
+		-- Add to queue
+	-- if not GetDisplayName()== "@Dolgubon" then
+	-- d(patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)
+	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
+	local request = WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)
+	request.level = 150
+	request.isCP = true
+	-- end
+	local traitName = GetString( _G["SI_ITEMTRAITTYPE"..itemTraitType] )
+	local styleName =  GetItemStyleName(itemStyleId)
+	local qualityName = GetString( _G["SI_ITEMQUALITY"..itemQuality] )
+	d(WritCreater.strings.newMasterWritSmithToCraft(
+		expectedItemLink,
+		traitName,
+		styleName,
+		qualityName,
+		name ))
+	-- else
+	-- 	d("Could not determine correct item to craft")
+	-- end
+end
+
+local function improvedMasterWritQuest(journalIndex, questName)
+	local _, _, station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId =  GetQuestConditionMasterWritInfo(journalIndex)
+	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, questName, journalIndex)
+end
+
+local function improvedRightClick(link, station, uniqueId)
+	------|H1:item:119680:5:1:0:0:0:52:188:4:208:16:120:0:0:0:0:0:0:0:0:58500|h|h
+	--[[
+	52 -> template ID
+	188-> material id, useless?
+	4 -> quality
+	208 -> setindex
+	16 -> traitindex
+	120 -> Style index
+	]]
+	local x = { ZO_LinkHandler_ParseLink(link) }
+	local itemTemplateId = tonumber(x[10])
+	local itemQuality = tonumber(x[12])
+	local setIndex = tonumber(x[13])
+	local itemTraitType = tonumber(x[14])
+	local itemStyleId = tonumber(x[15])
+	local name = GetItemLinkName(link)
+	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, name, link)
+end
+
+local function improvedEnchantRightClick(link, station, uniqueId)
+	local x = { ZO_LinkHandler_ParseLink(link) }
+	local quality = tonumber(x[12])
+	local resultItemId = tonumber(x[10])
+	local levelId = tonumber(x[11])
+	local name = GetItemLinkName(link)
+	EnchantingMasterWrit(resultItemId, levelId, quality, link, name)
+end
+
+local function improvedEnchantJournal(journalIndex, name)
+	local itemId, levelId, station, quality = GetQuestConditionMasterWritInfo(journalIndex, 1,1)
+	EnchantingMasterWrit(itemId, levelId, quality, journalIndex, name)
+end
+
+local function provisioningJournal(journalIndex, name)
+	local itemId = GetQuestConditionMasterWritInfo(journalIndex, 1,1)
+	local _, current, required = GetJournalQuestConditionInfo(journalIndex)
+	local needed = required - current
+	local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(itemId)
+	local factor = GetRecipeResultQuantity(recipeList,recipeIndex)
+	if recipeList > 16 then
+		factor = 1
+	end
+	local quantity = calculateRequiredProvisioningAmount(needed, itemId)
+	if quantity > 0 then
+		ProvisioningMasterWrit(itemId, quantity, journalIndex, name)
+	else
+		d(name..": Could not queue for writ. You might not know the required recipe")
+	end
+end
+
+local function deepWinterQuantity(resultItemId)
+	
+	local _, recipeList, recipeIndex =  GetRecipeInfoFromItemId(resultItemId)
+	local _,_,_,_, quality = GetRecipeResultItemInfo(recipeList, recipeIndex)
+	if quality == ITEM_FUNCTIONAL_QUALITY_MAGIC then
+		return calculateRequiredProvisioningAmount(1, resultItemId)
+	elseif quality == ITEM_FUNCTIONAL_QUALITY_NORMAL then
+		if resultItemId == 120410 or resultItemId == 117943 then
+			return  calculateRequiredProvisioningAmount(3, resultItemId)
+		end
+		return  calculateRequiredProvisioningAmount(12, resultItemId)
+	end
+	return 0
+end
+
+
+local function provisioningRightClick(link, station, uniqueId)
+	--d(GetQuestConditionMasterWritInfo(16,1,1))
+	local x = { ZO_LinkHandler_ParseLink(link) }
+	local resultItemId = tonumber(x[10])
+	local _, recipeList, recipeIndex =  GetRecipeInfoFromItemId(resultItemId)
+	if not recipeList then return end
+	local name = GetItemLinkName(link)
+	local quantity = 2
+	-- quantites according to uesp for holiday writs
+	if station == CRAFTING_TYPE_WITCHES then
+		quantity = calculateRequiredProvisioningAmount(4, resultItemId)
+	end
+	if station == CRAFTING_TYPE_NEWLIFE then
+		local _,_,_,_, quality = GetRecipeResultItemInfo(recipeList, recipeIndex)
+		if quality == ITEM_FUNCTIONAL_QUALITY_MAGIC then
+			quantity = calculateRequiredProvisioningAmount(1, resultItemId)
+		elseif quality == ITEM_FUNCTIONAL_QUALITY_NORMAL then
+			quantity = calculateRequiredProvisioningAmount(12, resultItemId)
+		else
+			quantity = 0 -- handled at the end of this func
+		end
+	end
+	if station == CRAFTING_TYPE_DEEPWINTER then
+		quantity = deepWinterQuantity(resultItemId)
+	end
+	if station == CRAFTING_TYPE_IMPERIAL then
+		quantity = 0
+		local _,_,_,_, quality = GetRecipeResultItemInfo(recipeList, recipeIndex)
+		if quality == ITEM_FUNCTIONAL_QUALITY_NORMAL then
+			quantity = calculateRequiredProvisioningAmount(3, resultItemId)
+		elseif quality == ITEM_FUNCTIONAL_QUALITY_MAGIC then
+			if recipeList <17 then -- food
+				quantity = calculateRequiredProvisioningAmount(12, resultItemId)
+			else
+				quantity = calculateRequiredProvisioningAmount(1, resultItemId)
+			end
+		end
+	end
+	if quantity == 0 then
+		d("Could not determine how many items to craft. Try accepting the writ.")
+		return
+	end
+	ProvisioningMasterWrit(resultItemId, quantity, link, name)
+end
+
+
 
 function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
-	if not WritCreater.langMasterWritNames or not WritCreater.savedVarsAccountWide.masterWrits then return end
-	local writNames = WritCreater.langMasterWritNames()
-	local isMasterWrit = false
-	local writType = ""
-	for k, v in pairs(writNames) do
-		if strFind(name, v) then
-			if k == "M" then
-				isMasterWrit = true
-			elseif k == "M1" then
-			else
-				writType = k
-			end
-
-		end
+	if WritCreater.savedVarsAccountWide.masterWrits then
+		-- improvedMasterWritQuest(journalIndex, name)
+		-- return
 	end
-	--if not isMasterWrit then return end
-	if not isMasterWrit then return end
-	dbug("FUNCTION:MasterWritStart")
-	local langInfo = WritCreater.languageInfo()
-	--local info = {}
-	if writType =="" then 
+	if not WritCreater.savedVarsAccountWide.masterWrits then return end
+
+	local itemId, _, writType = GetQuestConditionMasterWritInfo(journalIndex, 1 , 1)
+	local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(itemId)
+	if recipeList and recipeIndex then
+		provisioningJournal(journalIndex, name)
 		return
-	else
-		
-		if writType=="weapon" then
-
-			local info = partialTable(langInfo[CRAFTING_TYPE_BLACKSMITHING]["pieces"] , 1, 7)
-			info = keyValueTable(info)
-			table.insert(info, {"greataxe",4})
-			--local patternBlacksmithing =  smithingSearch(condition, info) --search pattern
-
-			if SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_BLACKSMITHING, false, "Rubedite",journalIndex) then
-				return
-			end
-
-			info = partialTable(langInfo[CRAFTING_TYPE_WOODWORKING]["pieces"] , 1, 6)
-			info = keyValueTable(info)
-
-			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_WOODWORKING, false, "Ruby Ash",journalIndex)
-
-		elseif writType == CRAFTING_TYPE_ALCHEMY then
-		elseif writType == CRAFTING_TYPE_ENCHANTING then
-			EnchantingMasterWrit(journalIndex)
-		elseif writType == CRAFTING_TYPE_PROVISIONING then
-		elseif writType == "shield" then
-			local info = {{"shield",2}}
-
-			if WritCreater.lang=="de" then info[1][1] ="schilden" end
-			if WritCreater.lang=="fr" then info[1][1] = "bouclier" end
-			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_WOODWORKING, true, "Ruby Ash",journalIndex)
-		elseif writType == "plate" then
-			local info = partialTable(langInfo[CRAFTING_TYPE_BLACKSMITHING]["pieces"] , 8, 14)
-			info = keyValueTable(info)
-
-			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_BLACKSMITHING, true, "Rubedite",journalIndex)
-		elseif writType == "leatherwear" then
-			local info = partialTable(langInfo[CRAFTING_TYPE_CLOTHIER]["pieces"] , 9, 15)
-			info = keyValueTable(info)
-			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_CLOTHIER, true, "Rubedo Leather",journalIndex)
-		elseif writType == "tailoring" then
-
-			local info = partialTable(langInfo[CRAFTING_TYPE_CLOTHIER]["pieces"] , 1, 8)
-			info = keyValueTable(info)
-			SmithingMasterWrit(journalIndex, info, CRAFTING_TYPE_CLOTHIER, true, "Ancestor Silk",journalIndex)
-		end
-
 	end
-
+	if writType == CRAFTING_TYPE_ENCHANTING then
+		improvedEnchantJournal(journalIndex, name)
+		return 
+	elseif writType == CRAFTING_TYPE_ALCHEMY then
+	elseif writType == CRAFTING_TYPE_PROVISIONING then
+		provisioningJournal(journalIndex, name)
+	elseif writType and writType >0 then
+		improvedMasterWritQuest(journalIndex, name)
+		return
+	end
 end
 
 local function QuestCounterChanged(event, journalIndex, questName, _, _, currConditionVal, newConditionVal, conditionMax)
@@ -538,9 +290,57 @@ function WritCreater.scanAllQuests()
 	dbug("FUNCTION:scanAllQuests")
 	for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
 end
+local exampleSealedWrits = {
+    [GetItemLinkName("|H1:item:121532:6:1:0:0:0:26:194:5:178:15:34:0:0:0:0:0:0:0:0:883200|h|h")] = CRAFTING_TYPE_CLOTHIER,
+    [GetItemLinkName("|H1:item:119680:6:1:0:0:0:47:188:4:240:12:29:0:0:0:0:0:0:0:0:56375|h|h")] = CRAFTING_TYPE_BLACKSMITHING,
+    [GetItemLinkName("|H1:item:119682:6:1:0:0:0:65:192:4:95:14:47:0:0:0:0:0:0:0:0:63250|h|h")] = CRAFTING_TYPE_WOODWORKING,
+    [GetItemLinkName("|H1:item:119564:5:1:0:0:0:26581:207:4:0:0:0:0:0:0:0:0:0:0:0:20000|h|h")] = CRAFTING_TYPE_ENCHANTING,
+    [GetItemLinkName("|H1:item:119693:5:1:0:0:0:68276:0:0:0:0:0:0:0:0:0:0:0:0:0:20000|h|h")] = CRAFTING_TYPE_PROVISIONING,
+    -- [GetItemLinkName("|H1:item:119705:5:1:0:0:0:199:19:3:15:0:0:0:0:0:0:0:0:0:0:50000|h|h")] = CRAFTING_TYPE_ALCHEMY,
+    [GetItemLinkName("|H1:item:153737:5:1:0:0:0:18:255:4:439:33:0:0:0:0:0:0:0:0:0:346500|h|h")] = CRAFTING_TYPE_JEWELRYCRAFTING,
+    [GetItemLinkName("|H1:item:153482:4:1:0:0:0:87691:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_WITCHES,
+    [GetItemLinkName("|H1:item:145572:4:1:0:0:0:118012:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_NEWLIFE,
+    [GetItemLinkName("|H1:item:156735:4:1:0:0:0:117954:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_DEEPWINTER,
+    [GetItemLinkName("|H1:item:167172:5:1:0:0:0:117963:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_IMPERIAL,
+    
+
+
+    
+}
+WritCreater.sealedWritNames = exampleSealedWrits
+
+local function itemHandler(bag, slot, station)
+	if not station then
+		return
+	end
+	if station == CRAFTING_TYPE_ENCHANTING then
+		local link = GetItemLink(bag, slot)
+		improvedEnchantRightClick(link, station)
+		return
+	elseif station == CRAFTING_TYPE_ALCHEMY then
+	elseif station == CRAFTING_TYPE_PROVISIONING or station == CRAFTING_TYPE_WITCHES or station == CRAFTING_TYPE_NEWLIFE or station == CRAFTING_TYPE_DEEPWINTER or station == CRAFTING_TYPE_IMPERIAL then
+		provisioningRightClick(GetItemLink(bag, slot), station)
+	elseif station and station >0 and station <8 then
+		improvedRightClick(GetItemLink(bag, slot), station)
+	else
+		return
+	end
+    trackedSealedWrits[#trackedSealedWrits + 1] = {bag, slot, GetItemUniqueId(bag, slot)}
+end
+
+local function canCraftSealedWrit(link)
+	local station = exampleSealedWrits[GetItemLinkName(link)]
+	if not station then return false end
+	if station == CRAFTING_TYPE_WITCHES then
+		local x = { ZO_LinkHandler_ParseLink(link) }
+		local resultItemId = tonumber(x[10])
+		if not GetRecipeInfoFromItemId(resultItemId) then return false end
+	end
+	return true, station
+end
+
 
 function WritCreater.InventorySlot_ShowContextMenu(rowControl,debugslot)
-	
 	local bag, slot, link, flavour, reference
 	if type(rowControl)=="userdata" or type(rowControl)=="number" then 
 		if type(rowControl)=="userdata" then
@@ -558,79 +358,95 @@ function WritCreater.InventorySlot_ShowContextMenu(rowControl,debugslot)
 	    reference = "Test"
 	end
 	
-    local exampleSealedWrits = {
-    [CRAFTING_TYPE_CLOTHIER] = "|H1:item:121532:6:1:0:0:0:26:194:5:178:15:34:0:0:0:0:0:0:0:0:883200|h|h",
-    [CRAFTING_TYPE_BLACKSMITHING] = "|H1:item:119680:6:1:0:0:0:47:188:4:240:12:29:0:0:0:0:0:0:0:0:56375|h|h",
-    [CRAFTING_TYPE_WOODWORKING] = "|H1:item:119682:6:1:0:0:0:65:192:4:95:14:47:0:0:0:0:0:0:0:0:63250|h|h",
-    [CRAFTING_TYPE_ENCHANTING] = "|H1:item:121528:6:1:0:0:0:26581:225:5:0:0:0:0:0:0:0:0:0:0:0:66000|h|h",
-	}
-	local writText = GenerateMasterWritBaseText(link)
-	local station
-
-	for k, v in pairs(exampleSealedWrits) do
-		if GetItemLinkName(link) == GetItemLinkName(v) then
-			station = k
-		end
-	end
-	if not station then return end
+    
+	-- enchanting glyph then writ
+	--|H1:item:26581:311:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+	--|H1:item:119564:5:1:0:0:0:26581:207:4:0:0:0:0:0:0:0:0:0:0:0:20000|h|h
+	--|H1:item:119693:5:1:0:0:0:68276:0:0:0:0:0:0:0:0:0:0:0:0:0:20000|h|h
+	local canCraft, station = canCraftSealedWrit(link)
+	if not canCraft or not station then return end
+	--|H1:item:119680:5:1:0:0:0:52:188:4:208:16:120:0:0:0:0:0:0:0:0:58500|h|h
+	--|H1:item:153737:5:1:0:0:0:18:255:4:439:33:0:0:0:0:0:0:0:0:0:346500|h|h
     -- Check if you can find "Blacksmithing, Clothing Woodworking or Enchanting"
     -- Search for if it is armour or not
-    if not WritCreater.savedVarsAccountWide.rightClick or not LibCustomMenu then return end
+    if not LibCustomMenu or not LibCustomMenu.RegisterIgnoreListContextMenu then return end
     zo_callLater(function ()
         AddCustomMenuItem("Craft Sealed Writ", function ()
-            if station == CRAFTING_TYPE_ENCHANTING then
-            	EnchantingMasterWrit(nil, writText,  GetItemUniqueId(bag, slot))
-            else
-            	local langInfo = WritCreater.languageInfo()
-            	local material = ""
-            	local info = partialTable(langInfo[station]["pieces"])
-				info = keyValueTable(info)
-				local isArmour
-				if station == CRAFTING_TYPE_BLACKSMITHING then
-					if flavour == GetItemLinkFlavorText(exampleSealedWrits[CRAFTING_TYPE_BLACKSMITHING]) then
-						isArmour = true
-					end
-					material = "Rubedite"
-					table.insert(info, {"greataxe",4})
-				elseif station == CRAFTING_TYPE_WOODWORKING then
-					if flavour == GetItemLinkFlavorText(exampleSealedWrits[CRAFTING_TYPE_WOODWORKING]) then
-						isArmour = true
-					end
-					table.insert(info,{"healing",6}) 
-					table.insert(info,{"frost",4}) 
-
-					material = "Ruby Ash"
-				elseif station == CRAFTING_TYPE_CLOTHIER then
-
-					if flavour == GetItemLinkFlavorText(exampleSealedWrits[CRAFTING_TYPE_CLOTHIER]) then
-						material = "Ancestor Silk"
-					else
-						material = "Rubedo Leather"
-					end
-					isArmour = true
-				end
-				SmithingMasterWrit(nil, info, station, isArmour, material, GetItemUniqueId(bag, slot), writText)
-            end
-            trackedSealedWrits[#trackedSealedWrits + 1] = {bag, slot, GetItemUniqueId(bag, slot)}
+			itemHandler(bag, slot, station)
         end, MENU_ADD_OPTION_LABEL)
         ShowMenu(self)
-    end, 50)
+    end, 0)
 end
-function WritCreater.InitializeRightClick()
-	ZO_PreHook('ZO_InventorySlot_ShowContextMenu', function (rowControl) WritCreater.InventorySlot_ShowContextMenu(rowControl) end)
+--alchemyu writs
+-- |H1:item:119705:5:1:0:0:0:199:19:3:15:0:0:0:0:0:0:0:0:0:0:50000|h|h
+-- |H1:item:119702:5:1:0:0:0:199:28:2:6:0:0:0:0:0:0:0:0:0:0:50000|h|h
+-- potions
+-- |H1:item:54339:308:50:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:72960|h|he
+-- |H1:item:30145:308:50:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:754432|h|h
 
+-- provsiionign
+--|H1:item:119693:5:1:0:0:0:68276:0:0:0:0:0:0:0:0:0:0:0:0:0:20000|h|h
+
+local function gamepadInventoryHook(inventoryInfo, slotActions)
+	if not IsInGamepadPreferredMode() and not IsConsoleUI() then
+		return
+	end
+	if not inventoryInfo or not inventoryInfo.dataSource then
+		return
+	end
+	local bag = inventoryInfo.dataSource.bagId
+	local slot = inventoryInfo.dataSource.slotIndex
+	local link = GetItemLink(bag, slot)
+	local canCraft, station = canCraftSealedWrit(link)
+	if not canCraft or not station then return end
+
+	slotActions:AddSlotAction(SI_CRAFT_SEALED_WRIT, function()itemHandler(bag, slot, station) end , "keybind3")
+	-- There is definitely a better way to do this
+	-- But I've spent too long trying to figure one out so I'll stick with this
+	zo_callLater(function()
+	local myButtonGroup = {
+	{
+		name = "Craft Writ",
+		keybind = "UI_SHORTCUT_QUATERNARY",
+		callback = function(input, input2)
+		itemHandler(bag, slot, station)
+		end,
+	}}
+	KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup) end, 10)
+end
+
+function WritCreater.InitializeRightClick()
+	if IsConsoleUI() or IsInGamepadPreferredMode() then
+		SecurePostHook(_G, "ZO_InventorySlot_DiscoverSlotActionsFromActionList", gamepadInventoryHook)
+	end
+	if not IsConsoleUI() then
+		-- zo_callLater(function()
+		-- SecurePostHook('ZO_InventorySlot_ShowContextMenu', function (rowControl)d("My hook") WritCreater.InventorySlot_ShowContextMenu(rowControl) end)end, 1000)
+		 -- SecurePostHook('ZO_InventorySlot_ShowContextMenu', function (rowControl)d("My hook") WritCreater.InventorySlot_ShowContextMenu(rowControl) end)
+	end
+end
+
+function WritCreater.queueAllSealedWrits(bag)
+	for i = 0, GetBagSize(bag) do
+		local itemType, specializedType = GetItemType(bag, i)
+		if itemType == ITEMTYPE_MASTER_WRIT then
+			local name = GetItemName(bag, i)
+			local stationType = exampleSealedWrits[name]
+			if stationType and not IsItemJunk(bag, i) then
+				itemHandler(bag, i, stationType)
+			end
+		end
+
+	end
 end
 
 --]]
 function WritCreater.checkIfMasterWritWasStarted(...)
 	dbug("EVENT:SlotUpdated")
 end
-
-
-
-EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_ADD_ON_LOADED, WritCreater.OnAddOnLoaded)
-
-
+if not IsConsoleUI() then
+	ZO_PreHook('ZO_InventorySlot_ShowContextMenu', function (rowControl) WritCreater.InventorySlot_ShowContextMenu(rowControl) end)
+end
 
 
 

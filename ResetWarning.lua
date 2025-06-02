@@ -18,7 +18,7 @@ local colour = "FFFF33"
 local warningText = ""
 local testingText = ""
 
-function showAnnouncement(msgText, sound)
+local function showAnnouncement(msgText, sound)
 	local secondText 
 	local split = string.find(msgText, "\n")
 	if split then secondText = "|c"..colour..string.sub(msgText, split + 1) msgText = string.sub(msgText, 1,split).."|r" end
@@ -34,7 +34,7 @@ local function showAlert(msgText)
 	ZO_Alert(nil,nil,msgText)
 end
 local function chatWarning(msgText)
-	CHAT_SYSTEM:AddMessage(msgText)
+	CHAT_ROUTER:AddSystemMessage(msgText)
 end
 
 local needsReset = false

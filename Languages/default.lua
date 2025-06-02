@@ -145,9 +145,10 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	return strings
 end
 
-local function masterWritEnchantToCraft (pat,set,trait,style,qual,mat,writName,Mname,generalName)
-	local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and style <<t:4>> at <<t:5>> quality",pat,set,trait,style,qual,mat)
-	return zo_strformat("<<t:2>> <<t:3>> <<t:4>>: <<1>>",partialString,writName,Mname,generalName )
+local function masterWritEnchantToCraft (link, trait, style, quality, writName)
+	-- local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and <<t:4>> style at <<t:5>> quality",pat,set,trait,style,qual,mat)
+	local partialString = zo_strformat("<<t:5>>: Crafting a CP150 <<t:1>> with the <<t:2>> trait and <<t:3>> style at <<t:4>> quality", link, trait, style, quality, writName)
+	return partialString
 end
 
 WritCreater.missingTranslations = {}
@@ -162,7 +163,7 @@ WritCreater.strings = {}
 setmetatable(WritCreater.strings, findMissingTranslationsMetatable)
 
 WritCreater.strings["runeReq"] 						= function (essence, potency,taStack,essenceStack,potencyStack) 
-	return zo_strformat("|c2dff00Crafting will require 1/<<3>> |rTa|c2dff00, 1/<<4>> |cffcc66<<1>>|c2dff00 and 1/<<5>> |c0066ff<<2>>|r", 
+	return zo_strformat("|c2dff00Crafting will require 1<<3>> |rTa|c2dff00, 1<<4>> |cffcc66<<1>>|c2dff00 and 1<<5>> |c0066ff<<2>>|r", 
 		essence, potency, taStack, essenceStack, potencyStack) 
 end
 WritCreater.strings["runeMissing"] 					= runeMissingFunction 
@@ -192,7 +193,9 @@ WritCreater.strings["sealedWrits"]					= "Sealed Writs"
 WritCreater.strings["masterWritEnchantToCraft"]		= function(lvl, type, quality, writCraft, writName, generalName) 
 														return zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality",lvl, type, quality,
 															writCraft,writName, generalName) end
-WritCreater.strings["masterWritSmithToCraft"]		= masterWritEnchantToCraft
+-- This is the old one that was used. Since parameters have been changed, we remove this one and use the next one instead
+-- WritCreater.strings["masterWritSmithToCraft"]		= masterWritEnchantToCraft
+WritCreater.strings["newMasterWritSmithToCraft"]	= masterWritEnchantToCraft
 WritCreater.strings["withdrawItem"]					= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link..". ("..remaining.." in bank)" end -- in Bank for German
 WritCreater.strings['fullBag']						= "You have no open bag spaces. Please empty your bag."
 WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option."
@@ -225,9 +228,9 @@ WritCreater.optionStrings["clothing tooltip"]							= "Turn the addon on for Clo
 WritCreater.optionStrings["enchanting"]									= "Enchanting"
 WritCreater.optionStrings["enchanting tooltip"]							= "Turn the addon on for Enchanting"
 WritCreater.optionStrings["alchemy"]									= "Alchemy"
-WritCreater.optionStrings["alchemy tooltip"]							= "Turn the addon on for Alchemy (Bank Withdrawal only)"
+WritCreater.optionStrings["alchemy tooltip"]							= "Turn the addon on for Alchemy. It's suggested to pre-craft stacks of required writ items, but crafting is supported"
 WritCreater.optionStrings["provisioning"]								= "Provisioning"
-WritCreater.optionStrings["provisioning tooltip"]						= "Turn the addon on for Provisioning (Bank Withdrawal only)"
+WritCreater.optionStrings["provisioning tooltip"]						= "Turn the addon on for Provisioning. It's suggested to pre-craft stacks of required writ items, but crafting is supported"
 WritCreater.optionStrings["woodworking"]								= "Woodworking"
 WritCreater.optionStrings["woodworking tooltip"]						= "Turn the addon on for Woodworking"
 WritCreater.optionStrings["jewelry crafting"]							= "Jewelry Crafting"
@@ -241,7 +244,7 @@ WritCreater.optionStrings["send data tooltip"]							= "Send information on the 
 WritCreater.optionStrings["exit when done"]								= "Exit crafting window"
 WritCreater.optionStrings["exit when done tooltip"]						= "Exit crafting window when all crafting is completed"
 WritCreater.optionStrings["automatic complete"]							= "Automatic quest dialog"
-WritCreater.optionStrings["automatic complete tooltip"]					= "Automatically accepts and completes quests when at the required place"
+WritCreater.optionStrings["automatic complete tooltip"]					= "Automatically accepts and completes quest dialog at writ boards and turnins"
 WritCreater.optionStrings["new container"]								= "Keep new status"
 WritCreater.optionStrings["new container tooltip"]						= "Keep the new status for writ reward containers"
 WritCreater.optionStrings["master"]										= "Master Writs"
@@ -275,7 +278,7 @@ WritCreater.optionStrings['dailyResetWarnTime']							= "Minutes Before Reset"
 WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "How many minutes before the daily reset the warning should be displayed"
 WritCreater.optionStrings['dailyResetWarnType']							= "Daily Reset Warning"
 WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "What type of warning should be displayed when the daily reset is about to occur"
-WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "None","Type 1", "Type 2", "Type 3", "Type 4", "All"}
+WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "None","Announcement", "Top Right", "Chat", "Popup", "All"}
 WritCreater.optionStrings['stealingProtection']							= "Stealing Protection"
 WritCreater.optionStrings['stealingProtectionTooltip']					= "Prevent you from stealing while you have a writ in your journal"
 WritCreater.optionStrings['noDELETEConfirmJewelry']						= "Easy Jewelry Writ Destruction"
@@ -285,7 +288,7 @@ WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Hides the te
 WritCreater.optionStrings["questBuffer"]								= "Writ Quest Buffer"
 WritCreater.optionStrings["questBufferTooltip"]							= "Keep a buffer of quests so you can always have room to pick up writs"
 WritCreater.optionStrings["craftMultiplier"]							= "Craft multiplier"
-WritCreater.optionStrings["craftMultiplierTooltip"]						= "Craft multiple copies of each required item so that you don't need to recraft them next time the writ comes up. Note: Save approximately 37 slots for each increase above 1"
+WritCreater.optionStrings["craftMultiplierTooltip"]						= "Craft multiple copies of each required item so that you don't need to recraft them next time the writ comes up. Note: Save approximately 37 inventory slots for each increase above 1"
 WritCreater.optionStrings['hireling behaviour']							= "Hireling Mail Actions"
 WritCreater.optionStrings['hireling behaviour tooltip']					= "What should be done with hireling mails"
 WritCreater.optionStrings['hireling behaviour choices']					= { "Nothing","Loot and Delete", "Loot only"}
@@ -355,11 +358,15 @@ WritCreater.optionStrings['transparentStatusBar']						= "Transparent Status Bar
 WritCreater.optionStrings['transparentStatusBarTooltip']				= "Make the status bar transparent"
 WritCreater.optionStrings['statusBarInventory']							= "Inventory Tracker"
 WritCreater.optionStrings['statusBarInventoryTooltip']					= "Add an inventory tracker to the status bar"
+WritCreater.optionStrings['incompleteColour']							= "Incomplete quest colour"
+WritCreater.optionStrings['completeColour']								= "Complete quest colour"
 
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Craft items")
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_OPEN", "Show Writ Crafter Stats window")
+-- text for crafting a sealed writ in the keybind area. Only for Gamepad
+ZO_CreateStringId("SI_CRAFT_SEALED_WRIT", "Craft writ")
 																		-- CSA, ZO_Alert, chat message, window
 
 WritCreater.cheeseyLocalizations

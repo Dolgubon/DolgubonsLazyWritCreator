@@ -28,7 +28,6 @@ WritCreater.name = "DolgubonsLazyWritCreator"
 
 WritCreater.settings = {}
 local LAM
-local LAM2
 WritCreater.languageStrings = {}
 WritCreater.resetTime = true
 WritCreater.version = 19
@@ -46,7 +45,7 @@ WritCreater.default =
 	[4]	= true,
 	[5]	= true,
 	[6]	= true,
-	[7] = true,
+	[7]  = true,
 	["delay"] = 100,
 	["shouldGrab"] = true,
 	["OffsetX"] = 1150,
@@ -60,7 +59,7 @@ WritCreater.default =
 	["lootContainerOnReceipt"] = true,	
 	["lootOutput"] = false,
 	["containerDelay"] = 1,
-	["hideWhenDone"] = true,
+	["hideWhenDone"] = false,
 	['changeReticle'] = true,
 	['reticleAntiSteal'] = true,
 	["useCharacterSettings"] = false,
@@ -109,6 +108,8 @@ WritCreater.default =
 	["statusBarIcons"] = not GetCVar("language.2")=="en",
 	["transparentStatusBar"] = false,
 	["deconstructList"] = {},
+	["completeColour"] = {0.2,1,0.2},
+	["incompleteColour"] = {1,0,0},
 }
 
 WritCreater.defaultAccountWide = {
@@ -283,7 +284,6 @@ WritCreater.settings["panel"] =
 {
      type = "panel",
      name = "Lazy Writ Crafter",
-     registerForRefresh = true,
      displayName = "|c8080FF Dolgubon's Lazy Writ Crafter|r",
      author = "@Dolgubon",
      registerForRefresh = true,
@@ -292,18 +292,15 @@ WritCreater.settings["panel"] =
      donation = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"
 
 }
-if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
+if not IsConsoleUI() and (GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn") then
 	WritCreater.settings["panel"].name = "1) "..WritCreater.settings["panel"].name
-	function lastPage() local a = 1 while a < 100 and GUILD_HISTORY_KEYBOARD.hasNextPage do GUILD_HISTORY_KEYBOARD:ShowNextPage() a = a + 1 end zo_callLater(lastPage, 100)  end lastPage()
-	SLASH_COMMANDS["/endhist"] = function() lastPage = function() end end
+	local function lastPage() local a = 1 while a < 100 and GUILD_HISTORY_KEYBOARD.hasNextPage do GUILD_HISTORY_KEYBOARD:ShowNextPage() a = a + 1 end zo_callLater(lastPage, 100)  end lastPage()
+	SLASH_COMMANDS["/endhist"] = function() lastPage() end
 	if LibHistoire and LibHistoire.internal then
 		LibHistoire.internal.InitializeDialogs = function() end
 	end
 end
 WritCreater.settings["options"] =  {} 
-
-local craftingEnchantCurrently = false
-local closeOnce = false
 
 local inWritCreater = true
 
@@ -461,17 +458,36 @@ end
 local function writSearch()
 	local W = {}
 	local anyFound = false
-	if not WritCreater.questExceptions then
-		return {}, false
-	end
 	for i=1 , 25 do
+		local itemId
+		local craftType = 0
+		for j = 1, 5 do
+			if craftType == 0 then
+				itemId,_,craftType = GetQuestConditionItemInfo(i,1,j)
+			end
+		end
+
 		local Qname=GetJournalQuestName(i)
-		Qname=WritCreater.questExceptions(Qname)
-		if (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING or string.find(Qname, WritCreater.writNames["G"])) and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY then
-			for j = 1, #WritCreater.writNames do 
-				if string.find(myLower(Qname),myLower(WritCreater.writNames[j])) then
-					W[j] = i
-					anyFound = true
+
+		local isEnding = IsJournalQuestStepEnding(i,1,1)
+		if itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY and (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING ) then
+			W[craftType] = i
+			anyFound = true
+		elseif GetJournalQuestRepeatType(i) == QUEST_REPEAT_NOT_REPEATABLE then
+			-- could be a certification quest, and we should be able to handle those safely
+			-- but if it's master writ we cannot
+			if GetQuestConditionMasterWritInfo(i,1,1) == nil then
+				W[craftType] = i
+				anyFound = true
+			end
+			-- If it's on the ending step, then the above can't find it. So we use the backup of the string matching
+		elseif isEnding then
+			if (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING ) and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY then
+				for j = 1, #WritCreater.writNames do 
+					if string.find(myLower(Qname),myLower(WritCreater.writNames[j])) then
+						W[j] = i
+						anyFound = true
+					end
 				end
 			end
 		end
@@ -487,11 +503,7 @@ WritCreater.applyGoatSkin = function()
 end
 
 local function initializeUI()
-	
-	
-	LAM:RegisterAddonPanel("DolgubonsWritCrafter", WritCreater.settings["panel"])
-	WritCreater.settings["options"] = WritCreater.Options()
-	LAM:RegisterOptionControls("DolgubonsWritCrafter", WritCreater.settings["options"])
+	WritCreater.initializeSettingsMenu()
 	DolgubonsWrits:ClearAnchors()
 	DolgubonsWrits:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, WritCreater:GetSettings().OffsetX-470, WritCreater:GetSettings().OffsetY)
 	if false then --GetWorldName() ~= "NA Megaserver" then
@@ -539,10 +551,13 @@ local function initializeOtherStuff()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function() 
 
 		if  newlyLoaded then  
-			newlyLoaded = false  WritCreater.scanAllQuests() EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) 
+			newlyLoaded = false  
+			WritCreater.scanAllQuests() 
+			EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) 
 			if WritCreater:GetSettings().scanForUnopened then
 				WritCreater.scanForUnopenedContainers()
 			end
+			WritCreater.initializeStatsScene()
 		end 
 	end )
 
@@ -590,7 +605,7 @@ local function initializeLibraries()
 		missingString = missingString.."LibLazyCrafting, "
 	end
 	LAM = LibAddonMenu2
-	if not LAM then
+	if not LAM and not IsConsoleUI() then
 		missing = true
 		missingString = missingString.."LibAddonMenu-2.0"
 	end
@@ -707,11 +722,6 @@ local function initializeLocalization()
 	}
 	-- Initializes Localizations 
 	if WritCreater.langWritNames then
-		if WritCreater.languageInfo then
-			WritCreater.craftInfo = WritCreater.languageInfo()
-		else
-			-- The language does not support master writs
-		end
 	else
 		if langs[GetCVar("language.2")] then
 			mandatoryRoadblockOut("Writ Crafter initialization failed. You are missing the language files. Try uninstalling and reinstalling the Writ Crafter")

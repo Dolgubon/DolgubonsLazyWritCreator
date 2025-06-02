@@ -13,7 +13,7 @@ local function lootMails()
 		local mailId = hirelingMails[1]
 		-- d(mailId)
 		currentWorkingMail = mailId
-		requestResult = RequestReadMail(mailId)
+		local requestResult = RequestReadMail(mailId)
 		if requestResult and requestResult <= REQUEST_READ_MAIL_RESULT_SUCCESS_SERVER_REQUESTED then
 		end
 		zo_callLater(function()
@@ -76,21 +76,27 @@ local function deleteLootedMail(mailId)
 		zo_callLater(lootMails, 250)
 	end
 	-- table.remove(hirelingMails, mailId)
-	shouldBeRemoved = mailId
 	-- zo_callLater(lootMails, 40)
 end
 
-
+local antiKick = 0
 function lootReadMail(event, mailId)
-	if not IsReadMailInfoReady(mailId) then
+	if not IsReadMailInfoReady(mailId) and (FindFirstEmptySlotInBag(BAG_BACKPACK) or IsESOPlusSubscriber()) then
 		-- d("Stop")
 		zo_callLater(function() lootMails() end , 10 )
 		return
 	end
 	local  _,_,subject, _,_,system,customer, _, numAtt, money = GetMailItemInfo(mailId)
 	if not customer and money == 0 and system and hirelingMailSubjects[subject] then
+		if antiKick>40 then
+			antiKick = 0
+			-- hopefully helps prevent kicks from server
+			-- reset so if they go back in they can loot again
+			return
+		end
 		if numAtt > 0 and (FindFirstEmptySlotInBag(BAG_BACKPACK) or IsESOPlusSubscriber()) then
 			-- d("Writ Crafter: Looting "..subject)
+			antiKick = antiKick + 1
 			ZO_MailInboxShared_TakeAll(mailId)
 			zo_callLater(function() deleteLootedMail(mailId) end, 250)
 			return
@@ -123,13 +129,11 @@ function WritCreater.lootHireling(event)
 				local _,_,sub = GetMailItemInfo(mailId)
 				-- d("Writ Crafter: "..sub.." looted")
 				if not WritCreater:GetSettings().mail.delete then
-					toremove = k
+					table.remove(hirelingMails, k)
+					break
 				end
 			end 
 		end 
-		if toremove then
-			table.remove(hirelingMails, k)
-		end
 	end )
 	-- EVENT_MANAGER:RegisterForEvent(WritCreater.name.."mailbox", EVENT_MAIL_OPEN_MAILBOX, 
 	-- 	function ()

@@ -36,9 +36,15 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 			currentWritDialogue= i
 		end
 	end
+	local titleUIToUse
+	if IsConsoleUI() then
+		titleUIToUse = ZO_InteractWindow_GamepadTitle
+	else
+		titleUIToUse = ZO_InteractWindowTargetAreaTitle
+	end
 	--d(writs[currentWritDialogue])
 	--d(journalIndex)
-	if zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,completionStrings["Rolis Hlaalu"]) then
+	if zo_plainstrfind( titleUIToUse:GetText() ,completionStrings["Rolis Hlaalu"]) then
 		--d("complete")
 		CompleteQuest()
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_QUEST_COMPLETE_DIALOG)
@@ -85,6 +91,8 @@ local function isQuestTypeActive(optionString)
 	return false
 end
 
+local lastSlotCraftable = false
+
 -- Automatically accepts master writs. Off by default but it's written so not deleting it just in case
 local function handleMasterWritQuestOffered()
 
@@ -96,11 +104,78 @@ local function handleMasterWritQuestOffered()
     	AcceptOfferedQuest()
 	end
 end
-
 --EVENT_MANAGER:RegisterForEvent("DolgubonsLazyWritCreatorMasterWrit", EVENT_QUEST_OFFERED, handleMasterWritQuestOffered)
+
+local function checkMasterWritCraftable(bag, slot)
+	lastSlotCraftable = true
+	if GetItemType(bag, slot)~=ITEMTYPE_MASTER_WRIT then return end
+	local link = GetItemLink(bag, slot)
+	local station = WritCreater.sealedWritNames[GetItemLinkName(link)]
+	if station == CRAFTING_TYPE_ALCHEMY then
+		return
+	elseif station == CRAFTING_TYPE_PROVISIONING then
+		return
+	elseif station == CRAFTING_TYPE_ENCHANTING then
+		return
+	elseif not (station == CRAFTING_TYPE_BLACKSMITHING or station == CRAFTING_TYPE_JEWELRYCRAFTING or station == CRAFTING_TYPE_WOODWORKING or station == CRAFTING_TYPE_CLOTHIER ) then
+		return
+	end
+	lastSlotCraftable = false
+	local x = { ZO_LinkHandler_ParseLink(link) }
+	local itemQuality = tonumber(x[12])
+	local itemTemplateId = tonumber(x[10])
+	local setIndex = tonumber(x[13])
+	local itemTraitType = tonumber(x[14])
+	local itemStyleId = tonumber(x[15])
+	local name = GetItemLinkName(link)
+	local patternIndex = WritCreater.LLCInteractionMaster.GetItemTemplateIdPatternIndex(itemTemplateId)
+	local reference = "TemporaryRequestToCheckIfCanCraft"
+	-- this is absolutely an abuse of the library
+	-- it is not meant to be used like this
+	-- but whatever. It works.
+	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
+	local expectedItemLink = WritCreater.LLCInteractionMaster.getItemLinkFromParticulars(setIndex, itemTraitType + 1, patternIndex, station, 150, true, itemQuality, itemStyleId)
+	local request = WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, false, reference)
+	local secondLink = WritCreater.LLCInteractionMaster.getItemLinkFromRequest(request)
+	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
+	request.level = 150
+	request.isCP = true
+	local craftableResults = LibLazyCrafting.craftInteractionTables[CRAFTING_TYPE_BLACKSMITHING].getNonCraftableReasons(request)
+	lastSlotCraftable= not craftableResults.missingKnowledge
+end
+local lastSlotChecked = -1
+local function slotActionHook(...)
+	local params = {...}
+	if not params or not params[1] then return end
+	local inventoryInfo = params[1].m_inventorySlot or params[1]
+	local bag = inventoryInfo.bagId
+	local slot = inventoryInfo.slotIndex
+	if lastSlotChecked == slot then
+		return
+	end
+	lastSlotChecked = slot
+	checkMasterWritCraftable(bag, slot)
+end
+local function secureProtectedHook(funcName, bag, slot)
+	if funcName == "UseItem" then
+		checkMasterWritCraftable(bag, slot)
+	end
+end
+ZO_InventorySlot_SetUpdateCallback(slotActionHook)
+-- should block most user attempts
+-- SecurePostHook(ZO_InventorySlotActions, "AddSlotAction" , slotActionHook)
+-- in case an addon calls use item directly
+SecurePostHook("CalLSecureProtected", secureProtectedHook)
+
+
 -- Handles dialogue start. It will fire on any NPC dialogue, so we need to filter out a bit
 local function HandleChatterBegin(eventCode, optionCount)
-
+	local titleUIToUse
+	if IsConsoleUI() then
+		titleUIToUse = ZO_InteractWindow_GamepadTitle
+	else
+		titleUIToUse = ZO_InteractWindowTargetAreaTitle
+	end
 	
     -- Ignore interactions with no options
     if optionCount == 0 then return end
@@ -151,7 +226,7 @@ local function HandleChatterBegin(eventCode, optionCount)
 	        SelectChatterOption(1)
 	        return
 	        -- Talking to the master writ person?
-	    elseif zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,completionStrings["Rolis Hlaalu"]) then 
+	    elseif zo_plainstrfind( titleUIToUse:GetText() ,completionStrings["Rolis Hlaalu"]) then 
 	    	if not WritCreater:GetSettings().autoAccept then return end
 	    	--d(optionType)
 	    	--d(optionString)
@@ -305,7 +380,7 @@ local function getBuffer()
 	end
 	return buffer
 end
---ERROR, GetString(SI_ERROR_QUEST_LOG_FULL), SOUNDS.GENERAL_ALERT_ERROR
+--UI_ALERT_CATEGORY_ERROR, GetString(SI_ERROR_QUEST_LOG_FULL), SOUNDS.GENERAL_ALERT_ERROR
 local function checkIfCanAcceptQuest()
 	-- Check if they can do jewelry writs
 	if not WritCreater:GetSettings().keepQuestBuffer then
@@ -319,8 +394,8 @@ local function checkIfCanAcceptQuest()
 		return false
 	end
 	if 25 - getBuffer() + numWrits < GetNumJournalQuests() + 1 then
-		-- ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"This would eat into the writ Quest Buffer! If you still want to accept it, turn off Quest Buffer in Writ Crafter settings")
-		ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The writ Quest Buffer from Lazy Writ Crafter™ is preventing you from accepting this quest")
+		-- ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"This would eat into the writ Quest Buffer! If you still want to accept it, turn off Quest Buffer in Writ Crafter settings")
+		ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The writ Quest Buffer from Lazy Writ Crafter™ is preventing you from accepting this quest")
 		return true
 	end
 	return false
@@ -335,9 +410,14 @@ function WritCreater.InitializeQuestHandling()
 	AcceptOfferedQuest = function()
 		if string.find(GetOfferedQuestInfo(), completionStrings["Rolis Hlaalu"]) and WritCreater:GetSettings().preventMasterWritAccept then 
 			d(WritCreater.strings.masterWritSave)  
-		else 
-			original() 
-		end 
+		elseif string.find(GetOfferedQuestInfo(), completionStrings["Rolis Hlaalu"]) and not lastSlotCraftable then
+			ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"Lazy Writ Crafter™ prevented you from accepting this writ because you cannot craft it")
+		else
+			-- d("Accept")
+			original()
+		end
+		-- reset craftable Check
+		lastSlotChecked = -1
 	end
 	for k, v in pairs(WritCreater.defaultAccountWide.writLocations) do
 		WritCreater.savedVarsAccountWide.writLocations[k] = v

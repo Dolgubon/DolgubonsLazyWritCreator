@@ -51,8 +51,10 @@ if
 	LibStub then lib, oldminor = LibStub:NewLibrary(LIB_NAME, VERSION)
 else
 	lib = {}
+	LibFeedback = LibFeedback or lib
 end
 if not lib then return end
+LibFeedback = LibFeedback or lib
 lib.debug = false
 lib.version = VERSION
 

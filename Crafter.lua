@@ -2,6 +2,7 @@ local queue = {}
 
 local craftingWrits = false
 local crafting
+local closeOnce = false
 
 -- Use this script to determine the index numbers:
 -- /script for i = 1, 42 do local _,_,n = GetSmithingPatternMaterialItemInfo( 1, i) d(GetSmithingPatternResultLink(1, i, n, 1, 1, 1).. " : ".. i) end
@@ -35,18 +36,107 @@ local jewelryIndexRanges =
 	[4] = 33,
 	[5] = 40,
 }
+local shouldShowGamepadPrompt = true
+
+local smithingCrafting
 
 
 local function getOut()
 	return DolgubonsWritsBackdropOutput:GetText()
 end
 
---outputs the string in the crafting window
-local function out(string)
-	DolgubonsWritsBackdropOutput:SetText(string)
+local function appendOut(str)
+	local currentText = getOut()
+	DolgubonsWritsBackdropOutput:SetText(currentText..str)
 end
 
+--outputs the string in the crafting window
+local function out(str)
+	DolgubonsWritsBackdropOutput:SetText(str)
+end
 
+function WritCreater.setCloseOnce()
+	closeOnce = true
+end
+
+local function getGamepadCraftKeyIcon()
+	local key
+	for i =1, 4 do
+		key = GetActionBindingInfo(3, 1, 3, i)
+		if IsKeyCodeGamepadKey(key) then
+			break
+		end
+	end
+	return GetGamepadIconPathForKeyCode(key) or  GetMouseIconPathForKeyCode(key) or GetKeyboardIconPathForKeyCode(key) or ""
+end
+local gamepadCraftShortcut = false
+local originalText = ""
+local myButtonGroup = {
+	alignment = KEYBIND_STRIP_ALIGN_LEFT,
+	{
+		name = "Craft Writ Items",
+		keybind = "UI_SHORTCUT_TERTIARY",
+		order = 2500,
+		callback = function(input, input2)
+			WritCreater.craft()
+			gamepadCraftShortcut =false
+		end,
+	},
+}
+
+
+local function showCraftButton(craftingWrits)
+	if not IsInGamepadPreferredMode() then
+		DolgubonsWritsBackdropCraft:SetHidden(craftingWrits) 
+	else
+		if craftingWrits == true  or not shouldShowGamepadPrompt then
+			KEYBIND_STRIP:RemoveKeybindButtonGroup(myButtonGroup)
+			out(originalText)
+			return 
+		end
+		myButtonGroup = {
+			alignment = KEYBIND_STRIP_ALIGN_LEFT,
+			{
+				name = "Craft Writ Items",
+				keybind = "UI_SHORTCUT_TERTIARY",
+				order = 2500,
+				callback = function(input, input2)
+					WritCreater.craft()
+					gamepadCraftShortcut =false
+				end,
+			},
+		}
+		KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup)
+		originalText = getOut()
+		appendOut("\nPress |t32:32:"..getGamepadCraftKeyIcon().."|t to craft")
+	end
+end
+WritCreater.showCraftButton = showCraftButton
+local craftingRootScenes = {
+	gamepad_enchanting_mode = true,
+	gamepad_smithing_root = true,
+	gamepad_provisioner_root = true,
+	gamepad_alchemy_mode = true,
+}
+SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, newState)
+	if not IsInGamepadPreferredMode() then return end
+	local sceneName = scene:GetName()
+	if craftingRootScenes[sceneName] and newState == SCENE_SHOWING and not DolgubonsWrits:IsHidden() then
+	-- if sceneName == "gamepad_smithing_root" and newState == SCENE_SHOWN and gamepadCraftShortcut then
+		local writs = WritCreater.writSearch()
+		-- if not WritCreater:GetSettings().autoCraft and not craftingWrits then
+		if originalText == getOut() then
+			-- smithingCrafting(writs[station],craftingWrits)
+			showCraftButton()
+		end
+		
+	elseif (newState == SCENE_SHOWING) and not craftingRootScenes[sceneName] then
+		-- if IsSmithingCraftingType(GetCraftingInteractionType() ) then
+			out(originalText)
+		-- end
+	end
+	 end)
+-- GAMEPAD_SMITHING_ROOT_SCENE
 --Helper functions
 
 --Capitalizes first letter, decapitalizes everything else
@@ -192,7 +282,7 @@ local function doesCharHaveSkill(patternIndex,materialIndex,abilityIndex)
 	if GetCraftingInteractionType()==0 then return end
 	local requirement =  select(10,GetSmithingPatternMaterialItemInfo( patternIndex,  materialIndex))
 	
-	local _,skillIndex = GetCraftingSkillLineIndices(GetCraftingInteractionType())
+	local _,skillIndex = SKILLS_DATA_MANAGER:GetCraftingSkillLineData(GetCraftingInteractionType()):GetIndices()
 	local skillLevel = GetSkillAbilityUpgradeInfo(SKILL_TYPE_TRADESKILL ,skillIndex,abilityIndex )
 
 	if skillLevel>=requirement then
@@ -203,7 +293,7 @@ local function doesCharHaveSkill(patternIndex,materialIndex,abilityIndex)
 end
 
 
-local function setupConditionsTable(quest, info,indexTableToUse)
+local function setupConditionsTable(quest, indexTableToUse)
 	local conditionsTable = 
 	{
 		["text"] = {},
@@ -260,15 +350,19 @@ end
 
 local function writCompleteUIHandle()
 	craftingWrits = false
-
 	out(WritCreater.strings.complete)
+	originalText = WritCreater.strings.complete
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	--if WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
 	if closeOnce and WritCreater.IsOkayToExitCraftStation() and isCurrentStationsWritComplete() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
 	if WritCreater:GetSettings().hideWhenDone then DolgubonsWrits:SetHidden(true) end
 	closeOnce = false
 	DolgubonsWritsBackdropCraft:SetHidden(true)
+	shouldShowGamepadPrompt = false
+
 end
+WritCreater.writCompleteUIHandle = writCompleteUIHandle
+
 local function fullInventorySpaceUIHandle()
 	craftingWrits = false
 
@@ -286,7 +380,7 @@ local matSaver = 0
 local function craftNextQueueItem(calledFromCrafting)
 	
 	if matSaver > 10 then return end
-	if (not IsPerformingCraftProcess()) and (craftingWrits or WritCreater:GetSettings().autoCraft ) then
+	if (not ZO_CraftingUtils_IsPerformingCraftProcess()) and (craftingWrits or WritCreater:GetSettings().autoCraft ) then
 
 		if queue[1] then
 
@@ -306,16 +400,16 @@ local function craftNextQueueItem(calledFromCrafting)
 		end
 	elseif calledFromCrafting then
 		return
-	elseif IsPerformingCraftProcess() then
+	elseif ZO_CraftingUtils_IsPerformingCraftProcess() then
 		return
 	else
 
-		writs = WritCreater.writSearch()
+		local writs = WritCreater.writSearch()
 		local station = GetCraftingInteractionType()
 		if WritCreater:GetSettings()[station] and writs[station] then
 			if station ~= CRAFTING_TYPE_PROVISIONING and station ~= CRAFTING_TYPE_ENCHANTING and station ~= CRAFTING_TYPE_ALCHEMY and station ~=0 then
 				DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
-				crafting(craftInfo[station],writs[station],craftingWrits)
+				smithingCrafting(writs[station],craftingWrits)
 			end
 		end
 	
@@ -386,7 +480,7 @@ local function specialGuestStuff(e,_,returnedTable)
 		WritCreater.specialLLC:CraftSmithingItemByLevel(1, true,160,maxStyle(1),1, false, GetCraftingInteractionType(), 0, 4, true, tostring(GetTimeStamp()), nil, nil, nil, 1)--total-numUsed)
 	end
 end
-function crafting(info,quest, craftItems)
+function smithingCrafting(quest, craftItems)
 
 	--if #queue>0 then return end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
@@ -423,7 +517,7 @@ function crafting(info,quest, craftItems)
 	
 	local numMats
 	
-	local conditions  = setupConditionsTable(quest, info, indexTableToUse)
+	local conditions  = setupConditionsTable(quest, indexTableToUse)
 	
 	for i,value in pairs(conditions["text"]) do
 		local pattern, index = conditions["pattern"][i], indexTableToUse[conditions["mats"][i]]
@@ -483,7 +577,7 @@ function crafting(info,quest, craftItems)
 							if style == -3 then out(WritCreater.strings.moreStyleSettings) return false end
 						end
 						needed = math.min(needed,  GetMaxIterationsPossibleForSmithingItem(pattern, index,numMats,style,1, false), 100000)
-						WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,LLC_FREE_STYLE_CHOICE,1, false, nil, 0, ITEM_QUALITY_NORMAL, 
+						WritCreater.LLCInteraction:CraftSmithingItem(pattern, index,numMats,LLC_FREE_STYLE_CHOICE,1, false, nil, 0, ITEM_FUNCTIONAL_QUALITY_NORMAL, 
 							true, GetCraftingInteractionType(), nil, nil, nil, needed, true)
 
 						DolgubonsWritsBackdropCraft:SetHidden(true) 
@@ -515,7 +609,9 @@ function crafting(info,quest, craftItems)
 	end
 
 	if queue[1] then
-		if not craftingWrits then DolgubonsWritsBackdropCraft:SetHidden(false) end
+		if not craftingWrits then 
+			showCraftButton()
+		end
 		craftNextQueueItem(true)
 	else
 
@@ -550,7 +646,7 @@ local function createItemLink(itemId, quality, lvl)
 	return string.format("|H1:item:%d:%d:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId, quality, lvl) 
 end
 
-local function enchantSearch(info,conditions, position,parity,questId)
+local function enchantSearch(questId)
 	for i = 1, #glyphIds do
 		for j = 1, #itemLinkLevel do
 			local link = createItemLink(glyphIds[i][1], itemLinkLevel[j][1],itemLinkLevel[j][2])
@@ -602,16 +698,18 @@ local function getItemTotalStackCount(bag, slot)
 	return backpack + bank + craftBag
 end
 
-local function enchantCrafting(info, quest,add)
+local function enchantCrafting(quest,add)
 	out("")
 	
 	DolgubonsWritsBackdropQuestOutput:SetText("")
-	ENCHANTING.potencySound = SOUNDS["NONE"]
-	ENCHANTING.potencyLength = 0
-	ENCHANTING.essenceSound = SOUNDS["NONE"]
-	ENCHANTING.essenceLength = 0
-	ENCHANTING.aspectSound = SOUNDS["NONE"]
-	ENCHANTING.aspectLength = 0
+	if ENCHANTING then
+		ENCHANTING.potencySound = SOUNDS["NONE"]
+		ENCHANTING.potencyLength = 0
+		ENCHANTING.essenceSound = SOUNDS["NONE"]
+		ENCHANTING.essenceLength = 0
+		ENCHANTING.aspectSound = SOUNDS["NONE"]
+		ENCHANTING.aspectLength = 0
+	end
 	local  numConditions = GetJournalQuestNumConditions(quest,1)
 	local conditions = 
 	{
@@ -627,7 +725,6 @@ local function enchantCrafting(info, quest,add)
 		local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
 		local acquireString = WritCreater.writCompleteStrings()["Acquire"] or "acquire"
 		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
-		conditions["text"][i] = WritCreater.enchantExceptions(conditions["text"][i])
 		if conditions["cur"][i]>0 then conditions["text"][i] = "" end
 		-- Second hardcoded dliver is for backwards compatability with localizations that expect it
 		if string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
@@ -652,15 +749,14 @@ local function enchantCrafting(info, quest,add)
 				return
 			end
 			incomplete = true
-			DolgubonsWritsBackdropQuestOutput:AddText(conditions["text"][i])
-			DolgubonsWritsBackdropCraft:SetHidden(false)
+			-- DolgubonsWritsBackdropCraft:SetHidden(false)
 			DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
 			local ta={}
 			local essence={}
 			local potency={}
 
 			ta["bag"],ta["slot"] = findItem(45850)
-			local essenceId , potencyId = enchantSearch(nil,nil, nil,nil,quest)
+			local essenceId , potencyId = enchantSearch(quest)
 			if not essenceId and not potency then
 				out("Could not determine which glyphs to use")
 				return
@@ -680,7 +776,8 @@ local function enchantCrafting(info, quest,add)
 						proper(GetItemName(potency["bag"], potency["slot"])),
 					}
 					out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)), "1", quantity))
-					DolgubonsWritsBackdropCraft:SetHidden(false)
+					-- DolgubonsWritsBackdropCraft:SetHidden(false)
+					showCraftButton()
 					DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
 				else
 					out(WritCreater.strings.runeMissing(proper(ta),proper(essence),proper(potency)))
@@ -693,7 +790,6 @@ local function enchantCrafting(info, quest,add)
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
 					}
-					craftingEnchantCurrently = true
 					if GetDisplayName() == "@Dolgubon" and WritCreater:GetSettings().craftMultiplier > 1 then
 						quantity = quantity * 3
 					end
@@ -701,7 +797,6 @@ local function enchantCrafting(info, quest,add)
 					runeNames[#runeNames + 1 ] = getItemTotalStackCount(essence["bag"], essence["slot"])
 					runeNames[#runeNames + 1 ] = getItemTotalStackCount(potency["bag"], potency["slot"])
 					
-					--d(conditions["type"][i],conditions["glyph"][i])
 					out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)).."\n"..WritCreater.strings.crafting, "1", quantity ))
 					DolgubonsWritsBackdropCraft:SetHidden(true)
 					--d(GetEnchantingResultingItemInfo(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]))
@@ -718,7 +813,6 @@ local function enchantCrafting(info, quest,add)
 
 					WritCreater.LLCInteraction:CraftEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"], nil, nil,nil , quantity or 1)					
 
-					zo_callLater(function() craftingEnchantCurrently = false end,4000) 
 					craftingWrits = false
 					return
 				else
@@ -729,8 +823,62 @@ local function enchantCrafting(info, quest,add)
 			end
 		end
 	end
+end
 
-	
+local function singleProvisioningCondition(questIndex, craftLinks, autocraft, conditionIndex)
+	local foodId = GetQuestConditionItemInfo(questIndex,1,conditionIndex)
+	if not foodId or foodId == 0 then
+		return
+	end
+	local _,current, max,_,_ = GetJournalQuestConditionInfo(questIndex,1,conditionIndex)
+	local foodComplete = current == max
+	-- local station, recipeList, recipeIndex = GetRecipeInfoFromItemId(foodId)
+	-- local known = GetRecipeInfo(recipeList, recipeIndex)
+	-- if not known then
+
+	-- end 28409
+	if foodId and foodId >0 and not foodComplete then -- |H1:item:28409:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+		local resultTable = WritCreater.LLCInteraction:CraftProvisioningItemByResultItemId(foodId, 1, autocraft, "dlwcProvisioning")
+		return resultTable
+	end
+end
+
+local function outputUnknown(craftLinks)
+	local unknown = {}
+	for i =1, #craftLinks do
+		if not craftLinks[i].known then
+			table.insert(unknown, craftLinks[i].resultLink)
+		end
+	end
+	out("You do not know the recipe for "..ZO_GenerateCommaSeparatedListWithAnd(unknown))
+end
+
+local function provisioningCrafting(questIndex, craftingWrits)
+	local craftLinks = {}
+	WritCreater.LLCInteraction:cancelItemByReference("dlwcProvisioning")
+	-- sometimes the conditions skip condition index 1, and it seems sometimes they don't.
+	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 1)
+	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 2)
+	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 3)
+	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 4)
+	if #craftLinks > 0 then
+		if not craftLinks[1].known or (craftLinks[2] and not craftLinks[2].known) then
+			outputUnknown(craftLinks)
+			return
+		end
+		out("Writ Crafter will craft "..ZO_GenerateCommaSeparatedListWithAnd({craftLinks[1].resultLink,craftLinks[2] and craftLinks[2].resultLink or nil}))
+		if craftingWrits then
+			out(getOut().."\n"..WritCreater.strings.crafting)
+		end
+		-- DolgubonsWritsBackdropCraft:SetHidden(craftingWrits)
+		if not craftingWrits then
+			showCraftButton()
+		end
+		DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
+		closeOnce = true
+	else
+		writCompleteUIHandle()
+	end
 end
 
 local showOnce= true
@@ -742,7 +890,7 @@ local function craftCheck(eventcode, station)
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("Update your addons!") 
 		out("Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons.")
-		ZO_Alert(ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons!")
+		ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons!")
 		DolgubonsWritsBackdropCraft:SetHidden(true)
 		out = function() end
 		DolgubonsWrits:SetHidden(false)
@@ -768,30 +916,26 @@ local function craftCheck(eventcode, station)
 	end
 
 	local writs
-	craftInfo = WritCreater.languageInfo()
-	if craftInfo then
-		if WritCreater:GetSettings().autoCraft then
-			craftingWrits = true
+	if WritCreater:GetSettings().autoCraft then
+		craftingWrits = true
+	end
+	shouldShowGamepadPrompt = true
+	local writs = WritCreater.writSearch()
+	if WritCreater:GetSettings()[station] and writs[station] then
+		if station == CRAFTING_TYPE_ENCHANTING then
+
+			DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
+			enchantCrafting(writs[station],craftingWrits)
+		elseif station == CRAFTING_TYPE_PROVISIONING then
+			DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
+			provisioningCrafting(writs[station],craftingWrits)
+		elseif station== CRAFTING_TYPE_ALCHEMY then
+			WritCreater.startAlchemy(station, craftingWrits)
+		else
+
+			DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
+			smithingCrafting(writs[station],craftingWrits)
 		end
-		writs = WritCreater.writSearch()
-
-		if WritCreater:GetSettings()[station] and writs[station] then
-			if station == CRAFTING_TYPE_ENCHANTING then
-
-				DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
-				enchantCrafting(craftInfo[station],writs[station],craftingWrits)
-			elseif station == CRAFTING_TYPE_PROVISIONING then
-			elseif station== CRAFTING_TYPE_ALCHEMY then
-			else
-
-				DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
-				crafting(craftInfo[station],writs[station],craftingWrits)
-			end
-		end
-	else
-		DolgubonsWrits:SetHidden(false)
-		local text = "The current client language is not supported. \nPlease contact Dolgubon on esoui if you are interested in translating for this language.\n"
-		out(text)
 	end
 	-- Prevent UI bug due to fast Esc
 	CALLBACK_MANAGER:FireCallbacks("CraftingAnimationsStopped")
@@ -801,19 +945,20 @@ WritCreater.craftCheck = craftCheck
 
 
 
-WritCreater.craft = function()  local station =GetCraftingInteractionType() craftingWrits = true 
-	if WritCreater[6697110] then
-		return 
-	end
+WritCreater.craft = function()
+shouldShowGamepadPrompt = true
+local station =GetCraftingInteractionType()
+craftingWrits = true 
+	local writs, hasWrits = WritCreater.writSearch()
 	if station == CRAFTING_TYPE_ENCHANTING then 
-
-		local writs, hasWrits = WritCreater.writSearch()
 		if hasWrits then
-			enchantCrafting(craftInfo[CRAFTING_TYPE_ENCHANTING],writs[CRAFTING_TYPE_ENCHANTING],craftingWrits)
+			enchantCrafting(writs[CRAFTING_TYPE_ENCHANTING],craftingWrits)
 		end
 
 	elseif station == CRAFTING_TYPE_ALCHEMY then
+		WritCreater.startAlchemy(station, craftingWrits)
 	elseif station == CRAFTING_TYPE_PROVISIONING then
+		provisioningCrafting(writs[station],craftingWrits)
 	else
 		craftNextQueueItem() 
 	end 
@@ -838,11 +983,14 @@ WritCreater.closeWindow = closeWindow
 
 function WritCreater.initializeCraftingEvents()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFTING_STATION_INTERACT, WritCreater.craftCheck)
-	WritCreater.craftCompleteHandler = function(event, station) 
+	WritCreater.craftCompleteHandler = function(event, station)
+	shouldShowGamepadPrompt = true
 		if station == CRAFTING_TYPE_ENCHANTING then
 			WritCreater.craftCheck(event, station)
 		elseif station ==CRAFTING_TYPE_PROVISIONING then
+			WritCreater.craftCheck(event, station)
 		elseif station == CRAFTING_TYPE_ALCHEMY then
+			WritCreater.startAlchemy(station)
 		else
 			WritCreater.craftCheck(event, station) craftNextQueueItem() 
 		end
