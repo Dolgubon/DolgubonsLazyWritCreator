@@ -18,13 +18,36 @@
 --local d = function() for i = 1, #abc do end end
 --test
 local dbug = function(...) d(...) end
-
-CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
-DolgubonsWritsBackdropQuestOutput.SetText = function()end
--- if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
-
 WritCreater = WritCreater or {}
 WritCreater.name = "DolgubonsLazyWritCreator"
+WritCreater.expectedVersion = 4004
+
+CRAFTING_TYPE_JEWELRYCRAFTING = CRAFTING_TYPE_JEWELRYCRAFTING or 7
+if DolgubonsWritsBackdropQuestOutput then DolgubonsWritsBackdropQuestOutput.SetText = function()end end
+
+local function GetAddOnVersion( name )
+	local am = GetAddOnManager()
+	for i = 1, am:GetNumAddOns() do
+		if (am:GetAddOnInfo(i) == name) then
+			return am:GetAddOnVersion(i)
+		end
+	end
+	return nil
+end
+-- Make sure Minion didn't mess up the manifest - thanks Code!
+if (GetAddOnVersion(WritCreater.name) < WritCreater.expectedVersion) then
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."IntegrityCheck", EVENT_PLAYER_ACTIVATED, function()
+		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."IntegrityCheck", EVENT_PLAYER_ACTIVATED)
+		-- Fallback message if the localization file is unavailable
+		zo_callLater(function() CHAT_ROUTER:AddSystemMessage("ERROR: Corrupted installation of Dolgubon's Lazy Writ Crafter detected; please uninstall and reinstall.") end , 1000)
+	end)
+	-- return
+end
+
+-- the GetAddOnVersion function looked like this:
+
+
+-- if GetDisplayName()~="@Dolgubon" then DolgubonsWritsBackdropQuestOutput.SetText = function() end end
 
 WritCreater.settings = {}
 local LAM
@@ -76,6 +99,7 @@ WritCreater.default =
 	},
 	["keepQuestBuffer"] = false,
 	["craftMultiplier"] = 1,
+	["consumableMultiplier"] = 1,
 	["rewardHandling"] = {
 		mats =   		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
 		master = 		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[4]= 1,[5]= 1,[6]= 1,[7] = 1},
@@ -473,7 +497,7 @@ local function writSearch()
 		if itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY and (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING ) then
 			W[craftType] = i
 			anyFound = true
-		elseif GetJournalQuestRepeatType(i) == QUEST_REPEAT_NOT_REPEATABLE then
+		elseif itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i) == QUEST_REPEAT_NOT_REPEATABLE and GetJournalQuestType(i) == QUEST_TYPE_CRAFTING  then
 			-- could be a certification quest, and we should be able to handle those safely
 			-- but if it's master writ we cannot
 			if GetQuestConditionMasterWritInfo(i,1,1) == nil then

@@ -163,7 +163,7 @@ WritCreater.strings = {}
 setmetatable(WritCreater.strings, findMissingTranslationsMetatable)
 
 WritCreater.strings["runeReq"] 						= function (essence, potency,taStack,essenceStack,potencyStack) 
-	return zo_strformat("|c2dff00Crafting will require 1<<3>> |rTa|c2dff00, 1<<4>> |cffcc66<<1>>|c2dff00 and 1<<5>> |c0066ff<<2>>|r", 
+	return zo_strformat("|c2dff00Crafting will require 1/<<3>> |rTa|c2dff00, 1/<<4>> |cffcc66<<1>>|c2dff00 and 1/<<5>> |c0066ff<<2>>|r", 
 		essence, potency, taStack, essenceStack, potencyStack) 
 end
 WritCreater.strings["runeMissing"] 					= runeMissingFunction 
@@ -229,6 +229,7 @@ WritCreater.optionStrings["enchanting"]									= "Enchanting"
 WritCreater.optionStrings["enchanting tooltip"]							= "Turn the addon on for Enchanting"
 WritCreater.optionStrings["alchemy"]									= "Alchemy"
 WritCreater.optionStrings["alchemy tooltip"]							= "Turn the addon on for Alchemy. It's suggested to pre-craft stacks of required writ items, but crafting is supported"
+WritCreater.optionStrings["alchemyChoices"]								= {"Off","All Features","Skip Autocraft"}
 WritCreater.optionStrings["provisioning"]								= "Provisioning"
 WritCreater.optionStrings["provisioning tooltip"]						= "Turn the addon on for Provisioning. It's suggested to pre-craft stacks of required writ items, but crafting is supported"
 WritCreater.optionStrings["woodworking"]								= "Woodworking"
@@ -287,8 +288,11 @@ WritCreater.optionStrings['suppressQuestAnnouncements']					= "Hide Writ Quest A
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "Hides the text in the center of the screen when you start a writ or create an item for it"
 WritCreater.optionStrings["questBuffer"]								= "Writ Quest Buffer"
 WritCreater.optionStrings["questBufferTooltip"]							= "Keep a buffer of quests so you can always have room to pick up writs"
-WritCreater.optionStrings["craftMultiplier"]							= "Craft multiplier"
+WritCreater.optionStrings["craftMultiplier"]							= "Craft multiplier (equipment and glyphs)"
 WritCreater.optionStrings["craftMultiplierTooltip"]						= "Craft multiple copies of each required item so that you don't need to recraft them next time the writ comes up. Note: Save approximately 37 inventory slots for each increase above 1"
+WritCreater.optionStrings["craftMultiplierConsumables"]					= "Craft multiplier (alchemy and provisioning)"
+WritCreater.optionStrings["craftMultiplierConsumablesTooltip"]			= "Single craft will do one crafting action, which may be multiplied due to passives. Full Stack will craft 100 of the required item, if you have the multiplier passives"
+WritCreater.optionStrings["craftMultiplierConsumablesChoices"]			= {"Single craft","Full Stack"}
 WritCreater.optionStrings['hireling behaviour']							= "Hireling Mail Actions"
 WritCreater.optionStrings['hireling behaviour tooltip']					= "What should be done with hireling mails"
 WritCreater.optionStrings['hireling behaviour choices']					= { "Nothing","Loot and Delete", "Loot only"}

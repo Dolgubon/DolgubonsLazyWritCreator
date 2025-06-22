@@ -28,6 +28,86 @@ WritCreater.settings["panel"] =
 }
 
 
+local craftingHouses = 
+{
+    ["XB1live-eu"] = 
+            {{displayName = "Blackswan20022" , houseId = 116, greeting = "Welcome to the Highlanders Might Guild Hall",
+        subHeading = "Stations are located directly by entrance.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:303060|hHighlanders Might|h|h",},
+        {displayName = "Darhysh" , houseId = 18, greeting = "Welcome to Wizard’s Emporium",
+        subHeading = "Stations are located at entrance.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:289124|hWizard's Emporium|h",},},
+    ["XB1live"] = {
+        {displayName = "J3zdaz", houseId = 46, greeting = "J3’s Craft Hub",
+        subHeading = "Stations at front, to the right.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:1218717|hRebels Reign|h"},
+        {displayName = "Razberry9876" , houseId = 18, greeting = "Welcome to the Master Writ Pit!",
+        subHeading = "Stations in front entry area.",},
+        {displayName = "MisfitOfSith" , houseId = 62, greeting = "Welcome to the Tarnished Architect's Guild House! Feel free to craft to your heart's content with your fellow housing nerds.",
+        subHeading = "Inside house, in grand hall.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:1111961|hTarnished Architects|h"},},
+    ["PS4live"] = 
+        {{displayName = "bat_girl77" , houseId =  55, greeting = "Welcome to bat’s Craft House!",
+        subHeading = "Stations are located by front entrance.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:908761|hDecor and Design|h|h",},
+        {displayName = "b3ast03101978" , houseId = 21,  greeting = "B3astly Builds Headquarters",
+        subHeading = "Stations are located in outside area.",},},
+    ["PS4live-eu"] = 
+         {{displayName = "NocturnaStrix" , houseId = 102, greeting = "Welcome, traveler. The veil grows thin tonight.",
+        subHeading = "Stations are located on the left side of the stairs at entrance.",},
+        {displayName = "Festegios" , houseId =  90, greeting = "Welcome to Renegade Jesters Guild House",
+        subHeading = "Stations are located on the left.",}, 
+        {displayName = "Ettena_" , houseId =  99 , greeting = "Welcome to The Hex Pistols Craft Hub",
+        subHeading = "Stations are to the left around the corner.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:382160|hThe Hex Pistols|h|h",},},
+    ["NA Megaserver"] = 
+    {
+        {displayName = "@xGAMxHQ", houseId = 71, greeting = "Welcome to Moon's Edge's guild house!", subheading = "Stations straight ahead", 
+            chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:391101|hMoon's Edge|h"},
+        {displayName = "@Amrayia", houseId = 71, greeting = "Welcome to Auction House Central's guild house!", subheading = "Stations straight ahead", 
+            chatMessage = "Like their house? Join AHC in Alinor - where friendly traders thrive. Check it out here: |H1:guild:370167|hAuction House Central|h"},
+        {displayName = "@Kelinmiriel", houseId = 40, greeting = "Welcome to Kelinmiriel's house!", subheading = "Stations to your left", chatMessage = ""},
+        {displayName = "@AuctionsBMW", houseId = 62, greeting = "Welcome to Black Market Wares' guild house!", subheading = "Stations to your left", 
+            chatMessage ="Like their guild house and want to join? Check them out here: |H1:guild:1427|hBlack Market Wares|h"},
+    },
+    ["EU Megaserver"] = 
+    {
+        {displayName = "@JN_Slevin", houseId = 56, greeting = "Welcome to JNSlevin's house!", subheading = "Stations to the left", 
+            chatMessage = "Welcome to the Independent Trading Team [ITT]'s guild house! if you find yourself in need of a "..
+        "trading guild please join discord.gg/itt or contact @JN_Slevin, @LouAnja or @RichestGuyinESO. From Mournhold to Alinor we have a space for every every type of trader you might be!"},
+        {displayName = "@Ek1", houseId = 66, greeting = "Welcome to Ek1's house!", subheading = "Stations right here!", chatMessage = ""},
+    }
+}
+
+
+---Join AHC in Alinor - where traders thrive in a friendly community. Check it out here: |H1:guild:370167|hAuction House Central|h
+-- Like their guild house? Join AHC in Alinor here: |H1:guild:370167|hAuction House Central|h
+-- Like their house? Join AHC in Alinor - where friendly traders thrive. Check it out here: |H1:guild:370167|hAuction House Central|h
+--GetCurrentHouseOwner()
+-- GetCurrentZoneHouseId()
+local houseToUse
+local function displayGreeting(greeting, subHeading)
+    local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT)
+    messageParams:SetText(greeting, subHeading)
+    CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
+end
+
+local function welcomePlayerToHouse()
+    if houseToUse and GetCurrentHouseOwner() == houseToUse.displayName and GetCurrentZoneHouseId()==houseToUse.houseId then
+        displayGreeting(houseToUse.greeting, houseToUse.subheading)
+        if houseToUse.chatMessage and houseToUse.chatMessage~="" then
+            d(houseToUse.chatMessage)
+        end
+        houseToUse = nil
+        EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."_houseWelcome", EVENT_PLAYER_ACTIVATED )
+    end
+end
+
+function WritCreater.portToCraftingHouse()
+    if GetWorldName()=="PTS" then 
+        return
+    end
+    if not craftingHouses[GetWorldName()] then return end -- no houses available :(
+    houseToUse = craftingHouses[GetWorldName()][math.random(1, #craftingHouses[GetWorldName()] ) ]
+    JumpToSpecificHouse(houseToUse.displayName, houseToUse.houseId)
+    EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_houseWelcome", EVENT_PLAYER_ACTIVATED , welcomePlayerToHouse)
+end
+
+
 function WritCreater.initializeSettingsMenu()
     WritCreater.generateHASConversions()
     local LHA = LibHarvensAddonSettings
@@ -96,6 +176,16 @@ function WritCreater.initializeSettingsMenu()
             buttonText = "Queue",
             clickHandler = function(control, button)
                 WritCreater.queueAllSealedWrits(BAG_BACKPACK)
+            end,
+            -- disable = function() return areSettingsDisabled end,
+        },
+        {
+            type = LHA.ST_BUTTON,
+            label = "Port to crafting house",
+            tooltip = "Port to a publicly available crafting house",
+            buttonText = "Port",
+            clickHandler = function(control, button)
+                WritCreater.portToCraftingHouse()
             end,
             -- disable = function() return areSettingsDisabled end,
         },
@@ -244,6 +334,7 @@ function WritCreater.initializeSettingsMenu()
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.reticleColour],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.questBuffer],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.craftMultiplier],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings.craftMultiplierConsumables],
 
 
         -- {
@@ -287,23 +378,23 @@ function WritCreater.initializeSettingsMenu()
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.transparentStatusBar],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.incompleteColour],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.completeColour],
-        {
-            type = LHA.ST_SECTION,
-            label = WritCreater.optionStrings["writRewards submenu"],
-        },
+        -- {
+        --     type = LHA.ST_SECTION,
+        --     label = WritCreater.optionStrings["writRewards submenu"],
+        -- },
         {
             type = LHA.ST_SECTION,
             label = WritCreater.optionStrings["crafting submenu"],
         },
-        WritCreater.lamConvertedOptions[WritCreater.optionStrings["blackmithing"].." (All features supported)"],
-        WritCreater.lamConvertedOptions[WritCreater.optionStrings["clothing"].." (All features supported)"],
-        WritCreater.lamConvertedOptions[WritCreater.optionStrings["woodworking"].." (All features supported)"],
-        WritCreater.lamConvertedOptions[WritCreater.optionStrings["jewelry crafting"].." (All features supported)"],
-        WritCreater.lamConvertedOptions[WritCreater.optionStrings["provisioning"].." (All features supported)"],
-        WritCreater.lamConvertedOptions[WritCreater.optionStrings["enchanting"].." (All features supported)"],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["blackmithing"]],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["clothing"]],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["woodworking"]],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["jewelry crafting"]],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["provisioning"]],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["enchanting"]],
         WritCreater.lamConvertedOptions[zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:45850:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")],
         WritCreater.lamConvertedOptions[zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:45831:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")],
-        WritCreater.lamConvertedOptions[WritCreater.optionStrings["alchemy"].." (All features supported)"],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["alchemy"]],
         WritCreater.lamConvertedOptions[zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:30152:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")],
         WritCreater.lamConvertedOptions[zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:30165:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")],
         WritCreater.lamConvertedOptions[zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:77591:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")],

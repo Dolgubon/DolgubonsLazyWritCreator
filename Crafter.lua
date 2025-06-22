@@ -775,6 +775,9 @@ local function enchantCrafting(quest,add)
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
 					}
+					runeNames[#runeNames + 1 ] = getItemTotalStackCount( ta["bag"], ta["slot"])
+					runeNames[#runeNames + 1 ] = getItemTotalStackCount(essence["bag"], essence["slot"])
+					runeNames[#runeNames + 1 ] = getItemTotalStackCount(potency["bag"], potency["slot"])
 					out(string.gsub(WritCreater.strings.runeReq(unpack(runeNames)), "1", quantity))
 					-- DolgubonsWritsBackdropCraft:SetHidden(false)
 					showCraftButton()
@@ -832,13 +835,24 @@ local function singleProvisioningCondition(questIndex, craftLinks, autocraft, co
 	end
 	local _,current, max,_,_ = GetJournalQuestConditionInfo(questIndex,1,conditionIndex)
 	local foodComplete = current == max
+
 	-- local station, recipeList, recipeIndex = GetRecipeInfoFromItemId(foodId)
 	-- local known = GetRecipeInfo(recipeList, recipeIndex)
 	-- if not known then
 
 	-- end 28409
 	if foodId and foodId >0 and not foodComplete then -- |H1:item:28409:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
-		local resultTable = WritCreater.LLCInteraction:CraftProvisioningItemByResultItemId(foodId, 1, autocraft, "dlwcProvisioning")
+		local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(foodId)
+		local factor = GetRecipeResultQuantity(recipeList,recipeIndex)
+		local quantity = 1
+		if WritCreater:GetSettings().consumableMultiplier == 25 then
+			if factor == 4 then
+				quantity = 25
+			else
+				d("You have selected to craft a full stack, but you do not have the craft multiplication passives active")
+			end
+		end
+		local resultTable = WritCreater.LLCInteraction:CraftProvisioningItemByResultItemId(foodId, quantity, autocraft, "dlwcProvisioning")
 		return resultTable
 	end
 end
@@ -930,6 +944,9 @@ local function craftCheck(eventcode, station)
 			DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
 			provisioningCrafting(writs[station],craftingWrits)
 		elseif station== CRAFTING_TYPE_ALCHEMY then
+			if WritCreater:GetSettings()[station] == "nocraft" then
+				craftingWrits = false
+			end
 			WritCreater.startAlchemy(station, craftingWrits)
 		else
 

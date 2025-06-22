@@ -253,10 +253,21 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, craftingWrit
 		if craftingWrits then
 			out(getOut().."\n"..WritCreater.strings.crafting)
 		end
+		local factor = GetAlchemyResultQuantity(findItemLocationById(solvent.itemId))
+		local quantity = 1
 		-- DolgubonsWritsBackdropCraft:SetHidden(craftingWrits)
+		if WritCreater:GetSettings().consumableMultiplier == 25 then
+			if factor == 4 then
+				quantity = 25
+			elseif factor == 16 then
+				quantity = 6
+			else
+				d("You have selected to craft a full stack, but you do not have the craft multiplication passives active")
+			end
+		end
 		DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
 		WritCreater.showCraftButton(craftingWrits)
-		WritCreater.LLCInteraction:CraftAlchemyItemId(solvent.itemId, minCombo[1], minCombo[2], nil, 1, craftingWrits)
+		WritCreater.LLCInteraction:CraftAlchemyItemId(solvent.itemId, minCombo[1], minCombo[2], nil, quantity, craftingWrits)
 		WritCreater.setCloseOnce()
 	else
 		WritCreater.writCompleteUIHandle()
@@ -275,7 +286,12 @@ end
 
 
 local function searchDailyCombos(journalIndex)
-	local requiredItemId, materialItemId = GetQuestConditionItemInfo(journalIndex, 1, getConditionIndex(journalIndex))
+	local conditionIndex = getConditionIndex(journalIndex)
+	local requiredItemId, materialItemId = GetQuestConditionItemInfo(journalIndex, 1, conditionIndex)
+	local _,current, max = GetJournalQuestConditionInfo(journalIndex,1,conditionIndex)
+	if current == max then
+		return nil
+	end
 	local effectId = GetTraitIdFromBasePotion(requiredItemId)
 	local shortList = getShortlist(effectId)
 	local parity = (effectId % 2 == 0) and -1 or 1
@@ -384,7 +400,10 @@ Returns: string link, ProspectiveAlchemyResult prospectiveAlchemyResult
 	local questItems = ALCHEMY.questItems
 	if not isMasterWrit then
 		questItems = searchDailyCombos(journalIndex)
-		IsAlchemySolventForItemAndMaterialId()
+		if not questItems then
+			WritCreater.writCompleteUIHandle()
+			return
+		end
 	end
 	local reagents = questItems.reagents
 	local solvent = questItems.solvent

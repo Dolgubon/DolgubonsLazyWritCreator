@@ -1061,6 +1061,17 @@ function WritCreater.Options() --Sentimental
 		},
 		{
 			type = "dropdown",
+			name = WritCreater.optionStrings['craftMultiplierConsumables'],
+			tooltip = WritCreater.optionStrings['craftMultiplierConsumablesTooltip'],
+			choices = WritCreater.optionStrings["craftMultiplierConsumablesChoices"],
+			choicesValues = {1,25},
+			getFunc = function() return  WritCreater:GetSettings().consumableMultiplier end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().consumableMultiplier = value
+			end,
+		},
+		{
+			type = "dropdown",
 			name = WritCreater.optionStrings["hireling behaviour"]	,
 			tooltip = WritCreater.optionStrings["hireling behaviour tooltip"],
 			choices = WritCreater.optionStrings["hireling behaviour choices"],
@@ -1345,7 +1356,7 @@ function WritCreater.Options() --Sentimental
 
 	local craftSubmenu = {{
 		type = "checkbox",
-		name = WritCreater.optionStrings["blackmithing"].." (All features supported)"   ,
+		name = WritCreater.optionStrings["blackmithing"]   ,
 		tooltip = WritCreater.optionStrings["blacksmithing tooltip"] ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_BLACKSMITHING] end,
 		setFunc = function(value) 
@@ -1354,7 +1365,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["clothing"].." (All features supported)"  ,
+		name = WritCreater.optionStrings["clothing"]  ,
 		tooltip = WritCreater.optionStrings["clothing tooltip"] ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_CLOTHIER] end,
 		setFunc = function(value) 
@@ -1363,7 +1374,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 	  type = "checkbox",
-	  name = WritCreater.optionStrings["woodworking"].." (All features supported)"    ,
+	  name = WritCreater.optionStrings["woodworking"]    ,
 	  tooltip = WritCreater.optionStrings["woodworking tooltip"],
 	  getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_WOODWORKING] end,
 	  setFunc = function(value) 
@@ -1372,7 +1383,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 	  type = "checkbox",
-	  name = WritCreater.optionStrings["jewelry crafting"].." (All features supported)"    ,
+	  name = WritCreater.optionStrings["jewelry crafting"]    ,
 	  tooltip = WritCreater.optionStrings["jewelry crafting tooltip"],
 	  getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_JEWELRYCRAFTING] end,
 	  setFunc = function(value) 
@@ -1381,7 +1392,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["provisioning"].." (All features supported)",
+		name = WritCreater.optionStrings["provisioning"],
 		tooltip = WritCreater.optionStrings["provisioning tooltip"]  ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_PROVISIONING] end,
 		setFunc = function(value) 
@@ -1396,7 +1407,7 @@ function WritCreater.Options() --Sentimental
 	},
 	{
 		type = "checkbox",
-		name = WritCreater.optionStrings["enchanting"].." (All features supported)",
+		name = WritCreater.optionStrings["enchanting"],
 		tooltip = WritCreater.optionStrings["enchanting tooltip"]  ,
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_ENCHANTING] end,
 		setFunc = function(value) 
@@ -1431,10 +1442,22 @@ function WritCreater.Options() --Sentimental
 		alpha = 0.5,
 		width = "full",
 	},
+	-- {
+	-- 	type = "checkbox",
+	-- 	name = WritCreater.optionStrings["alchemy"],
+	-- 	tooltip = WritCreater.optionStrings["alchemy tooltip"]  ,
+	-- 	getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] end,
+	-- 	setFunc = function(value) 
+	-- 		WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] = value 
+	-- 	end,
+
+	-- },
 	{
-		type = "checkbox",
-		name = WritCreater.optionStrings["alchemy"].." (All features supported)",
-		tooltip = WritCreater.optionStrings["alchemy tooltip"]  ,
+		type = "dropdown",
+		name = WritCreater.optionStrings["alchemy"],
+		tooltip = WritCreater.optionStrings["alchemy tooltip"],
+		choices = WritCreater.optionStrings["alchemyChoices"],
+		choicesValues =  {false, true, "nocraft"},
 		getFunc = function() return WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] end,
 		setFunc = function(value) 
 			WritCreater:GetSettings()[CRAFTING_TYPE_ALCHEMY] = value 
