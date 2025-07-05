@@ -31,28 +31,28 @@ WritCreater.settings["panel"] =
 local craftingHouses = 
 {
     ["XB1live-eu"] = 
-            {{displayName = "Blackswan20022" , houseId = 116, greeting = "Welcome to the Highlanders Might Guild Hall",
+            {{displayName = "@Blackswan20022" , houseId = 116, greeting = "Welcome to the Highlanders Might Guild Hall",
         subHeading = "Stations are located directly by entrance.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:303060|hHighlanders Might|h|h",},
-        {displayName = "Darhysh" , houseId = 18, greeting = "Welcome to Wizard’s Emporium",
+        {displayName = "@Darhysh" , houseId = 18, greeting = "Welcome to Wizard’s Emporium",
         subHeading = "Stations are located at entrance.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:289124|hWizard's Emporium|h",},},
     ["XB1live"] = {
-        {displayName = "J3zdaz", houseId = 46, greeting = "J3’s Craft Hub",
+        {displayName = "@J3zdaz", houseId = 46, greeting = "J3’s Craft Hub",
         subHeading = "Stations at front, to the right.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:1218717|hRebels Reign|h"},
-        {displayName = "Razberry9876" , houseId = 18, greeting = "Welcome to the Master Writ Pit!",
+        {displayName = "@Razberry9876" , houseId = 18, greeting = "Welcome to the Master Writ Pit!",
         subHeading = "Stations in front entry area.",},
-        {displayName = "MisfitOfSith" , houseId = 62, greeting = "Welcome to the Tarnished Architect's Guild House! Feel free to craft to your heart's content with your fellow housing nerds.",
+        {displayName = "@MisfitOfSith" , houseId = 62, greeting = "Welcome to the Tarnished Architect's Guild House! Feel free to craft to your heart's content with your fellow housing nerds.",
         subHeading = "Inside house, in grand hall.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:1111961|hTarnished Architects|h"},},
     ["PS4live"] = 
-        {{displayName = "bat_girl77" , houseId =  55, greeting = "Welcome to bat’s Craft House!",
+        {{displayName = "@bat_girl77" , houseId =  55, greeting = "Welcome to bat’s Craft House!",
         subHeading = "Stations are located by front entrance.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:908761|hDecor and Design|h|h",},
-        {displayName = "b3ast03101978" , houseId = 21,  greeting = "B3astly Builds Headquarters",
+        {displayName = "@b3ast03101978" , houseId = 21,  greeting = "B3astly Builds Headquarters",
         subHeading = "Stations are located in outside area.",},},
     ["PS4live-eu"] = 
-         {{displayName = "NocturnaStrix" , houseId = 102, greeting = "Welcome, traveler. The veil grows thin tonight.",
+         {{displayName = "@NocturnaStrix" , houseId = 102, greeting = "Welcome, traveler. The veil grows thin tonight.",
         subHeading = "Stations are located on the left side of the stairs at entrance.",},
-        {displayName = "Festegios" , houseId =  90, greeting = "Welcome to Renegade Jesters Guild House",
+        {displayName = "@Festegios" , houseId =  90, greeting = "Welcome to Renegade Jesters Guild House",
         subHeading = "Stations are located on the left.",}, 
-        {displayName = "Ettena_" , houseId =  99 , greeting = "Welcome to The Hex Pistols Craft Hub",
+        {displayName = "@Ettena_" , houseId =  99 , greeting = "Welcome to The Hex Pistols Craft Hub",
         subHeading = "Stations are to the left around the corner.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:382160|hThe Hex Pistols|h|h",},},
     ["NA Megaserver"] = 
     {
@@ -221,6 +221,7 @@ function WritCreater.initializeSettingsMenu()
         -- },
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.autocraft],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.stealingProtection],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["writ grabbing"]],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.suppressQuestAnnouncements],
 
         {
@@ -273,12 +274,13 @@ function WritCreater.initializeSettingsMenu()
             WritCreater.savedVarsAccountWide.masterWrits = value
             WritCreater.LLCInteraction:cancelItem()
                 if value  then
-                    for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestlabel(i)) end
+                    for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
                 else
                     d("Master Writ crafting queue cleared")
                 end
             end,
         },
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["jubilee"]],
         -- {
         --     type = LHA.ST_CHECKBOX,
         --     label = WritCreater.optionStrings["right click to craft"],
@@ -378,6 +380,44 @@ function WritCreater.initializeSettingsMenu()
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.transparentStatusBar],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.incompleteColour],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.completeColour],
+        {
+            type = LibHarvensAddonSettings.ST_SLIDER,
+            label = "Horizontal Position",
+            tooltip = "Horizontal position of the status bar",
+            setFunction = function(value)
+                WritCreater:GetSettings().statusBarX = value
+                WritCreater.updateQuestStatusAnchors()
+            end,
+            getFunction = function()
+                return WritCreater:GetSettings().statusBarX
+            end,
+            default = 5,
+            min = 0,
+            max = GuiRoot:GetWidth()-120,
+            step = 50,
+            -- unit = "", --optional unit
+            format = "%d", --value format
+            disable = function() return not WritCreater:GetSettings().showStatusBar end,
+        },
+        {
+            type = LibHarvensAddonSettings.ST_SLIDER,
+            label = "Vertical Position",
+            tooltip = "Horizontal position of the status bar",
+            setFunction = function(value)
+                WritCreater:GetSettings().statusBarY = value
+                WritCreater.updateQuestStatusAnchors()
+            end,
+            getFunction = function()
+                return WritCreater:GetSettings().statusBarY
+            end,
+            default = 5,
+            min = 0,
+            max = GuiRoot:GetHeight()-120,
+            step = 50,
+            -- unit = "", --optional unit
+            format = "%d", --value format
+            disable = function() return not WritCreater:GetSettings().showStatusBar end,
+        },
         -- {
         --     type = LHA.ST_SECTION,
         --     label = WritCreater.optionStrings["writRewards submenu"],
@@ -402,6 +442,65 @@ function WritCreater.initializeSettingsMenu()
         --     type = LHA.ST_SECTION,
         --     label = WritCreater.optionStrings["style stone menu"],
         -- },
+        {
+            type = LHA.ST_SECTION,
+            label = WritCreater.optionStrings["writRewards submenu"],
+        },
+        {
+            type = LHA.ST_SECTION,
+            label = WritCreater.optionStrings["masterReward"],
+        },
+        -- WritCreater.lamConvertedOptions["masterrewards1"],
+        WritCreater.lamConvertedOptions["masterrewards2"],
+        -- WritCreater.lamConvertedOptions["masterrewards3"],
+        -- WritCreater.lamConvertedOptions["masterrewards4"],
+        -- WritCreater.lamConvertedOptions["masterrewards5"],
+        -- WritCreater.lamConvertedOptions["masterrewards6"],
+        -- WritCreater.lamConvertedOptions["masterrewards7"],
+        -- WritCreater.lamConvertedOptions["masterrewards8"],
+        -- WritCreater.lamConvertedOptions["masterrewards9"],
+        -- WritCreater.lamConvertedOptions["masterrewards10"],
+        {
+            type = LHA.ST_SECTION,
+            label = WritCreater.optionStrings["intricateReward"],
+        },
+        -- WritCreater.lamConvertedOptions["intricaterewards1"],
+        WritCreater.lamConvertedOptions["intricaterewards2"],
+        -- WritCreater.lamConvertedOptions["intricaterewards3"],
+        -- WritCreater.lamConvertedOptions["intricaterewards4"],
+        -- WritCreater.lamConvertedOptions["intricaterewards5"],
+        -- WritCreater.lamConvertedOptions["intricaterewards6"],
+        -- WritCreater.lamConvertedOptions["intricaterewards7"],
+        {
+            type = LHA.ST_SECTION,
+            label = WritCreater.optionStrings["ornateReward"],
+        },
+        -- WritCreater.lamConvertedOptions["ornaterewards1"],
+        WritCreater.lamConvertedOptions["ornaterewards2"],
+        -- WritCreater.lamConvertedOptions["ornaterewards3"],
+        -- WritCreater.lamConvertedOptions["ornaterewards4"],
+        -- WritCreater.lamConvertedOptions["ornaterewards5"],
+        -- WritCreater.lamConvertedOptions["ornaterewards6"],
+        -- WritCreater.lamConvertedOptions["ornaterewards7"],
+        {
+            type = LHA.ST_SECTION,
+            label = WritCreater.optionStrings["surveyReward"],
+        },
+        -- WritCreater.lamConvertedOptions["surveyrewards1"],
+        WritCreater.lamConvertedOptions["surveyrewards2"],
+        -- WritCreater.lamConvertedOptions["surveyrewards3"],
+        -- WritCreater.lamConvertedOptions["surveyrewards4"],
+        -- WritCreater.lamConvertedOptions["surveyrewards5"],
+        -- WritCreater.lamConvertedOptions["surveyrewards6"],
+        -- WritCreater.lamConvertedOptions["surveyrewards7"],
+        -- WritCreater.lamConvertedOptions["surveyrewards8"],
+        -- WritCreater.lamConvertedOptions["surveyrewards9"],
+        {
+            type = LHA.ST_SECTION,
+            label = WritCreater.optionStrings["repairRewards"],
+        },
+        WritCreater.lamConvertedOptions["repairReward"],
+
     }
     local addAbandon = {
         WritCreater.lamConvertedOptions[zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:45850:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")],

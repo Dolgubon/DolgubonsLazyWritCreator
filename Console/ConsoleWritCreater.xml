@@ -173,7 +173,7 @@
 				</Backdrop>
 			</Controls>
 		</TopLevelControl>
-		<TopLevelControl name="DolgubonsLazyWritStatus" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+		<TopLevelControl name="DolgubonsLazyWritStatus" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="120" y="37" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="850" />
 			<OnMoveStop>

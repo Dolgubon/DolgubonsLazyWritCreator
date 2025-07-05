@@ -158,6 +158,10 @@ local function updateQuestStatus(event)
 end
 
 
+function WritCreater.updateQuestStatusAnchors()
+	StatusBar:ClearAnchors()
+	StatusBar:SetAnchor(TOPRIGHT, GuiRoot, TOPLEFT, WritCreater:GetSettings().statusBarX, WritCreater:GetSettings().statusBarY)
+end
 
 
 WritCreater.updateQuestStatus = updateQuestStatus

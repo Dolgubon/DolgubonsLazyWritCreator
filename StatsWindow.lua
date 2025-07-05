@@ -413,6 +413,7 @@ local function updateNonScrollElements()
 end
 
 local updateList = function () 
+	if not WritCreater.rewardsScrollManager then return end
 	WritCreater.rewardsScrollManager:RefreshData()
 	updateNonScrollElements()
 end

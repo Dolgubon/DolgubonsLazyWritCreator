@@ -168,7 +168,7 @@ end
 -- WritCreater.savedVarsAccountWide.unlockedCheese
 -- WritCreater.savedVarsAccountWide.cheeseCompletedTwice
 if isCheeseOn() then
-	local isConsolePeasant = GetCVar("ForceConsoleFlow.2") == "1" -- kidding, you guys are fine :) But you'll likely never read this, sooooo
+	local isConsolePeasant = IsConsoleUI() -- kidding, you guys are fine :) But you'll likely never read this, sooooo
 	local cheesyActivityTypeIndex = 2
 	while TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex] do 
 		cheesyActivityTypeIndex = cheesyActivityTypeIndex + 1 
@@ -1281,18 +1281,22 @@ function WritCreater.Options() --Sentimental
 				submenuOptions[#submenuOptions + 1] = geRewardTypeOption(validCraftTypes[j], rewardName, validActions, actionNames)
 			end
 			rewardsSubmenu[#rewardsSubmenu + 1] = {
-			type = "submenu",
-			name = WritCreater.optionStrings[rewardName.."Reward"],
-			tooltip = WritCreater.optionStrings[rewardName.."RewardTooltip"],
-			controls = submenuOptions,
-			reference = "WritCreaterRewardsSubmenu"..rewardName,
-		}
+				type = "submenu",
+				name = WritCreater.optionStrings[rewardName.."Reward"],
+				tooltip = WritCreater.optionStrings[rewardName.."RewardTooltip"],
+				controls = submenuOptions,
+				reference = "WritCreaterRewardsSubmenu"..rewardName,
+			}
+			for i = 1 , #submenuOptions do
+				submenuOptions[i].LHASName = rewardName.."rewards"..i
+			end
 		else
 			rewardsSubmenu[#rewardsSubmenu + 1] = {
 				type = "dropdown",
 				name =  WritCreater.optionStrings[rewardName.."Reward"]	,
 				tooltip = WritCreater.optionStrings["allRewardTooltip"],
 				choices = actionNames,
+				LHASName = rewardName.."Reward",
 				choicesValues = validActions,
 				disabled = function() return not WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
 				getFunc = function()
@@ -1311,7 +1315,10 @@ function WritCreater.Options() --Sentimental
 				end,
 			}
 		end
-		
+		for i = 1 , #rewardsSubmenu do
+			-- rewardsSubmenu[i].LHASName = rewardName.."rewards"..i
+			-- WritCreater.lamConvertedOptions
+		end
 		
 	end
 	-- local gearWrits = {1, 2, 6, 7}
@@ -1601,7 +1608,11 @@ end
 
 local function addToControlTable(newOption, t)
 	t.indexed[#t.indexed + 1 ] = newOption
-	t.nameMap[newOption.label] = newOption
+	if newOption.LHASName then
+		t.nameMap[newOption.LHASName] = newOption
+	else
+		t.nameMap[newOption.label] = newOption
+	end
 	newOption.conversionIndex = #t.indexed
 end
 local function LAMtoHASDropdownConverter(option, controlTable)
@@ -1613,6 +1624,7 @@ local function LAMtoHASDropdownConverter(option, controlTable)
 		getFunction = option.getFunc,
 		tooltip = option.tooltip,
 		disable = option.disabled,
+		LHASName = option.LHASName,
 	}
 
 	newOption.setFunction = function(combobox, name, item) option.setFunc(item.data) end
@@ -1629,6 +1641,14 @@ local function LAMtoHASDropdownConverter(option, controlTable)
 	newOption.getFunction = function() return labelMap[option.getFunc()]  end
 	addToControlTable(newOption, controlTable)
 end
+local function LamToHASDividerConverter(entry, controlTable, optionalLabel)
+    newOption = {
+        type = LibHarvensAddonSettings.ST_SECTION,
+        label = "",
+        LHASName = entry.LHASName,
+    }
+    addToControlTable(newOption, controlTable)
+end
 
 local function convertlamToHasTable(optionsTable, controlTable)
 	local LAMtoHAS = {
@@ -1641,7 +1661,8 @@ local function convertlamToHasTable(optionsTable, controlTable)
 	}
 	local LAMtoHASSpecial = {
 		dropdown = LAMtoHASDropdownConverter,
-		submenu = function(option, controlTable) convertlamToHasTable(option.controls, controlTable) end
+		submenu = function(option, controlTable) convertlamToHasTable(option.controls, controlTable) end,
+		divider = LamToHASDividerConverter,
 	}
 	local controlTable = controlTable or {
 		indexed = {},
@@ -1656,6 +1677,7 @@ local function convertlamToHasTable(optionsTable, controlTable)
 			local newOption = {
 				type = newType,
 				label = entry.name,
+				LHASName = entry.LHASName,
 				default = entry.default,
 				setFunction = entry.setFunc,
 				getFunction = entry.getFunc,

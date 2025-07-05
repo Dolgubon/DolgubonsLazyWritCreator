@@ -125,8 +125,12 @@ local function queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, i
 end
 
 local function improvedMasterWritQuest(journalIndex, questName)
+	local _, current, required = GetJournalQuestConditionInfo(journalIndex)
+	if current == required then
+		return
+	end
 	local _, _, station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId =  GetQuestConditionMasterWritInfo(journalIndex)
-	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, questName, journalIndex)
+	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, questName, itemTemplateId)
 end
 
 local function improvedRightClick(link, station, uniqueId)
@@ -159,13 +163,20 @@ local function improvedEnchantRightClick(link, station, uniqueId)
 end
 
 local function improvedEnchantJournal(journalIndex, name)
+	local _, current, required = GetJournalQuestConditionInfo(journalIndex)
+	if current == required then
+		return
+	end
 	local itemId, levelId, station, quality = GetQuestConditionMasterWritInfo(journalIndex, 1,1)
-	EnchantingMasterWrit(itemId, levelId, quality, journalIndex, name)
+	EnchantingMasterWrit(itemId, levelId, quality, itemId, name)
 end
 
 local function provisioningJournal(journalIndex, name)
 	local itemId = GetQuestConditionMasterWritInfo(journalIndex, 1,1)
 	local _, current, required = GetJournalQuestConditionInfo(journalIndex)
+	if current == required then
+		return
+	end
 	local needed = required - current
 	local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(itemId)
 	local factor = GetRecipeResultQuantity(recipeList,recipeIndex)
@@ -174,7 +185,7 @@ local function provisioningJournal(journalIndex, name)
 	end
 	local quantity = calculateRequiredProvisioningAmount(needed, itemId)
 	if quantity > 0 then
-		ProvisioningMasterWrit(itemId, quantity, journalIndex, name)
+		ProvisioningMasterWrit(itemId, quantity, itemId, name)
 	else
 		d(name..": Could not queue for writ. You might not know the required recipe")
 	end
@@ -244,10 +255,6 @@ end
 
 
 function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
-	if WritCreater.savedVarsAccountWide.masterWrits then
-		-- improvedMasterWritQuest(journalIndex, name)
-		-- return
-	end
 	if not WritCreater.savedVarsAccountWide.masterWrits then return end
 
 	local itemId, _, writType = GetQuestConditionMasterWritInfo(journalIndex, 1 , 1)
@@ -271,18 +278,25 @@ end
 local function QuestCounterChanged(event, journalIndex, questName, _, _, currConditionVal, newConditionVal, conditionMax)
 	dbug("EVENT:Quest Counter Change")
 	if not WritCreater.LLCInteractionMaster then return end
+	if not journalIndex then return end
 	if #WritCreater.LLCInteractionMaster:findItemByReference(journalIndex) == 0 then
 		WritCreater.LLCInteractionMaster:cancelItemByReference(journalIndex)
-		if newConditionVal<conditionMax then
-			
+		if newConditionVal and conditionMax and newConditionVal<conditionMax then
 			WritCreater.MasterWritsQuestAdded(event, journalIndex, questName)
 		end
 	end
 end
 
+local function QuestRemoved(event, completed, journalIndex)
+	WritCreater.LLCInteractionMaster:cancelItemByReference(journalIndex)
+end
 
 --EVENT_QUEST_ADDED found in AlchGrab File
 EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_QUEST_CONDITION_COUNTER_CHANGED , QuestCounterChanged)
+EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_QUEST_REMOVED , QuestRemoved)
+-- EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_QUEST_COMPLETE , QuestCounterChanged)
+
+
 
 function WritCreater.scanAllQuests()
 	if not WritCreater.LLCInteractionMaster then return end
@@ -387,6 +401,21 @@ end
 -- provsiionign
 --|H1:item:119693:5:1:0:0:0:68276:0:0:0:0:0:0:0:0:0:0:0:0:0:20000|h|h
 
+local myButtonGroup = {
+{
+	name = "Craft Writ",
+	keybind = "UI_SHORTCUT_QUATERNARY",
+	callback = function(input, input2)
+	itemHandler(bag, slot, station)
+	end,
+}}
+
+local function removeCraftKeybind()
+	KEYBIND_STRIP:RemoveKeybindButtonGroup(myButtonGroup)
+	myButtonGroup.callback = function() end
+end
+
+
 local function gamepadInventoryHook(inventoryInfo, slotActions)
 	if not IsInGamepadPreferredMode() and not IsConsoleUI() then
 		return
@@ -404,7 +433,7 @@ local function gamepadInventoryHook(inventoryInfo, slotActions)
 	-- There is definitely a better way to do this
 	-- But I've spent too long trying to figure one out so I'll stick with this
 	zo_callLater(function()
-	local myButtonGroup = {
+	 myButtonGroup = {
 	{
 		name = "Craft Writ",
 		keybind = "UI_SHORTCUT_QUATERNARY",
@@ -414,6 +443,16 @@ local function gamepadInventoryHook(inventoryInfo, slotActions)
 	}}
 	KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup) end, 10)
 end
+
+SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, newState)
+	if not IsInGamepadPreferredMode() then return end
+
+	local sceneName = scene:GetName()
+	if (newState == SCENE_SHOWING) and sceneName ~= "gamepad_inventory_root" then
+			removeCraftKeybind()
+		-- end
+	end
+	 end)
 
 function WritCreater.InitializeRightClick()
 	if IsConsoleUI() or IsInGamepadPreferredMode() then
@@ -427,6 +466,7 @@ function WritCreater.InitializeRightClick()
 end
 
 function WritCreater.queueAllSealedWrits(bag)
+	WritCreater.LLCInteractionMaster:cancelItem()
 	for i = 0, GetBagSize(bag) do
 		local itemType, specializedType = GetItemType(bag, i)
 		if itemType == ITEMTYPE_MASTER_WRIT then

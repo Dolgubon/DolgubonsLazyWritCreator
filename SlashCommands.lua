@@ -349,6 +349,7 @@ if GetDisplayName() == "@Dolgubon" then
 	SLASH_COMMANDS['/listquest'] = function() for i = 1, 25 do local n = GetJournalQuestName(i) if n~="" then d(i..": "..n) end end end
 	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
 	SLASH_COMMANDS['/findwrit'] = findWrits
+	SLASH_COMMANDS['/quit'] = Quit
 
 	IsEnlightenedAvailableForCharacter = function() return false end
 end

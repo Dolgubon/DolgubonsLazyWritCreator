@@ -46,7 +46,7 @@ local function updateSavedVars(vars, location, quantity)
 	end
 end
 
-local function lootOutput(itemLink, itemType, quantity, isAnniversary)
+local function lootOutput(itemLink, itemType, quantity, isAnniversary, isZenithar)
 
 	if WritCreater:GetSettings().lootOutput then
 		local amountBag, amountBank, amountCraft = GetItemLinkStacks( itemLink)
@@ -58,10 +58,13 @@ local function lootOutput(itemLink, itemType, quantity, isAnniversary)
 			text = zo_strformat( WritCreater.strings.lootReceived, itemLink, amount, quantity)
 		end
 		if isAnniversary then
-			text = text.. " (Anniversary Box)"
+			text = text.. " (Event Box)"
+		elseif isZenithar then
+			text = text.. " (Zenithar Box)"
 		else
-			d(text)
+			
 		end
+		d(text)
 	end
 end
 
@@ -88,7 +91,7 @@ local function LootAllHook(boxType) -- technically not a hook.
 			end
 		elseif CanItemLinkBeVirtual(itemLink) then 
 			updateSavedVars(vars, GetItemLinkItemId(itemLink), quantity)
-			if GetItemLinkFunctionalQuality(itemLink) == ITEM_FUNCTIONAL_QUALITY_LEGENDARY or GetItemLinkItemId(itemLink) ==135153 or GetItemLinkItemId(itemLink) == 135149 then
+			if GetItemLinkFunctionalQuality(itemLink) == ITEM_FUNCTIONAL_QUALITY_LEGENDARY then
 				lootOutput(itemLink, nil, quantity)
 			end
 		elseif itemType==ITEMTYPE_RECIPE then 
@@ -123,6 +126,9 @@ local function LootAllHook(boxType) -- technically not a hook.
 			lootOutput(itemLink, ITEMTYPE_MASTER_WRIT, quantity)
 			updateSavedVars(vars, "master", quantity)
 			updateSavedVars(vars, "voucher", toVoucherCount(itemLink))
+		elseif itemType == ITEMTYPE_CONTAINER_STACKABLE then
+			lootOutput(itemLink, nil, quantity)
+			updateSavedVars(vars, "unknownMaster", 1)
 		elseif specializedType == SPECIALIZED_ITEMTYPE_RACIAL_STYLE_MOTIF_CHAPTER then
 			lootOutput(itemLink, nil, quantity)
 		elseif specializedType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then
@@ -144,7 +150,7 @@ end
 
 local function shouldSaveStats(boxType)
 	if GetNumLootItems() < 2 then return false end
-	if boxType == 0 then return false end -- then it's an anniversary box
+	if boxType == 0 then return false end -- then it's an anniversary box or zenithar box
 
 	return true
 end
@@ -219,15 +225,16 @@ local function OnLootUpdated(event)
 				local itemId = GetItemLinkItemId(itemLink)
 				--d(itemLink)
 				local quality = GetItemLinkFunctionalQuality(itemLink)
-				local itemType, specializedType = GetItemLinkItemType(itemLink) 
+				local itemType, specializedType = GetItemLinkItemType(itemLink)
+				local isSpecialBox = boxInfo == 0
 				if specializedType == SPECIALIZED_ITEMTYPE_RACIAL_STYLE_MOTIF_CHAPTER then
-					lootOutput(itemLink, nil, quantity, true)
+					lootOutput(itemLink, nil, quantity, isSpecialBox)
 				elseif specializedType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then
-					lootOutput(itemLink, nil, quantity, true)
+					lootOutput(itemLink, nil, quantity, isSpecialBox)
 				elseif quality>=ITEM_FUNCTIONAL_QUALITY_ARCANE then
-					lootOutput(itemLink, nil, quantity, true)
+					lootOutput(itemLink, nil, quantity, isSpecialBox)
 				elseif itemId == 56863 or itemId == 56862 then
-					lootOutput(itemLink, nil, quantity, true)
+					lootOutput(itemLink, nil, quantity, isSpecialBox)
 				end
 			end
 		end
@@ -272,12 +279,18 @@ local flavours = {
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
 	
 }
+local eventBoxes = {
+	[GetItemLinkFlavorText("|H1:item:194428:124:1:0:0:0:2023:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- anniversary box
+	-- [GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- witches box
+	[GetItemLinkFlavorText("|H1:item:187701:5:1:0:0:0:2025:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- zenithar box
+	[GetItemLinkFlavorText("|H1:item:187746:6:1:0:0:0:2025:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- glorious zenithar box
+}
 local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:194428:124:1:0:0:0:2023:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local plunderSkulls = GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local flavourTexts = {}
 setmetatable(flavourTexts, {__index = function(t, i)
 	if flavours[i] then return true end
-	if i == anniversaryBoxie then
+	if eventBoxes[i]then
 		return WritCreater:GetSettings().lootJubileeBoxes
 	end
 	if i==plunderSkulls and GetDisplayName()=="@Dolgubon" then
@@ -421,6 +434,7 @@ end
 local handledItemTypes = 
 {
 	[ITEMTYPE_MASTER_WRIT] = "master",
+	[ITEMTYPE_CONTAINER_STACKABLE] = "master",
 	[SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT] = "survey",
 	[44879] = "repair",
 	-- Subtracting 100 so that an item with an item type matching the item trait does not return intricate
@@ -817,5 +831,9 @@ local anniversaryBox = GetItemLinkName("|H1:item:183890:124:1:0:0:0:0:0:0:0:0:0:
 anniversaryBox = string.gsub(anniversaryBox, "%(","%%%(")
 anniversaryBox = string.gsub(anniversaryBox, "%)","%%%)")
 WritCreater.boxNames[anniversaryBox] = {0, 0}
+local zenitharBox = GetItemLinkName("|H1:item:187701:5:1:0:0:0:2025:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+local gloriousZenitharBox = GetItemLinkName("|H1:item:187746:6:1:0:0:0:2025:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
+WritCreater.boxNames[zenitharBox] = {0, 0}
+WritCreater.boxNames[gloriousZenitharBox] = {0, 0}
 -- |H1:item:204459:124:1:0:0:0:2025:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h - Glorious Anniversary Jubilee Gift Box
 -- |H1:item:194428:123:1:0:0:0:2025:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h - Anniversary Jubilee Gift Box

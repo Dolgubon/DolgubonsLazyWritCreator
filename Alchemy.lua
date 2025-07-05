@@ -252,7 +252,11 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, craftingWrit
 		out(zo_strformat("Crafting will use 1 <<t:1>>, 1 <<t:2>>, and 1 <<t:3>>", getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2])))
 		if craftingWrits then
 			out(getOut().."\n"..WritCreater.strings.crafting)
+			shouldShowGamepadPrompt = false
+		else
+			shouldShowGamepadPrompt = true
 		end
+		WritCreater.gpCraftOutOriginalText = getOut()
 		local factor = GetAlchemyResultQuantity(findItemLocationById(solvent.itemId))
 		local quantity = 1
 		-- DolgubonsWritsBackdropCraft:SetHidden(craftingWrits)
@@ -392,12 +396,12 @@ Returns: string link, ProspectiveAlchemyResult prospectiveAlchemyResult
 	local list = PLAYER_INVENTORY:GenerateListOfVirtualStackedItems(INVENTORY_BACKPACK, predicate)
 	PLAYER_INVENTORY:GenerateListOfVirtualStackedItems(INVENTORY_BANK, predicate, list)
 	PLAYER_INVENTORY:GenerateListOfVirtualStackedItems(INVENTORY_CRAFT_BAG, predicate, list)
-	ALCHEMY:UpdatePotentialQuestItems(list, alchemyInfo)
+	-- ALCHEMY:UpdatePotentialQuestItems(list, alchemyInfo)
 	WritCreater.alchemyList = list
 	-- local itemType = 
 
 	-- now we have our list
-	local questItems = ALCHEMY.questItems
+	local questItems = {}
 	if not isMasterWrit then
 		questItems = searchDailyCombos(journalIndex)
 		if not questItems then

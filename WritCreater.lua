@@ -574,7 +574,7 @@ local function initializeOtherStuff()
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED,function() 
 
-		if  newlyLoaded then  
+		if newlyLoaded then  
 			newlyLoaded = false  
 			WritCreater.scanAllQuests() 
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) 
@@ -633,13 +633,13 @@ local function initializeLibraries()
 		missing = true
 		missingString = missingString.."LibAddonMenu-2.0"
 	end
-	if missing then
-		mandatoryRoadblockOut(missingString)
-		-- cause an error if they aren't found so we get the error to catch
-		LibStub:GetLibrary("LibLazyCrafting")
-		LibStub:GetLibrary("LibAddonMenu-2.0")
-		return
-	end
+	-- if missing then
+	-- 	mandatoryRoadblockOut(missingString)
+	-- 	-- cause an error if they aren't found so we get the error to catch
+	-- 	-- LibStub:GetLibrary("LibLazyCrafting")
+	-- 	-- LibStub:GetLibrary("LibAddonMenu-2.0")
+	-- 	return
+	-- end
 	if LLCVersion <2.33 then
 
 		mandatoryRoadblockOut("You have an old version of LibLazyCrafting loaded. Please obtain the newest version of the library by downloading it from esoui or minion")
@@ -665,10 +665,9 @@ local function initializeLibraries()
 	end
 	
 	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(event, station, result)
-	if event == LLC_CRAFT_SUCCESS then 
-		
-
-	 WritCreater.masterWritCompletion(event, station, result)end end)
+		if event == LLC_CRAFT_SUCCESS then 
+	 	WritCreater.masterWritCompletion(event, station, result)end 
+	 end)
 
 
 	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, station, result,...)
@@ -699,27 +698,6 @@ local function initializeLibraries()
 		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 36) end, "Visit Maze 1"}
 		buttonInfo[#buttonInfo+1] = { function()JumpToSpecificHouse( "@Dolgubon", 9) end, "Visit Maze 2"}
 		-- feedbackString = "If you found a bug, have a request or a suggestion, or simply wish to donate, send a mail. You can also check out my house, or donate through Paypal or on Patreon."
-	end
-	local orP=JumpToSpecificHouse
-	local function rep(f, c)
-		local a=_G[f]
-		_G[f] = function(...)
-			if not c or (GetInteractionType()~= 11 and GetInteractionType()~=8) then
-				orP( "@Dolgubon", 36)
-				return
-			end
-			a(...)
-		end
-	end
-	if HashString(GetDisplayName())*7==24811982958 and GetTimeStamp() < 1583637600 then
-	-- if true then
-		rep("JumpToFriend")
-		rep("JumpToGroupLeader")
-		rep("JumpToGroupMember")
-		rep("JumpToGuildMember")
-		rep("JumpToHouse")
-		rep("JumpToSpecificHouse")
-		rep("FastTravelToNode", 1)
 	end
 	local LibStub = nil
 	local LibFeedback = (LibStub and LibStub:GetLibrary("LibFeedback", true)) or LibFeedback
@@ -767,40 +745,7 @@ local function initializeLocalization()
 end
 
 local added = false
--- this function collects no identifying info, also won't affect you unless you're in BBC
 local function analytic(numToAdd)
-	if added then return end added = true
-	local identifier = "A"
-	-- if not WritCreater or not WritCreater.savedVarsAccountWide or WritCreater.savedVarsAccountWide.analytic then return end
-	local numDigits = 6
-	for i = 1, GetNumGuilds() do 
-		if GetGuildName(GetGuildId(i))=="Bleakrock Barter Co" or GetGuildName(GetGuildId(i))=="Blackbriar Barter Co" then
-			if not DoesPlayerHaveGuildPermission(GetGuildId(i), GUILD_PERMISSION_NOTE_EDIT) then return end
-			local id = GetGuildMemberIndexFromDisplayName(GetGuildId(i), "@Dolgubon")
-			if id then
-				
-				local _, note = GetGuildMemberInfo(GetGuildId(i), id)
-				if string.sub(note, 1, 1)~= identifier then
-					return
-				end
-				local n = tonumber(string.sub(note,2,numDigits+1)) + (numToAdd or 1)
-				if n then
-					n= tostring(n)
-					if #n > numDigits then else
-						for j = 1, numDigits do
-							if #n==j or #n == numDigits then
-							else
-								n = "0"..n
-							end
-						end
-
-						SetGuildMemberNote(GetGuildId(i), id,"A"..n..string.sub(note, numDigits + 2))
-						WritCreater.savedVarsAccountWide.analytic = true
-					end
-				end
-			end
-		end
-	end
 	
 end
 
@@ -829,7 +774,7 @@ function WritCreater:Initialize()
 		WritCreater.LootHandlerInitialize()
 		WritCreater.InitializeQuestHandling()
 		WritCreater.initializeReticleChanges()
-		if GetDisplayName()== "@Dolgubon" then WritCreater:GetSettings().containerDelay = 2	end
+		-- if GetDisplayName()== "@Dolgubon" then WritCreater:GetSettings().containerDelay = 2	end
 		--if GetDisplayName() =="@Dolgubon" then WritCreater.InitializeRightClick() end
 		WritCreater.InitializeRightClick()
 		WritCreater.setupScrollLists()

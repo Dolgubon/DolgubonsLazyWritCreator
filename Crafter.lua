@@ -70,7 +70,7 @@ local function getGamepadCraftKeyIcon()
 	return GetGamepadIconPathForKeyCode(key) or  GetMouseIconPathForKeyCode(key) or GetKeyboardIconPathForKeyCode(key) or ""
 end
 local gamepadCraftShortcut = false
-local originalText = ""
+WritCreater.gpCraftOutOriginalText = ""
 local myButtonGroup = {
 	alignment = KEYBIND_STRIP_ALIGN_LEFT,
 	{
@@ -84,6 +84,9 @@ local myButtonGroup = {
 	},
 }
 
+local function removeCraftKeybind()
+	KEYBIND_STRIP:RemoveKeybindButtonGroup(myButtonGroup)
+end
 
 local function showCraftButton(craftingWrits)
 	if not IsInGamepadPreferredMode() then
@@ -91,7 +94,7 @@ local function showCraftButton(craftingWrits)
 	else
 		if craftingWrits == true  or not shouldShowGamepadPrompt then
 			KEYBIND_STRIP:RemoveKeybindButtonGroup(myButtonGroup)
-			out(originalText)
+			out(WritCreater.gpCraftOutOriginalText)
 			return 
 		end
 		myButtonGroup = {
@@ -107,7 +110,6 @@ local function showCraftButton(craftingWrits)
 			},
 		}
 		KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup)
-		originalText = getOut()
 		appendOut("\nPress |t32:32:"..getGamepadCraftKeyIcon().."|t to craft")
 	end
 end
@@ -125,14 +127,15 @@ SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, newState)
 	-- if sceneName == "gamepad_smithing_root" and newState == SCENE_SHOWN and gamepadCraftShortcut then
 		local writs = WritCreater.writSearch()
 		-- if not WritCreater:GetSettings().autoCraft and not craftingWrits then
-		if originalText == getOut() then
+		if WritCreater.gpCraftOutOriginalText == getOut() then
 			-- smithingCrafting(writs[station],craftingWrits)
 			showCraftButton()
 		end
 		
 	elseif (newState == SCENE_SHOWING) and not craftingRootScenes[sceneName] then
 		-- if IsSmithingCraftingType(GetCraftingInteractionType() ) then
-			out(originalText)
+			out(WritCreater.gpCraftOutOriginalText)
+			removeCraftKeybind()
 		-- end
 	end
 	 end)
@@ -351,7 +354,7 @@ end
 local function writCompleteUIHandle()
 	craftingWrits = false
 	out(WritCreater.strings.complete)
-	originalText = WritCreater.strings.complete
+	WritCreater.gpCraftOutOriginalText = WritCreater.strings.complete
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	--if WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
 	if closeOnce and WritCreater.IsOkayToExitCraftStation() and isCurrentStationsWritComplete() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
