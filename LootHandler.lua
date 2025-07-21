@@ -64,7 +64,7 @@ local function lootOutput(itemLink, itemType, quantity, isAnniversary, isZenitha
 		else
 			
 		end
-		d(text)
+		CHAT_ROUTER:AddSystemMessage(text)
 	end
 end
 
@@ -444,6 +444,10 @@ local handledItemTypes =
 	[ITEM_TRAIT_TYPE_ARMOR_ORNATE-100] = "ornate",
 	[ITEM_TRAIT_TYPE_JEWELRY_ORNATE-100] = "ornate",
 	[ITEM_TRAIT_TYPE_WEAPON_ORNATE-100] = "ornate",
+	[ITEMTYPE_GLYPH_ARMOR] = "glyph",
+	[ITEMTYPE_GLYPH_JEWELRY] = "glyph",
+	[ITEMTYPE_GLYPH_WEAPON] = "glyph",
+	[ITEMTYPE_SOUL_GEM] = "soulGem",
 }
 
 local function getItemLinkCraftType(link)
@@ -530,6 +534,21 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 				elseif action == 2 then
 					d("Writ Crafter: Queued up to deposit "..link)
 					table.insert(pendingItemActions, {link, 2, bag, slot, changeAmount})
+					local id64 = GetItemUniqueId(bag, slot)
+					local id64String = Id64ToString(id64)
+					WritCreater.savedVars.depositList[id64String] = 
+					{ 	
+						link,
+						2,
+						bag,
+						slot,
+						changeAmount,
+						["uniqueId"] = id64String , 
+						["bag"] = bag, 
+						["slot"] = slot,
+						["timestamp"] = GetTimeStamp(),
+						["changeAmount"] = changeAmount,
+					}
 				elseif action == 3 then
 					SetItemIsJunk(bag, slot, true)
 					d("Writ Crafter: Marked "..link.." as junk")
@@ -619,6 +638,13 @@ function WritCreater.LootHandlerInitialize()
 				d("Writ Crafter: Queued "..link.." for deconstruction")
 				WritCreater.LLCInteractionDeconstruct:DeconstructSmithingItem(v.bag, v.slot, true, k)
 			end
+		end
+		local numDeposits = 0
+		for k, v in pairs(WritCreater.savedVars.depositList) do
+			numDeposits = numDeposits + 1
+		end
+		if numDeposits > 0 then
+			d("Writ Crafter: "..numDeposits.." items queued up for bank deposit")
 		end
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED)
 	end )

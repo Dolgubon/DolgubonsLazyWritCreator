@@ -195,6 +195,7 @@ local function outputStats(showChances)
 	end
 
 	if not showChances  then
+		WritCreater.initializeStatsScene()
 		WritCreater.updateList()
 		if WritCreater.writStatsScene:IsShowing() then
 			SCENE_MANAGER:Hide(WritCreater.writStatsScene:GetName())

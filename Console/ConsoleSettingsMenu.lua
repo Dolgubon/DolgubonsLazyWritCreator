@@ -27,7 +27,6 @@ WritCreater.settings["panel"] =
 
 }
 
-
 local craftingHouses = 
 {
     ["XB1live-eu"] = 
@@ -145,7 +144,7 @@ function WritCreater.initializeSettingsMenu()
             tooltip = "Open a thread to report bugs specifically with the console version of writ crafter. Please check to make sure the issue hasn't been reported yet.",
             buttonText = "Open URL",
             clickHandler = function(control, button)
-                RequestOpenUnsafeURL("https://www.esoui.com/forums/showthread.php?t=11241")
+                WritCreater.showQRCode("https://www.esoui.com/forums/showthread.php?t=11241")
             end,
             -- disable = function() return areSettingsDisabled end,
         },
@@ -155,7 +154,7 @@ function WritCreater.initializeSettingsMenu()
             tooltip = "Donate to Dolgubon on Paypal",
             buttonText = "Open URL",
             clickHandler = function(control, button)
-                RequestOpenUnsafeURL("https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&ssrt=1747363295246")
+                WritCreater.showQRCode("https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&ssrt=1747363295246")
             end,
             -- disable = function() return areSettingsDisabled end,
         },
@@ -336,6 +335,7 @@ function WritCreater.initializeSettingsMenu()
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.reticleColour],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.questBuffer],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.craftMultiplier],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings.smartMultiplier],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.craftMultiplierConsumables],
 
 
@@ -500,6 +500,8 @@ function WritCreater.initializeSettingsMenu()
             label = WritCreater.optionStrings["repairRewards"],
         },
         WritCreater.lamConvertedOptions["repairReward"],
+        WritCreater.lamConvertedOptions["soulGemReward"],
+        WritCreater.lamConvertedOptions["glyphReward"],
 
     }
     local addAbandon = {

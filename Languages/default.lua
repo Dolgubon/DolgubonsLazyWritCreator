@@ -364,6 +364,9 @@ WritCreater.optionStrings['statusBarInventory']							= "Inventory Tracker"
 WritCreater.optionStrings['statusBarInventoryTooltip']					= "Add an inventory tracker to the status bar"
 WritCreater.optionStrings['incompleteColour']							= "Incomplete quest colour"
 WritCreater.optionStrings['completeColour']								= "Complete quest colour"
+WritCreater.optionStrings['smartMultiplier']							= "Smart Multiplier"
+WritCreater.optionStrings['smartMultiplierTooltip']						= "If on, Writ Crafter will craft items for the full cycle of 3 days of writs. It will also check to see if you have any writ items"..
+" already, and take that into consideration. If off, Writ Crafter will simply craft multiple items of the current day's writs"
 
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end

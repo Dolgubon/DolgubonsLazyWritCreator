@@ -14,35 +14,6 @@ local function out(string)
 	DolgubonsWritsBackdropOutput:SetText(string)
 end
 
-function WritCreater.alchemyRightClick(link, station, uniqueId)
-		--d(GetQuestConditionMasterWritInfo(16,1,1))
-	local x = { ZO_LinkHandler_ParseLink(link) }
-	local materialItemId = tonumber(x[10])
-	local effect1 = tonumber(x[11])
-	local effect2 = tonumber(x[12])
-	local effect3 = tonumber(x[13])
-	local name = GetItemLinkName(link)
-	local itemId, materialItemId, craftType, _,_,_,_,_,encodedAlchemyTraits = GetQuestConditionMasterWritInfo(journalIndex, 1, 1)
-
-	if encodedAlchemyTraits then
-		alchemyInfo =
-		{
-			basePotionItemId = itemId,
-			materialItemId = materialItemId,
-			encodedTraits = encodedAlchemyTraits,
-			isMasterWrit = true
-		}
-	else
-		craftingQuestIndices.alchemyInfo =
-		{
-			hasDesiredPotion = curCount >= maxCount
-		}
-	end
-end
-
-function WritCreater.alchemyMasterWrit(journalIndex)
-end
-
 local prices = {
 	[77583] = 80 ,
 	[30157] = 60,
@@ -80,39 +51,39 @@ local prices = {
 	[30159] = 52,
 }
 
-WritCreater.effectNumbers = {
-  ["Restore Health"] = 1,
-  ["Ravage Health"] = 2,
-  ["Restore Magicka"] = 3,
-  ["Ravage Magicka"] = 4,
-  ["Restore Stamina"] = 5,
-  ["Ravage Stamina"] = 6,
-  ["Increase Spell Resist"] = 7,
-  ["Breach"] = 8,
-  ["Increase Armor"] = 9,
-  ["Fracture"] = 10,
-  ["Increase Spell Power"] = 11,
-  ["Cowardice"] = 12,
-  ["Increase Weapon Power"] = 13,
-  ["Maim"] = 14,
-  ["Spell Critical"] = 15,
-  ["Uncertainty"] = 16,
-  ["Weapon Critical"] = 17,
-  ["Enervation"] = 18,
-  ["Unstoppable"] = 19,
-  ["Entrapment"] = 20,
-  ["Detection"] = 21,
-  ["Invisible"] = 22,
-  ["Speed"] = 23,
-  ["Hindrance"] = 24,
-  ["Protection"] = 25,
-  ["Vulnerability"] = 26,
-  ["Lingering Health"] = 27,
-  ["Gradual Ravage Health"] = 28,
-  ["Vitality"] = 29,
-  ["Defile"] = 30,
-  ["Heroism"] = 31,
-  ["Timidity"] = 32,
+WritCreater.effectMap = {
+  [1] = "Restore Health",
+  [2] = "Ravage Health",
+  [3] = "Restore Magicka",
+  [4] = "Ravage Magicka",
+  [5] = "Restore Stamina",
+  [6] = "Ravage Stamina",
+  [7] = "Increase Spell Resist",
+  [8] = "Breach",
+  [9] = "Increase Armor",
+  [10] = "Fracture",
+  [11] = "Increase Spell Power",
+  [12] = "Cowardice",
+  [13] = "Increase Weapon Power",
+  [14] = "Maim",
+  [15] = "Spell Critical",
+  [16] = "Uncertainty",
+  [17] = "Weapon Critical",
+  [18] = "Enervation",
+  [19] = "Unstoppable",
+  [20] = "Entrapment",
+  [21] = "Detection",
+  [22] = "Invisible",
+  [23] = "Speed",
+  [24] = "Hindrance",
+  [25] = "Protection",
+  [26] = "Vulnerability",
+  [27] = "Lingering Health",
+  [28] = "Gradual Ravage Health",
+  [29] = "Vitality",
+  [30] = "Defile",
+  [31] = "Heroism",
+  [32] = "Timidity",
 }
 
 local reagentInfo = {
@@ -249,7 +220,7 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, craftingWrit
 			out(missingOut)
 			return 
 		end
-		out(zo_strformat("Crafting will use 1 <<t:1>>, 1 <<t:2>>, and 1 <<t:3>>", getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2])))
+		
 		if craftingWrits then
 			out(getOut().."\n"..WritCreater.strings.crafting)
 			shouldShowGamepadPrompt = false
@@ -269,6 +240,7 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, craftingWrit
 				d("You have selected to craft a full stack, but you do not have the craft multiplication passives active")
 			end
 		end
+		out(zo_strformat("Crafting will use <<t:4>> <<t:1>>, <<t:4>> <<t:2>>, and <<t:4>> <<t:3>>", getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2]), quantity))
 		DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
 		WritCreater.showCraftButton(craftingWrits)
 		WritCreater.LLCInteraction:CraftAlchemyItemId(solvent.itemId, minCombo[1], minCombo[2], nil, quantity, craftingWrits)
@@ -327,7 +299,7 @@ end
 
 
 
-local function swapAlchemyInfo(journalIndex, craftingWrits)
+local function startAlchemy(journalIndex, craftingWrits)
 	local journalIndex = WritCreater.writSearch()[CRAFTING_TYPE_ALCHEMY]
 	if not journalIndex then
 		DolgubonsWrits:SetHidden(true)
@@ -365,22 +337,6 @@ local function swapAlchemyInfo(journalIndex, craftingWrits)
 	        }
 	    end
 	else
-		-- searchDailyCombos(journalIndex)
-		local itemId, materialItemId = GetQuestConditionItemInfo(journalIndex, 1, 1)
-	    local desiredTraitId = GetTraitIdFromBasePotion(itemId)
-	    if desiredTraitId ~= 0 and curCount < maxCount then
-	        alchemyInfo =
-	        {
-	            basePotionItemId = itemId,
-	            materialItemId = materialItemId,
-	            desiredTrait = desiredTraitId
-	        }
-	    else
-	        alchemyInfo =
-	        {
-	            hasDesiredPotion = curCount >= maxCount
-	        }
-	    end
 	end
 	--[[
  GetAlchemyResultingItemIdIfKnown(Bag solventBagId, integer solventSlotIndex, Bag reagent1BagId, integer reagent1SlotIndex, Bag reagent2BagId, integer reagent2SlotIndex, Bag:nilable reagent3BagId, integer:nilable reagent3SlotIndex, integer:nilable desiredEncodedTraits)
@@ -421,7 +377,117 @@ Returns: string link, ProspectiveAlchemyResult prospectiveAlchemyResult
 		return
 	end
 end
-WritCreater.startAlchemy = swapAlchemyInfo
+WritCreater.startAlchemy = startAlchemy
+-- |H1:item:119703:5:1:0:0:0:199:8:11:15:0:0:0:0:0:0:0:0:0:0:50000|h|h
+-- |H1:item:119701:5:1:0:0:0:239:27:1:4:0:0:0:0:0:0:0:0:0:0:20000|h|h
+
+local typeMap = 
+{
+	[64501] = "potion",
+	[75365] = "poison",
+}
+
+local function queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, reference, name)
+	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
+	WritCreater.LLCInteractionMaster:CraftAlchemyItemId(solvent, r1, r2, r3, quantity, true, reference)
+	local type = typeMap[solvent]
+
+	-- local resultLink = LLC_GetEnchantingResultItemLinkByAttributes(true, level, itemId, quality)
+	d(zo_strformat("<<t:1>>: Crafting a <<t:2>> using <<t:3>>, <<t:4>>, and <<t:5>>", name, type, getItemLinkFromItemId(r1), getItemLinkFromItemId(r2), getItemLinkFromItemId(r3)))
+
+end
+
+
+local function checkCombo(effect1, effect2, effect3, r1, r2, r3)
+	local result, numTraits = determinePotionResult(r1, r2, r3)
+	if numTraits < 3 then
+		return false
+	end
+	local p1 = (effect1 % 2 == 0) and -1 or 1
+	local e1 = effect1 + ((effect1 % 2 == 0) and -1 or 0)
+	local p2 = (effect2 % 2 == 0) and -1 or 1
+	local e2 = effect2 + ((effect2 % 2 == 0) and -1 or 0)
+	local p3 = (effect3 % 2 == 0) and -1 or 1
+	local e3 = effect3 + ((effect3 % 2 == 0) and -1 or 0)
+	local e1Match = result[e1] == p1
+	local e2Match = result[e2] == p2
+	local e3Match = result[e3] == p3
+	return e1Match and e2Match and e3Match
+end
+
+local function findMasterWritReagents(materialId, effect1, effect2, effect3)
+	local shortList = getShortlist(effect1, effect2, effect3)
+	local r1, r2, r3
+	for r1, _ in pairs(shortList) do
+		for r2, _ in pairs(shortList) do
+			if r1 ~= r2 then
+				for r3, _ in pairs(shortList) do
+					if r1 ~= r3 and r2 ~= r3 then
+						local valid = checkCombo(effect1, effect2, effect3, r1, r2, r3)
+						if valid then
+							return r1, r2, r3
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+
+function WritCreater.alchemySealedWrit(bag, slot)
+	local itemLink = GetItemLink(bag, slot)
+	local x = { ZO_LinkHandler_ParseLink(itemLink) }
+	local materialId = tonumber(x[10])
+	local effect1 = tonumber(x[11])
+	local effect2 = tonumber(x[12])
+	local effect3 = tonumber(x[13])
+	local r1, r2, r3 = findMasterWritReagents(materialId, effect1, effect2, effect3)
+	-- d(getItemLinkFromItemId(r1))
+	-- d(getItemLinkFromItemId(r2))
+	-- d(getItemLinkFromItemId(r3))
+	local solvent
+	local quantity
+	if materialId == 199 then
+		solvent = 64501
+		quantity = 4
+	else
+		solvent = 75365
+		quantity = 1
+	end
+	queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, itemLink, GetItemLinkName(itemLink))
+	-- 
+end
+-- 395549
+local function decodeEffects(encodedTraits)
+
+	local e1 = (math.floor(encodedTraits / 65536) % 64)
+	local e2 = (math.floor(encodedTraits / 256) % 64)
+	local e3 = (encodedTraits % 64)
+	return e1, e2, e3
+end
+
+function WritCreater.alchemyMasterQuestAdded(journalIndex, name)
+	local _, current, required = GetJournalQuestConditionInfo(journalIndex)
+	if current == required then
+		return
+	end
+	local itemId, materialId, _, _, _, _, _, _, encodedTraits =  GetQuestConditionMasterWritInfo(journalIndex)
+	local solvent
+	local quantity
+	if materialId == 199 then
+		solvent = 64501
+		quantity = 4
+	else
+		solvent = 75365
+		quantity = 1
+	end
+	local effect1, effect2, effect3 = decodeEffects(encodedTraits)
+	local r1, r2, r3 = findMasterWritReagents(materialId, effect1, effect2, effect3)
+	queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, journalIndex, name)
+end
+
+
 
 
 

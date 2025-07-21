@@ -63,7 +63,7 @@ end
 local lootReadMail
 local function deleteLootedMail(mailId)
 	local  _,_,subject, _,_,system,customer, _, numAtt, money = GetMailItemInfo(mailId)
-	if numAtt > 0 and (FindFirstEmptySlotInBag(BAG_BACKPACK) or IsESOPlusSubscriber()) then
+	if numAtt <= GetNumBagFreeSlots(1) or IsESOPlusSubscriber() then
 		-- d("Tried deleting but still attachments")
 		lootReadMail(1, mailId)
 		return

@@ -15,3 +15,18 @@
 function getItemLinkFromItemId(itemId) 
 	return string.format("|H1:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", itemId, 0, 0, 0, 10000) 
 end 
+WritCreater = WritCreater or {}
+-- Currently only used on console, but who knows
+function WritCreater.showQRCode(url)
+    if not DolgubonsLazyWritQRCode or not LibQRCode then
+        RequestOpenUnsafeURL(url)
+    end
+    if url == nil then return end
+    if not WritCreater.qrCodeScene then
+        local qrCodeScene = ZO_Scene:New("dlwcqrCode", SCENE_MANAGER)
+        WritCreater.qrCodeScene = qrCodeScene
+        WritCreater.qrCodeScene:AddFragment(ZO_SimpleSceneFragment:New(DolgubonsLazyWritQRCode))
+    end
+    LibQRCode.DrawQRCode(DolgubonsLazyWritQRCodeBackdropOutput, url)
+    SCENE_MANAGER:Show("dlwcqrCode")
+end

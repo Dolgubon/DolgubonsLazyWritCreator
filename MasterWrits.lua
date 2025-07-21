@@ -20,6 +20,22 @@ local CRAFTING_TYPE_CHARITY = 300
 local CRAFTING_TYPE_DEEPWINTER = 400
 local CRAFTING_TYPE_IMPERIAL = 500
 -- Debug function. Has the ability to save stuff and then later send it in a mail rather than outputting it in chat. Mail currently not enabled.
+local outputCounter
+
+local d = function(...)
+	if outputCounter then
+	else
+		CHAT_ROUTER:AddSystemMessage(...)
+		return
+	end
+	outputCounter = outputCounter + 1
+	if outputCounter < 10 then
+		CHAT_ROUTER:AddSystemMessage(...)
+	elseif outputCounter == 10 then
+		-- d("Large number of writs ")
+	end
+end
+
 
 function DolgubonGlobalDebugOutput(...)
 	if GetDisplayName()=="@Dolgubon" and (DolgubonGlobalDebugToggle or localDebugToggle) then
@@ -103,7 +119,6 @@ local function queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, i
 	local expectedItemLink = WritCreater.LLCInteractionMaster.getItemLinkFromParticulars(setIndex, itemTraitType+1, patternIndex, station, 150, true, itemQuality, itemStyleId)
 	-- if DoesItemLinkFulfillJournalQuestCondition(expectedItemLink, journalIndex, 1, 1, true) then
 		-- Add to queue
-	-- if not GetDisplayName()== "@Dolgubon" then
 	-- d(patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)
 	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
 	local request = WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)
@@ -267,6 +282,7 @@ function WritCreater.MasterWritsQuestAdded(event, journalIndex,name)
 		improvedEnchantJournal(journalIndex, name)
 		return 
 	elseif writType == CRAFTING_TYPE_ALCHEMY then
+		WritCreater.alchemyMasterQuestAdded(journalIndex, name)
 	elseif writType == CRAFTING_TYPE_PROVISIONING then
 		provisioningJournal(journalIndex, name)
 	elseif writType and writType >0 then
@@ -310,16 +326,12 @@ local exampleSealedWrits = {
     [GetItemLinkName("|H1:item:119682:6:1:0:0:0:65:192:4:95:14:47:0:0:0:0:0:0:0:0:63250|h|h")] = CRAFTING_TYPE_WOODWORKING,
     [GetItemLinkName("|H1:item:119564:5:1:0:0:0:26581:207:4:0:0:0:0:0:0:0:0:0:0:0:20000|h|h")] = CRAFTING_TYPE_ENCHANTING,
     [GetItemLinkName("|H1:item:119693:5:1:0:0:0:68276:0:0:0:0:0:0:0:0:0:0:0:0:0:20000|h|h")] = CRAFTING_TYPE_PROVISIONING,
-    -- [GetItemLinkName("|H1:item:119705:5:1:0:0:0:199:19:3:15:0:0:0:0:0:0:0:0:0:0:50000|h|h")] = CRAFTING_TYPE_ALCHEMY,
+    [GetItemLinkName("|H1:item:119705:5:1:0:0:0:199:19:3:15:0:0:0:0:0:0:0:0:0:0:50000|h|h")] = CRAFTING_TYPE_ALCHEMY,
     [GetItemLinkName("|H1:item:153737:5:1:0:0:0:18:255:4:439:33:0:0:0:0:0:0:0:0:0:346500|h|h")] = CRAFTING_TYPE_JEWELRYCRAFTING,
     [GetItemLinkName("|H1:item:153482:4:1:0:0:0:87691:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_WITCHES,
     [GetItemLinkName("|H1:item:145572:4:1:0:0:0:118012:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_NEWLIFE,
     [GetItemLinkName("|H1:item:156735:4:1:0:0:0:117954:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_DEEPWINTER,
     [GetItemLinkName("|H1:item:167172:5:1:0:0:0:117963:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_IMPERIAL,
-    
-
-
-    
 }
 WritCreater.sealedWritNames = exampleSealedWrits
 
@@ -332,6 +344,7 @@ local function itemHandler(bag, slot, station)
 		improvedEnchantRightClick(link, station)
 		return
 	elseif station == CRAFTING_TYPE_ALCHEMY then
+		WritCreater.alchemySealedWrit(bag, slot)
 	elseif station == CRAFTING_TYPE_PROVISIONING or station == CRAFTING_TYPE_WITCHES or station == CRAFTING_TYPE_NEWLIFE or station == CRAFTING_TYPE_DEEPWINTER or station == CRAFTING_TYPE_IMPERIAL then
 		provisioningRightClick(GetItemLink(bag, slot), station)
 	elseif station and station >0 and station <8 then
@@ -432,23 +445,26 @@ local function gamepadInventoryHook(inventoryInfo, slotActions)
 	slotActions:AddSlotAction(SI_CRAFT_SEALED_WRIT, function()itemHandler(bag, slot, station) end , "keybind3")
 	-- There is definitely a better way to do this
 	-- But I've spent too long trying to figure one out so I'll stick with this
+	if SCENE_MANAGER:GetCurrentScene() ~= "gamepad_inventory_root" then
+		return
+	end
 	zo_callLater(function()
 	 myButtonGroup = {
 	{
 		name = "Craft Writ",
 		keybind = "UI_SHORTCUT_QUATERNARY",
 		callback = function(input, input2)
-		itemHandler(bag, slot, station)
+			itemHandler(bag, slot, station)
 		end,
 	}}
 	KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup) end, 10)
 end
-
+-- SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, newState) d(scene:GetName(), newState) end )
 SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, newState)
 	if not IsInGamepadPreferredMode() then return end
 
 	local sceneName = scene:GetName()
-	if (newState == SCENE_SHOWING) and sceneName ~= "gamepad_inventory_root" then
+	if (newState == SCENE_SHOWING or newState == SCENE_SHOWN ) and sceneName ~= "gamepad_inventory_root" then --
 			removeCraftKeybind()
 		-- end
 	end
@@ -466,6 +482,7 @@ function WritCreater.InitializeRightClick()
 end
 
 function WritCreater.queueAllSealedWrits(bag)
+	outputCounter = 0
 	WritCreater.LLCInteractionMaster:cancelItem()
 	for i = 0, GetBagSize(bag) do
 		local itemType, specializedType = GetItemType(bag, i)
@@ -476,8 +493,11 @@ function WritCreater.queueAllSealedWrits(bag)
 				itemHandler(bag, i, stationType)
 			end
 		end
-
 	end
+	if outputCounter >= 10 then
+		CHAT_ROUTER:AddSystemMessage("Writ Crafter queued "..outputCounter.." sealed writs")
+	end
+	outputCounter = nil
 end
 
 --]]

@@ -11,6 +11,27 @@
 
 <GuiXml>
 	<Controls>
+		<TopLevelControl name="DolgubonsLazyWritQRCode" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="300" y="300" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200" />
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+					<Dimensions x="300" y="300" />
+					<Edge edgeSize="1" />
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubon's Lazy Writ Creator">
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="15" offsetX="0" />
+						</Label>
+						<Texture name="$(parent)Output" font="ZoFontGame" color="FFFFFF" horizontalAlignment="LEFT"
+							verticalAlignment="TOP" text="The daily reset for writs will be in 1 hour" mouseEnabled="true">
+							<Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="5" />
+							<Dimensions x="240" y="240" />
+						</Texture>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
 		<TopLevelControl name="DolgubonsLazyWritResetWarner" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="700" y="150" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200" />
@@ -50,6 +71,35 @@
 									WritCreater.resetWindowClose(false)
 									WritCreater.resetWindowClose = nil
 								end
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+		<TopLevelControl name="DolgubonsLazyWritChangelog" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="700" y="400" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200" />
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+					<Dimensions x="700" y="400" />
+					<Edge edgeSize="1" />
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubon's Lazy Writ Creator Changelog">
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="15" offsetX="-5" />
+						</Label>
+						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" horizontalAlignment="LEFT"
+							verticalAlignment="TOP" text="The daily reset for writs will be in 1 hour" mouseEnabled="true">
+							<Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="-5" />
+							<Dimensions x="640" y="330" />
+						</Label>
+						<Button name="$(parent)Close" alpha="1" inherits="ZO_DefaultButton" text="Close" clickSound="Book_Acquired">
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10" />
+							<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3" />
+							<Dimensions x="130" />
+							<OnClicked>
+								self:GetOwningWindow():SetHidden(true)
 							</OnClicked>
 						</Button>
 					</Controls>

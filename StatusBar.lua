@@ -163,6 +163,15 @@ function WritCreater.updateQuestStatusAnchors()
 	StatusBar:SetAnchor(TOPRIGHT, GuiRoot, TOPLEFT, WritCreater:GetSettings().statusBarX, WritCreater:GetSettings().statusBarY)
 end
 
+local function inventorySlotFilter( eventCode,  bagId,  slotId,  isNewItem,  itemSoundCategory,  inventoryUpdateReason,  stackCountChange)
+	if isNewItem then
+		updateQuestStatus()
+	elseif GetSlotStackSize(bagId, slotId) == 0 then
+		updateQuestStatus()
+	end
+	return
+end
+
 
 WritCreater.updateQuestStatus = updateQuestStatus
 function WritCreater.loadStatusBar()
@@ -174,6 +183,8 @@ function WritCreater.loadStatusBar()
 	EVENT_MANAGER:RegisterForEvent("WritCrafterStatusBar", EVENT_OBJECTIVE_COMPLETED , updateQuestStatus) -- probably not used
 	EVENT_MANAGER:RegisterForEvent("WritCrafterStatusBar", EVENT_QUEST_REMOVED , updateQuestStatus)
 	EVENT_MANAGER:RegisterForEvent("WritCrafterStatusBar", EVENT_PLAYER_ACTIVATED , updateQuestStatus)
+	EVENT_MANAGER:RegisterForEvent("WritCrafterStatusBar", EVENT_INVENTORY_SINGLE_SLOT_UPDATE , updateQuestStatus)
+	-- EVENT_MANAGER:AddFilterForEvent("WritCrafterStatusBar", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM, true)
 	updateQuestStatus()
 	StatusBar:ClearAnchors()
 	StatusBar:SetAnchor(TOPRIGHT, GuiRoot, TOPLEFT, WritCreater:GetSettings().statusBarX, WritCreater:GetSettings().statusBarY)

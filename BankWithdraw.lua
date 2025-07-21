@@ -328,48 +328,51 @@ local validItemTypes =
 	--]]
 }
 
+local function openBankInterface()
+	if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
+		for i= 1, GetChatterOptionCount() do
+			local _, optiontype = GetChatterOption(i)
+			if optiontype == CHATTER_START_BANK then
+				SelectChatterOption(i)
+			end
+		end
+	end
+end
+
 local depositedItem = false
 
 local function runProcessDeposits()
+	local _,bankStack = GetItemLinkStacks(itemLink)
 	local numItems = 0
-	for k, v in pairs(WritCreater.pendingItemActions) do 
-		numItems = numItems + 1
-	end
-	if numItems > 0 and (FindFirstEmptySlotInBag(BAG_BANK) or FindFirstEmptySlotInBag(BAG_SUBSCRIBER_BANK)) then
-		for k, itemInfo in pairs(WritCreater.pendingItemActions) do
-			if itemInfo[1] == GetItemLink(itemInfo[3], itemInfo[4]) then
-				if itemInfo[2] == 2 then
-					if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
-						for i= 1, GetChatterOptionCount() do
-							local _, optiontype = GetChatterOption(i)
-							if optiontype == CHATTER_START_BANK then
-								SelectChatterOption(i)
-							end
-						end
-					end
-					local bag
-					local destinationSlot = FindFirstEmptySlotInBag(BAG_BANK) or FindFirstEmptySlotInBag(BAG_SUBSCRIBER_BANK)
-					if FindFirstEmptySlotInBag(BAG_BANK) then
-						bag = BAG_BANK
-					elseif FindFirstEmptySlotInBag(BAG_SUBSCRIBER_BANK) then
-						bag = BAG_SUBSCRIBER_BANK
-					end
-					if not bag then
-						return
-					end
-					if IsProtectedFunction("RequestMoveItem") then
-						CallSecureProtected("RequestMoveItem", itemInfo[3], itemInfo[4], bag,destinationSlot,1)
-					else
-						RequestMoveItem(itemInfo[3], itemInfo[4], bag,destinationSlot,itemInfo[5])
-					end
-					depositedItem = true
-					d("Writ Crafter: Depositing "..itemInfo[1])
-					table.remove(WritCreater.pendingItemActions, k)
-					return zo_callLater( runProcessDeposits, GetLatency()+50)
-				end
-			end
+	for k, v in pairs(WritCreater.savedVars.depositList) do
+		local doesItemExistInSlot = Id64ToString(GetItemUniqueId(bag, index)) == v.uniqueId
+		if doesItemExistInSlot then
+			numItems = numItems + 1
 		end
-	elseif depositedItem and numItems == 0 then
+	end
+	for k, v in pairs(WritCreater.savedVars.depositList) do
+		local bag = v.bag
+		local index = v.slot
+		local doesItemExistInSlot = Id64ToString(GetItemUniqueId(bag, index)) == v.uniqueId
+		if not doesItemExistInSlot then
+			d("Writ Crafter: Could not find "..v[1].." to deposit. Item may have been destroyed or moved")
+			WritCreater.savedVars.depositList[k] = nil
+			numItems = numItems - 1
+		elseif DoesBagHaveSpaceFor(bankingBag, bag, index) or (canAlsoBePlacedInSubscriberBank and DoesBagHaveSpaceFor(BAG_SUBSCRIBER_BANK, bag, index)) then
+			if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
+				openBankInterface()
+				return zo_callLater( runProcessDeposits, GetLatency()+50)
+			end
+			local _=IsProtectedFunction("PickupInventoryItem") and CallSecureProtected("PickupInventoryItem",bag, index) or PickupInventoryItem(bag, index)
+			local _=IsProtectedFunction("PlaceInTransfer") and CallSecureProtected("PlaceInTransfer") or PlaceInTransfer()
+			d("Writ Crafter: Depositing "..tostring(v[1]))
+			WritCreater.savedVars.depositList[k] = nil
+			depositedItem = true
+			numItems = numItems - 1
+			return zo_callLater( runProcessDeposits, GetLatency()+20)
+		end
+	end
+	if depositedItem and numItems == 0 then
 		depositedItem = false
 		if WritCreater:GetSettings().despawnBankerDeposits then
 			ZO_SharedInteraction:CloseChatterAndDismissAssistant()

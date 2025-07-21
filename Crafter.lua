@@ -308,6 +308,9 @@ local function setupConditionsTable(quest, indexTableToUse)
 	}
 	for condition = 1, GetJournalQuestNumConditions(quest,1) do
 		conditionsTable["text"][condition], conditionsTable["cur"][condition], conditionsTable["max"][condition],_,conditionsTable["complete"][condition] = GetJournalQuestConditionInfo(quest, 1, condition)
+		local itemIdT, _, stationT = GetQuestConditionItemInfo(quest, 1, condition)
+		WritCreater.savedVarsAccountWide["craftLog"][stationT] = WritCreater.savedVarsAccountWide["craftLog"][stationT] or {}
+		WritCreater.savedVarsAccountWide["craftLog"][stationT][itemIdT] = WritCreater.savedVarsAccountWide["craftLog"][stationT][itemIdT] or {( 0) + conditionsTable["max"][condition],GetItemLinkName(getItemLinkFromItemId(itemIdT))}
 		DolgubonsWritsBackdropQuestOutput:AddText("\n"..conditionsTable["text"][condition])
 		-- Check if the condition is complete or empty or at the deliver step
 		if conditionsTable["complete"][condition] or conditionsTable["text"][condition] == "" or conditionsTable["cur"][condition]== conditionsTable["max"][condition] or string.find(myLower(conditionsTable["text"][condition]),myLower(WritCreater.writCompleteStrings()["Deliver"])) then
@@ -323,6 +326,7 @@ local function setupConditionsTable(quest, indexTableToUse)
 						conditionsTable["pattern"][condition] = j
 						conditionsTable["mats"][condition] = i
 						found= true
+						WritCreater.savedVarsAccountWide["craftLog"][stationT][itemIdT][3] = j
 						break 
 					end
 				end
@@ -484,6 +488,11 @@ local function specialGuestStuff(e,_,returnedTable)
 	end
 end
 function smithingCrafting(quest, craftItems)
+	if WritCreater.shouldUseSmartMultiplier() then
+		WritCreater.preCraftMultiple(GetCraftingInteractionType())
+		return
+	end
+	local multiplierToUse = math.max(WritCreater:GetSettings().craftMultiplier, 1)
 
 	--if #queue>0 then return end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
@@ -541,7 +550,7 @@ function smithingCrafting(quest, craftItems)
 			else
 				local needed = conditions["max"][i] - conditions["cur"][i]
 				-- Since some days use the same as other days, we account for that here
-				if WritCreater:GetSettings().craftMultiplier > 1 then
+				if multiplierToUse > 1 then
 					if CRAFTING_TYPE_JEWELRYCRAFTING == GetCraftingInteractionType() then
 						if conditions["max"][i] > 1 then
 							needed =  needed + 1
@@ -558,7 +567,7 @@ function smithingCrafting(quest, craftItems)
 						end
 					end
 				end
-				needed = needed*WritCreater:GetSettings().craftMultiplier
+				needed = needed*multiplierToUse
 				for s = 1, needed do
 					local matName = GetSmithingPatternMaterialItemLink( conditions["pattern"][i], index, 0)
 					addMats(matName,numMats ,matsRequired, conditions["pattern"][i], index )
@@ -602,7 +611,7 @@ function smithingCrafting(quest, craftItems)
 	end
 
 	createMatRequirementText(matsRequired)
-	if GetNumBagFreeSlots(BAG_BACKPACK) < 3*WritCreater:GetSettings().craftMultiplier then
+	if GetNumBagFreeSlots(BAG_BACKPACK) < 3*multiplierToUse then
 					
 		out(getOut()..zo_strformat(WritCreater.strings['lowInventory'], GetNumBagFreeSlots(BAG_BACKPACK)))
 	end
@@ -703,7 +712,10 @@ end
 
 local function enchantCrafting(quest,add)
 	out("")
-	
+	local multiplierToUse = WritCreater:GetSettings().craftMultiplier or 1
+	if WritCreater:GetSettings().simpleMultiplier or WritCreater:GetSettings().craftMultiplier == 0 then
+		multiplierToUse = 1
+	end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	if ENCHANTING then
 		ENCHANTING.potencySound = SOUNDS["NONE"]
@@ -773,7 +785,7 @@ local function enchantCrafting(quest,add)
 			end
 			if not add then
 				if essence["bag"] and potency["bag"] and ta["bag"] then
-					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), multiplierToUse) or 1
 					local runeNames = {
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
@@ -791,12 +803,12 @@ local function enchantCrafting(quest,add)
 				end
 			else
 				if essence["bag"] and potency["bag"] and ta["bag"] then
-					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), WritCreater:GetSettings().craftMultiplier) or 1
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), multiplierToUse) or 1
 					local runeNames = {
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
 					}
-					if GetDisplayName() == "@Dolgubon" and WritCreater:GetSettings().craftMultiplier > 1 then
+					if GetDisplayName() == "@Dolgubon" and multiplierToUse > 1 then
 						quantity = quantity * 3
 					end
 					runeNames[#runeNames + 1 ] = getItemTotalStackCount( ta["bag"], ta["slot"])
@@ -952,7 +964,6 @@ local function craftCheck(eventcode, station)
 			end
 			WritCreater.startAlchemy(station, craftingWrits)
 		else
-
 			DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
 			smithingCrafting(writs[station],craftingWrits)
 		end
@@ -966,9 +977,9 @@ WritCreater.craftCheck = craftCheck
 
 
 WritCreater.craft = function()
-shouldShowGamepadPrompt = true
-local station =GetCraftingInteractionType()
-craftingWrits = true 
+	shouldShowGamepadPrompt = true
+	local station =GetCraftingInteractionType()
+	craftingWrits = true 
 	local writs, hasWrits = WritCreater.writSearch()
 	if station == CRAFTING_TYPE_ENCHANTING then 
 		if hasWrits then
@@ -979,6 +990,9 @@ craftingWrits = true
 		WritCreater.startAlchemy(station, craftingWrits)
 	elseif station == CRAFTING_TYPE_PROVISIONING then
 		provisioningCrafting(writs[station],craftingWrits)
+	elseif WritCreater.shouldUseSmartMultiplier() then
+		WritCreater.LLCInteractionMultiplicator:craftItem(GetCraftingInteractionType())
+		WritCreater.updateCraftMultiplierOut()
 	else
 		craftNextQueueItem() 
 	end 
@@ -1020,7 +1034,7 @@ function WritCreater.initializeCraftingEvents()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED, WritCreater.craftCompleteHandler)
 	-- Exit if the user goes to a battleground
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name,  EVENT_BATTLEGROUND_STATE_CHANGED, function(event , pre, new) if pre == 0 and new > 0 then WritCreater.closeWindow() end end )
-EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, WritCreater.closeWindow)
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, WritCreater.closeWindow)
 
 
 
