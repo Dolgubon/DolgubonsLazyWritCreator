@@ -5,7 +5,7 @@
 -- Addon Creation Date: March 14, 2016
 --
 -- File Name: Languages/jp.lua
--- File Description: Japanese Localization
+-- File Description: Japanese Localization (Translated by qoqo and Calamath)
 -- Load Order Requirements: None
 -- 
 -----------------------------------------------------------------------------------
@@ -168,14 +168,21 @@ local function dailyResetFunction(till)
 	end 
 end
 
-local function masterWritEnchantToCraft (pat,set,trait,style,qual,mat,writName,Mname,generalName)
-	local partialString = zo_strformat("<<t:6>>の<<t:1>> セット:<<t:2>> 特性:<<t:3>> スタイル:<<t:4>> 品質:<<t:5>>を作成する",pat,set,trait,style,qual,mat)
-	return zo_strformat("<<t:2>>の<<t:3>><<t:4>>: <<1>>",partialString,writName,Mname,generalName )
+local function masterWritEnchantToCraft (link, trait, style, quality, writName)
+	local partialString = zo_strformat("<<t:5>>: CP150の <<t:1>> (特性:<<t:2>> スタイル:<<t:3>> 品質:<<t:4>>) を作成する", link, trait, style, quality, writName)
+	return partialString
 end
+
 
 WritCreater.strings = WritCreater.strings or {}
 
-WritCreater.strings["runeReq"] 					= function (essence, potency) return zo_strformat("|c2dff00クラフトには|r ター |c2dff00と |cffcc66<<1>>|c2dff00 と |c0066ff<<2>>|r|c2dff00 が各1個必要|r", essence, potency) end
+WritCreater.strings["runeReq"] 					= function (essence, potency, taStack, essenceStack, potencyStack) 
+	if taStack and essenceStack and potencyStack then
+		return zo_strformat("|c2dff00クラフトには|r ター|c2dff00(<<3>>個 所持)と |r|cffcc66<<1>>|r|c2dff00(<<4>>個 所持)と |r|c0066ff<<2>>|r|c2dff00(<<5>>個 所持) が各1個必要|r", essence, potency, taStack, essenceStack, potencyStack)
+	else
+		return zo_strformat("|c2dff00クラフトには|r ター |c2dff00と |cffcc66<<1>>|c2dff00 と |c0066ff<<2>>|r|c2dff00 が各1個必要|r", essence, potency)
+	end
+end
 WritCreater.strings["runeMissing"] 				= runeMissingFunction
 WritCreater.strings["notEnoughSkill"]			= "必要な装備を作るための十分に高いクラフトスキルを有していません。"
 WritCreater.strings["smithingMissing"] 			= "\n|cf60000十分な材料を持っていません|r"
@@ -192,7 +199,8 @@ WritCreater.strings["complete"] 				= "|c00FF00令状完了|r"
 WritCreater.strings["craftingstopped"] 			= "クラフトを中止しました。アドオンが正しいアイテムをクラフトしていたかチェックしてください"
 WritCreater.strings["smithingReqM"] 			= function(amount, type, more) return zo_strformat("クラフトには<<1>>を<<2>>個使用 (|cf60000あと<<3>>個必要|r)", type, amount, more) end
 WritCreater.strings["smithingReqM2"] 			= function (amount,type,more) return zo_strformat("\n同様に<<1>>を<<2>>個使用 (|cf60000あと<<3>>個必要|r)", type, amount, more) end
-WritCreater.strings["smithingReq"] 				= function (amount,type, current) return zo_strformat("クラフトには<<1>>を<<2>>個使用 (|c2dff00<<3>>個使用可能|r)", type, amount, current) end
+WritCreater.strings["smithingReq"] 				= function (amount,type, current) return zo_strformat("クラフトには<<1>>を<<2>>個使用 (|c2dff00<<3>>個使用可能|r)", type, amount, 
+														zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(current, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES))) end
 WritCreater.strings["smithingReq2"] 			= function (amount,type, current) return zo_strformat("\n同様に<<1>>を<<2>>個使用 (|c2dff00<<3>>個使用可能|r)", type, amount, current) end
 WritCreater.strings["lootReceived"]				= "<<1>> <<3>>個 を受け取った (<<2>>個 所持)"
 WritCreater.strings["lootReceivedM"]			= "<<1>> を受け取った "
@@ -204,13 +212,14 @@ WritCreater.strings["sealedWrits"]				= "Sealed Writs"
 WritCreater.strings["masterWritEnchantToCraft"]	= function(lvl, type, quality, writCraft, writName, generalName) 
 													return zo_strformat("<<t:4>>の<<t:5>><<t:6>>: <<t:1>>のグリフ(<<t:2>>) 品質:<<t:3>>を作成する",lvl, type, quality,
 													writCraft,writName, generalName) end
-WritCreater.strings["masterWritSmithToCraft"]		= masterWritEnchantToCraft
+WritCreater.strings["newMasterWritSmithToCraft"]	= masterWritEnchantToCraft
 WritCreater.strings["withdrawItem"]				= function(amount, link, remaining) return link.."を"..amount.."個取り出した(銀行に"..remaining.."個)" end
 WritCreater.strings['fullBag']					= "バッグに空きがありません。バッグに空きを作ってください。"
 WritCreater.strings['masterWritSave']			= "Dolgubon's Lazy Writ Crafterは、あなたが誤ってマスター依頼を受諾してしまうのを防ぎました! 設定メニューでこの機能をオフにできます"
 WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafterには次のスタンドアロンライブラリが必要です。ダウンロードしてインストールするかライブラリをオンにしてください: "
 WritCreater.strings['resetWarningMessageText']	= "デイリー依頼のリセットまで<<1>>時間<<2>>分です\n設定でこのワーニング表示のカスタマイズができます"
 WritCreater.strings['resetWarningExampleText']	= "ワーニングはこのように表示されます"
+WritCreater.strings['lowInventory']				= "\n空きスロットが <<1>>しか残っておらず、空きスロットが不足している可能性があります。"
 
 
 
@@ -221,7 +230,7 @@ WritCreater.optionStrings.accountWide                  = "アカウント共通"
 WritCreater.optionStrings.characterSpecific            = "キャラクター固有"
 WritCreater.optionStrings.useCharacterSettings         = "キャラクター固有の設定を使用する" -- de
 WritCreater.optionStrings.useCharacterSettingsTooltip  = "このキャラクターのみの固有の設定を使用します" --de
-WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("スタイル素材「<<2>>」を用いる「<<1>>スタイル」を、クラフト時に使用できるようにします。",styleName, styleStone) end 
+WritCreater.optionStrings["style tooltip"]								= function (styleName, styleStone) return zo_strformat("スタイル素材「"..styleStone.."」を用いる「<<1>>スタイル」を、クラフト時に使用できるようにします。",styleName, styleStone) end 
 WritCreater.optionStrings["show craft window"]							= "クラフトウィンドウを表示"
 WritCreater.optionStrings["show craft window tooltip"]					= "クラフト台を開いたときにクラフトウィンドウを表示します"
 WritCreater.optionStrings["autocraft"]									= "クラフトの自動化"
@@ -233,9 +242,10 @@ WritCreater.optionStrings["clothing tooltip"]							= "縫製を自動化する"
 WritCreater.optionStrings["enchanting"]									= "付呪"
 WritCreater.optionStrings["enchanting tooltip"]							= "付呪を自動化する"
 WritCreater.optionStrings["alchemy"]									= "錬金"
-WritCreater.optionStrings["alchemy tooltip"]							= "錬金を自動化する（銀行からの取り込みのみ）"
+WritCreater.optionStrings["alchemy tooltip"]							= "錬金を自動化する（令状に必要なアイテムを事前にクラフトしておくことが推奨されますが、クラフトの自動化もサポートされています）"
+WritCreater.optionStrings["alchemyChoices"]								= {"オフ","全機能オン","自動クラフトを飛ばす"}
 WritCreater.optionStrings["provisioning"]								= "調理"
-WritCreater.optionStrings["provisioning tooltip"]						= "調理を自動化する（銀行からの取り込みのみ）"
+WritCreater.optionStrings["provisioning tooltip"]						= "調理を自動化する（令状に必要なアイテムを事前にクラフトしておくことが推奨されますが、クラフトの自動化もサポートされています）"
 WritCreater.optionStrings["woodworking"]								= "木工"
 WritCreater.optionStrings["woodworking tooltip"]						= "木工を自動化する"
 WritCreater.optionStrings["jewelry crafting"]							= "宝飾"
@@ -258,14 +268,14 @@ WritCreater.optionStrings["master"]										= "マスター依頼"
 WritCreater.optionStrings["master tooltip"]								= "これをオンにすると、受諾されたマスター依頼の納品物をクラフト台で自動的にクラフトします"
 WritCreater.optionStrings["right click to craft"]						= "右クリックでクラフト"
 WritCreater.optionStrings["right click to craft tooltip"]				= "これをオンにすると、密封された依頼をインベントリで右クリックして「密封された依頼をクラフトする」指示をしたときだけ、マスター依頼の納品物を自動的にクラフトします。本機能には、アドオンLibCustomMenuが必要です"
-WritCreater.optionStrings["crafting submenu"]							= "クラフトの自動化"
-WritCreater.optionStrings["crafting submenu tooltip"]					= "クラフトの職制別に自動化のオンオフを切り替えます"
+WritCreater.optionStrings["crafting submenu"]							= "デイリークラフト依頼の自動化"
+WritCreater.optionStrings["crafting submenu tooltip"]					= "クラフトの職制別に、クラフト依頼のデイリークエストの自動化のオンオフを切り替えます"
 WritCreater.optionStrings["timesavers submenu"]							= "時間短縮"
 WritCreater.optionStrings["timesavers submenu tooltip"]					= "時間短縮のための設定"
 WritCreater.optionStrings["loot container"]								= "報酬を取り出す"
 WritCreater.optionStrings["loot container tooltip"]						= "クラフト依頼完了の報酬コンテナからアイテムを自動的に取り出します"
 WritCreater.optionStrings["master writ saver"]							= "マスター依頼を保持"
-WritCreater.optionStrings["master writ saver tooltip"]					= "マスター依頼のクエストが自動的に受諾されことを防止します"
+WritCreater.optionStrings["master writ saver tooltip"]					= "マスター依頼のクエストが自動的に受諾されることを防止します"
 WritCreater.optionStrings["loot output"]								= "価値の高い報酬を受けた時の通知"
 WritCreater.optionStrings["loot output tooltip"]						= "クラフト依頼完了の報酬コンテナから価値の高いアイテムを受け取ったとき、メッセージを表示します"
 WritCreater.optionStrings["autoloot behaviour"]							= "自動取得の動作"
@@ -279,15 +289,17 @@ WritCreater.optionStrings['reticleColour']								= "レティクルの色を変
 WritCreater.optionStrings['reticleColourTooltip']						= "依頼を受けている場合に完了か未完了かで、クラフト台のレティクルの色を変えます"
 WritCreater.optionStrings['autoCloseBank']								= "銀行ダイアログの自動化"
 WritCreater.optionStrings['autoCloseBankTooltip']						= "令状に必要なアイテムがあれば、自動的に銀行からアイテムを取り出して銀行のダイアログを閉じます"
-WritCreater.optionStrings['despawnBanker']								= "助手の頭取の開放"
-WritCreater.optionStrings['despawnBankerTooltip']						= "銀行からアイテムを取り出した後で、助手の頭取を自動的に解放します"
+WritCreater.optionStrings['despawnBanker']								= "助手の頭取の解放 (引き出し)"
+WritCreater.optionStrings['despawnBankerTooltip']						= "銀行からアイテムを引き出した後で、助手の頭取を自動的に解放します"
+WritCreater.optionStrings['despawnBankerDeposit']						= "助手の頭取の解放 (預け入れ)"
+WritCreater.optionStrings['despawnBankerDepositTooltip']				= "銀行にアイテムを預け入れた後で、助手の頭取を自動的に解放します"
 WritCreater.optionStrings['dailyResetWarn']								= "Writ Reset Warning"
 WritCreater.optionStrings['dailyResetWarnTooltip']						= "その日の令状がリセットされる前に警告を表示します"
 WritCreater.optionStrings['dailyResetWarnTime']							= "リセットの何分前に表示"
 WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "デイリーリセットの何分前にワーニングを表示するか"
 WritCreater.optionStrings['dailyResetWarnType']							= "デイリーリセットのワーニング表示"
 WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "デイリーリセットが起ころうとしたときにどの種類のワーニングを表示するか"
-WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "なし","Type 1", "Type 2", "Type 3", "Type 4", "すべて"}
+WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "なし","画面中央に告知", "画面右上に表示", "チャット欄に表示", "ポップアップ", "すべて"}
 WritCreater.optionStrings['stealingProtection']							= "盗み行為防止"
 WritCreater.optionStrings['stealingProtectionTooltip']					= "ジャーナルに令状クエストを持っている間、あなたが誤って盗むのを防ぎます"
 WritCreater.optionStrings['jewelryWritDestroy']							= "Destroy Jewelry Sealed Writs"
@@ -299,8 +311,11 @@ WritCreater.optionStrings['suppressQuestAnnouncements']					= "令状クエス�
 WritCreater.optionStrings['suppressQuestAnnouncementsTooltip']			= "クラフト依頼の令状クエスト受諾時やアイテムのクラフト時にセンタースクリーンに表示されるメッセージ を抑制します"
 WritCreater.optionStrings["questBuffer"]								= "令状クエストバッファー"
 WritCreater.optionStrings["questBufferTooltip"]							= "令状クエストをいつでも受諾できるように、クエスト受諾枠の中にバッファー（令状クエスト用の予約枠）を確保します"
-WritCreater.optionStrings["craftMultiplier"]							= "クラフト乗数（2以上：余分にクラフト）"
-WritCreater.optionStrings["craftMultiplierTooltip"]						= "必要なアイテムごとに複数のコピーを余分に作成しておくと、次に令状クエストがきたときに再度クラフトする必要がなくなります。\n注意：クラフト乗数を1つ増やすごとに、インベントリに約37スロットを確保します。"
+WritCreater.optionStrings["craftMultiplier"]							= "マルチクラフト[装備とグリフ]（2以上のとき）"
+WritCreater.optionStrings["craftMultiplierTooltip"]						= "これを2以上に設定し、必要なアイテムごとに複数のコピーを余分に作成しておくと、次に令状クエストがきたときに再度クラフトする必要がなくなります。\n注意：設定値を1増やすごとに、インベントリに約37スロットを確保します。"
+WritCreater.optionStrings["craftMultiplierConsumables"]					= "マルチクラフト[錬金と調理]"
+WritCreater.optionStrings["craftMultiplierConsumablesTooltip"]			= "クラフト1回を選ぶと、クラフト台で1回だけクラフト操作を実行します。パッシブスキルの効果により余分にアイテムがクラフトされることがあります。フルスタックを選ぶと、令状に必要なアイテムが100個クラフトされます（パッシブスキルの効果が最大のとき）。"
+WritCreater.optionStrings["craftMultiplierConsumablesChoices"]			= {"クラフト1回","フルスタック"}
 WritCreater.optionStrings['hireling behaviour']							= "助手のメールの取り扱い"
 WritCreater.optionStrings['hireling behaviour tooltip']					= "クラフトスキルで雇った助手からのメールをどのようにするか（メールから素材を自動で取り出すかどうか）"
 WritCreater.optionStrings['hireling behaviour choices']					= { "何もしない","取り出して削除", "取り出すだけ" }
@@ -326,35 +341,53 @@ WritCreater.optionStrings["masterReward"]								= "マスター依頼の報酬"
 WritCreater.optionStrings["masterRewardTooltip"]						= "マスター依頼の報酬をどうするか"
 WritCreater.optionStrings["repairReward"]								= "修理キットの報酬"
 WritCreater.optionStrings["repairRewardTooltip"]						= "修理キットの報酬をどうするか"
-WritCreater.optionStrings["ornateReward"]								= "Ornate Gear Rewards"
-WritCreater.optionStrings["ornateRewardTooltip"]						= "What to do with ornate gear rewards"
-WritCreater.optionStrings["intricateReward"]							= "Intricate Gear Rewards"
-WritCreater.optionStrings["intricateRewardTooltip"]						= "What to do with intricate gear rewards"
-WritCreater.optionStrings["soulGemReward"]								= "Empty Soul Gems"
-WritCreater.optionStrings["soulGemTooltip"]								= "What to do with empty soul gems"
-WritCreater.optionStrings["glyphReward"]								= "Glyphs"
-WritCreater.optionStrings["glyphRewardTooltip"]							= "What to do with glyphs"
-WritCreater.optionStrings["recipeReward"]								= "Recipes"
-WritCreater.optionStrings["recipeRewardTooltip"]						= "What to do with recipes"
-WritCreater.optionStrings["fragmentReward"]								= "Psijic Fragments"
-WritCreater.optionStrings["fragmentRewardTooltip"]						= "What to do with psijic fragments"
+WritCreater.optionStrings["ornateReward"]								= "装飾特性の装備の報酬"
+WritCreater.optionStrings["ornateRewardTooltip"]						= "装飾特性の装備の報酬をどうするか"
+WritCreater.optionStrings["intricateReward"]							= "複雑特性の装備の報酬"
+WritCreater.optionStrings["intricateRewardTooltip"]						= "複雑特性の装備の報酬をどうするか"
+WritCreater.optionStrings["soulGemReward"]								= "魂石(空)の報酬"
+WritCreater.optionStrings["soulGemTooltip"]								= "魂石(空)の装備の報酬をどうするか"
+WritCreater.optionStrings["glyphReward"]								= "グリフの報酬"
+WritCreater.optionStrings["glyphRewardTooltip"]							= "グリフの報酬をどうするか"
+WritCreater.optionStrings["recipeReward"]								= "レシピ"
+WritCreater.optionStrings["recipeRewardTooltip"]						= "レシピの報酬をどうするか"
+WritCreater.optionStrings["fragmentReward"]								= "サイジックのアンブロージアの断片"
+WritCreater.optionStrings["fragmentRewardTooltip"]						= "サイジックのアンブロージアのレシピの断片の報酬をどうするか"
 
 
 WritCreater.optionStrings["writRewards submenu"]						= "依頼書の報酬の取り扱い"
 WritCreater.optionStrings["writRewards submenu tooltip"]				= "依頼書からの全ての報酬をどうするか"
 
-WritCreater.optionStrings["jubilee"]									= "記念祭の箱の中身を取り出す"
-WritCreater.optionStrings["jubilee tooltip"]							= "記念祭のギフトボックスからアイテムを自動的に取り出します"
+WritCreater.optionStrings["jubilee"]									= "記念祭/ゼニタールの箱の中身を取り出す"
+WritCreater.optionStrings["jubilee tooltip"]							= "記念祭/ゼニタールのギフトボックスからアイテムを自動的に取り出します"
 WritCreater.optionStrings["skin"]										= "Writ CrafterのUIスキン"
 WritCreater.optionStrings["skinTooltip"]								= "Writ CrafterのUI用のスキン"
-WritCreater.optionStrings["skinOptions"]								= {"標準", "チーズくさい"}
-
-WritCreater.optionStrings["rewardChoices"]								= {"何もしない","預ける","ガラクタ", "破壊する", "Deconstruct"}
+WritCreater.optionStrings["skinOptions"]								= {"標準", "チーズくさい", "山羊っぽい"}
+WritCreater.optionStrings["goatSkin"]									= "山羊っぽい"
+WritCreater.optionStrings["cheeseSkin"]									= "チーズくさい"
+WritCreater.optionStrings["defaultSkin"]								= "標準"
+WritCreater.optionStrings["rewardChoices"]								= {"何もしない","預ける","ガラクタ", "破壊する", "解体する"}
 WritCreater.optionStrings["scan for unopened"]							= "ログイン時にコンテナを開く"
 WritCreater.optionStrings["scan for unopened tooltip"]					= "ログイン時にバッグをスキャンして、クラフト依頼の未開封の報酬コンテナを探し、開封を試みます"
 
-WritCreater.optionStrings["smart style slot save"]							= "スタイル素材を少ない順に使用"
-WritCreater.optionStrings["smart style slot save tooltip"]					= "ESO Plus会員ではないとき、スタイル素材のより小さなスタックから使用することで、使用されるスロットを最小限に抑えることを試みます"
+WritCreater.optionStrings["smart style slot save"]						= "スタイル素材を少ない順に使用"
+WritCreater.optionStrings["smart style slot save tooltip"]				= "ESO Plus会員ではないとき、スタイル素材のより小さなスタックから使用することで、使用されるスロットを最小限に抑えることを試みます"
+WritCreater.optionStrings["abandon quest for item"]						= "<<1>>を納品する令状"
+WritCreater.optionStrings["abandon quest for item tooltip"]				= "これをオフにすると、<<1>>を納品する令状を自動的に放棄します。<<1>>を必要とするアイテムをクラフトが必要なクエストは放棄されません"
+WritCreater.optionStrings["status bar submenu"]							= "ステータスバー オプション"
+WritCreater.optionStrings["status bar submenu tooltip"]					= "ステータスバー オプション"
+WritCreater.optionStrings['showStatusBar']								= "クエストステータスバーの表示"
+WritCreater.optionStrings['showStatusBarTooltip']						= "クエストステータスバーを表示するか"
+WritCreater.optionStrings['statusBarIcons']								= "アイコンを使う"
+WritCreater.optionStrings['statusBarIconsTooltip']						= "令状クエストの種別を表すアルファベットの代わりに、クラフトアイコンを表示します"
+WritCreater.optionStrings['transparentStatusBar']						= "ステータスバーの透明化"
+WritCreater.optionStrings['transparentStatusBarTooltip']				= "ステータスバーの背景を透明化します"
+WritCreater.optionStrings['statusBarInventory']							= "インベントリ トラッカー"
+WritCreater.optionStrings['statusBarInventoryTooltip']					= "インベントリの空き状況の表示をステータスバーに追加します"
+WritCreater.optionStrings['incompleteColour']							= "未完了クエストの色"
+WritCreater.optionStrings['completeColour']								= "完了クエストの色"
+WritCreater.optionStrings['smartMultiplier']							= "スマートマルチクラフト（3日分の一括クラフト）"
+WritCreater.optionStrings['smartMultiplierTooltip']						= "これをオンにすると, 3日間の令状クエストの全サイクルのアイテムをまとめてクラフトします。令状に必要なアイテムを既に持っているかをチェックし、個々のアイテムのクラフト要否はアドオンが判断します。これをオフにすると、単純にその日の令状クエストのアイテムだけをクラフトします。"
 
 
 --[[
@@ -392,7 +425,7 @@ WritCreater.cheeseBingos["私はチーズが大好きだー！"] = true
 WritCreater.cheeseyLocalizations
 =
 {
-	['menuName'] = "儀式",
+	['menuName'] = "|cFFBF00儀式|r",
 	['endeavorName'] = "儀式的なエンデバー",
 	['tasks']={
 		{original="あなたは奇妙なパンフレットを見つけました．．．多分それを読む(/yomu)べきです。",name="幸運を呼ぶ儀式の説明を読む", completion = "幸運を呼ぶ儀式を行う方法を学びました！",
@@ -421,7 +454,7 @@ WritCreater.cheeseyLocalizations
 	["extraGoatyContextTextText"] = "山羊^n",
 	["extraSlash"] = "/yomu",
 	["bookText"] = 
-[[
+[=[
 この儀式はあなたに大きな幸運をもたらす|L0:0:0:45%%:8%%:ignore|lでしょう|lかもしれない。 以下の手順を正確に実行してください！
 
 1. |L0:0:0:45%%:8%%:ignore|l羊|l 山羊から新鮮な内蔵を入手する
@@ -430,12 +463,18 @@ WritCreater.cheeseyLocalizations
 4. [判読不能な名称] を称える
 
 - 真心を込めて,
-|L0:0:0:45%%:8%%:ignore|lシェオゴラス|l ツェオゴヲス]],
+|L0:0:0:45%%:8%%:ignore|lシェオゴラス|l シェオゴヲス]=],
 	["bookTitle"] = "幸運を呼ぶ儀式",
 	["outOfRange"] = "あなたはもう儀式の場所にいません！",
 	["closeEnough"] = "じゅうぶん近いから合格",
 	["praiseHint "] = "(半角の)RNGesusについて何か言う必要があるんじゃない？",
 }
+
+
+WritCreater.cheeseyLocalizations["alreadyUnlocked"] = "Writ CrafterのUIスキン解除済"
+WritCreater.cheeseyLocalizations["alreadyUnlockedTooltip"] = "あなたは 2023年4月1日に既にUIスキンを解除済です。もう一度やるのはただの楽しみのためです！"
+WritCreater.cheeseyLocalizations["settingsChooseSkin"] = "あなたは設定メニューからUIスキンを変更できます"
+
 --/esoui/art/icons/pet_041.dds
 --/esoui/art/icons/pet_042.dds
 --/esoui/art/icons/pet_sheepbrown.dds
