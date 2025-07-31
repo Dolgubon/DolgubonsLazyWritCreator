@@ -603,6 +603,8 @@ if isCheeseOn() then
 		["Коза"] = 1,
 		["Cabra"] = 1,
 		["cabra^f"] = 1,
+		["山羊"] = 1,
+		["山羊^n"] = 1,
 	}
 	local goatFlag = false
 	local function setGoatFlag(text)
@@ -736,6 +738,7 @@ if isCheeseOn() then
 	-- 	en = "Sheogorath",
 	-- 	de = "Sheogorath",
 	-- 	fr = "Shéogorath",
+	-- 	jp = "シェオゴラス",
 	-- }
 	-- -- EVENT_MANAGER:RegisterForEvent(WritCreater.name.."cheesyMusic", EVENT_PLAYER_ACTIVATED, setupCheesyMusic)
 	-- -- Handles the dialogue where we actually complete the quest
@@ -1522,7 +1525,6 @@ function WritCreater.Options() --Sentimental
 	},
 }
 
-  if WritCreater.lang ~="jp" then
   table.insert(options, 7,{
 	type = "checkbox",
 	name = WritCreater.optionStrings["writ grabbing"] ,
@@ -1542,7 +1544,6 @@ function WritCreater.Options() --Sentimental
 	end,
 	disabled = function() return not WritCreater:GetSettings().shouldGrab end,
   })]]
-  end
 
 	if false --[[GetWorldName() == "NA Megaserver" and WritCreater.lang =="en" ]] then
 	  table.insert(options,8, {
