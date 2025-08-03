@@ -4,12 +4,12 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Writ Creator v4.0.3.3
+## Title: Dolgubon's Lazy Writ Creator v4.0.3.4
 ## Description: Simplifying writs since 2016
 ## APIVersion: 101046
 ## Author: Dolgubon
-## Version: 4.0.3.3
-## AddOnVersion: 4033
+## Version: 4.0.3.4
+## AddOnVersion: 4034
 ## DependsOn: LibLazyCrafting>=4025
 ## PCDependsOn: LibAddonMenu-2.0
 ## ConsoleDependsOn: LibHarvensAddonSettings LibPrice LibQRCode

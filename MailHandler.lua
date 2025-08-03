@@ -63,14 +63,18 @@ end
 local lootReadMail
 local function deleteLootedMail(mailId)
 	local  _,_,subject, _,_,system,customer, _, numAtt, money = GetMailItemInfo(mailId)
-	if numAtt <= GetNumBagFreeSlots(1) or IsESOPlusSubscriber() then
+	if (numAtt > GetNumBagFreeSlots(1)) then
+		return
+	end
+	if (numAtt <= GetNumBagFreeSlots(1) or IsESOPlusSubscriber()) and numAtt>0 then
 		-- d("Tried deleting but still attachments")
 		lootReadMail(1, mailId)
 		return
 	end
-	if WritCreater:GetSettings().mail.delete then
+	if WritCreater:GetSettings().mail.delete and numAtt == 0 then
 		DeleteMail(mailId, true)
 	end
+
 	if hirelingMails[1] == mailId then
 		table.remove(hirelingMails, 1)
 		zo_callLater(lootMails, 250)

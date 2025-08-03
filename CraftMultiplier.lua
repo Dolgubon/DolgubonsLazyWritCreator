@@ -122,7 +122,7 @@ local function updateOut()
     local station = GetCraftingInteractionType()
     if not WritCreater.shouldUseSmartMultiplier() then return end
     if station == 0 then return end
-    DolgubonsWrits:SetHidden(false)
+    
     local stationQueue = WritCreater.LLCInteractionMultiplicator:getAddonCraftingQueue(station)
     local total = 0
     if not stationQueue then return end
@@ -134,6 +134,10 @@ local function updateOut()
         multiplierQueued = false
         return
     end
+    if total == 0 then
+        return
+    end
+    DolgubonsWrits:SetHidden(false)
     out(zo_strformat("Crafting <<2>> items for <<1[nothign/$d cycle/$d cycles]>> of writs", WritCreater:GetSettings().craftMultiplier, total))
     local isCrafting = WritCreater:GetSettings().autoCraft or LibLazyCrafting:IsPerformingCraftProcess()
     if isCrafting then
