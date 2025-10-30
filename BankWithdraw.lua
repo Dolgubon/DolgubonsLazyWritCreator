@@ -350,6 +350,17 @@ local function runProcessDeposits()
 			numItems = numItems + 1
 		end
 	end
+	if WritCreater.savedVars.goldToDeposit > 0 and WritCreater:GetSettings().rewardHandling["currency"].all == 2 then
+		if GetInteractionType()~=INTERACTION_BANK and GetInteractionType() == INTERACTION_CONVERSATION then
+			openBankInterface()
+			return zo_callLater( runProcessDeposits, GetLatency()+50)
+		end
+		numItems = numItems + 1
+		d("Writ Crafter: Depositing "..WritCreater.savedVars.goldToDeposit.." gold")
+		TransferCurrency(CURT_MONEY, WritCreater.savedVars.goldToDeposit, CURRENCY_LOCATION_CHARACTER,CURRENCY_LOCATION_BANK)
+		WritCreater.savedVars.goldToDeposit = 0
+		return zo_callLater( runProcessDeposits, GetLatency()+20)
+	end
 	for k, v in pairs(WritCreater.savedVars.depositList) do
 		local bag = v.bag
 		local index = v.slot

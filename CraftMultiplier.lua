@@ -79,8 +79,17 @@ local itemsToCraft =
     [43561] = 
     {
         3, "necklace", 2, CRAFTING_TYPE_JEWELRYCRAFTING },
+    [26582] = 
+    { 1, "magick glyph", 45832, CRAFTING_TYPE_ENCHANTING},
+    [26580] = 
+    { 1, "health glyph", 45831, CRAFTING_TYPE_ENCHANTING},
+    [26588] = 
+    { 1, "stamina glyph", 45833, CRAFTING_TYPE_ENCHANTING},
 }
-
+-- |H1:item:26582:272:50:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h|H1:item:26582:308:50:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
+--|H1:item:26580:368:50:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
+-- |H1:item:26588:368:50:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
+-- |H1:item:45832:20:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h|H1:item:45831:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
 local craftLevels = 
 {
 	[1] = { false, 2 }, -- This is not an erorr. GetItemLevel returns 2 for items of level 1
@@ -102,6 +111,32 @@ local jewelryLevels={
 	[4] = { true, 80 },
 	[5] = { true, 150 }
 }
+
+local enchantingLevels={
+    [1] = { false, 1, 102,45855 },
+    [2] = { false, 10, 104, 45857},
+    [3] = { false, 20, 106, 45807},
+    [4] = { false, 30, 108, 45809},
+    [5] = { false, 40, 110, 45811},
+    [6] = { true, 30, 112, 45813},
+    [7] = { true, 50, 113, 45814},
+    [8] = { true, 70, 114, 45815},
+    [9] = { true, 100, 115, 45816},
+    [10] = {true, 150, 207, 64509},
+}
+local enchantingLevelMap = {
+    [102] = { false, 5,  45855 }, -- Level '1' glyphs have a required level in the code of 5
+    [104] = { false, 10,  45857},
+    [106] = { false, 20,  45807},
+    [108] = { false, 30,  45809},
+    [110] = { false, 40,  45811},
+    [112] = { true, 30,   45813},
+    [113] = { true, 50,   45814},
+    [114] = { true, 70,   45815},
+    [115] = { true, 100,  45816},
+    [207] = {true, 150,  64509},
+}
+
 
 local function getOut()
     return DolgubonsWritsBackdropOutput:GetText()
@@ -127,7 +162,7 @@ local function updateOut()
     local total = 0
     if not stationQueue then return end
     for k, v in pairs(stationQueue) do
-        total = total + v.smithingQuantity or 1
+        total = total + (v.smithingQuantity or v.quantity or 1)
     end
     if total == 0 and multiplierQueued then
         WritCreater.writCompleteUIHandle()
@@ -150,8 +185,28 @@ end
 
 WritCreater.updateCraftMultiplierOut = updateOut
 
+local function convert()
+    if WritCreater:GetSettings().craftMultiplier == 1 or not WritCreater:GetSettings().craftMultiplier then
+        WritCreater:GetSettings().craftMultiplier = 0
+    end
+    WritCreater:GetSettings().simpleMultiplier = false
+    WritCreater:GetSettings().convertMult = true
+end
+local function revert() -- for testing purposes
+    -- if WritCreater:GetSettings().craftMultiplier == 1 or not WritCreater:GetSettings().craftMultiplier then
+    --     WritCreater:GetSettings().craftMultiplier = 0
+    -- end
+    WritCreater:GetSettings().craftMultiplier = 1
+    WritCreater:GetSettings().simpleMultiplier = false
+    WritCreater:GetSettings().convertMult = nil
+end
+
+
 function WritCreater.shouldUseSmartMultiplier()
-    return WritCreater:GetSettings().craftMultiplier > 0 and not WritCreater:GetSettings().simpleMultiplier
+    if not WritCreater:GetSettings().convertMult then
+        convert()
+    end
+    return WritCreater:GetSettings().craftMultiplier > 0 and not WritCreater:GetSettings().simpleMultiplier and  WritCreater:GetSettings().convertMult
 end
 
 local craftingProficiencyLevels = {
@@ -162,21 +217,40 @@ local craftingProficiencyLevels = {
   [CRAFTING_TYPE_ENCHANTING] = NON_COMBAT_BONUS_ENCHANTING_LEVEL
 }
 
+local function getLevelsToUse(craftType)
+    if craftType == CRAFTING_TYPE_JEWELRYCRAFTING then
+        return jewelryLevels
+    elseif craftType == CRAFTING_TYPE_ENCHANTING then
+        return enchantingLevels
+    else
+        return craftLevels
+    end
+end
+
+local function getEnchantingLevel()
+    local writTable = WritCreater.writSearch()
+    local journalIndex = writTable[CRAFTING_TYPE_ENCHANTING]
+    if not journalIndex then
+        return 0,0,0
+    end
+    local _,lvlId = GetQuestConditionItemInfo(journalIndex, 1, 1)
+    if lvlId == 0 then
+        _,lvlId = GetQuestConditionItemInfo(journalIndex, 1, 2)
+    end
+    return enchantingLevelMap[lvlId][1], enchantingLevelMap[lvlId][2] , enchantingLevelMap[lvlId][3]
+end
+
+--|H1:item:26582:272:50:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h|H1:item:26582:308:50:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
 -- Determines the number of required items currently in bag, so we don't overcraft
 local function peekBagState()
 	local runningTotal = {}
+    local enchantCP , enchantLevel = getEnchantingLevel()
 -- WritCreater.savedVarsAccountWide["craftLog"]=
 	local playerName = GetUnitName("player")
 	for i = 0, GetBagSize(BAG_BACKPACK) do
 		-- so we can easily continue to the next iteration of the loop
 		for x = 1, 1 do
 			local creatorName = GetItemCreatorName(BAG_BACKPACK, i)
-            -- if IsConsoleUI() then
-            --     local link = GetItemLink(BAG_BACKPACK, i)
-            --     if not IsItemLinkCrafted(link) then
-            --         break
-            --     end
-            -- else
             if creatorName ~= playerName then
 				break
 			end
@@ -192,9 +266,14 @@ local function peekBagState()
 			local requiredCP = GetItemRequiredChampionPoints(BAG_BACKPACK, i)
 			local isChampion = requiredCP ~= 0
 			local level = isChampion and requiredCP or GetItemLevel(BAG_BACKPACK, i)
-			local levelsToUse = station == CRAFTING_TYPE_JEWELRYCRAFTING and jewelryLevels or craftLevels
+			local levelsToUse = getLevelsToUse(station)
 			local craftLevelInfo = levelsToUse[GetNonCombatBonus(craftingProficiencyLevels[station])]
-			if craftLevelInfo[1] ~= isChampion or level ~= craftLevelInfo[2] then
+            if station == CRAFTING_TYPE_ENCHANTING then
+                local glyphLevel  = isChampion and requiredCP or GetItemRequiredLevel(BAG_BACKPACK, i)
+                if enchantCP ~=isChampion or glyphLevel ~= enchantLevel then
+                    break
+                end
+			elseif craftLevelInfo[1] ~= isChampion or level ~= craftLevelInfo[2] then
 				break
 			end
 			runningTotal[itemId] = (runningTotal[itemId] or 0) + 1
@@ -219,21 +298,26 @@ function WritCreater.preCraftMultiple(interactedStation)
 		local requiredAmount = math.max(expectedAmount - existingAmount, 0)
 		if requiredAmount > 0 and interactedStation == craftInfo[4] then
 			local station = craftInfo[4]
-			local levelsToUse = station == CRAFTING_TYPE_JEWELRYCRAFTING and jewelryLevels or craftLevels
+			local levelsToUse = getLevelsToUse(station)
 			local craftLevelInfo = levelsToUse[GetNonCombatBonus(craftingProficiencyLevels[station])]
 			local isChampion, level = craftLevelInfo[1], craftLevelInfo[2]
 			local patternIndex = craftInfo[3]
             if level == 2 then
                 level = 1 -- items of level 1 return level 2 from the api, so we need to correct for that here
             end
-			local r = WritCreater.LLCInteractionMultiplicator:CraftSmithingItemByLevel(patternIndex, isChampion, level, LLC_FREE_STYLE_CHOICE, 1, false, station, INDEX_NO_SET, ITEM_FUNCTIONAL_QUALITY_NORMAL, WritCreater:GetSettings().autoCraft, itemId, nil, nil, nil, requiredAmount)
+            if interactedStation== CRAFTING_TYPE_ENCHANTING then
+                local isCP, level, potencyItemID = getEnchantingLevel()
+                WritCreater.LLCInteractionMultiplicator:CraftEnchantingItemId(potencyItemID, craftInfo[3], 45850, WritCreater:GetSettings().autoCraft, reference, nil, requiredAmount)
+            else
+			 local r = WritCreater.LLCInteractionMultiplicator:CraftSmithingItemByLevel(patternIndex, isChampion, level, LLC_FREE_STYLE_CHOICE, 1, false, station, INDEX_NO_SET, ITEM_FUNCTIONAL_QUALITY_NORMAL, WritCreater:GetSettings().autoCraft, itemId, nil, nil, nil, requiredAmount)
+            end
 		end
 	end
     updateOut(interactedStation)
 end
 
 local function stationClosed(event, station)
-    if not WritCreater.shouldUseSmartMultiplier() or station == 0 then return end
+    if not WritCreater.shouldUseSmartMultiplier() or station == 0 or station >7 then return end
     multiplierQueued = false
     WritCreater.LLCInteractionMultiplicator:cancelItem(station)
     DolgubonsWrits:SetHidden(true)

@@ -12,7 +12,16 @@
 
 
 WritCreater = WritCreater or {}
-local completionStrings
+local completionStrings = { -- This will be overridden in other languages, but we can have the english as a default
+	["place"] = "Place the goods",
+	["sign"] = "Sign the Manifest",
+	["masterPlace"] = "I've finished the ",
+	["masterSign"] = "<Finish the job.>",
+	["masterStart"] = "<Accept the contract.>",
+	["Rolis Hlaalu"] = "Rolis Hlaalu", -- This is the same in most languages but ofc chinese and japanese are different
+	["Deliver"] = "Deliver",
+	["Acquire"] = "acquire",
+}
 local function onWritComplete()
 	local zoneIndex = GetUnitZoneIndex("player")
 	local zoneId = GetZoneId(zoneIndex)
@@ -24,7 +33,7 @@ local function onWritComplete()
 	WritCreater.savedVarsAccountWide.writLocations[zoneId] = {zoneIndex, x, y, 640000}
 
 end
-
+WritCreater.onWritComplete = onWritComplete
 -- Handles the dialogue where we actually complete the quest
 local function HandleQuestCompleteDialog(eventCode, journalIndex)
 	local writs = WritCreater.writSearch()
@@ -62,9 +71,49 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
     if not WritCreater:GetSettings().autoAccept then return end
 	CompleteQuest()
 	onWritComplete()
-
-
 end
+
+local questName
+local questGold
+
+local function QuestCompleteDialogGoldListener(eventCode, journalIndex)
+	local writs = WritCreater.writSearch()
+	if not GetJournalQuestIsComplete(journalIndex) then return end
+	local currentWritDialogue 
+	for i = 1, 7 do
+		if writs[i] == journalIndex then -- determine which type of writ it is
+			currentWritDialogue= i
+		end
+	end
+	local titleUIToUse
+	if IsConsoleUI() then
+		titleUIToUse = ZO_InteractWindow_GamepadTitle
+	else
+		titleUIToUse = ZO_InteractWindowTargetAreaTitle
+	end
+	if zo_plainstrfind( titleUIToUse:GetText() ,completionStrings["Rolis Hlaalu"]) then
+		return 
+	end
+	if not currentWritDialogue then return end
+	local rewardType, _, goldAmount = GetJournalQuestRewardInfo(journalIndex,1)
+    -- WritCreater.savedVars.goldToDeposit = WritCreater.savedVars.goldToDeposit + goldAmount
+    questName = GetJournalQuestName(journalIndex)
+    questGold = goldAmount
+end
+
+local function QuestConfirmCompleteGoldListener(eventCode, completedQuestName)
+	if questName == completedQuestName and WritCreater:GetSettings().rewardHandling["currency"].all == 2 then
+		WritCreater.savedVars.goldToDeposit = WritCreater.savedVars.goldToDeposit + questGold
+		questName = ""
+		questGold = 0
+	else
+		questName = ""
+		questGold = 0
+	end
+end
+
+EVENT_MANAGER:RegisterForEvent("DolgubonsLazyWritCreatorGoldListener", EVENT_QUEST_COMPLETE_DIALOG, QuestCompleteDialogGoldListener)
+EVENT_MANAGER:RegisterForEvent("DolgubonsLazyWritCreatorGoldListener", EVENT_QUEST_COMPLETE, QuestConfirmCompleteGoldListener)
 
 local wasQuestAccepted
 

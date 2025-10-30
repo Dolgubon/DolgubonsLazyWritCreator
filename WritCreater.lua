@@ -30,7 +30,7 @@ local function GetAddOnVersion( name )
 		if (am:GetAddOnInfo(i) == name) then
 			WritCreater.addonIndex = i
 			local _,displayedName = GetAddOnManager():GetAddOnInfo(i)
-			displayedName = string.sub(displayedName, 31) 
+			displayedName = string.sub(displayedName, 31,38) 
 			displayedName = string.gsub(displayedName,"[.]","")
 			return am:GetAddOnVersion(i), tonumber(displayedName)
 		end
@@ -114,10 +114,13 @@ WritCreater.default =
 		intricate = 	{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
 		repair = 		{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[6]= 1,[7] = 1},
 		soulGem =   	{sameForAllCrafts = true, [0] = 1, },
-		glyph =   		{sameForAllCrafts = true, [0] = 1, },
-		fragment = 	 	{sameForAllCrafts = true, [0] = 1, },
-		recipe =   		{sameForAllCrafts = true, [0] = 1, },
+		glyph =   	{sameForAllCrafts = true, [0] = 1, },
+		fragment =	{sameForAllCrafts = true, [0] = 1, },
+		recipe =   	{sameForAllCrafts = true, [0] = 1, },
+		currency = 	{sameForAllCrafts = true, [0] = 1, },
+		goldMat = 	{sameForAllCrafts = true, [0] = 1, [1]= 1,[2]= 1,[3]= 1,[6]= 1,[7] = 1},
 	},
+	["goldToDeposit"] = 0,
 	["mail"] = {
 		delete = false,
 		loot = IsESOPlusSubscriber(),
@@ -352,11 +355,14 @@ local function mandatoryRoadblockOut(string, showCraftButton)
 	-- DolgubonsWritsBackdropCraft.SetHidden = function() end
 end
 
-local function dismissableRoadblock(string, showCraftButton)
-	DolgubonsWritsBackdropOutput:SetText(string)
+local function dismissableRoadblock(str, showCraftButton)
+	DolgubonsWritsBackdropOutput:SetText(str)
 	DolgubonsWrits:SetHidden(false)
 	DolgubonsWritsBackdropCraft:SetHidden (not showCraftButton)
 	WritCreater.dismissable = true
+	zo_callLater(function() DolgubonsWrits:SetHidden(true) DolgubonsLazyWritQRCode:SetHidden(true) end, 30000)
+	local o = DolgubonsWritsBackdropOutput.SetText
+	-- DolgubonsWritsBackdropOutput.SetText = function(...) o(...) d("Outputting ")d(...) d(string.sub(debug.traceback(), 1, 300)) end
 end
 
 -- Method for @silvereyes to overwrite and cancel exiting the station
@@ -505,7 +511,7 @@ local function writSearch()
 		local Qname=GetJournalQuestName(i)
 
 		local isEnding = IsJournalQuestStepEnding(i,1,1)
-		if itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY and (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING ) then
+		if itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY and (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING or GetJournalQuestType(i) == QUEST_TYPE_HOLIDAY_EVENT ) then
 			W[craftType] = i
 			anyFound = true
 		elseif itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i) == QUEST_REPEAT_NOT_REPEATABLE and GetJournalQuestType(i) == QUEST_TYPE_CRAFTING  then
@@ -517,7 +523,7 @@ local function writSearch()
 			end
 			-- If it's on the ending step, then the above can't find it. So we use the backup of the string matching
 		elseif isEnding then
-			if (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING ) and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY then
+			if (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING or GetJournalQuestType(i) == QUEST_TYPE_HOLIDAY_EVENT ) and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY then
 				for j = 1, #WritCreater.writNames do 
 					if string.find(myLower(Qname),myLower(WritCreater.writNames[j])) then
 						W[j] = i
@@ -661,34 +667,13 @@ local function initializeLibraries()
 		missing = true
 		missingString = missingString.."LibAddonMenu-2.0"
 	end
-	-- if missing then
-	-- 	mandatoryRoadblockOut(missingString)
-	-- 	-- cause an error if they aren't found so we get the error to catch
-	-- 	-- LibStub:GetLibrary("LibLazyCrafting")
-	-- 	-- LibStub:GetLibrary("LibAddonMenu-2.0")
-	-- 	return
-	-- end
-	if LLCVersion <2.33 then
 
+	if LLCVersion <2.33 then
 		mandatoryRoadblockOut("You have an old version of LibLazyCrafting loaded. Please obtain the newest version of the library by downloading it from esoui or minion")
 	end
 
 	if WritCreater.savedVarsAccountWide.rightClick and not LibCustomMenu then
-		-- WritCreater.savedVarsAccountWide.rightClick = false
-		-- WritCreater.savedVarsAccountWide.masterWrits = true
 		dismissableRoadblock("To use the master writ right click to craft option, you must have LIbCustomMenu turned on. The option has been turned off, and to re-enable it, you'll need to install and turn on LibCustomMenu", true)
-		-- dismissableRoadblock("It looks like you had the right click to craft option turned ON. Unfortunately, this feature has been discontinued. ")
-		-- WritCreater.autoFix = function() 
-		-- 	local manager = GetAddOnManager()
-		-- 	for i =1 , manager:GetNumAddOns() do
-		-- 		if manager:GetAddOnInfo(i) =="LibCustomMenu" then
-		-- 			manager:SetAddOnEnabled(i, true)
-		-- 			ReloadUI()
-		-- 			return
-		-- 		end
-		-- 	end
-		-- 	d("Could not find LibCustomMenu")
-		-- end
 		DolgubonsWritsBackdropCraft:SetText("Close")
 	end
 	
@@ -711,10 +696,11 @@ local function initializeLibraries()
 		end
 	 end)
 
-	WritCreater.LLCInteractionMultiplicator = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Multiplicator", true, function(event, station, result)
+	WritCreater.LLCInteractionMultiplicator = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Multiplicator", true, function(event, station, result,...)
+		if event == LLC_CRAFT_SUCCESS then
+			WritCreater.writItemCompletion(event, station, result,...) 
+		end
 	 end, nil , function()return WritCreater:GetSettings().styles end)
-
-
 	
 	local buttonInfo = 
 	{0,25000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url"
@@ -827,11 +813,9 @@ end
 	d(GetItemLink(tostring(t[1]),tostring(t[2]),LINK_STYLE_DEFAULT))
 end--]]
 
-
 function WritCreater.OnAddOnLoaded(event, addonName)
 	if addonName == WritCreater.name then
 		WritCreater:Initialize()
-
 	end
 end
 

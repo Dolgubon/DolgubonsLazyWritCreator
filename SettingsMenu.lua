@@ -115,6 +115,10 @@ local function styleCompiler()
 				end,
 		},
 		{
+			type = "description",
+			text = "Reminder: You can purchase base racial style stones from any crafting NPC vendor for 15g each",
+		},
+		{
 			type = "divider",
 			height = 15,
 			alpha = 0.5,
@@ -141,7 +145,7 @@ local function styleCompiler()
 end
 local function isCheeseOn()
 	local enableNames = {
-		["@Dolgubon"]=UI_PLATFORM_PC,
+		-- ["@Dolgubon"]=UI_PLATFORM_PC,
 		-- ["@mithra62"]=1,
 		-- ["@Gitaelia"]=1,
 		-- ["@PacoHasPants"]=1,
@@ -863,6 +867,14 @@ function WritCreater.Options() --Sentimental
 				WritCreater.queueAllSealedWrits(BAG_BACKPACK)
 			end,
 		},
+		{ 
+			type = "button",
+			name = WritCreater.optionStrings.craftHousePort,
+            tooltip = WritCreater.optionStrings.craftHousePortTooltip,
+			func = function(value) 
+				WritCreater.portToCraftingHouse()
+			end,
+		},
 		-- {
 		-- 	type = "checkbox",
 		-- 	name = WritCreater.optionStrings["right click to craft"],
@@ -883,7 +895,10 @@ function WritCreater.Options() --Sentimental
 
 			
 	}
-
+	if GetDisplayName() == "@J3zdaz" then
+		WritCreater.savedVarsAccountWide.skin = "goat"
+		WritCreater.savedVarsAccountWide.unlockedGoat = true
+	end
 	if WritCreater.savedVarsAccountWide.unlockedCheese or WritCreater.savedVarsAccountWide.unlockedGoat then
 		local skinOptions = {"default"}
 		local skinChoices = {WritCreater.optionStrings["defaultSkin"]}
@@ -1241,10 +1256,10 @@ function WritCreater.Options() --Sentimental
 		{"survey" ,  {1,2,3,4,6,7}, {1,2,3,4}},
 		{"ornate" ,  {1,2,6,7}, {1,2,3,4,5}},
 		{"intricate" ,  {1,2,6,7}, {1,2,3,4,5}},
-		-- {"soulGem" ,    {3}, },
-		-- {"glyph" ,    {3}, },
-		-- {"fragment" ,    {5}, },
-		-- {"recipe" ,    {5}, },
+		{"goldMat" , {1,2,3, 6,7}, {1, 2}},
+		{"fragment" ,    {5}, {1,2,3,4}},
+		{"currency" , {}, {1, 2}},
+		-- {"recipe" ,    {5}, {1,2,3,4}},
 	}
 	-- use same for all craft chaeckbox
 	-- option to use
@@ -1273,6 +1288,7 @@ function WritCreater.Options() --Sentimental
 					setFunc = function(value) 
 						WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts = value
 					end,
+					disabled = function() return IsESOPlusSubscriber() and rewardName == "goldMat" end,
 				},
 				{
 					type = "dropdown",
@@ -1295,6 +1311,7 @@ function WritCreater.Options() --Sentimental
 							end
 						end
 					end,
+					disabled = function() return IsESOPlusSubscriber() and rewardName == "goldMat" end,
 				},
 				{
 					type = "divider",
@@ -1312,6 +1329,7 @@ function WritCreater.Options() --Sentimental
 				tooltip = WritCreater.optionStrings[rewardName.."RewardTooltip"],
 				controls = submenuOptions,
 				reference = "WritCreaterRewardsSubmenu"..rewardName,
+				disabled = function() return IsESOPlusSubscriber() and rewardName == "goldMat" end,
 			}
 			for i = 1 , #submenuOptions do
 				submenuOptions[i].LHASName = rewardName.."rewards"..i
@@ -1324,6 +1342,7 @@ function WritCreater.Options() --Sentimental
 				choices = actionNames,
 				LHASName = rewardName.."Reward",
 				choicesValues = validActions,
+				disabled = function() return IsESOPlusSubscriber() and rewardName == "goldMat" end,
 				disabled = function() return not WritCreater:GetSettings().rewardHandling[rewardName].sameForAllCrafts end,
 				getFunc = function()
 					-- So I don't need to ennummerate it all in the default writ creator settings

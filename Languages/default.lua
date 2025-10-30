@@ -331,6 +331,11 @@ WritCreater.optionStrings["recipeReward"]								= "Recipes"
 WritCreater.optionStrings["recipeRewardTooltip"]						= "What to do with recipes"
 WritCreater.optionStrings["fragmentReward"]								= "Psijic Fragments"
 WritCreater.optionStrings["fragmentRewardTooltip"]						= "What to do with psijic fragments"
+WritCreater.optionStrings["currencyReward"]								= "Gold Currency"
+WritCreater.optionStrings["currencyRewardTooltip"]						= "What to do with quest reward gold"
+WritCreater.optionStrings["goldMatReward"]								= "Gold Mats (Non ESO+ only)"
+WritCreater.optionStrings["goldMatRewardTooltip"]						= "What to do with gold mats from writ rewards. Ignored for ESO+ subscribers"
+
 
 
 WritCreater.optionStrings["writRewards submenu"]						= "Writ Reward Handling"
@@ -351,7 +356,7 @@ WritCreater.optionStrings["scan for unopened tooltip"]					= "When you login, sc
 WritCreater.optionStrings["smart style slot save"]						= "Lowest amount first"
 WritCreater.optionStrings["smart style slot save tooltip"]				= "Will attempt to minimize slots used if non ESO+ by using smaller stacks of style stones first"
 WritCreater.optionStrings["abandon quest for item"]						= "Writs with 'deliver <<1>>'"
-WritCreater.optionStrings["abandon quest for item tooltip"]				= "If OFF, will auto abandon writs requiring you to deliver <<1>>. Quests which require you to craft an item requireing <<1>> will not be abandoned"
+WritCreater.optionStrings["abandon quest for item tooltip"]				= "If OFF, will auto abandon writs requiring you to deliver <<1>>. Quests which require you to craft an item requireing <<1>> will never be abandoned"
 WritCreater.optionStrings["status bar submenu"]							= "Status Bar Options"
 WritCreater.optionStrings["status bar submenu tooltip"]					= "Status Bar Options"
 WritCreater.optionStrings['showStatusBar']								= "Show Status Bar"
@@ -367,6 +372,8 @@ WritCreater.optionStrings['completeColour']								= "Complete quest colour"
 WritCreater.optionStrings['smartMultiplier']							= "Smart Multiplier"
 WritCreater.optionStrings['smartMultiplierTooltip']						= "If on, Writ Crafter will craft items for the full cycle of 3 days of writs. It will also check to see if you have any writ items"..
 " already, and take that into consideration. If off, Writ Crafter will simply craft multiple items of the current day's writs"
+WritCreater.optionStrings['craftHousePort']								= "Port to crafting house"
+WritCreater.optionStrings['craftHousePortTooltip'] 						= "Port to a publicly available crafting house"
 
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end

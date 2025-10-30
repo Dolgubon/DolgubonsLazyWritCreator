@@ -13,7 +13,7 @@
 	<Controls>
 		<TopLevelControl name="DolgubonsLazyWritQRCode" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="300" y="300" />
-			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200" />
+			<Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="250" />
 			<Controls>
 				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
 					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
@@ -34,7 +34,7 @@
 		</TopLevelControl>
 		<TopLevelControl name="DolgubonsLazyWritChangelog" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="800" y="700" />
-			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200" />
+			<Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200" />
 			<Controls>
 				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
 					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
@@ -178,7 +178,7 @@
 				</Label>
 			</Controls>
 		</Button> -->
-		<TopLevelControl name="DolgubonsWrits" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+		<TopLevelControl name="DolgubonsWrits" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
 			<Dimensions x="470" y="200" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50" />
 			<Controls>
@@ -192,7 +192,7 @@
 							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
 							<Dimensions x="500" y="400" />
 							<Edge edgeSize="1" />
-							<Center file="esoui/art/crafting/crafting_alchemy_slottingbg.dds" />
+							<Center file="DolgubonsLazyWritCreator/LWCbackground.dds" />
 						</Backdrop>
 						<Label name="$(parent)Head" font="ZoFontGamepad27" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
 							<Anchor relativePoint="TOP" relativeTo="$(parent)" offsetY="55" offsetX="-85" />

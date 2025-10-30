@@ -9,7 +9,7 @@ Improved Craft Multiplier
 |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t If you want the old behaviour, you can turn the smart multiplier off in the settings menu
 Slight load optimization - stat window functionality will only be loaded if you open the window
 ]],
-[[
+console=[[
 QR codes for settings links (Console only)
 |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Will pop up a QR code for you to scan, for example if you want to go to the forum thread for posting bugs
 |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t LibQRCode added as a dependency to facilitate this behaviour
@@ -21,8 +21,33 @@ QR codes for settings links (Console only)
 - Fixed lua errors which fired when using the deconstruction assistants
 - Fixed a bug where the smart multiplier wouldn't properly detect level 1 crafted items
 ]]
-}
-}
+},
+{
+	4036,
+[[Added Psijic Recipe Fragments to supported writ reward handling
+Added the ability to craft set items for the 'A Crafty Business' Golden Pursuit. 
+|t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t When you interact with a grand master crafting station, you will see a prompt to craft the items. 
+|t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Will only craft the ones you still need, and will only show if you haven't finished the capstone reward
+|t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Note that it's very basic, so will only craft robes/axes/bow/ring
+]]
+},
+{
+	4038,
+[[Added gold to writ reward handling. You can set it to deposit all gold you get from writs into your bank. Only the actual quest gold will be deposited
+Fixed a bug where reward handling for the new unknown surveys was using the setting for the unknown master writs
+]],pc="Added a 'port to craft house' button to the settings menu (a few versions ago)"
+},
+{4039,
+[[Smart multiplier now supports enchanting
+Fixed a bug where unknown surveys and unknown master writs were combined in the loot statistics window
+Changed the background texture to use the old background texture
+]]
+},
+{4041,
+[[Added support for gold mats to the rewards handling
+]]}
+
+}-- ,pc =[[Added a port to crafting house button to the settings menu]]
 
 local welcomeMessage = "Thanks for installing Dolgubon's Lazy Writ Crafter! Please check out the settings to customize the behaviour of the addon"
 
@@ -47,9 +72,11 @@ function WritCreater.displayChangelog()
 		if not WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] then
 			WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] = true
 			local text = changelog[i][2]
-			if IsConsoleUI() and changelog[i][3] then
-				text = text..changelog[i][3]
-			end 
+			if IsConsoleUI() and changelog[i].console then
+				text = text..changelog[i].console
+			elseif not IsConsoleUI() and changelog[i].pc then
+				text = text..changelog[i].pc
+			end
 			displayText(text)
 			return
 		end

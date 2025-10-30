@@ -53,7 +53,12 @@ end
 --outputs the string in the crafting window
 local function out(str)
 	DolgubonsWritsBackdropOutput:SetText(str)
+	if str == "" then
+		DolgubonsWrits:SetHidden(true)
+	end
 end
+
+
 
 function WritCreater.setCloseOnce()
 	closeOnce = true
@@ -257,7 +262,72 @@ local function maxStyle (piece) -- Searches to find the style that the user has 
 	return max, maxStones
 end
 
+------------------ 
+-- GOLDEN PURSUITS
+------------------
 
+local validGoldenPursuitCraftTypes = {[CRAFTING_TYPE_BLACKSMITHING] = true, [CRAFTING_TYPE_CLOTHIER] = true, [CRAFTING_TYPE_JEWELRYCRAFTING] = true, [CRAFTING_TYPE_WOODWORKING] = true}
+
+local function craftGoldenPusuit()
+
+	local sets = {43, 80, 51, 38, 54, 37, 75}
+	if not WritCreater.pomotionalLLC then
+	end
+	if not validGoldenPursuitCraftTypes[GetCraftingInteractionType()] then
+		WritCreater.pomotionalLLC:cancelItem()
+		return
+	end
+	local campaignKey = GetActivePromotionalEventCampaignKey(1)
+	local campaignId,_,_,numNeeded = GetPromotionalEventCampaignInfo(campaignKey)
+	for i = 1, GetNumActivePromotionalEventCampaigns() do
+		campaignKey = GetActivePromotionalEventCampaignKey(i) -- maybe it's the hero's return?
+		campaignId,_,_,numNeeded = GetPromotionalEventCampaignInfo(campaignKey)
+		if campaignId == 89 then -- aka crafty business
+			break
+		end
+	end
+	if campaignId ~= 89 then
+		return
+	end
+	local numComplete = GetPromotionalEventCampaignProgress(campaignKey)
+	if numComplete >= numNeeded then
+		return
+	end
+	local numCrafted = 0
+	for i = 1, #sets do
+		local progress = GetPromotionalEventCampaignActivityProgress(campaignKey, 32+i)
+		if progress == 0 then
+			numCrafted = numCrafted + 1
+			local result = WritCreater.pomotionalLLC:CraftSmithingItemByLevel(1,false, 1, LLC_FREE_STYLE_CHOICE, 1, false, GetCraftingInteractionType() , sets[i], ITEM_FUNCTIONAL_QUALITY_NORMAL, true, sets[i] )
+		end
+	end
+end
+
+local function showGoldenPursuitPrompt()
+	if not (GetCraftingInteractionMode() == CRAFTING_INTERACTION_MODE_CONSOLIDATED_STATION) then
+		return
+	end
+	local campaignKey = GetActivePromotionalEventCampaignKey(1)
+	local campaignId,_,_,numNeeded = GetPromotionalEventCampaignInfo(campaignKey)
+	for i = 1, GetNumActivePromotionalEventCampaigns() do
+		campaignKey = GetActivePromotionalEventCampaignKey(i) -- maybe it's the hero's return?
+		campaignId,_,_,numNeeded = GetPromotionalEventCampaignInfo(campaignKey)
+		if campaignId == 89 then -- aka crafty business
+			break
+		end
+	end
+	if campaignId ~= 89 then
+		return
+	end
+	local numComplete = GetPromotionalEventCampaignProgress(campaignKey)
+	if numComplete >= numNeeded then
+		return
+	end
+	out("Craft set items for unfinished golden pursuits?\n(May be unable to craft anything. Axe/Bow/Ring/Robe only, uses iron)")
+	DolgubonsWrits:SetHidden(false)
+	showCraftButton(false)
+	pursuitCrafting = true
+end
 
 
 local function addMats(type,num,matsRequired, pattern, index)
@@ -307,13 +377,13 @@ local function setupConditionsTable(quest, indexTableToUse)
 		["mats"] = {},
 	}
 	for condition = 1, GetJournalQuestNumConditions(quest,1) do
-		conditionsTable["text"][condition], conditionsTable["cur"][condition], conditionsTable["max"][condition],_,conditionsTable["complete"][condition] = GetJournalQuestConditionInfo(quest, 1, condition)
+		conditionsTable["text"][condition], conditionsTable["cur"][condition], conditionsTable["max"][condition],_,conditionsTable["complete"][condition], _,_,conditionType = GetJournalQuestConditionInfo(quest, 1, condition)
 		local itemIdT, _, stationT = GetQuestConditionItemInfo(quest, 1, condition)
 		WritCreater.savedVarsAccountWide["craftLog"][stationT] = WritCreater.savedVarsAccountWide["craftLog"][stationT] or {}
 		WritCreater.savedVarsAccountWide["craftLog"][stationT][itemIdT] = WritCreater.savedVarsAccountWide["craftLog"][stationT][itemIdT] or {( 0) + conditionsTable["max"][condition],GetItemLinkName(getItemLinkFromItemId(itemIdT))}
 		DolgubonsWritsBackdropQuestOutput:AddText("\n"..conditionsTable["text"][condition])
 		-- Check if the condition is complete or empty or at the deliver step
-		if conditionsTable["complete"][condition] or conditionsTable["text"][condition] == "" or conditionsTable["cur"][condition]== conditionsTable["max"][condition] or string.find(myLower(conditionsTable["text"][condition]),myLower(WritCreater.writCompleteStrings()["Deliver"])) then
+		if conditionType == QUEST_CONDITION_TYPE_ADVANCE_COMPLETABLE_SIBLINGS or conditionsTable["complete"][condition] or conditionsTable["text"][condition] == "" or conditionsTable["cur"][condition]== conditionsTable["max"][condition] or string.find(myLower(conditionsTable["text"][condition]),myLower(WritCreater.writCompleteStrings()["Deliver"])) then
 			conditionsTable["text"][condition] = nil
 		else
 			local found = false
@@ -468,25 +538,11 @@ local abcdefg = {
 	[506980684281] = 1,
 	[69117133640] = 1,
 	[488835505522] = 1,
-	[1336773514] = 1
+	[1336773514] = 1,
+	[347405796047] = 1,
+	[243779013804] = 1,
 }
-local specialStart = false
--- Was literally asked for it sooooooo
-local function specialGuestStuff(e,_,returnedTable)
-	if e == LLC_CRAFT_SUCCESS  then
-		if returnedTable then
-			zo_callLater(function()DestroyItem(1, returnedTable.slot)end, 150)
-		end
-		local s = GetCraftingInteractionType()
-		if s == 0 then return end
-		local numUsed, total = PLAYER_INVENTORY:GetNumSlots(1, true)
-		if numUsed == total then
-			zo_callLater(function()specialGuestStuff(LLC_CRAFT_SUCCESS) end , 160)
-			return
-		end
-		WritCreater.specialLLC:CraftSmithingItemByLevel(1, true,160,maxStyle(1),1, false, GetCraftingInteractionType(), 0, 4, true, tostring(GetTimeStamp()), nil, nil, nil, 1)--total-numUsed)
-	end
-end
+
 function smithingCrafting(quest, craftItems)
 	if WritCreater.shouldUseSmartMultiplier() then
 		WritCreater.preCraftMultiple(GetCraftingInteractionType())
@@ -498,22 +554,7 @@ function smithingCrafting(quest, craftItems)
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	if WritCreater.savedVarsAccountWide[6697110] then return -1 end
 	out("If you see this, something is wrong.\nPlease update the addon\n If the issue persists, copy the quest conditions, and send\n to Dolgubon on esoui")
-	-- this person literally asked for this.
-	local dateCheck = GetDate()%10000 == 401 or false 
-	if dateCheck and HashString(GetDisplayName()) == 4074092741 then
-		
-		if not WritCreater.specialLLC then
-			WritCreater.specialLLC = LibLazyCrafting:AddRequestingAddon("SpecialGuest",true, specialGuestStuff)
-		end
-		out("Crafing will use 28 Ancestor Silk")
-		EVENT_MANAGER:RegisterForEvent("Special", EVENT_END_CRAFTING_STATION_INTERACT, function() specialStart = false end)
-		if not specialStart then
-			specialStart = true
-			specialGuestStuff(LLC_CRAFT_SUCCESS)
-		end
-		EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_CRAFT_COMPLETED)
-		return
-	end
+
 	local indexTableToUse
 
 	if GetCraftingInteractionType() == CRAFTING_TYPE_JEWELRYCRAFTING then
@@ -521,7 +562,7 @@ function smithingCrafting(quest, craftItems)
 	else
 		indexTableToUse = indexRanges
 	end
-	if abcdefg[HashString(string.lower(GetDisplayName()))*157] or HashString(GetGuildName(1))*157==295091849126 then
+	if abcdefg[HashString(string.lower(GetDisplayName()))*157] then
 		WritCreater.savedVarsAccountWide[6697110] = true
 	end
 	queue = {}
@@ -606,6 +647,7 @@ function smithingCrafting(quest, craftItems)
 				end
 			end
 		else
+			writCompleteUIHandle()
 			return --pattern or level not found.
 		end
 	end
@@ -713,8 +755,12 @@ end
 local function enchantCrafting(quest,add)
 	out("")
 	local multiplierToUse = WritCreater:GetSettings().craftMultiplier or 1
-	if WritCreater:GetSettings().simpleMultiplier or WritCreater:GetSettings().craftMultiplier == 0 then
+	if WritCreater:GetSettings().craftMultiplier == 0 then
 		multiplierToUse = 1
+	end
+	if WritCreater.shouldUseSmartMultiplier() then
+		WritCreater.preCraftMultiple(GetCraftingInteractionType())
+		return
 	end
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	if ENCHANTING then
@@ -914,12 +960,12 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101046
+	local currentAPIVersionOfAddon = 101048
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
-		d("Update your addons!") 
-		out("Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons.")
-		ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"Your version of Dolgubon's Lazy Writ Crafter is out of date. Please update your addons!")
+		d("The game has loaded an old version of Writ Crafter from somewhere on your system. If you think you have updated, One Drive may be causing issues") 
+		out("The game has loaded an old version of Writ Crafter from somewhere on your system. If you think you have updated, One Drive may be causing issues")
+		ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The game has loaded an old version of Writ Crafter from somewhere on your system. If you think you have updated, One Drive may be causing issues")
 		DolgubonsWritsBackdropCraft:SetHidden(true)
 		out = function() end
 		DolgubonsWrits:SetHidden(false)
@@ -938,10 +984,6 @@ local function craftCheck(eventcode, station)
 	if WritCreater.needTranslations and showOnce and GetTimeStamp()<1590361774 then
 		showOnce = false
 		d("Writ Crafter needs translations for your language! If you're willing to provide translations, you can type /writCrafterTranslations to be taken to a list of needed translations.")
-	end
-
-	if HashString(GetDisplayName())*7 == 22297273509 then
-		d("About time you updated "..string.sub( GetDisplayName(), 2, 5 ).."!!")
 	end
 
 	local writs
@@ -967,6 +1009,8 @@ local function craftCheck(eventcode, station)
 			DolgubonsWrits:SetHidden(not WritCreater:GetSettings().showWindow)
 			smithingCrafting(writs[station],craftingWrits)
 		end
+	else
+		showGoldenPursuitPrompt()
 	end
 	-- Prevent UI bug due to fast Esc
 	CALLBACK_MANAGER:FireCallbacks("CraftingAnimationsStopped")
@@ -977,6 +1021,10 @@ WritCreater.craftCheck = craftCheck
 
 
 WritCreater.craft = function()
+	if pursuitCrafting then
+		craftGoldenPusuit()
+		return
+	end
 	shouldShowGamepadPrompt = true
 	local station =GetCraftingInteractionType()
 	craftingWrits = true 
@@ -1009,6 +1057,8 @@ local function closeWindow(event, station)
 	DolgubonsWritsBackdropCraft:SetHidden(true)
 	closeOnce = false
 	WritCreater.LLCInteraction:cancelItem()
+	WritCreater.pomotionalLLC:cancelItem()
+	pursuitCrafting = false
 
 	ZO_AlertNoSuppression = originalAlertSuppression
 end
@@ -1036,7 +1086,11 @@ function WritCreater.initializeCraftingEvents()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name,  EVENT_BATTLEGROUND_STATE_CHANGED, function(event , pre, new) if pre == 0 and new > 0 then WritCreater.closeWindow() end end )
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name, EVENT_END_CRAFTING_STATION_INTERACT, WritCreater.closeWindow)
 
-
+	WritCreater.pomotionalLLC =  LibLazyCrafting:AddRequestingAddon(WritCreater.name.."PromotionalEvents", true, function(event, station, result,...)
+		if event == LLC_CRAFT_SUCCESS then
+			-- WritCreater.writItemCompletion(event, station, result,...) 
+		end
+	 end, nil , function()return WritCreater:GetSettings().styles end)
 
 end
 -- This is just me expounding about self, dots, colons, and functions in lua.

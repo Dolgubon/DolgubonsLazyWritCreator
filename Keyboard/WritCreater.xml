@@ -252,7 +252,7 @@
 							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
 							<Dimensions x="500" y="400" />
 							<Edge edgeSize="1" />
-							<Center file="esoui/art/crafting/crafting_alchemy_slottingbg.dds" />
+							<Center file="DolgubonsLazyWritCreator/LWCbackground.dds" />
 						</Backdrop>
 						<Label name="$(parent)Head" font="ZoFontGame" color="FFAA33" horizontalAlignment="CENTER" text="Dolgubons Lazy Writ Creator">
 							<Anchor relativePoint="TOP" relativeTo="$(parent)" offsetY="55" offsetX="-85" />
