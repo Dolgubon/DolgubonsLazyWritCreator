@@ -55,6 +55,8 @@ local function out(str)
 	DolgubonsWritsBackdropOutput:SetText(str)
 	if str == "" then
 		DolgubonsWrits:SetHidden(true)
+	else
+		-- DolgubonsWrits:SetHidden(false)
 	end
 end
 
@@ -534,13 +536,6 @@ local function createMatRequirementText(matsRequired)
 end
 
 local abcdefg = {
-	[208941633510] = 1,
-	[506980684281] = 1,
-	[69117133640] = 1,
-	[488835505522] = 1,
-	[1336773514] = 1,
-	[347405796047] = 1,
-	[243779013804] = 1,
 }
 
 function smithingCrafting(quest, craftItems)
@@ -753,7 +748,6 @@ local function getItemTotalStackCount(bag, slot)
 end
 
 local function enchantCrafting(quest,add)
-	out("")
 	local multiplierToUse = WritCreater:GetSettings().craftMultiplier or 1
 	if WritCreater:GetSettings().craftMultiplier == 0 then
 		multiplierToUse = 1
@@ -1059,8 +1053,8 @@ local function closeWindow(event, station)
 	WritCreater.LLCInteraction:cancelItem()
 	WritCreater.pomotionalLLC:cancelItem()
 	pursuitCrafting = false
-
 	ZO_AlertNoSuppression = originalAlertSuppression
+	out("")
 end
 
 WritCreater.closeWindow = closeWindow

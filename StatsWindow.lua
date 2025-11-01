@@ -449,4 +449,7 @@ function WritCreater.initializeStatsScene()
 		SCENE_MANAGER:Show(WritCreater.writStatsScene:GetName())
 		WritCreater.rewardsScrollManager.viewType =	WritCreater:GetSettings().defaultViewType or 1
 	end
+	if GetDate()%10000 == 1031 then
+		DolgubonsLazyWritStatsWindowBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter")
+	end
 end

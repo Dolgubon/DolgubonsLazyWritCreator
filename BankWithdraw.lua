@@ -248,7 +248,7 @@ local function queueRun()
 				zo_callLater(
 					function() 
 						if GetInteractionType()==6 then
-							if WritCreater:GetSettings().despawnBanker and IsInteractingWithMyAssistant() then
+							if WritCreater:GetSettings().despawnBanker and IsInteractingWithMyAssistant() and #WritCreater.savedVars.depositList==0 then
 								ZO_SharedInteraction:CloseChatterAndDismissAssistant()
 							end
 							SCENE_MANAGER:Show('hud')

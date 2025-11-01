@@ -862,7 +862,7 @@ function WritCreater.Options() --Sentimental
 		{
 			type = "button",
 			name = "Queue all sealed writs",
-            tooltip = "Queue all sealed writs in your inventory. Does not queue Alchemy sealed writs. Skips junked writs.",
+            tooltip = "Queue all sealed writs in your inventory. Skips junked writs.",
 			func = function(value) 
 				WritCreater.queueAllSealedWrits(BAG_BACKPACK)
 			end,

@@ -248,6 +248,7 @@ local function OnLootUpdated(event)
 					end
 				end
 				LootAll()
+				EndLooting() -- In case inventory is full. Not sure if it works, but worth a try
 			else
 				-- GetLootItemInfo(number lootIndex)
 				-- do not loot the transmute if it would go over max

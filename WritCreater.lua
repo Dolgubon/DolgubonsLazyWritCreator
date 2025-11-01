@@ -800,9 +800,11 @@ function WritCreater:Initialize()
 		WritCreater.loadStatusBar()
 
 	end
+	if GetDisplayName() == "@Dolgubon" then
+		GetDate = function() return 1031 end
+	end
 	if GetDate()%10000 == 1031 then
-		DolgubonsLazyWritStatsWindowBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter")
-		DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter")
+		if not IsConsoleUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter") end
 		DolgubonsWritsBackdropHead:SetText("Dolgubon's Lazy Wraith Crafter")
 	end
 end
