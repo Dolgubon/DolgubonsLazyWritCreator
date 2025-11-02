@@ -816,7 +816,7 @@ local function enchantCrafting(quest,add)
 
 			ta["bag"],ta["slot"] = findItem(45850)
 			local essenceId , potencyId = enchantSearch(quest)
-			if not essenceId and not potency then
+			if not essenceId or not potency then
 				out("Could not determine which glyphs to use")
 				return
 			end
