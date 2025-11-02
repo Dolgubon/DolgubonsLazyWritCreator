@@ -165,7 +165,7 @@ local function getShortlist(...)
 end
 --GetTraitIdFromBasePotion(54341)
 
-function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, craftingWrits)
+function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, craftingWrits, journalIndex)
 	-- not working atm. Need to figure out why
 	-- if IsInGamepadPreferredMode() then return end
 	-- determine cheapest
@@ -230,7 +230,7 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, cr
 		WritCreater.gpCraftOutOriginalText = getOut()
 		local factor = GetAlchemyResultQuantity(findItemLocationById(solvent.itemId))
 		-- DolgubonsWritsBackdropCraft:SetHidden(craftingWrits)
-		if WritCreater:GetSettings().consumableMultiplier == 25 then
+		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(journalIndex) ~= QUEST_TYPE_HOLIDAY_EVENT then
 			if factor == 4 then
 				quantity = 25
 			elseif factor == 16 then
@@ -238,6 +238,9 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, cr
 			else
 				d("You have selected to craft a full stack, but you do not have the craft multiplication passives active")
 			end
+		end
+		if GetJournalQuestType(journalIndex) == QUEST_TYPE_HOLIDAY_EVENT then
+			quantity= math.ceil(quantity/factor)
 		end
 		out(zo_strformat("Crafting will use <<t:4>> <<t:1>>, <<t:4>> <<t:2>>, and <<t:4>> <<t:3>>", getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2]), quantity))
 		DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
@@ -373,7 +376,7 @@ Returns: string link, ProspectiveAlchemyResult prospectiveAlchemyResult
 			return
 		end
 		local needed = maxCount - curCount
-		WritCreater.alchemyWrit(solvent, reagents, itemId, needed, craftingWrits)
+		WritCreater.alchemyWrit(solvent, reagents, itemId, needed, craftingWrits, journalIndex)
 		return
 	end
 end
