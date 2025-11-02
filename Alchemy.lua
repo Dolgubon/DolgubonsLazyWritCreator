@@ -165,7 +165,7 @@ local function getShortlist(...)
 end
 --GetTraitIdFromBasePotion(54341)
 
-function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, craftingWrits)
+function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, craftingWrits, journalIndex)
 	-- not working atm. Need to figure out why
 	-- if IsInGamepadPreferredMode() then return end
 	-- determine cheapest
@@ -229,9 +229,8 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, craftingWrit
 		end
 		WritCreater.gpCraftOutOriginalText = getOut()
 		local factor = GetAlchemyResultQuantity(findItemLocationById(solvent.itemId))
-		local quantity = 1
 		-- DolgubonsWritsBackdropCraft:SetHidden(craftingWrits)
-		if WritCreater:GetSettings().consumableMultiplier == 25 then
+		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(journalIndex) ~= QUEST_TYPE_HOLIDAY_EVENT then
 			if factor == 4 then
 				quantity = 25
 			elseif factor == 16 then
@@ -239,6 +238,9 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, craftingWrit
 			else
 				d("You have selected to craft a full stack, but you do not have the craft multiplication passives active")
 			end
+		end
+		if GetJournalQuestType(journalIndex) == QUEST_TYPE_HOLIDAY_EVENT then
+			quantity= math.ceil(quantity/factor)
 		end
 		out(zo_strformat("Crafting will use <<t:4>> <<t:1>>, <<t:4>> <<t:2>>, and <<t:4>> <<t:3>>", getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2]), quantity))
 		DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
@@ -314,7 +316,7 @@ local function startAlchemy(journalIndex, craftingWrits)
 	local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
 	local acquireString = string.lower(WritCreater.writCompleteStrings()["Acquire"]) or "acquire"
 	conditionText = myLower(conditionText)
-	if curCount == 1 or string.find(conditionText,deliverString) or string.find(conditionText,"deliver") then
+	if curCount >= maxCount or string.find(conditionText,deliverString) or string.find(conditionText,"deliver") then
 		WritCreater.writCompleteUIHandle()
 		return
 	end
@@ -373,7 +375,8 @@ Returns: string link, ProspectiveAlchemyResult prospectiveAlchemyResult
 			out("Could not find a known reagent combo. Try learning or acquiring more alchemy items")
 			return
 		end
-		WritCreater.alchemyWrit(solvent, reagents, itemId, craftingWrits)
+		local needed = maxCount - curCount
+		WritCreater.alchemyWrit(solvent, reagents, itemId, needed, craftingWrits, journalIndex)
 		return
 	end
 end

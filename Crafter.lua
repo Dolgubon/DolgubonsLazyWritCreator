@@ -419,8 +419,8 @@ function isCurrentStationsWritComplete()
 	end
 	-- Need a special exception for enchanting, since the second 'withdraw an item' 
 	if GetCraftingInteractionType() == CRAFTING_TYPE_ENCHANTING then
-		local text, currentAmount,_,_,_,_,_, conditionType = GetJournalQuestConditionInfo(questIndex, 1, 2)
-		if currentAmount == 1 then
+		local text, currentAmount, maxAmount,_,_,_,_, conditionType = GetJournalQuestConditionInfo(questIndex, 1, 2)
+		if currentAmount >= maxAmount then
 			return true
 		end
 	end
@@ -539,7 +539,7 @@ local abcdefg = {
 }
 
 function smithingCrafting(quest, craftItems)
-	if WritCreater.shouldUseSmartMultiplier() then
+	if WritCreater.shouldUseSmartMultiplier() and GetJournalQuestType(quest) ~= QUEST_TYPE_HOLIDAY_EVENT then
 		WritCreater.preCraftMultiple(GetCraftingInteractionType())
 		return
 	end
@@ -669,26 +669,27 @@ function smithingCrafting(quest, craftItems)
 	
 end
 local glyphIds = {
-{26580,45831,}, --health
-{26588,45833,}, --stamina
-{26582,45832,}, --magicka
+{26580,45831,1}, --health (oko, additive)
+{26588,45833,1}, --stamina (deni, additive)
+{26582,45832,1}, --magicka (makko, additive)
+{45886,45848,-1}, --decrease spell harm (makderi, subtractive)
 }
 local itemLinkLevel={
-{20,5,45855,},-- 1
-{20,10,45856,},-- 5
-{20,15,45857,},-- 10
-{20,20,45806,},-- 15
-{20,25,45807,},-- 20
-{20,30,45808,},-- 25
-{20,35,45809,},-- 30
-{20,40,45810,},-- 35
-{20,45,45811,},-- 40
-{125,50,45812,},-- cp10
-{127,50,45813,},-- cp30
-{129,50,45814,},-- cp50
-{131,50,45815,},-- cp70
-{272,50,45816,},-- cp100
-{308,50,64509,},-- cp150
+{20,5,45855,45817},-- 1 Jora/Jode
+{20,10,45856,45818},-- 5 Porade/Notade
+{20,15,45857,45819},-- 10 Jera/Ode
+{20,20,45806,45820},-- 15 Jejora/Tade
+{20,25,45807,45821},-- 20 Odra/Jayde
+{20,30,45808,45822},-- 25 Pojora/Edode
+{20,35,45809,45823},-- 30 Edora/Pojode
+{20,40,45810,45824},-- 35 Jaera/Rekude
+{20,45,45811,45825},-- 40 Pora/Hade
+{125,50,45812,45826},-- cp10 Denara/Idode
+{127,50,45813,45827},-- cp30 Rera/Pode
+{129,50,45814,45828},-- cp50 Derado/Kedeko
+{131,50,45815,45829},-- cp70 Rekura/Rede
+{272,50,45816,45830},-- cp100 Kura/Kude
+{308,50,64509,64508},-- cp150 Rejera/Jehade
 }
 
 local function createItemLink(itemId, quality, lvl)
@@ -699,12 +700,15 @@ local function enchantSearch(questId)
 	for i = 1, #glyphIds do
 		for j = 1, #itemLinkLevel do
 			local link = createItemLink(glyphIds[i][1], itemLinkLevel[j][1],itemLinkLevel[j][2])
-			local _,cur, max = GetJournalQuestConditionInfo(questId, 1, 2) 
-			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,2,true) and GetJournalQuestConditionValues(questId, 1, 2) == 0  then
-				return glyphIds[i][2], itemLinkLevel[j][3]
-			end
-			if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,1,true) and GetJournalQuestConditionValues(questId, 1, 1) == 0  then
-				return glyphIds[i][2], itemLinkLevel[j][3]
+			for k = 1, 2 do
+				local cur, max = GetJournalQuestConditionValues(questId, 1, k)
+				if DoesItemLinkFulfillJournalQuestCondition(link,questId,1,k,true) and cur < max then
+					if glyphIds[i][3] > 0 then -- is it additive?
+						return glyphIds[i][2], itemLinkLevel[j][3]
+					else
+						return glyphIds[i][2], itemLinkLevel[j][4]
+					end
+				end
 			end
 		end
 	end
@@ -752,7 +756,7 @@ local function enchantCrafting(quest,add)
 	if WritCreater:GetSettings().craftMultiplier == 0 then
 		multiplierToUse = 1
 	end
-	if WritCreater.shouldUseSmartMultiplier() then
+	if WritCreater.shouldUseSmartMultiplier() and GetJournalQuestType(quest) ~= QUEST_TYPE_HOLIDAY_EVENT then
 		WritCreater.preCraftMultiple(GetCraftingInteractionType())
 		return
 	end
@@ -779,10 +783,11 @@ local function enchantCrafting(quest,add)
 	for i = 1, numConditions do
 		local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
 		local acquireString = WritCreater.writCompleteStrings()["Acquire"] or "acquire"
-		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
-		if conditions["cur"][i]>0 then conditions["text"][i] = "" end
+		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i],_,_,conditions["type"][i] = GetJournalQuestConditionInfo(quest, 1, i)
+
+		if conditions["type"][i] == QUEST_CONDITION_TYPE_ADVANCE_COMPLETABLE_SIBLINGS and conditions["max"] == 0 then
 		-- Second hardcoded dliver is for backwards compatability with localizations that expect it
-		if string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
+		elseif string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
 			writCompleteUIHandle()
 			return
 		elseif string.find(myLower(conditions["text"][i]),acquireString) or string.find(myLower(conditions["text"][i]),"acquire") then
@@ -794,7 +799,7 @@ local function enchantCrafting(quest,add)
 			end
 		elseif conditions["text"][i] =="" then
 
-		elseif conditions["cur"][i] == conditions["max"][i] and conditions["cur"][i] == 1 then
+		elseif conditions["cur"][i] == conditions["max"][i] then
 			writCompleteUIHandle()
 			return
 		else
@@ -803,6 +808,8 @@ local function enchantCrafting(quest,add)
 				out("Your inventory is full!")
 				return
 			end
+
+			local needed = conditions["max"][i] - conditions["cur"][i]
 			incomplete = true
 			-- DolgubonsWritsBackdropCraft:SetHidden(false)
 			DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
@@ -812,7 +819,7 @@ local function enchantCrafting(quest,add)
 
 			ta["bag"],ta["slot"] = findItem(45850)
 			local essenceId , potencyId = enchantSearch(quest)
-			if not essenceId and not potency then
+			if not essenceId or not potency then
 				out("Could not determine which glyphs to use")
 				return
 			end
@@ -825,7 +832,7 @@ local function enchantCrafting(quest,add)
 			end
 			if not add then
 				if essence["bag"] and potency["bag"] and ta["bag"] then
-					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), multiplierToUse) or 1
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), needed * multiplierToUse) or needed
 					local runeNames = {
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
@@ -843,7 +850,7 @@ local function enchantCrafting(quest,add)
 				end
 			else
 				if essence["bag"] and potency["bag"] and ta["bag"] then
-					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), multiplierToUse) or 1
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), needed * multiplierToUse) or needed
 					local runeNames = {
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
@@ -900,7 +907,7 @@ local function singleProvisioningCondition(questIndex, craftLinks, autocraft, co
 		local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(foodId)
 		local factor = GetRecipeResultQuantity(recipeList,recipeIndex)
 		local quantity = 1
-		if WritCreater:GetSettings().consumableMultiplier == 25 then
+		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(quest) ~= QUEST_TYPE_HOLIDAY_EVENT then
 			if factor == 4 then
 				quantity = 25
 			else
