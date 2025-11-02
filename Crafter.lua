@@ -419,8 +419,8 @@ function isCurrentStationsWritComplete()
 	end
 	-- Need a special exception for enchanting, since the second 'withdraw an item' 
 	if GetCraftingInteractionType() == CRAFTING_TYPE_ENCHANTING then
-		local text, currentAmount,_,_,_,_,_, conditionType = GetJournalQuestConditionInfo(questIndex, 1, 2)
-		if currentAmount == 1 then
+		local text, currentAmount, maxAmount,_,_,_,_, conditionType = GetJournalQuestConditionInfo(questIndex, 1, 2)
+		if currentAmount >= maxAmount then
 			return true
 		end
 	end
@@ -783,10 +783,11 @@ local function enchantCrafting(quest,add)
 	for i = 1, numConditions do
 		local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
 		local acquireString = WritCreater.writCompleteStrings()["Acquire"] or "acquire"
-		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i] = GetJournalQuestConditionInfo(quest, 1, i)
-		if conditions["cur"][i]>0 then conditions["text"][i] = "" end
+		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i],_,_,conditions["type"][i] = GetJournalQuestConditionInfo(quest, 1, i)
+
+		if conditions["type"][i] == QUEST_CONDITION_TYPE_ADVANCE_COMPLETABLE_SIBLINGS and conditions["max"] == 0 then
 		-- Second hardcoded dliver is for backwards compatability with localizations that expect it
-		if string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
+		elseif string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
 			writCompleteUIHandle()
 			return
 		elseif string.find(myLower(conditions["text"][i]),acquireString) or string.find(myLower(conditions["text"][i]),"acquire") then
@@ -798,7 +799,7 @@ local function enchantCrafting(quest,add)
 			end
 		elseif conditions["text"][i] =="" then
 
-		elseif conditions["cur"][i] == conditions["max"][i] and conditions["cur"][i] == 1 then
+		elseif conditions["cur"][i] == conditions["max"][i] then
 			writCompleteUIHandle()
 			return
 		else
