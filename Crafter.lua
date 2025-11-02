@@ -539,7 +539,7 @@ local abcdefg = {
 }
 
 function smithingCrafting(quest, craftItems)
-	if WritCreater.shouldUseSmartMultiplier() then
+	if WritCreater.shouldUseSmartMultiplier() and GetJournalQuestType(quest) ~= QUEST_TYPE_HOLIDAY_EVENT then
 		WritCreater.preCraftMultiple(GetCraftingInteractionType())
 		return
 	end
@@ -756,7 +756,7 @@ local function enchantCrafting(quest,add)
 	if WritCreater:GetSettings().craftMultiplier == 0 then
 		multiplierToUse = 1
 	end
-	if WritCreater.shouldUseSmartMultiplier() then
+	if WritCreater.shouldUseSmartMultiplier() and GetJournalQuestType(quest) ~= QUEST_TYPE_HOLIDAY_EVENT then
 		WritCreater.preCraftMultiple(GetCraftingInteractionType())
 		return
 	end
@@ -907,7 +907,7 @@ local function singleProvisioningCondition(questIndex, craftLinks, autocraft, co
 		local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(foodId)
 		local factor = GetRecipeResultQuantity(recipeList,recipeIndex)
 		local quantity = 1
-		if WritCreater:GetSettings().consumableMultiplier == 25 then
+		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(quest) ~= QUEST_TYPE_HOLIDAY_EVENT then
 			if factor == 4 then
 				quantity = 25
 			else
