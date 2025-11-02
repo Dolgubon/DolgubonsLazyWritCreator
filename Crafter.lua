@@ -807,6 +807,8 @@ local function enchantCrafting(quest,add)
 				out("Your inventory is full!")
 				return
 			end
+
+			local needed = conditions["max"][i] - conditions["cur"][i]
 			incomplete = true
 			-- DolgubonsWritsBackdropCraft:SetHidden(false)
 			DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
@@ -829,7 +831,7 @@ local function enchantCrafting(quest,add)
 			end
 			if not add then
 				if essence["bag"] and potency["bag"] and ta["bag"] then
-					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), multiplierToUse) or 1
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), needed * multiplierToUse) or needed
 					local runeNames = {
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
@@ -847,7 +849,7 @@ local function enchantCrafting(quest,add)
 				end
 			else
 				if essence["bag"] and potency["bag"] and ta["bag"] then
-					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), multiplierToUse) or 1
+					local quantity = math.min(GetMaxIterationsPossibleForEnchantingItem(potency["bag"], potency["slot"], essence["bag"], essence["slot"], ta["bag"], ta["slot"]), needed * multiplierToUse) or needed
 					local runeNames = {
 						proper(GetItemName(essence["bag"], essence["slot"])),
 						proper(GetItemName(potency["bag"], potency["slot"])),
