@@ -5,7 +5,7 @@
 -- Addon Creation Date: March 14, 2016
 --
 -- File Name: Languages/pl.lua
--- File Description: Polish Localization (Skrybowie Tamriel)
+-- File Description: Polish Localization (Skrybowie Tamriel EsoPL)
 -- Load Order Requirements: None
 -- 
 -----------------------------------------------------------------------------------
@@ -48,13 +48,13 @@ function WritCreater.langWritNames() -- Not vital, but auto quest dialog probabl
 	-- Exact!!!  For example, for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
 	local names = {
 	["G"] = "zlecenia",
-    	[CRAFTING_TYPE_ENCHANTING] = "zaklinacza", -- 249936564-0-6495 <Examine the Enchanter Writs.> - <Sprawdź zlecenia dla zaklinacza.>
-	[CRAFTING_TYPE_BLACKSMITHING] = "kowala",
-	[CRAFTING_TYPE_CLOTHIER] = "krawca",
-	[CRAFTING_TYPE_PROVISIONING] = "aprowizatora",
-	[CRAFTING_TYPE_WOODWORKING] = "stolarza",
-	[CRAFTING_TYPE_ALCHEMY] = "alchemika",
-	[CRAFTING_TYPE_JEWELRYCRAFTING] = "jubilera",
+    	[CRAFTING_TYPE_ENCHANTING] = "Zaklinacza", -- 249936564-0-6495 <Examine the Enchanter Writs.> - <Sprawdź zlecenia dla zaklinacza.>
+	[CRAFTING_TYPE_BLACKSMITHING] = "Kowala",
+	[CRAFTING_TYPE_CLOTHIER] = "Krawca",
+	[CRAFTING_TYPE_PROVISIONING] = "Aprowizatora",
+	[CRAFTING_TYPE_WOODWORKING] = "Stolarza",
+	[CRAFTING_TYPE_ALCHEMY] = "Alchemika",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jubilera",
 	}
 	return names
 end
@@ -337,8 +337,8 @@ WritCreater.strings["smithingReq2"] 				= function (amount,type, current) return
 
 WritCreater.strings["lootReceived"]					= "<<3>> <<1>> został odebrany (masz <<2>>)"
 WritCreater.strings["lootReceivedM"]				= "Odebrano <<1>> "
-WritCreater.strings["countSurveys"]					= "Masz <<1>> raportów z badań"
-WritCreater.strings["countVouchers"]				= "Masz <<1>> niezdobytych Wrzosów Zleceń"
+WritCreater.strings["countSurveys"]					= "Ilość posiadanych raportów z badań: <<1>>"
+WritCreater.strings["countVouchers"]				= "Niezarobione talony za zlecenia: <<1>>"
 WritCreater.strings["includesStorage"]				= function(type) local a= {"Raportów", "Mistrzowskich Zleceń"} a = a[type] return zo_strformat("Liczba obejmuje <<1>> w magazynie domowym", a) end
 WritCreater.strings["surveys"]						= "Raporty z badań"
 WritCreater.strings["sealedWrits"]					= "Zapieczętowane zlecenia"
@@ -355,7 +355,7 @@ WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter uchroni
 WritCreater.strings['missingLibraries']				= "Dolgubon's Lazy Writ Crafter wymaga następujących samodzielnych bibliotek. Prosimy o pobranie, zainstalowanie lub włączenie tych bibliotek: "
 WritCreater.strings['resetWarningMessageText']		= "Codzienne resetowanie zleceń nastąpi za <<1>> godz. i <<2>> min.\nMożesz dostosować lub wyłączyć to ostrzeżenie w ustawieniach"
 WritCreater.strings['resetWarningExampleText']		= "Ostrzeżenie będzie wyglądać następująco"
-WritCreater.strings['lowInventory']					= "\nMasz tylko <<1>> wolnych miejsc, może to być niewystarczające."
+WritCreater.strings['lowInventory']					= "\nIlość wolnego miejsca wynosi: <<1>>, może nie starczyć ci miejsca w plecaku"
 WritCreater.strings['masterWritQueueCleared']		= "Kolejka wytwarzania Mistrzowskich Zleceń wyczyszczona"
 WritCreater.strings['multiplierCraftPrediction']	= "Wytwarzanie <<2>> przedmiotów dla <<1[niczego/$d cyklu/$d cykli]>> zleceń"
 
@@ -437,8 +437,8 @@ WritCreater.optionStrings["enchanting"]                = "Zaklinanie"
 WritCreater.optionStrings["enchanting tooltip"]        = "Włącz dodatek dla Zaklinania"
 WritCreater.optionStrings["alchemy"]                   = "Alchemia"
 WritCreater.optionStrings["alchemy tooltip"]           = "Włącz dodatek dla Alchemii (Tylko pobieranie z banku)"
-WritCreater.optionStrings["provisioning"]              = "Prowiantowanie"
-WritCreater.optionStrings["provisioning tooltip"]      = "Włącz dodatek dla Prowiantowania (Tylko pobieranie z banku)"
+WritCreater.optionStrings["provisioning"]              = "Aprowizacja"
+WritCreater.optionStrings["provisioning tooltip"]      = "Włącz dodatek dla Aprowizacji (Tylko pobieranie z banku)"
 WritCreater.optionStrings["woodworking"]               = "Stolarstwo"
 WritCreater.optionStrings["woodworking tooltip"]       = "Włącz dodatek dla Stolarstwa"
 WritCreater.optionStrings["jewelry crafting"]          = "Jubilerstwo"
@@ -467,9 +467,9 @@ WritCreater.optionStrings["master writ saver"]         = "Ochrona Mistrzowskich 
 WritCreater.optionStrings["master writ saver tooltip"] = "Zapobiega przypadkowemu zaakceptowaniu Mistrzowskich Zleceń"
 WritCreater.optionStrings["loot output"]               = "Alert o cennych nagrodach"
 WritCreater.optionStrings["loot output tooltip"]       = "Wyświetla wiadomość, gdy otrzymasz cenne przedmioty ze zlecenia"
-WritCreater.optionStrings["autoloot behaviour"]        = "Zachowanie autolootu"
+WritCreater.optionStrings["autoloot behaviour"]        = "Zachowanie automatycznego podnoszenia"
 WritCreater.optionStrings["autoloot behaviour tooltip"] = "Wybierz, kiedy dodatek ma automatycznie podnosić przedmioty z pojemników z nagrodami"
-WritCreater.optionStrings["autoloot behaviour choices"] = {"Kopiuj ustawienia gry", "Autoloot", "Nigdy nie podnoś"}
+WritCreater.optionStrings["autoloot behaviour choices"] = {"Kopiuj ustawienia gry", "Automatyczne podnoszenie", "Nigdy nie podnoś"}
 WritCreater.optionStrings["hide when done"]            = "Ukryj po zakończeniu"
 WritCreater.optionStrings["hide when done tooltip"]    = "Ukrywa okno dodatku po wytworzeniu wszystkich przedmiotów"
 WritCreater.optionStrings['reticleColour']             = "Zmiana koloru celownika"
@@ -500,7 +500,7 @@ WritCreater.optionStrings["craftMultiplierConsumablesTooltip"] = "Pojedyncze wyt
 WritCreater.optionStrings["craftMultiplierConsumablesChoices"] = {"Pojedyncze wytworzenie", "Pełny stos"}
 WritCreater.optionStrings['hireling behaviour']        = "Akcje poczty od dostawców"
 WritCreater.optionStrings['hireling behaviour tooltip'] = "Co robić z wiadomościami od dostawców"
-WritCreater.optionStrings['hireling behaviour choices'] = { "Nic", "Odbierz i usuń", "Tylko odbierz"}
+WritCreater.optionStrings['hireling behaviour choices'] = { "Nic nie rób", "Odbierz i usuń", "Tylko odbierz"}
 WritCreater.optionStrings["alchemyChoices"]            = {"Wyłączone", "Wszystkie funkcje", "Pomiń autowytwarzanie"}
 
 WritCreater.optionStrings["allReward"]                 = "Wszystkie rzemiosła"
@@ -517,8 +517,8 @@ WritCreater.optionStrings['7Reward']                   = "Zastosowanie dla wszys
 
 WritCreater.optionStrings["matsReward"]                = "Nagroda w postaci materiałów"
 WritCreater.optionStrings["matsRewardTooltip"]         = "Co zrobić z nagrodami za rzemiosło"
-WritCreater.optionStrings["surveyReward"]              = "Nagrody: Raporty z badań"
-WritCreater.optionStrings["surveyRewardTooltip"]       = "Co robić z raportami z badań"
+WritCreater.optionStrings["surveyReward"]              = "Nagrody: mapy składników"
+WritCreater.optionStrings["surveyRewardTooltip"]       = "Co zrobić z nagrodami w postaci map składników"
 WritCreater.optionStrings["masterReward"]              = "Nagrody w postaci Mistrzowskich Zleceń"
 WritCreater.optionStrings["masterRewardTooltip"]       = "Co zrobić z nagrodami w postaci Mistrzowskich Zleceń"
 WritCreater.optionStrings["repairReward"]              = "Nagrody w postaci zestawów naprawczych"
@@ -550,7 +550,7 @@ WritCreater.optionStrings["skinOptions"]               = {"Domyślny", "Serowy",
 WritCreater.optionStrings["goatSkin"]                  = "Koza"
 WritCreater.optionStrings["cheeseSkin"]                = "Serowy"
 WritCreater.optionStrings["defaultSkin"]               = "Domyślny"
-WritCreater.optionStrings["rewardChoices"]             = {"Nic", "Deponuj", "Śmieci", "Zniszcz", "Dekonstruuj"}
+WritCreater.optionStrings["rewardChoices"]             = {"Nic nie rób", "Deponuj", "Śmieci", "Zniszcz", "Dekonstruuj"}
 WritCreater.optionStrings["scan for unopened"]         = "Otwórz pojemniki przy logowaniu"
 WritCreater.optionStrings["scan for unopened tooltip"] = "Po zalogowaniu skanuje plecak w poszukiwaniu nieotwartych pojemników ze zleceń i próbuje je otworzyć"
 WritCreater.optionStrings["smart style slot save"]     = "Najmniejsza ilość najpierw"
@@ -571,7 +571,7 @@ WritCreater.optionStrings['incompleteColour']          = "Kolor nieukończonych 
 WritCreater.optionStrings['completeColour']            = "Kolor ukończonych zadań"
 WritCreater.optionStrings['smartMultiplier']           = "Inteligentny mnożnik"
 WritCreater.optionStrings['smartMultiplierTooltip']    = "Jeśli włączone, Writ Crafter wytworzy przedmioty na pełny cykl 3 dni zleceń. Sprawdzi również, czy masz już przedmioty do zleceń i weźmie to pod uwagę. Jeśli wyłączone, Writ Crafter wytworzy tylko wielokrotność przedmiotów na bieżący dzień"
-WritCreater.optionStrings['craftHousePort']            = "Teleportuj do domu rzemieślniczego"
+WritCreater.optionStrings['craftHousePort']            = "Teleport do domu rzemieś."
 WritCreater.optionStrings['craftHousePortTooltip']     = "Teleportuje do publicznie dostępnego domu rzemieślniczego"
 WritCreater.optionStrings['craftHousePortButton']      = "Teleportuj"
 WritCreater.optionStrings['reportBug']                 = "Zgłoś błąd"
@@ -582,7 +582,7 @@ WritCreater.optionStrings['donateTooltip']             = "Wesprzyj Dolgubona na 
 WritCreater.optionStrings['writStats']                 = "Statystyki zleceń"
 WritCreater.optionStrings['writStatsTooltip']          = "Zobacz historyczne statystyki nagród za zlecenia wykonane z zainstalowanym dodatkiem"
 WritCreater.optionStrings['writStatsButton']           = "Otwórz okno"
-WritCreater.optionStrings['queueWrits']                = "Kolejkuj wszystkie zapieczętowane zlecenia"
+WritCreater.optionStrings['queueWrits']                = "Kolejkuj zapieczętowane zlec."
 WritCreater.optionStrings['queueWritsTooltip']         = "Dodaj do kolejki wszystkie zapieczętowane zlecenia z ekwipunku"
 WritCreater.optionStrings['queueWritsButton']          = "Kolejkuj"
 WritCreater.optionStrings['mainSettings']              = "Ustawienia główne"
@@ -668,7 +668,7 @@ This ritual  |L0:0:0:45%%:8%%:ignore|lwill|l might give you great luck. Make sur
 ["bookTitle"] = "Rytuał na szczęście",
 ["outOfRange"] = "Nie jesteś już w obszarze Rytuału!",
 ["closeEnough"] = "Wystarczająco blisko",
-["praiseHint "] = "Maybe you need to say something about RNGesus?",
+["praiseHint "] = "Może musisz powiedzieć coś o RNGesus?",
 }
 --/esoui/art/icons/pet_041.dds
 --/esoui/art/icons/pet_042.dds
