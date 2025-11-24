@@ -116,7 +116,7 @@ local function styleCompiler()
 		},
 		{
 			type = "description",
-			text = "Reminder: You can purchase base racial style stones from any crafting NPC vendor for 15g each",
+			text = optionStrings["npcStyleStoneReminder"],
 		},
 		{
 			type = "divider",
@@ -861,8 +861,8 @@ function WritCreater.Options() --Sentimental
 		},
 		{
 			type = "button",
-			name = "Queue all sealed writs",
-            tooltip = "Queue all sealed writs in your inventory. Skips junked writs.",
+			name = WritCreater.optionStrings['queueWrits'],
+            tooltip = WritCreater.optionStrings['queueWritsTooltip'],
 			func = function(value) 
 				WritCreater.queueAllSealedWrits(BAG_BACKPACK)
 			end,

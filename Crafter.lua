@@ -81,7 +81,7 @@ WritCreater.gpCraftOutOriginalText = ""
 local myButtonGroup = {
 	alignment = KEYBIND_STRIP_ALIGN_LEFT,
 	{
-		name = "Craft Writ Items",
+		name = WritCreater.strings['keybindStripBlurb'],
 		keybind = "UI_SHORTCUT_TERTIARY",
 		order = 2500,
 		callback = function(input, input2)
@@ -107,7 +107,7 @@ local function showCraftButton(craftingWrits)
 		myButtonGroup = {
 			alignment = KEYBIND_STRIP_ALIGN_LEFT,
 			{
-				name = "Craft Writ Items",
+				name = WritCreater.strings['keybindStripBlurb'],
 				keybind = "UI_SHORTCUT_TERTIARY",
 				order = 2500,
 				callback = function(input, input2)
@@ -117,7 +117,7 @@ local function showCraftButton(craftingWrits)
 			},
 		}
 		KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup)
-		appendOut("\nPress |t32:32:"..getGamepadCraftKeyIcon().."|t to craft")
+		appendOut(zo_strformat(WritCreater.strings['pressToCraft'],getGamepadCraftKeyIcon() ))
 	end
 end
 WritCreater.showCraftButton = showCraftButton
@@ -325,7 +325,7 @@ local function showGoldenPursuitPrompt()
 	if numComplete >= numNeeded then
 		return
 	end
-	out("Craft set items for unfinished golden pursuits?\n(May be unable to craft anything. Axe/Bow/Ring/Robe only, uses iron)")
+	out(WritCreater.strings['goldenPursuitCraft'])
 	DolgubonsWrits:SetHidden(false)
 	showCraftButton(false)
 	pursuitCrafting = true
@@ -445,7 +445,7 @@ WritCreater.writCompleteUIHandle = writCompleteUIHandle
 local function fullInventorySpaceUIHandle()
 	craftingWrits = false
 
-	out("Your inventory is full")
+	out(WritCreater.strings['fullInventory'])
 	DolgubonsWritsBackdropQuestOutput:SetText("")
 	--if WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
 	-- if closeOnce and WritCreater.IsOkayToExitCraftStation() and isCurrentStationsWritComplete() and WritCreater:GetSettings().exitWhenDone then SCENE_MANAGER:ShowBaseScene() end
@@ -805,7 +805,7 @@ local function enchantCrafting(quest,add)
 		else
 			if FindFirstEmptySlotInBag(BAG_BACKPACK) ==nil then
 				writCompleteUIHandle()
-				out("Your inventory is full!")
+				out(WritCreater.strings['fullInventory'])
 				return
 			end
 
@@ -820,14 +820,14 @@ local function enchantCrafting(quest,add)
 			ta["bag"],ta["slot"] = findItem(45850)
 			local essenceId , potencyId = enchantSearch(quest)
 			if not essenceId or not potency then
-				out("Could not determine which glyphs to use")
+				out("Could not determine which glyphs to use") -- no translate
 				return
 			end
 			essence["bag"], essence["slot"] = findItem(essenceId)
 			potency["bag"], potency["slot"] = findItem(potencyId)
 
 			if essence["slot"] == nil or potency["slot"] == nil  or ta["slot"]== nil then -- should never actually be run, but whatever
-				out("An error was encountered.")
+				out("An error was encountered.") -- no translate
 				return
 			end
 			if not add then
@@ -911,7 +911,7 @@ local function singleProvisioningCondition(questIndex, craftLinks, autocraft, co
 			if factor == 4 then
 				quantity = 25
 			else
-				d("You have selected to craft a full stack, but you do not have the craft multiplication passives active")
+				d(WritCreater.strings['alchemyLowPassive'])
 			end
 		end
 		local resultTable = WritCreater.LLCInteraction:CraftProvisioningItemByResultItemId(foodId, quantity, autocraft, "dlwcProvisioning")
@@ -926,7 +926,7 @@ local function outputUnknown(craftLinks)
 			table.insert(unknown, craftLinks[i].resultLink)
 		end
 	end
-	out("You do not know the recipe for "..ZO_GenerateCommaSeparatedListWithAnd(unknown))
+	out(zo_strformat(WritCreater.strings['provisioningUnknownRecipe'], ZO_GenerateCommaSeparatedListWithAnd(unknown)))
 end
 
 local function provisioningCrafting(questIndex, craftingWrits)
@@ -942,7 +942,7 @@ local function provisioningCrafting(questIndex, craftingWrits)
 			outputUnknown(craftLinks)
 			return
 		end
-		out("Writ Crafter will craft "..ZO_GenerateCommaSeparatedListWithAnd({craftLinks[1].resultLink,craftLinks[2] and craftLinks[2].resultLink or nil}))
+		out(zo_strformat(WritCreater.strings['provisioningCraft'], ZO_GenerateCommaSeparatedListWithAnd({craftLinks[1].resultLink,craftLinks[2] and craftLinks[2].resultLink or nil}) ))
 		if craftingWrits then
 			out(getOut().."\n"..WritCreater.strings.crafting)
 		end

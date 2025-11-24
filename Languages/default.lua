@@ -9,11 +9,9 @@
 -- Load Order Requirements: Before the language file
 -- 
 -----------------------------------------------------------------------------------
-
+WritCreater = WritCreater or {}
 function WritCreater.language()
-
 	return false
-
 end
 
 local function myLower(str)
@@ -42,17 +40,19 @@ local function proper(str)
 end
 
 WritCreater.hirelingMailSubjects = 
-{
+{	-- english subject lines
 	["Raw Enchanter Materials"] = true ,
 	["Raw Clothier Materials"] = true ,
 	["Raw Blacksmith Materials"] = true ,
 	["Raw Woodworker Materials"] = true ,
 	["Raw Provisioner Materials"] = true ,
+	-- german subject lines
 	["Schreinermaterial"] = true,
 	["Versorgerzutaten"] = true,
 	["Schneidermaterial"] = true,
 	["Verzauberermaterial"] = true,
 	["Schmiedematerial"] = true,
+	-- french subject lines
 	["Matériaux bruts d'enchantement"] = true,
 	["Matériaux bruts de forge"] = true,
 	["Matériaux bruts de travail du bois"] = true,
@@ -87,9 +87,12 @@ local function runeMissingFunction (ta,essence,potency)
 	return text
 end
 
+-- Note for translators: I recommend translating this first dailyResetFunction only and skipping+removing the second dailyResetFunction.
+local function dailyResetFunction(till) 
+	d(zo_strformat("<<1>> hours and <<2>> minutes until the daily reset.",till["hour"],till["minute"])) 
+end
 
-local function dailyResetFunction(till, stamp) -- You can translate the following simple version instead.
-										-- function (till) d(zo_strformat("<<1>> hours and <<2>> minutes until the daily reset.",till["hour"],till["minute"])) end,
+local function dailyResetFunction(till, stamp)
 	if till["hour"]==0 then
 		if till["minute"]==1 then
 			return "1 minute until daily server reset!"
@@ -141,21 +144,25 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	["masterStart"] = "<Accept the contract.>",
 	["Rolis Hlaalu"] = "Rolis Hlaalu", -- This is the same in most languages but ofc chinese and japanese
 	["Deliver"] = "Deliver",
+	["Acquire"] = "acquire",
 	}
 	return strings
 end
 
-local function masterWritEnchantToCraft (link, trait, style, quality, writName)
+local function masterWritSmithCraft (link, trait, style, quality, writName)
 	-- local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and <<t:4>> style at <<t:5>> quality",pat,set,trait,style,qual,mat)
 	local partialString = zo_strformat("<<t:5>>: Crafting a CP150 <<t:1>> with the <<t:2>> trait and <<t:3>> style at <<t:4>> quality", link, trait, style, quality, writName)
 	return partialString
 end
 
 WritCreater.missingTranslations = {}
+WritCreater.missingTranslationsOrder = {}
 local stringIndexTable = {}
 local findMissingTranslationsMetatable = 
 {
-["__newindex"] = function(t,k,v) if not stringIndexTable[tostring(t)] then stringIndexTable[tostring(t)] = {} end stringIndexTable[tostring(t)][k] = v WritCreater.missingTranslations[k] = {k, v} end,
+["__newindex"] = function(t,k,v) if not stringIndexTable[tostring(t)] then stringIndexTable[tostring(t)] = {} end stringIndexTable[tostring(t)][k] = v WritCreater.missingTranslations[k] = {k, v}
+WritCreater.missingTranslationsOrder[#WritCreater.missingTranslationsOrder+1] = {k, v}
+ end,
 ["__index"] = function(t, k) return stringIndexTable[tostring(t)][k] end,
 }
 
@@ -190,12 +197,9 @@ WritCreater.strings["countVouchers"]				= "You have <<1>> unearned Writ Vouchers
 WritCreater.strings["includesStorage"]				= function(type) local a= {"Surveys", "Master Writs"} a = a[type] return zo_strformat("Count includes <<1>> in house storage", a) end
 WritCreater.strings["surveys"]						= "Crafting Surveys"
 WritCreater.strings["sealedWrits"]					= "Sealed Writs"
-WritCreater.strings["masterWritEnchantToCraft"]		= function(lvl, type, quality, writCraft, writName, generalName) 
-														return zo_strformat("<<t:4>> <<t:5>> <<t:6>>: Crafting a <<t:1>> Glyph of <<t:2>> at <<t:3>> quality",lvl, type, quality,
-															writCraft,writName, generalName) end
 -- This is the old one that was used. Since parameters have been changed, we remove this one and use the next one instead
 -- WritCreater.strings["masterWritSmithToCraft"]		= masterWritEnchantToCraft
-WritCreater.strings["newMasterWritSmithToCraft"]	= masterWritEnchantToCraft
+WritCreater.strings["newMasterWritSmithToCraft"]	= masterWritSmithCraft
 WritCreater.strings["withdrawItem"]					= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter retrieved "..amount.." "..link..". ("..remaining.." in bank)" end -- in Bank for German
 WritCreater.strings['fullBag']						= "You have no open bag spaces. Please empty your bag."
 WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter has saved you from accidentally accepting a master writ! Go to the settings menu to disable this option."
@@ -203,6 +207,56 @@ WritCreater.strings['missingLibraries']				= "Dolgubon's Lazy Writ Crafter requi
 WritCreater.strings['resetWarningMessageText']		= "The daily reset for writs will be in <<1>> hour and <<2>> minutes\nYou can customize or turn off this warning in the settings"
 WritCreater.strings['resetWarningExampleText']		= "The warning will look like this"
 WritCreater.strings['lowInventory']					= "\nYou only have <<1>> free slots left and may not have enough free slots"
+WritCreater.strings['masterWritQueueCleared']		= "Master Writ crafting queue cleared"
+WritCreater.strings['multiplierCraftPrediction']	= "Crafting <<2>> items for <<1[nothing/$d cycle/$d cycles]>> of writs"
+
+WritCreater.strings['alchemyNoCombo']				= "Could not find a cheap enough known reagent combo. Try acquiring other types of alchemy items"
+WritCreater.strings['alchemyMissing']				= 
+function(missingTable)
+	local missingOut = "You are missing "
+	for missingItemId, v in pairs(missing) do
+		missingOut = missingOut..getItemLinkFromItemId(missingItemId).." "
+	end
+	missingOut = missingOut.." to craft the cheapest combo"
+	return missingOut
+end
+WritCreater.strings['alchemyLowPassive']			= "You have selected to craft a full stack, but you do not have the craft multiplication passives active"
+WritCreater.strings['alchemyCraftReqs']				= "Crafting will use <<t:4>> <<t:1>>, <<t:4>> <<t:2>>, and <<t:4>> <<t:3>>"
+WritCreater.strings['alchemyMasterReqs']			= "<<t:1>>: Crafting a <<t:2>> using <<t:3>>, <<t:4>>, and <<t:5>>"
+WritCreater.strings['depositGold']					= "Writ Crafter: Depositing <<1>> gold"
+WritCreater.strings['depositItemMissing']			= "Writ Crafter: Could not find <<t:1>> to deposit. Item may have been destroyed or moved"
+WritCreater.strings['depositItem']					= "Writ Crafter: Depositing <<t:1>>"
+WritCreater.strings['welcomeMessage']				= "Thanks for installing Dolgubon's Lazy Writ Crafter! Please check out the settings to customize the behaviour of the addon"
+WritCreater.strings['keybindStripBlurb']			= "Craft Writ Items"
+WritCreater.strings['pressToCraft']					= "\nPress |t32:32:<<1>>|t to craft"
+WritCreater.strings['goldenPursuitCraft']			= "Craft set items for unfinished golden pursuits?\n(May be unable to craft anything. Axe/Bow/Ring/Robe only, uses iron)"
+WritCreater.strings['fullInventory']				= "Your inventory is full"
+WritCreater.strings['provisioningUnknownRecipe']	= "You do not know the recipe for <<1>>"
+WritCreater.strings['provisioningCraft']			= "Writ Crafter will craft <<1>>"
+WritCreater.strings['transmuteLooted']				= "<<1>> Transmute Stone recieved (You have <<2>>)"
+WritCreater.strings['transmuteLimitApproach']		= "You are approaching the transmute stone limit. If a box would put you over the transmute stone limit, Writ Crafter will not loot the stones."
+WritCreater.strings['transmuteLimitHit']			= "Looting these transmute stones would put you over the maximum, so <<1>> transmute stones were not looted"
+WritCreater.strings['lootingMarkJunk']				= "Writ Crafter: Marked <<1>> as junk"
+WritCreater.strings['lootingDestroyItem']			= "Writ Crafter: Destroyed <<1>> because you told it to in the settings menu"
+WritCreater.strings['lootingDeconItem']				= "Writ Crafter: Queued <<1>> for deconstruction"
+WritCreater.strings['lootingDeposit']				= "Writ Crafter: <<1>> items queued up for bank deposit"
+WritCreater.strings['mailComplete']					= "Writ Crafter: Mail Looting complete"
+WritCreater.strings['mailNumLoot']					= "Writ Crafter: <<1>> hireling mails found"
+WritCreater.strings['masterRecipeUnknown']			= "<<t:1>>: Could not queue as you do not know the recipe for <<t:2>>"
+WritCreater.strings['masterEnchantCraft']			= "<<t:1>>: Crafting <<t:2>>"
+WritCreater.strings['masterRecipeCraft']			= "<<t:1>>: Crafting <<t:3>>x<<t:2>>"
+WritCreater.strings['masterRecipeError']			= "<<1>>: Could not queue for writ. You might not know the required recipe"
+WritCreater.strings['masterQueueNotFound']			= "Could not determine how many items to craft. Try accepting the writ."
+WritCreater.strings['masterQueueBlurb']				= "Craft Writ"
+WritCreater.strings['masterQueueSummary']			= "Writ Crafter queued <<1>> sealed writs"
+WritCreater.strings['abandonQuestBanItem']			= "Writ Crafter abandoned the <<1>> because it requires <<2>> which was disallowed for use in the settings"
+WritCreater.strings['writBufferNotification']		= "The writ Quest Buffer from Lazy Writ Crafter™ is preventing you from accepting this quest"
+WritCreater.strings['masterStopAcceptNoCraftSkill'] = "Lazy Writ Crafter™ prevented you from accepting this writ because you cannot craft it"
+WritCreater.strings['stealingProtection'] 			= "The Lazy Writ Crafter™ has saved you from stealing while doing writs!"
+WritCreater.strings['statsWitsDone']				= "Writs Done: <<1>> in the past <<2>> days"
+WritCreater.strings['deconstructSuccess']			= "Writ Crafter: Deconstructed <<1>>"
+WritCreater.strings['potion']						= "potion"
+WritCreater.strings['poison']						= "poison"
 
 
 
@@ -240,8 +294,6 @@ WritCreater.optionStrings["writ grabbing"]								= "Withdraw writ items"
 WritCreater.optionStrings["writ grabbing tooltip"]						= "Grab items required for writs (e.g. nirnroot, Ta, etc.) from the bank"
 WritCreater.optionStrings["style stone menu"]							= "Style Stones Used"
 WritCreater.optionStrings["style stone menu tooltip"]					= "Choose which style stones the addon will use"
-WritCreater.optionStrings["send data"]									= "Send Writ Data"
-WritCreater.optionStrings["send data tooltip"]							= "Send information on the rewards received from your writ boxes. No other information is sent."
 WritCreater.optionStrings["exit when done"]								= "Exit crafting window"
 WritCreater.optionStrings["exit when done tooltip"]						= "Exit crafting window when all crafting is completed"
 WritCreater.optionStrings["automatic complete"]							= "Automatic quest dialog"
@@ -357,8 +409,8 @@ WritCreater.optionStrings["smart style slot save"]						= "Lowest amount first"
 WritCreater.optionStrings["smart style slot save tooltip"]				= "Will attempt to minimize slots used if non ESO+ by using smaller stacks of style stones first"
 WritCreater.optionStrings["abandon quest for item"]						= "Writs with 'deliver <<1>>'"
 WritCreater.optionStrings["abandon quest for item tooltip"]				= "If OFF, will auto abandon writs requiring you to deliver <<1>>. Quests which require you to craft an item requireing <<1>> will never be abandoned"
-WritCreater.optionStrings["status bar submenu"]							= "Status Bar Options"
-WritCreater.optionStrings["status bar submenu tooltip"]					= "Status Bar Options"
+WritCreater.optionStrings["status bar submenu"]							= "Status Bar"
+WritCreater.optionStrings["status bar submenu tooltip"]					= "Options for the Writ Status Bar"
 WritCreater.optionStrings['showStatusBar']								= "Show Status Bar"
 WritCreater.optionStrings['showStatusBarTooltip']						= "Show or hide quest status bar"
 WritCreater.optionStrings['statusBarIcons']								= "Use Icons"
@@ -374,14 +426,61 @@ WritCreater.optionStrings['smartMultiplierTooltip']						= "If on, Writ Crafter 
 " already, and take that into consideration. If off, Writ Crafter will simply craft multiple items of the current day's writs"
 WritCreater.optionStrings['craftHousePort']								= "Port to crafting house"
 WritCreater.optionStrings['craftHousePortTooltip'] 						= "Port to a publicly available crafting house"
+WritCreater.optionStrings['craftHousePortButton']						= "Port"
+WritCreater.optionStrings['reportBug']									= "Report a bug"
+WritCreater.optionStrings['reportBugTooltip']							= "Open a thread to report bugs specifically with the console version of writ crafter. Please check to make sure the issue hasn't been reported yet."
+WritCreater.optionStrings['openUrlButtonText']							= "Open URL"
+WritCreater.optionStrings['donate']										= "Donate"
+WritCreater.optionStrings['donateTooltip']								= "Donate to Dolgubon on Paypal"
+WritCreater.optionStrings['writStats']									= "Writ Stats"
+WritCreater.optionStrings['writStatsTooltip']							= "View historical writ reward statistics of writs done with the addon installed"
+WritCreater.optionStrings['writStatsButton']							= "Open window"
+WritCreater.optionStrings['queueWrits']									= "Queue all sealed writs"
+WritCreater.optionStrings['queueWritsTooltip']							= "Queue all sealed writs in your inventory"
+WritCreater.optionStrings['queueWritsButton']							= "Queue"
+WritCreater.optionStrings['mainSettings']								= "Main Settings"
+WritCreater.optionStrings['statusBarHorizontal']						= "Horizontal Position"
+WritCreater.optionStrings['statusBarHorizontalTooltip']					= "Horizontal position of the status bar"
+WritCreater.optionStrings['statusBarVertical']							= "Vertical Position"
+WritCreater.optionStrings['statusBarVerticalTooltip']					= "Vertical position of the status bar"
+WritCreater.optionStrings['keepItemWritFormat']							= "Keep <<1>>"
+WritCreater.optionStrings["npcStyleStoneReminder"]						= "Reminder: You can purchase base racial style stones from any crafting NPC vendor for 15g each"
+
+
 
 
 findMissingTranslationsMetatable["__newindex"] = function(t,k,v)WritCreater.missingTranslations[k] = nil rawset(t,k,v)  end
+WritCreater.missingTranslationMetatable = findMissingTranslationsMetatable
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_CRAFT_ITEMS", "Craft items")
 ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_OPEN", "Show Writ Crafter Stats window")
 -- text for crafting a sealed writ in the keybind area. Only for Gamepad
 ZO_CreateStringId("SI_CRAFT_SEALED_WRIT", "Craft writ")
 																		-- CSA, ZO_Alert, chat message, window
+
+function WritCreater.sortMissingTranslations()
+	for i = 1, #WritCreater.missingTranslationsOrder do
+		local v = WritCreater.missingTranslationsOrder[i]
+		if WritCreater.missingTranslations[v[1]] then
+			if type(v[2])=="table" then
+				local s= ""
+				for j = 1, #v[2] do
+					s = s..v[2][j].." , "
+				end
+				d(v[1].." : "..s)
+			else
+				d(v[1].." : "..tostring(v[2]))
+			end
+		end
+	end
+	local sorted = {}
+	for k, v in pairs(WritCreater.missingTranslations) do
+		table.insert(sorted, v)
+	end
+	table.sort(sorted, function(a, b) return a[1] < b[1] end)
+end
+-- alchemyMissing : You are missing  <<list of items missing>>  to craft the cheapest combo
+-- newMasterWritSmithToCraft : <<t:5>>: Crafting a CP150 <<t:1>> with the <<t:2>> trait and <<t:3>> style at <<t:4>> quality
+-- /script local sorted = {} for k, v in pairs(WritCreater.missingTranslations) do table.insert(sorted, v) end table.sort(sorted, function(a, b) return a[1] > b[1] end) for i = 1, #sorted do d(sorted[i][1].." : "..tostring(sorted[i][2])) end
 
 WritCreater.cheeseyLocalizations
 =

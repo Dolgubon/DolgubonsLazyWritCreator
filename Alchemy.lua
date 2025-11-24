@@ -144,6 +144,7 @@ end
 
 local function getShortlist(...)
 	local params = {...}
+	-- no need to translate; error message
 	if #params > 3 then d("Searching for too many parameters") return end
 	local searchEffects = {}
 	for i = 1, #params do
@@ -199,7 +200,7 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, cr
 		end
 	end
 	if solvent and not minCombo then
-		out("Could not find a cheap enough known reagent combo. Try acquiring other types of alchemy items")
+		out(WritCreater.strings['alchemyNoCombo'])
 		return
 	end
 
@@ -212,13 +213,7 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, cr
 			end
 		end
 		if NonContiguousCount(missing) > 0 then
-			local missingOut = "You are missing "
-			for missingId, v in pairs(missing) do
-				missingOut = missingOut..getItemLinkFromItemId(missingId).." "
-			end
-			missingOut = missingOut.." to craft the cheapest combo"
-			out(missingOut)
-			return 
+			out(WritCreater.strings['alchemyMissing'](missing))
 		end
 		
 		if craftingWrits then
@@ -236,13 +231,13 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, cr
 			elseif factor == 16 then
 				quantity = 6
 			else
-				d("You have selected to craft a full stack, but you do not have the craft multiplication passives active")
+				d(WritCreater.strings['alchemyLowPassive'])
 			end
 		end
 		if GetJournalQuestType(journalIndex) == QUEST_TYPE_HOLIDAY_EVENT then
 			quantity= math.ceil(quantity/factor)
 		end
-		out(zo_strformat("Crafting will use <<t:4>> <<t:1>>, <<t:4>> <<t:2>>, and <<t:4>> <<t:3>>", getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2]), quantity))
+		out(zo_strformat(WritCreater.strings['alchemyCraftReqs'], getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2]), quantity))
 		DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
 		WritCreater.showCraftButton(craftingWrits)
 		WritCreater.LLCInteraction:CraftAlchemyItemId(solvent.itemId, minCombo[1], minCombo[2], nil, quantity, craftingWrits)
@@ -372,7 +367,7 @@ Returns: string link, ProspectiveAlchemyResult prospectiveAlchemyResult
 	if not isMasterWrit then
 		local itemId, materialItemId = GetQuestConditionItemInfo(journalIndex, 1, 1)
 		if ZO_IsTableEmpty(reagents) or not solvent then
-			out("Could not find a known reagent combo. Try learning or acquiring more alchemy items")
+			out(WritCreater.strings['alchemyNoCombo'])
 			return
 		end
 		local needed = maxCount - curCount
@@ -386,8 +381,8 @@ WritCreater.startAlchemy = startAlchemy
 
 local typeMap = 
 {
-	[64501] = "potion",
-	[75365] = "poison",
+	[64501] = WritCreater.strings['potion'],
+	[75365] = WritCreater.strings['poison'],
 }
 
 local function queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, reference, name)
@@ -396,7 +391,7 @@ local function queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, reference, 
 	local type = typeMap[solvent]
 
 	-- local resultLink = LLC_GetEnchantingResultItemLinkByAttributes(true, level, itemId, quality)
-	d(zo_strformat("<<t:1>>: Crafting a <<t:2>> using <<t:3>>, <<t:4>>, and <<t:5>>", name, type, getItemLinkFromItemId(r1), getItemLinkFromItemId(r2), getItemLinkFromItemId(r3)))
+	d(zo_strformat(WritCreater.strings['alchemyMasterReqs'], name, type, getItemLinkFromItemId(r1), getItemLinkFromItemId(r2), getItemLinkFromItemId(r3)))
 
 end
 

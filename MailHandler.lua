@@ -7,7 +7,7 @@ local currentWorkingMail
 local function lootMails()
 	if #hirelingMails == 0 then
 		-- CloseMailbox()
-		d("Writ Crafter: Mail Looting complete")
+		d(WritCreater.strings['mailComplete'])
 		return
 	else
 		local mailId = hirelingMails[1]
@@ -53,7 +53,7 @@ local function  findLootableMails()
 	end
 
 	if #hirelingMails > 0 then
-		d("Writ Crafter: "..#hirelingMails.. " hireling mails found")
+		d(zo_strformat(WritCreater.strings['mailNumLoot'], #hirelingMails))
 		zo_callLater(lootMails, 10)
 	else
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."mailbox", EVENT_MAIL_READABLE)

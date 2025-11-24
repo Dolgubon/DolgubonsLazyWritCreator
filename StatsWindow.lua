@@ -405,7 +405,7 @@ end
 
 local function updateNonScrollElements()
 	local daysSinceReset = math.floor((GetTimeStamp() - WritCreater.savedVarsAccountWide.timeSinceReset)/86400*100)/100
-	DolgubonsLazyWritStatsWindowBackdropWritCounter:SetText("Writs Done: ".. WritCreater.savedVarsAccountWide.total.." in the past "..daysSinceReset.." days")
+	DolgubonsLazyWritStatsWindowBackdropWritCounter:SetText(zo_strformat(WritCreater.strings['statsWitsDone'] ,WritCreater.savedVarsAccountWide.total , daysSinceReset))
 	
 	local itemGold= GetControl(DolgubonsLazyWritStatsWindowBackdrop, "ItemGold")
 	local totalGold= GetControl(DolgubonsLazyWritStatsWindowBackdrop, "TotalGold")

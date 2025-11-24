@@ -173,7 +173,8 @@ local function updateOut()
         return
     end
     DolgubonsWrits:SetHidden(false)
-    out(zo_strformat("Crafting <<2>> items for <<1[nothign/$d cycle/$d cycles]>> of writs", WritCreater:GetSettings().craftMultiplier, total))
+    
+    out(zo_strformat(WritCreater.strings['multiplierCraftPrediction'], WritCreater:GetSettings().craftMultiplier, total))
     local isCrafting = WritCreater:GetSettings().autoCraft or LibLazyCrafting:IsPerformingCraftProcess()
     if isCrafting then
         WritCreater.setCloseOnce()

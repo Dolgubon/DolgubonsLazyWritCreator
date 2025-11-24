@@ -277,7 +277,7 @@
 								if WritCreater.dismissable then
 									DolgubonsWrits:SetHidden(true)
 									WritCreater.dismissable = false
-									self:SetText("Craft")
+									self:SetText(WritCreater.strings["craft"])
 								end
 								WritCreater.craft()
 							</OnClicked>

@@ -38,7 +38,7 @@ function WritCreater.initializeSettingsMenu()
         end,
     }
     local settingsMenuName = "|c8080FFDolgubon's Lazy Writ Crafter|r"
-    if GetDisplayName() == "@Dolgubon" then
+    if GetDisplayName() == "@Dolgubon" then -- trebuchet it to the start of the list
         settingsMenuName = "|c8080FFDolgubon's 1 Lazy Writ Crafter|r"
     end
     -- settings.version = panel.version
@@ -60,9 +60,9 @@ function WritCreater.initializeSettingsMenu()
     local options =  {
         {
             type = LHA.ST_BUTTON,
-            label = "Report a Bug",
-            tooltip = "Open a thread to report bugs specifically with the console version of writ crafter. Please check to make sure the issue hasn't been reported yet.",
-            buttonText = "Open URL",
+            label = WritCreater.optionStrings['reportBug'],
+            tooltip = WritCreater.optionStrings['reportBugTooltip'],
+            buttonText = WritCreater.optionStrings['openUrlButtonText'],
             clickHandler = function(control, button)
                 WritCreater.showQRCode("https://www.esoui.com/forums/showthread.php?t=11241")
             end,
@@ -70,9 +70,9 @@ function WritCreater.initializeSettingsMenu()
         },
         {
             type = LHA.ST_BUTTON,
-            label = "Donate",
-            tooltip = "Donate to Dolgubon on Paypal",
-            buttonText = "Open URL",
+            label = WritCreater.optionStrings['donate'],
+            tooltip = WritCreater.optionStrings['donateTooltip'],
+            buttonText = WritCreater.optionStrings['openUrlButtonText'],
             clickHandler = function(control, button)
                 WritCreater.showQRCode("https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&ssrt=1747363295246")
             end,
@@ -80,9 +80,9 @@ function WritCreater.initializeSettingsMenu()
         },
         {
             type = LHA.ST_BUTTON,
-            label = "Writ Stats",
-            tooltip = "View historical writ reward statistics of writs done with the addon installed",
-            buttonText = "Open Window",
+            label = WritCreater.optionStrings['writStats'],
+            tooltip = WritCreater.optionStrings['writStatsTooltip'],
+            buttonText = WritCreater.optionStrings['writStatsButton'],
             clickHandler = function(control, button)
                 WritCreater.ShowStatsWindow(false)
             end,
@@ -90,9 +90,9 @@ function WritCreater.initializeSettingsMenu()
         },
         {
             type = LHA.ST_BUTTON,
-            label = "Queue all sealed writs",
-            tooltip = "Queue all sealed writs in your inventory. Does not queue Alchemy sealed writs",
-            buttonText = "Queue",
+            label = WritCreater.optionStrings['queueWrits'],
+            tooltip = WritCreater.optionStrings['queueWritsTooltip'],
+            buttonText = WritCreater.optionStrings['queueWritsButton'],
             clickHandler = function(control, button)
                 WritCreater.queueAllSealedWrits(BAG_BACKPACK)
             end,
@@ -102,7 +102,7 @@ function WritCreater.initializeSettingsMenu()
             type = LHA.ST_BUTTON,
             label = WritCreater.optionStrings.craftHousePort,
             tooltip = WritCreater.optionStrings.craftHousePortTooltip,
-            buttonText = "Port",
+            buttonText = WritCreater.optionStrings['craftHousePortButton'],
             clickHandler = function(control, button)
                 WritCreater.portToCraftingHouse()
             end,
@@ -130,7 +130,7 @@ function WritCreater.initializeSettingsMenu()
         },
         {
             type = LHA.ST_SECTION,
-            label = "Main Settings", 
+            label = WritCreater.optionStrings['mainSettings'], 
         },
         -- {
         --     type = "divider",
@@ -195,7 +195,7 @@ function WritCreater.initializeSettingsMenu()
                 if value  then
                     for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
                 else
-                    d("Master Writ crafting queue cleared")
+                    d(WritCreater.strings['masterWritQueueCleared'])
                 end
             end,
         },
@@ -302,8 +302,8 @@ function WritCreater.initializeSettingsMenu()
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.completeColour],
         {
             type = LibHarvensAddonSettings.ST_SLIDER,
-            label = "Horizontal Position",
-            tooltip = "Horizontal position of the status bar",
+            label = WritCreater.optionStrings['statusBarHorizontal'],
+            tooltip = WritCreater.optionStrings['statusBarHorizontalTooltip'],
             setFunction = function(value)
                 WritCreater:GetSettings().statusBarX = value
                 WritCreater.updateQuestStatusAnchors()
@@ -321,8 +321,8 @@ function WritCreater.initializeSettingsMenu()
         },
         {
             type = LibHarvensAddonSettings.ST_SLIDER,
-            label = "Vertical Position",
-            tooltip = "Horizontal position of the status bar",
+            label = WritCreater.optionStrings['statusBarVertical'],
+            tooltip = WritCreater.optionStrings['statusBarVerticalTooltip'],
             setFunction = function(value)
                 WritCreater:GetSettings().statusBarY = value
                 WritCreater.updateQuestStatusAnchors()
@@ -438,7 +438,7 @@ function WritCreater.initializeSettingsMenu()
         WritCreater.lamConvertedOptions[zo_strformat(WritCreater.optionStrings["abandon quest for item"], "|H1:item:77591:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")],
     }
     for k, v in pairs(addAbandon) do
-        v.label = "Keep "..v.label
+        v.label = zo_strformat(WritCreater.optionStrings['keepItemWritFormat'], v.label)
     end
     for i = 1, #options do
         -- if options[i] then

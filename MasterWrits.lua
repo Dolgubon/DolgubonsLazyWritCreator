@@ -78,7 +78,7 @@ local function EnchantingMasterWrit(itemId, levelId, quality, reference, name)
 	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
 	WritCreater.LLCInteractionMaster:CraftEnchantingGlyphDesiredResult(true, level, itemId, quality, true, reference)
 	local resultLink = LLC_GetEnchantingResultItemLinkByAttributes(true, level, itemId, quality)
-	d(zo_strformat("<<t:1>>: Crafting <<t:2>>", name, resultLink))
+	d(zo_strformat(WritCreater.strings['masterEnchantCraft'], name, resultLink))
 end
 
 local function calculateRequiredProvisioningAmount(needed, itemId)
@@ -94,7 +94,7 @@ local function ProvisioningMasterWrit(resultItemId, quantity, reference, name)
 	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
 	local known = GetRecipeInfo(recipeList, recipeIndex)
 	if not known then
-		d(zo_strformat("<<t:1>>: Could not queue as you do not know the recipe for <<t:2>>", name, resultLink))
+		d(zo_strformat(WritCreater.strings['masterRecipeUnknown'], name, resultLink))
 		return
 	end
 	WritCreater.LLCInteractionMaster:CraftProvisioningItemByResultItemId(resultItemId, quantity, true, reference)
@@ -102,7 +102,7 @@ local function ProvisioningMasterWrit(resultItemId, quantity, reference, name)
 	local resultAmount = GetRecipeResultQuantity(recipeList,recipeIndex)
 	local amountToCreate = quantity*resultAmount
 	local resultLink = getItemLinkFromItemId(resultItemId)
-	d(zo_strformat("<<t:1>>: Crafting <<t:3>>x<<t:2>>", name, resultLink, amountToCreate))
+	d(zo_strformat(WritCreater.strings['masterRecipeCraft'], name, resultLink, amountToCreate))
 end
 
 
@@ -202,7 +202,8 @@ local function provisioningJournal(journalIndex, name)
 	if quantity > 0 then
 		ProvisioningMasterWrit(itemId, quantity, itemId, name)
 	else
-		d(name..": Could not queue for writ. You might not know the required recipe")
+
+		d(zo_strformat(WritCreater.strings['masterRecipeError'], name))
 	end
 end
 
@@ -261,7 +262,7 @@ local function provisioningRightClick(link, station, uniqueId)
 		end
 	end
 	if quantity == 0 then
-		d("Could not determine how many items to craft. Try accepting the writ.")
+		d(WritCreater.strings['masterQueueNotFound'])
 		return
 	end
 	ProvisioningMasterWrit(resultItemId, quantity, link, name)
@@ -398,7 +399,7 @@ function WritCreater.InventorySlot_ShowContextMenu(rowControl,debugslot)
     -- Search for if it is armour or not
     if not LibCustomMenu or not LibCustomMenu.RegisterIgnoreListContextMenu then return end
     zo_callLater(function ()
-        AddCustomMenuItem("Craft Sealed Writ", function ()
+        AddCustomMenuItem(WritCreater.strings['masterQueueBlurb'], function ()
 			itemHandler(bag, slot, station)
         end, MENU_ADD_OPTION_LABEL)
         ShowMenu(self)
@@ -416,7 +417,7 @@ end
 
 local myButtonGroup = {
 {
-	name = "Craft Writ",
+	name = WritCreater.strings['masterQueueBlurb'],
 	keybind = "UI_SHORTCUT_QUATERNARY",
 	callback = function(input, input2)
 	itemHandler(bag, slot, station)
@@ -451,7 +452,7 @@ local function gamepadInventoryHook(inventoryInfo, slotActions)
 	zo_callLater(function()
 	 myButtonGroup = {
 	{
-		name = "Craft Writ",
+		name = WritCreater.strings['masterQueueBlurb'],
 		keybind = "UI_SHORTCUT_QUATERNARY",
 		callback = function(input, input2)
 			itemHandler(bag, slot, station)
@@ -495,7 +496,7 @@ function WritCreater.queueAllSealedWrits(bag)
 		end
 	end
 	if outputCounter >= 10 then
-		CHAT_ROUTER:AddSystemMessage("Writ Crafter queued "..outputCounter.." sealed writs")
+		CHAT_ROUTER:AddSystemMessage(zo_strformat(WritCreater.strings['masterQueueSummary'], outputCounter))
 	end
 	outputCounter = nil
 end

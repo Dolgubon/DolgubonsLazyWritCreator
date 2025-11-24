@@ -242,9 +242,10 @@ local function OnLootUpdated(event)
 		if autoLoot then
 			if numLootTransmute==0 or numTransmute + numLootTransmute <=GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) then
 				if numLootTransmute > 0 then
-					d(numLootTransmute.." Transmute Stone recieved (You have "..(numTransmute + numLootTransmute)..")")
+
+					d(zo_strformat(WritCreater.strings['transmuteLooted'] , numLootTransmute , (numTransmute + numLootTransmute)))
 					if GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) * 0.8 < numTransmute + numLootTransmute then
-						d("You are approaching the transmute stone limit. If a box would put you over the transmute stone limit, Writ Crafter will not loot the stones.")
+						d(WritCreater.strings['transmuteLimitApproach'])
 					end
 				end
 				LootAll()
@@ -261,7 +262,7 @@ local function OnLootUpdated(event)
 					containerHasTransmute[lastInteractedSlot] = true
 					WritCreater:GetSettings().transmuteBlock[Id64ToString(GetItemUniqueId(1, lastInteractedSlot))] = numLootTransmute
 				end
-				d("Looting these transmute stones would put you over the maximum, so "..numLootTransmute.." transmute stones were not looted")
+				d(zo_strformat(WritCreater.strings['transmuteLimitHit'],numLootTransmute))
 				EndLooting()
 			end
 		else
@@ -311,7 +312,7 @@ local scanBagForUnopenedContainers
 local lootClosedTime
 local slotUpdateHandler
 -- _G[savedVariablesName][GetWorldName()][GetDisplayName()][characterName]
-SLASH_COMMANDS['/transmuteboxtotal'] = function()
+SLASH_COMMANDS['/transmuteboxtotal'] = function() -- I dunno if people use this? probably no need to bother translate unless you want to
 	local sum = 0
 	for toon, v in pairs(_G["DolgubonsWritCrafterSavedVars"]["Default"][GetDisplayName()]) do
 		local toonSum = 0
@@ -562,7 +563,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 
 					-- d("Do nothing")
 				elseif action == 2 then
-					d("Writ Crafter: Queued up to deposit "..link)
+					d(zo_strformat(WritCreater.strings['lootingDeposit'], link))
 					table.insert(pendingItemActions, {link, 2, bag, slot, changeAmount})
 					local id64 = GetItemUniqueId(bag, slot)
 					local id64String = Id64ToString(id64)
@@ -581,10 +582,10 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 					}
 				elseif action == 3 then
 					SetItemIsJunk(bag, slot, true)
-					d("Writ Crafter: Marked "..link.." as junk")
+					d(zo_strformat(WritCreater.strings['lootingMarkJunk'], link))
 				elseif action == 4 then
 					 DestroyItem(bag , slot)
-					 d("Writ Crafter: Destroyed "..link.." because you told it to in the settings menu")
+					 d(zo_strformat(WritCreater.strings['lootingDestroyItem'], link))
 				elseif action == 5 then
 					local id64 = GetItemUniqueId(bag, slot)
 					local id64String = Id64ToString(id64)
@@ -595,7 +596,7 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 						["slot"] = slot,
 						["timestamp"] = GetTimeStamp()
 					}
-					d("Writ Crafter: Queued "..link.." for deconstruction")
+					d(zo_strformat(WritCreater.strings['lootingDeconItem'], link))
 					WritCreater.LLCInteractionDeconstruct:DeconstructSmithingItem(bag, slot, true, id64String)
 				end
 				-- 1 nothing
@@ -665,7 +666,7 @@ function WritCreater.LootHandlerInitialize()
 				WritCreater.savedVars.deconstructList[k] = nil
 			elseif Id64ToString(GetItemUniqueId(v.bag, v.slot)) == v.uniqueId then
 				local link = GetItemLink(v.bag, v.slot)
-				d("Writ Crafter: Queued "..link.." for deconstruction")
+				d(zo_strformat(WritCreater.strings['lootingDeconItem'], link))
 				WritCreater.LLCInteractionDeconstruct:DeconstructSmithingItem(v.bag, v.slot, true, k)
 			end
 		end
@@ -674,7 +675,7 @@ function WritCreater.LootHandlerInitialize()
 			numDeposits = numDeposits + 1
 		end
 		if numDeposits > 0 then
-			d("Writ Crafter: "..numDeposits.." items queued up for bank deposit")
+			d(zo_strformat(WritCreater.strings['lootingDeposit'], numDeposits))
 		end
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED)
 	end )

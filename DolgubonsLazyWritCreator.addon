@@ -4,12 +4,12 @@
 ; States and/or other countries. All rights reserved.
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-## Title: Dolgubon's Lazy Writ Creator v4.0.4.2.2
+## Title: Dolgubon's Lazy Writ Creator v4.0.4.3.4
 ## Description: Simplifying writs since 2016
 ## APIVersion: 101047 101048
 ## Author: Dolgubon
-## Version: 4.0.4.2.2
-## AddOnVersion: 4042
+## Version: 4.0.4.3.4
+## AddOnVersion: 4043
 ## DependsOn: LibLazyCrafting>=4025
 ## PCDependsOn: LibAddonMenu-2.0
 ## ConsoleDependsOn: LibHarvensAddonSettings LibPrice LibQRCode
@@ -19,6 +19,10 @@
 LWCbackground.dds
 
 Libs\LibFeedback\feedback.lua
+
+Languages/default.lua
+Languages/$(officialLanguage).lua
+Languages/$(language).lua
 
 HelperFunctions.lua
 LootHandler.lua
@@ -31,9 +35,7 @@ WritCreater.lua
 MasterWrits.lua
 BankWithdraw.lua
 
-Languages/default.lua
-Languages/$(officialLanguage).lua
-Languages/$(language).lua
+
 
 SettingsMenu.lua
 Console/ConsoleSettingsMenu.lua

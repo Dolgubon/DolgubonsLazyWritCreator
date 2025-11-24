@@ -40,8 +40,8 @@ local craftingHouses =
         {displayName = "@Darhysh" , houseId = 18, greeting = "Welcome to Wizard’s Emporium",
         subHeading = "Stations are located at entrance.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:289124|hWizard's Emporium|h",},},
     ["XB1live"] = {
-        {displayName = "@J3zdaz", houseId = 46, greeting = "J3’s Craft Hub",
-        subHeading = "Stations at front, to the right.", chatMessage = "Like their guild house and want to join? Check them out here: |H1:guild:1218717|hRebels Reign|h"},
+        {displayName = "@KozmicKitty", houseId = 41, greeting = "Rebels Reign Guild House",
+        subHeading = "Stations inside the castle", chatMessage = "|H1:guild:1218717|hRebels Reign|h Guild Hall: Where Rebels Craft"},
         {displayName = "@Razberry9876" , houseId = 18, greeting = "Welcome to the Master Writ Pit!",
         subHeading = "Stations in front entry area.",},
         {displayName = "@MisfitOfSith" , houseId = 94, greeting = "Welcome to the Tarnished Architect's Guild House! Prepare yourself to be Bio Shocked!",
@@ -76,9 +76,6 @@ local craftingHouses =
         {displayName = "@Ek1", houseId = 66, greeting = "Welcome to Ek1's house!", subheading = "Stations right here!", chatMessage = ""},
     }
 }
-if GetTimeStamp() < 1754784957 then
-    craftingHouses["XB1live"][3] = nil
-end
 
 ---Join AHC in Alinor - where traders thrive in a friendly community. Check it out here: |H1:guild:370167|hAuction House Central|h
 -- Like their guild house? Join AHC in Alinor here: |H1:guild:370167|hAuction House Central|h
@@ -111,4 +108,11 @@ function WritCreater.portToCraftingHouse()
     houseToUse = craftingHouses[GetWorldName()][math.random(1, #craftingHouses[GetWorldName()] ) ]
     JumpToSpecificHouse(houseToUse.displayName, houseToUse.houseId)
     EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_houseWelcome", EVENT_PLAYER_ACTIVATED , welcomePlayerToHouse)
+end
+
+
+function WritCreater.outputMissingTranslations()
+    for k , v in pairs(WritCreater.missingTranslations) do
+        d(zo_strformat("[<<1>>] = <<2>>", k, v[2]))
+    end
 end

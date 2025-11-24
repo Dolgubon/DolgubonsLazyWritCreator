@@ -71,48 +71,6 @@ return names
 end
 
 
-function WritCreater.masterWritQuality()
-	return {{"episch",4},{"legendär",5}}
-end
-
-
-local enExceptions = -- This is a slight misnomer. Not all are corrections - some are changes into english so that future functions will work
-{
-	["original"] =
-	{
-		[1] = "beschafft",
-		[2] = "beliefert",
-		[3] = "beliefer",
-		[4] = "Beliefer",
-
-	},
-	["corrected"] = 
-	{	
-		[1] = "acquire",
-		[2] = "deliver",
-		[3] = "deliver",
-		[4] = "deliver",
-
-	},
-}
-
-
-
-function WritCreater.questExceptions(condition)
-	condition = string.gsub(condition, " "," ")
-	return condition
-end
-
-function WritCreater.enchantExceptions(condition)
-	condition = string.gsub(condition, " "," ")
-	condition = string.lower(condition)
-	for i = 1, #enExceptions["original"] do
-		condition = string.gsub(condition,enExceptions["original"][i],enExceptions["corrected"][i])
-	
-	end
-	return condition
-end
-
 
 function WritCreater.langTutorial(i) --sentimental
 	local t = {
@@ -202,12 +160,22 @@ WritCreater.strings["includesStorage"] 							= "Zähle <<1>> in deinen Lagertru
 WritCreater.strings["surveys"]									= "Handwerksgutachten"
 WritCreater.strings["sealedWrits"]								= "Versiegelte Schriebe"
 WritCreater.strings["missingLibraries"]							= "Dolgubon's Lazy Writ Crafter benötigt die folgenden Standalone-Libraries. Bitte installiere oder aktiviere diese Libraries: "
-WritCreater.strings['fullBag']						= "Du hast keinen Platz mehr im Inventar. Bitte leere dein Inventar."
-WritCreater.strings['masterWritSave']				= "Dolgubon's Lazy Writ Crafter hat verhindert, dass du versehentlich einen Meisterschrieb annimmst. Gehe in die Erweiterungseinstellungen, um diese Option zu deaktivieren."
-WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: "
-WritCreater.strings['resetWarningMessageText']		= "Die täglichen Handwerksquests werden in <<1>> Stunde und <<2>> Minute zurückgesetzt\nDu kannst diese Warnung in den Einstellungen anpassen oder deaktivieren"
-WritCreater.strings['resetWarningExampleText']		= "Die Warnung wird so aussehen"
-WritCreater.strings["withdrawItem"]					= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter entnahm "..amount.." "..link..". (Noch "..remaining.." in der Bank)" end -- in Bank for German
+WritCreater.strings['fullBag']									= "Du hast keinen Platz mehr im Inventar. Bitte leere dein Inventar."
+WritCreater.strings['masterWritSave']							= "Dolgubon's Lazy Writ Crafter hat verhindert, dass du versehentlich einen Meisterschrieb annimmst. Gehe in die Erweiterungseinstellungen, um diese Option zu deaktivieren."
+WritCreater.strings['missingLibraries']							= "Dolgubon's Lazy Writ Crafter requires the following standalone libraries. Please download, install or turn on these libraries: "
+WritCreater.strings['resetWarningMessageText']					= "Die täglichen Handwerksquests werden in <<1>> Stunde und <<2>> Minute zurückgesetzt\nDu kannst diese Warnung in den Einstellungen anpassen oder deaktivieren"
+WritCreater.strings['resetWarningExampleText']					= "Die Warnung wird so aussehen"
+WritCreater.strings["withdrawItem"]								= function(amount, link, remaining) return "Dolgubon's Lazy Writ Crafter entnahm "..amount.." "..link..". (Noch "..remaining.." in der Bank)" end -- in Bank for German
+WritCreater.strings["writBufferNotification"] 					= "Der Schrieb-Quest-Puffer des Lazy Writ Crafter™ hindert Euch daran, diese Aufgabe anzunehmen" --- Kontextural anders formulieren ---- "
+WritCreater.strings["welcomeMessage"] 							= "Danke, dass Ihr Dolgubon's Lazy Writ Crafter installiert habt. Bitte ruft die Einstellungen auf, um das Addon auf Eure Vorlieben anzupassen"
+WritCreater.strings["transmuteLooted"] 							= "<<1>> Transmute Stone recieved (You have <<2>>) <<1>> Transmut Kristall erhalten (Ihr habt <<2>>)" ---- mit dem benutzten Wort im deutschsprachigen Spiel abgleichen -----"
+WritCreater.strings["transmuteLimitHit"] 						= "Das Einsammeln dieser Transmut-Kristalle übersteigt Euer Maximum! Nicht eingesammelte Kristalle: <<1>>"  ---- umformuliert, um mengenabhängige Unterschiede zu vermeiden --------"
+WritCreater.strings["transmuteLimitApproach"] 					= "Euer Transmut-Kristall-Limit ist fast erreicht. Beim nächsten Behälter wird Writ-Crafter die [übersteigenden} Kristalle nicht einsammeln" ----- Kontext klären - anteilig nicht oder gar nicht ----- "
+WritCreater.strings["statsWitsDone"] 							= "Hergestellte Schriebe: <<1>> in den letzten <<2>> Tagen"
+WritCreater.strings["provisioningUnknownRecipe"] 				= "Ihr kennt das Rezept für <<1>> nicht"
+WritCreater.strings["provisioningCraft"] 						= "Writ Crafter stellt <<1>> her"
+WritCreater.strings["pressToCraft"] 							= "Zum Herstellen drückt |t32:32:<<1>>|t"
+
 
 
 local DivineMats =
@@ -268,11 +236,11 @@ WritCreater.optionStrings["woodworking"]                              = "Schrein
 WritCreater.optionStrings["woodworking tooltip"]                      = "Addon für Schreiner ausschalten"
 WritCreater.optionStrings["jewelry crafting"]							= "Schmuckhandwerk"
 WritCreater.optionStrings["jewelry crafting tooltip"]					= "Addon für Schmuckhandwerk ausschalten"
-WritCreater.optionStrings["style stone menu"]                         = "Stilmaterial"
-WritCreater.optionStrings["style stone menu tooltip"]                 = "Wähle aus, welches Stilmaterial benutzt werden soll."
-WritCreater.optionStrings["exit when done"]                           = "Schließe Handwerksfenster"
-WritCreater.optionStrings["exit when done tooltip"]                   = "Schließe Handwerksfenster nachdem alle Aufgaben abgeschlossen sind"
-WritCreater.optionStrings["automatic complete"]                       = "Automatischer Quest Dialog"
+WritCreater.optionStrings["style stone menu"]							= "Stilmaterial"
+WritCreater.optionStrings["style stone menu tooltip"]					= "Wähle aus, welches Stilmaterial benutzt werden soll."
+WritCreater.optionStrings["exit when done"]								= "Schließe Handwerksfenster"
+WritCreater.optionStrings["exit when done tooltip"]						= "Schließe Handwerksfenster nachdem alle Aufgaben abgeschlossen sind"
+WritCreater.optionStrings["automatic complete"]							= "Automatischer Quest Dialog"
 WritCreater.optionStrings["automatic complete tooltip"]					= "Automatisches annehmen und abschließen der Quests bei erreichen und einmaligem aktivieren des benötigten Ortes"
 WritCreater.optionStrings["new container"]								= "Behalte neuen Status"
 WritCreater.optionStrings["new container tooltip"]						= "Behalte neuen Status für Schrieb-Belohnungs-Behälter"
@@ -327,8 +295,56 @@ WritCreater.optionStrings["skinOptions"]								= {"Default", "Käsig", "Ziege"}
 WritCreater.optionStrings["goatSkin"]									= "Ziege"
 WritCreater.optionStrings["cheeseSkin"]									= "Käsig"
 WritCreater.optionStrings["defaultSkin"]								= "Default"
+WritCreater.optionStrings["writStatsTooltip"]							= "Belohnungs-Statistik für Schriebe, die Ihr mithilfe des Addon hergestellt habt"
+WritCreater.optionStrings["writStatsButton"] 							= "Öffnet das Addon-Menüfenster"
+WritCreater.optionStrings["writStats"]									= "Schrieb-Statistik"
+WritCreater.optionStrings["writRewards submenu tooltip"]				= "Was Ihr mit den Schrieb-Belohnungen tun könnt"
+WritCreater.optionStrings["writRewards submenu"] 						= "Einstellungen für die Behandlung von Schrieb-Belohnungen"
+WritCreater.optionStrings["transparentStatusBarTooltip"] 				= "Macht die Statusleiste transparent"
+WritCreater.optionStrings["transparentStatusBar"] 						= "Transparente Statusleiste"
+WritCreater.optionStrings["surveyRewardTooltip"] 						= "Wie mit Fundberichten umgegangen werden soll"
+WritCreater.optionStrings["surveyReward"] 								= "Fundbericht-Belohnungen"
+WritCreater.optionStrings["statusBarVerticalTooltip"] 					= "Vertikale Position auf der Statusleiste"
+WritCreater.optionStrings["statusBarVertical"] 							= "Vertikale Position"
+WritCreater.optionStrings["statusBarInventoryTooltip"] 					= "Fügt der Statusleiste einen Inventar-Tracker zu"
+WritCreater.optionStrings["statusBarInventory"] 						= "Inventar-Tracker"
+WritCreater.optionStrings["statusBarIconsTooltip"] 						= "Zeigt anstelle von Buchstaben Handwerkssymbole für jeden Schriebtypus an"
+WritCreater.optionStrings["statusBarIcons"] 							= "Verwende Symbole"
+WritCreater.optionStrings["statusBarHorizontalTooltip"]					= "Horizontale Position der Statusleiste"
+WritCreater.optionStrings["statusBarHorizontal"]						= "Horizontale Position"
+WritCreater.optionStrings["status bar submenu tooltip"]					= "Optionen für die Schrieb Statusleiste"
+WritCreater.optionStrings["status bar submenu"]							= "Statusleiste"
+WritCreater.optionStrings["soulGemTooltip"] 							= "Wie leere Seelensteine behandelt werden"
+WritCreater.optionStrings["soulGemReward"] 								= "Leere Seelensteine"
+WritCreater.optionStrings["smartMultiplierTooltip"] 					= "Eingeschaltet: Herstellung von Gegenständen für den vollen 3-Tages-Zyklus. Bereits vorhandene Gegenstände werden dabei berücksichtigt. Ausgeschaltet: Herstellung mehrere Gegenstände gemäß der Quest des Tages"
+WritCreater.optionStrings["smartMultiplier"] 							= "Smart Multiplier"
+WritCreater.optionStrings["smart style slot save tooltip"] 				= "Versucht, bei nicht ESO+ Anwendung Slots (Inventarplätze) einzusparen, indem bei Stilsteinen kleine Stapel zuerst verbraucht werden"
+WritCreater.optionStrings["smart style slot save"] 						= "Geringste Anzahl zuerst"
+WritCreater.optionStrings["showStatusBarTooltip"] 						= "Zeigt oder verbirgt die Anzeige für den Quest-Status"
+WritCreater.optionStrings["showStatusBar"] 								= "Zeigt die Status-Leiste an"
+WritCreater.optionStrings["scan for unopened tooltip"] 					= "Scannt beim Einloggen das Inventar nach ungeöffneten Meisterschrieb-Behältern und versucht sie zu entpacken"
+WritCreater.optionStrings["scan for unopened"] 							= "Öffnet Container bei Login"
+WritCreater.optionStrings["sameForALlCraftsTooltip"] 					= "Wendet die Regel für diesen Typ von Belohnung auf alle Handwerke an"
+WritCreater.optionStrings["sameForALlCrafts"] 							= "Gleiche Regel für alle Handwerke"
+WritCreater.optionStrings["rewardChoices"] 								= {"Nichts","Einlagern","Junk","Zerstöre","Zerlege"} ---- prüfe Junk auf deutschen Begriff -----"
+WritCreater.optionStrings["reportBugTooltip"] 							= "Öffne einen Thread um speziell für die Konsolenversion des Writ Crafter Bugs zu berichten. Bitte prüft zuvor, ob der Fehler bereits berichtet worden ist."
+WritCreater.optionStrings["reportBug"] 									= "Meldet einen Bug"
+WritCreater.optionStrings["repairRewardTooltip"] 						= "Wie werden belohnte Reparatur-Kits behandelt"
+WritCreater.optionStrings["repairReward"] 								= "Belohnte Reparatur-Kits"
+WritCreater.optionStrings["recipeRewardTooltip"] 						= "Behandlung von Rezepten"
+WritCreater.optionStrings["recipeReward"] 								= "Rezepte"
+WritCreater.optionStrings["queueWritsTooltip"] 							= "Stellt alle verschlossenen Meisterschriebe des Inventars in die Warteschlange"
+WritCreater.optionStrings["queueWritsButton"] 							= "Warteschlange"
+WritCreater.optionStrings["queueWrits"] 								= "Stelle alle versiegelten Schriebe an"
+WritCreater.optionStrings["questBufferTooltip"] 						= "Halte einen Quest-Puffer vor, so dass täglich alle Handwerksquests angenommen werden können"
+WritCreater.optionStrings["questBuffer"] 								= "Questpuffer für tägliches Handwerk"
+WritCreater.optionStrings["ornateRewardTooltip"] 						= "Wie wird mit 'ornate gear' - Belohnungen umgegangen"  ------ Spielvokabel für ornate und gear rausfinden -------"
+WritCreater.optionStrings["ornateReward"] 								= "Ornate Gear-Belohnungen"
+WritCreater.optionStrings["openUrlButtonText"] 							= "Öffne URL"
 
  
+
+
 function WritCreater.langStationNames()
 	return
 	{["Schmiedestelle"] = 1, ["Schneidertisch"] = 2, 

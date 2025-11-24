@@ -12,7 +12,7 @@
 
 
 WritCreater = WritCreater or {}
-local completionStrings = { -- This will be overridden in other languages, but we can have the english as a default
+local completionStrings = { -- This will be overridden later in the file in other languages, but we can have the english as a default
 	["place"] = "Place the goods",
 	["sign"] = "Sign the Manifest",
 	["masterPlace"] = "I've finished the ",
@@ -420,7 +420,8 @@ end
 local function OnQuestAdded(eventId, questIndex)
 	local rejectedMat = rejectQuest(questIndex)
 	if rejectedMat then
-		d("Writ Crafter abandoned the "..GetJournalQuestName(questIndex).." because it requires "..rejectedMat.." which was disallowed for use in the settings")
+
+		d(zo_strformat(WritCreater.strings['abandonQuestBanItem'], GetJournalQuestName(questIndex), rejectedMat))
 		zo_callLater(function() AbandonQuest(questIndex) end , 500)
 		return
 	end
@@ -468,7 +469,7 @@ local function checkIfCanAcceptQuest()
 	end
 	if 25 - getBuffer() + numWrits < GetNumJournalQuests() + 1 then
 		-- ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"This would eat into the writ Quest Buffer! If you still want to accept it, turn off Quest Buffer in Writ Crafter settings")
-		ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"The writ Quest Buffer from Lazy Writ Crafter™ is preventing you from accepting this quest")
+		ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,WritCreater.strings['writBufferNotification'])
 		return true
 	end
 	return false
@@ -484,7 +485,7 @@ function WritCreater.InitializeQuestHandling()
 		if string.find(GetOfferedQuestInfo(), completionStrings["Rolis Hlaalu"]) and WritCreater:GetSettings().preventMasterWritAccept then 
 			d(WritCreater.strings.masterWritSave)  
 		elseif string.find(GetOfferedQuestInfo(), completionStrings["Rolis Hlaalu"]) and not lastSlotCraftable then
-			ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,"Lazy Writ Crafter™ prevented you from accepting this writ because you cannot craft it")
+			ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,WritCreater.strings['masterStopAcceptNoCraftSkill'])
 		else
 			-- d("Accept")
 			if GetDisplayName()=="@Dolgubon" and true then

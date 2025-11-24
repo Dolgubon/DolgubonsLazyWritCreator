@@ -57,7 +57,7 @@ local queue = {}
 local emptySlots = {}
 
 local function findEmptySlots(location)
-	specialDebug("WC Debug Locating empty slots in backpack")
+	specialDebug("WC Debug Locating empty slots in backpack") -- no translate
 	emptySlots = {}
 	for i = FindFirstEmptySlotInBag(location) or 250, GetBagSize(location) - 1 do
 		if GetItemName(location, i) == "" then
@@ -116,7 +116,7 @@ local function moveItem( amountRequired, bag, slot, secondTry)
 	local _,remainingInBank = GetItemLinkStacks(GetItemLink(bag, slot))
 	if emptySlot and GetItemName(BAG_BACKPACK, emptySlot)=="" then
 		table.remove(emptySlots,1)
-		specialDebug("WC Debug Moving item to bag")
+		specialDebug("WC Debug Moving item to bag") -- no translate
 		if IsProtectedFunction("RequestMoveItem") then
 			CallSecureProtected("RequestMoveItem", bag, slot, BAG_BACKPACK,emptySlot,amountRequired)
 		else
@@ -139,8 +139,8 @@ local function isPotentialMatch(validItemTypes, bag, slot, quest, stepindex, con
 	if validItemTypes[itemType] then
 		
 		local link = GetItemLink(bag, slot)
-		specialDebug("WC Debug Item is correct type of item (e.g. food, weapon)")
-		specialDebug("WC Debug Item Link: "..link)
+		specialDebug("WC Debug Item is correct type of item (e.g. food, weapon)")-- no translate
+		specialDebug("WC Debug Item Link: "..link)-- no translate
 		
 		
 		if DoesItemFulfillJournalQuestCondition(bag, slot, quest, stepindex, conditionindex) then 
@@ -154,13 +154,13 @@ end
 local function filterMatches(matches)
 	local traits = 4
 	if #matches== 0 then
-		specialDebug("WC Debug No potential matches")
+		specialDebug("WC Debug No potential matches")-- no translate
 		return nil, nil
 	elseif #matches==1 then
-		specialDebug("WC Debug Only one potential match. Item wins by default")
+		specialDebug("WC Debug Only one potential match. Item wins by default")-- no translate
 		return matches[1][1], matches[1][2]
 	else
-		specialDebug("WC Debug Multiple matches. Longest item will be withdrawn")
+		specialDebug("WC Debug Multiple matches. Longest item will be withdrawn")-- no translate
 		local longest = 0
 		local position = 0
 		for i = 1, #matches do
@@ -170,7 +170,7 @@ local function filterMatches(matches)
 				traits=traitAmount
 			end
 		end
-		specialDebug("WC Debug "..GetItemLink(matches[position][1], matches[position][2]).." had the longest name and will now be withdrawn")
+		specialDebug("WC Debug "..GetItemLink(matches[position][1], matches[position][2]).." had the longest name and will now be withdrawn")-- no translate
 		return matches[position][1], matches[position][2]
 	end
 
@@ -180,10 +180,10 @@ local bagList = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_
 local houseBagList =  {BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 		BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 local function potionGrabRefactored(questCondition, amountRequired, validItemTypes, quest, stepindex, conditionindex)
-	specialDebug("WC Debug Beggining Bank Withdrawal Sequence")
-	specialDebug("Attempting to find items for "..questCondition)
-	specialDebug(" We need ".. amountRequired)
-	specialDebug("Valid itemTypes are the table keys of the following table:")
+	specialDebug("WC Debug Beggining Bank Withdrawal Sequence")-- no translate
+	specialDebug("Attempting to find items for "..questCondition)-- no translate
+	specialDebug(" We need ".. amountRequired)-- no translate
+	specialDebug("Valid itemTypes are the table keys of the following table:")-- no translate
 	specialDebug(validItemTypes )
 	local potentialMatches = {}
 	local storageIncluded = false
@@ -193,10 +193,10 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	end
 	for i = 1, #bags do
 		local bagId = bags[i]
-		specialDebug("Searching bag number "..bagId)
-		specialDebug("Bag has a size of "..GetBagSize(bagId))
+		specialDebug("Searching bag number "..bagId)-- no translate
+		specialDebug("Bag has a size of "..GetBagSize(bagId))-- no translate
 		for i=0, GetBagSize(bagId) do -- check the rest of the bank
-			if i < 5 and GetItemName(bagId, i)~="" then specialDebug("Checking item in slot "..i.." which has name "..GetItemName(bagId, i).." and itemType "..GetItemType(bagId, i)) end
+			if i < 5 and GetItemName(bagId, i)~="" then specialDebug("Checking item in slot "..i.." which has name "..GetItemName(bagId, i).." and itemType "..GetItemType(bagId, i)) end -- no translate
 			if isPotentialMatch(validItemTypes, bagId, i, quest, stepindex, conditionindex) then 
 				-- Add to match list
 				table.insert(potentialMatches, {bagId, i})
@@ -207,10 +207,10 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	if bag and slot then
 		local stackSize = GetSlotStackSize(bag, slot)
 		if stackSize < amountRequired then
-			specialDebug("WC Debug User does not have enough items for quest in the bank. Moving what is there, and checking again after")
+			specialDebug("WC Debug User does not have enough items for quest in the bank. Moving what is there, and checking again after")-- no translate
 			queue[#queue + 1]  = function() return potionGrabRefactored(questCondition, amountRequired -stackSize, validItemTypes ) end 
 		else
-			specialDebug("WC Debug User has enough items for quest. Withdrawing items")
+			specialDebug("WC Debug User has enough items for quest. Withdrawing items")-- no translate
 			if not moveItem(amountRequired, bag, slot) then
 				return false
 			end
@@ -356,7 +356,7 @@ local function runProcessDeposits()
 			return zo_callLater( runProcessDeposits, GetLatency()+50)
 		end
 		numItems = numItems + 1
-		d("Writ Crafter: Depositing "..WritCreater.savedVars.goldToDeposit.." gold")
+		d(zo_strformat(WritCreater.strings['depositGold'], WritCreater.savedVars.goldToDeposit))
 		TransferCurrency(CURT_MONEY, WritCreater.savedVars.goldToDeposit, CURRENCY_LOCATION_CHARACTER,CURRENCY_LOCATION_BANK)
 		WritCreater.savedVars.goldToDeposit = 0
 		return zo_callLater( runProcessDeposits, GetLatency()+20)
@@ -366,7 +366,7 @@ local function runProcessDeposits()
 		local index = v.slot
 		local doesItemExistInSlot = Id64ToString(GetItemUniqueId(bag, index)) == v.uniqueId
 		if not doesItemExistInSlot then
-			d("Writ Crafter: Could not find "..v[1].." to deposit. Item may have been destroyed or moved")
+			d(zo_strformat(WritCreater.strings['depositItemMissing'],v[1]))
 			WritCreater.savedVars.depositList[k] = nil
 			numItems = numItems - 1
 		elseif DoesBagHaveSpaceFor(bankingBag, bag, index) or (canAlsoBePlacedInSubscriberBank and DoesBagHaveSpaceFor(BAG_SUBSCRIBER_BANK, bag, index)) then
@@ -376,7 +376,7 @@ local function runProcessDeposits()
 			end
 			local _=IsProtectedFunction("PickupInventoryItem") and CallSecureProtected("PickupInventoryItem",bag, index) or PickupInventoryItem(bag, index)
 			local _=IsProtectedFunction("PlaceInTransfer") and CallSecureProtected("PlaceInTransfer") or PlaceInTransfer()
-			d("Writ Crafter: Depositing "..tostring(v[1]))
+			d(zo_strformat(WritCreater.strings['depositItem'], v[1]))
 			WritCreater.savedVars.depositList[k] = nil
 			depositedItem = true
 			numItems = numItems - 1

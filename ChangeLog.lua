@@ -49,7 +49,7 @@ Changed the background texture to use the old background texture
 
 }-- ,pc =[[Added a port to crafting house button to the settings menu]]
 
-local welcomeMessage = "Thanks for installing Dolgubon's Lazy Writ Crafter! Please check out the settings to customize the behaviour of the addon"
+local welcomeMessage = WritCreater.strings['welcomeMessage']
 
 local function displayText(text)
 	WritCreater.initializeResetWarnerScene()

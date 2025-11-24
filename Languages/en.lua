@@ -17,31 +17,15 @@
 -- If you are not looking to translate the addon you can ignore this. :D
 --
 -- If you ARE looking to translate this to something else then anything with a comment of Vital beside it is 
--- REQUIRED for a main feature to work properly. These strings should be TRANSLATED EXACTLY!
+-- required for a feature to work properly. But these features are mostly minor.
 -- If only going for functionality, ctrl+f for Vital. Otherwise, you can just translate everything.
--- If you are going for a full translation, you must also translate defualt.lua and paste it into your localization file.
--- Some functions are marked as only required for master writs.
--- Master writs are not really supported anymore and are only kept to not remove a feature. It is highly recommended to not translate those functions, 
--- and instead point users torwards writ worthy.
---
--- For languages that do not use the Latin Alphabet, there is also an optional langParser() function. IF the language you are translating
--- requires some changes to the WritCreater.parser() function then write the optional langParser() function here, and the addon
--- will use that instead. Just below is a commented out langParser for English. Be sure to remove the surrounding comment if rewriting it. [[  ]]
+-- If you are going for a full translation, you should also translate defualt.lua and paste it into your localization file. (Espcially lines starting with WritCreater.strings or WritCreater.optionStrings)
 --
 -- If you run into problems, please feel free to contact me on ESOUI.
 --
 -----------------------------------------------------------------------------------
---
 
 WritCreater = WritCreater or {}
-
-local function proper(str)
-	if type(str)== "string" then
-		return zo_strformat("<<C:1>>",str)
-	else
-		return str
-	end
-end
 
 function WritCreater.langWritNames() -- Not vital, but auto quest dialog probably won't work without it
 	-- Exact!!!  For example, for german alchemy writ is Alchemistenschrieb - so ["G"] = schrieb, and ["A"]=Alchemisten
@@ -58,20 +42,7 @@ function WritCreater.langWritNames() -- Not vital, but auto quest dialog probabl
 	return names
 end
 
-function WritCreater.langCraftKernels()
-	return 
-	{
-		[CRAFTING_TYPE_ENCHANTING] = "Enchant",
-		[CRAFTING_TYPE_BLACKSMITHING] = "Blacksmith",
-		[CRAFTING_TYPE_CLOTHIER] = "Clothier",
-		[CRAFTING_TYPE_PROVISIONING] = "Provision",
-		[CRAFTING_TYPE_WOODWORKING] = "Woodwork",
-		[CRAFTING_TYPE_ALCHEMY] = "Alchem",
-		[CRAFTING_TYPE_JEWELRYCRAFTING] = "Jewelry",
-	}
-end
-
-function WritCreater.writCompleteStrings() -- Vital for translation
+function WritCreater.writCompleteStrings() -- Vital for quest dialog
 	local strings = {
 	["place"] = "Place the goods",
 	["sign"] = "Sign the Manifest",
@@ -85,12 +56,7 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	return strings
 end
 
-function WritCreater.questExceptions(condition)
-	condition = string.gsub(condition, " "," ")
-	return condition
-end
-
-function WritCreater.langStationNames()
+function WritCreater.langStationNames() -- Vital for reticle changes
 	return
 	{["Blacksmithing Station"] = 1, ["Clothing Station"] = 2, 
 	 ["Enchanting Table"] = 3,["Alchemy Station"] = 4, ["Cooking Fire"] = 5, ["Woodworking Station"] = 6, ["Jewelry Crafting Station"] = 7, }

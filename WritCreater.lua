@@ -410,7 +410,6 @@ local function parser(str)
 
 end
 
-WritCreater.parser = parser
 
 
 --debug functions
@@ -690,7 +689,7 @@ local function initializeLibraries()
 		)
 	WritCreater.LLCInteractionDeconstruct = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Deconstruct", true, function(event, station, result)
 		if result and result.type == "deconstruct" then
-			d("Writ Crafter: Deconstructed "..result.ItemLink)
+			d(zo_strformat(WritCreater.strings['deconstructSuccess'], result.ItemLink))
 			WritCreater.savedVars.deconstructList[result.itemStringUniqueId] = nil
 			return
 		end
@@ -757,10 +756,6 @@ local function initializeLocalization()
 
 	WritCreater.writNames = WritCreater.langWritNames()
 
-	if WritCreater.langParser then -- overwrite stock parser if a localized parser is available
-		parser = WritCreater.langParser
-		WritCreater.parser = WritCreater.langParser
-	end
 end
 
 local added = false

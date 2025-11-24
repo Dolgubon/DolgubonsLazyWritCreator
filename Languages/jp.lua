@@ -5,7 +5,7 @@
 -- Addon Creation Date: March 14, 2016
 --
 -- File Name: Languages/jp.lua
--- File Description: Japanese Localization (Translated by qoqo and Calamath)
+-- File Description: Japanese Localization (Translated by qoqo and Calamath: last update Nov.20, 2025)
 -- Load Order Requirements: None
 -- 
 -----------------------------------------------------------------------------------
@@ -106,6 +106,7 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	["masterStart"] = "<契約を受諾する>",
 	["Rolis Hlaalu"] = "ロリス・フラール",
 	["Deliver"] = "届ける",
+	["Acquire"] = "手に入れる",
 	}
 	return strings
 end
@@ -150,7 +151,7 @@ local function runeMissingFunction (ta,essence,potency)
 end
 
 
-local function dailyResetFunction(till)
+local function dailyResetFunction(till, stamp)
 	if till["hour"]==0 then
 		if till["minute"]==1 then
 			return "サーバーのデイリーリセットまであと１分です！"
@@ -161,14 +162,14 @@ local function dailyResetFunction(till)
 				return "マジで... 尋ねないでください。そんなにせっかちなの？　あと１秒でリセットされます！　*ぶつぶつ*"
 			end
 		else
-			return "デイリーリセットまであと" .. till["minute"] .."分！"
+			return "デイリーリセットまであと"..till["minute"].."分！"
 		end
 	else
-		return "デイリーリセットまであと" .. till["hour"].."時間".. till["minute"] .."分"
+		return "デイリーリセットまであと"..till["hour"].."時間"..till["minute"].."分"
 	end 
 end
 
-local function masterWritEnchantToCraft (link, trait, style, quality, writName)
+local function masterWritSmithCraft (link, trait, style, quality, writName)
 	local partialString = zo_strformat("<<t:5>>: CP150の <<t:1>> (特性:<<t:2>> スタイル:<<t:3>> 品質:<<t:4>>) を作成する", link, trait, style, quality, writName)
 	return partialString
 end
@@ -197,29 +198,77 @@ WritCreater.strings["moreStyleKnowledge"]		= "|cf60000使用可能なスタイ�
 WritCreater.strings["dailyreset"] 				= dailyResetFunction
 WritCreater.strings["complete"] 				= "|c00FF00令状完了|r"
 WritCreater.strings["craftingstopped"] 			= "クラフトを中止しました。アドオンが正しいアイテムをクラフトしていたかチェックしてください"
-WritCreater.strings["smithingReqM"] 			= function(amount, type, more) return zo_strformat("クラフトには<<1>>を<<2>>個使用 (|cf60000あと<<3>>個必要|r)", type, amount, more) end
-WritCreater.strings["smithingReqM2"] 			= function (amount,type,more) return zo_strformat("\n同様に<<1>>を<<2>>個使用 (|cf60000あと<<3>>個必要|r)", type, amount, more) end
-WritCreater.strings["smithingReq"] 				= function (amount,type, current) return zo_strformat("クラフトには<<1>>を<<2>>個使用 (|c2dff00<<3>>個使用可能|r)", type, amount, 
+WritCreater.strings["smithingReqM"] 			= function(amount, type, more) return zo_strformat("<<1>>が<<2>>個必要 (|cf60000あと<<3>>個必要|r)", type, amount, more) end
+WritCreater.strings["smithingReq"] 				= function (amount,type, current) return zo_strformat("<<1>>が<<2>>個必要 (|c2dff00<<3>>個使用可能|r)", type, amount, 
 														zo_strformat(SI_NUMBER_FORMAT, ZO_AbbreviateNumber(current, NUMBER_ABBREVIATION_PRECISION_TENTHS, USE_LOWERCASE_NUMBER_SUFFIXES))) end
-WritCreater.strings["smithingReq2"] 			= function (amount,type, current) return zo_strformat("\n同様に<<1>>を<<2>>個使用 (|c2dff00<<3>>個使用可能|r)", type, amount, current) end
 WritCreater.strings["lootReceived"]				= "<<1>> <<3>>個 を受け取った (<<2>>個 所持)"
 WritCreater.strings["lootReceivedM"]			= "<<1>> を受け取った "
-WritCreater.strings["countSurveys"]				= "You have <<1>> surveys"
-WritCreater.strings["countVouchers"]			= "You have <<1>> unearned Writ Vouchers"
+WritCreater.strings["countSurveys"]				= "調査依頼を<<1>>個所持している"
+WritCreater.strings["countVouchers"]			= "報酬箱を<<1>>個所持している"
 WritCreater.strings["includesStorage"]			= function(type) local a= {"Surveys", "Master Writs"} a = a[type] return zo_strformat("Count includes <<1>> in house storage", a) end
-WritCreater.strings["surveys"]					= "Crafting Surveys"
-WritCreater.strings["sealedWrits"]				= "Sealed Writs"
+WritCreater.strings["surveys"]					= "調査依頼"
+WritCreater.strings["sealedWrits"]				= "マスター依頼"
 WritCreater.strings["masterWritEnchantToCraft"]	= function(lvl, type, quality, writCraft, writName, generalName) 
 													return zo_strformat("<<t:4>>の<<t:5>><<t:6>>: <<t:1>>のグリフ(<<t:2>>) 品質:<<t:3>>を作成する",lvl, type, quality,
 													writCraft,writName, generalName) end
-WritCreater.strings["newMasterWritSmithToCraft"]	= masterWritEnchantToCraft
+WritCreater.strings["newMasterWritSmithToCraft"]	= masterWritSmithCraft
 WritCreater.strings["withdrawItem"]				= function(amount, link, remaining) return link.."を"..amount.."個取り出した(銀行に"..remaining.."個)" end
 WritCreater.strings['fullBag']					= "バッグに空きがありません。バッグに空きを作ってください。"
 WritCreater.strings['masterWritSave']			= "Dolgubon's Lazy Writ Crafterは、あなたが誤ってマスター依頼を受諾してしまうのを防ぎました! 設定メニューでこの機能をオフにできます"
 WritCreater.strings['missingLibraries']			= "Dolgubon's Lazy Writ Crafterには次のスタンドアロンライブラリが必要です。ダウンロードしてインストールするかライブラリをオンにしてください: "
-WritCreater.strings['resetWarningMessageText']	= "デイリー依頼のリセットまで<<1>>時間<<2>>分です\n設定でこのワーニング表示のカスタマイズができます"
-WritCreater.strings['resetWarningExampleText']	= "ワーニングはこのように表示されます"
+WritCreater.strings['resetWarningMessageText']	= "デイリー依頼のリセットまで<<1>>時間<<2>>分です\n設定でこの通知のカスタマイズができます"
+WritCreater.strings['resetWarningExampleText']	= "通知はこのように表示されます"
 WritCreater.strings['lowInventory']				= "\n空きスロットが <<1>>しか残っておらず、空きスロットが不足している可能性があります。"
+WritCreater.strings['masterWritQueueCleared']		= "マスター依頼のクラフトキューをクリアしました。"
+WritCreater.strings['multiplierCraftPrediction']	= "令状<<1[なしで/$dサイクル分の/$dサイクル分の]>><<2>>個のアイテムをクラフト中"
+
+WritCreater.strings['alchemyNoCombo']				= "十分に安価な既知の試料の組み合わせが見つかりませんでした。他の種類の錬金術アイテムを入手してみてください。"
+WritCreater.strings['alchemyMissing']				= 
+function(missingTable)
+	local missingOut = "最低コストの試料の組み合わせで作るには "
+	for missingItemId, v in pairs(missing) do
+		missingOut = missingOut..getItemLinkFromItemId(missingItemId).." "
+	end
+	missingOut = missingOut.." が足りません。"
+	return missingOut
+end
+WritCreater.strings['alchemyLowPassive']			= "フルスタックが選択されましたが、クラフト数を増加させるパッシブスキルが有効になっていません。"
+WritCreater.strings['alchemyCraftReqs']				= "クラフトには<<t:1>>を<<t:4>>個、<<t:2>>を<<t:4>>個、<<t:3>>を<<t:4>>個が必要 "
+WritCreater.strings['alchemyMasterReqs']			= "<<t:1>>: <<t:2>>のクラフトに <<t:3>>と、<<t:4>>と、<<t:5>>を使用"
+WritCreater.strings['depositGold']					= "Writ Crafter: <<1>>ゴールドを預けた"
+WritCreater.strings['depositItemMissing']			= "Writ Crafter: 預ける<<t:1>> が見つかりません。アイテムが破壊または移動されていた可能性があります"
+WritCreater.strings['depositItem']					= "Writ Crafter: <<t:1>>を預けた"
+WritCreater.strings['welcomeMessage']				= "Dolgubon's Lazy Writ Crafterをインストールしていただきありがとうございます！アドオンの動作をカスタマイズするための設定をご確認ください"
+WritCreater.strings['keybindStripBlurb']			= "令状アイテムをクラフト"
+WritCreater.strings['pressToCraft']					= "\n |t32:32:<<1>>|t を押してクラフト"
+WritCreater.strings['goldenPursuitCraft']			= "未完了の黄金の追跡のためにセットアイテムを作成しますか？\n（何も作れない可能性があります。斧/弓/指輪/ローブのみ、鉄を使用）"
+WritCreater.strings['fullInventory']				= "所持品が満杯です"
+WritCreater.strings['provisioningUnknownRecipe']	= "<<1>>のレシピを知りません"
+WritCreater.strings['provisioningCraft']			= "Writ Crafterは <<1>> を作成中"
+WritCreater.strings['transmuteLooted']				= "変性クリスタルを<<1>>個拾った (<<2>>個所持)"
+WritCreater.strings['transmuteLimitApproach']		= "変性クリスタルの所持上限に近づいています。変性晶石から取り出すと上限を超えてしまう場合、Writ Crafterは変性晶石から取り出しません"
+WritCreater.strings['transmuteLimitHit']			= "変性クリスタルを取り出すと所持上限を超えてしまうため、<<1>>個の変性クリスタルが取り出されませんでした"
+WritCreater.strings['lootingMarkJunk']				= "Writ Crafter: <<1>> をガラクタとしてマークした"
+WritCreater.strings['lootingDestroyItem']			= "Writ Crafter: <<1>> を破壊した。設定メニューであなたが指定したためです"
+WritCreater.strings['lootingDeconItem']				= "Writ Crafter: <<1>> を解体のキューに入れた"
+WritCreater.strings['lootingDeposit']				= "Writ Crafter: <<1>> を銀行に預けるキューに入れた"
+WritCreater.strings['mailComplete']					= "Writ Crafter: メール添付アイテムの受け取り終了"
+WritCreater.strings['mailNumLoot']					= "Writ Crafter: 助手のメールが <<1>>通あった"
+WritCreater.strings['masterRecipeUnknown']			= "<<t:1>>: <<t:2>>のレシピを知らないため、クラフトキューに入れられませんでした"
+WritCreater.strings['masterEnchantCraft']			= "<<t:1>>: <<t:2>>をクラフトする"
+WritCreater.strings['masterRecipeCraft']			= "<<t:1>>: <<t:2>>を<<t:3>>個クラフトする"
+WritCreater.strings['masterRecipeError']			= "<<1>>: クラフトキューに入れられませんでした。必要なレシピを知らない可能性があります"
+WritCreater.strings['masterQueueNotFound']			= "クラフトするアイテム数を計算できませんでした。マスター依頼を受諾してみてください"
+WritCreater.strings['masterQueueBlurb']				= "依頼書のクラフト"
+WritCreater.strings['masterQueueSummary']			= "Writ Crafterは<<1>>個のマスター依頼をクラフトキューに入れました"
+WritCreater.strings['abandonQuestBanItem']			= "Writ Crafterはクエスト「<<1>>」を破棄しました。使用禁止に設定された<<2>>を必要とするからです"
+WritCreater.strings['writBufferNotification']		= "Lazy Writ Crafter™ の令状クエストバッファー機能が、このクエストの受諾を妨げています"
+WritCreater.strings['masterStopAcceptNoCraftSkill'] = "Lazy Writ Crafter™ は、あなたが依頼書のアイテムを作れないので依頼を受諾するのを抑止した"
+WritCreater.strings['stealingProtection'] 			= "Lazy Writ Crafter™ は、クラフトデイリーの最中に誤って盗みを働くのを抑止した！"
+WritCreater.strings['statsWitsDone']				= "完了した令状: 過去<<2>>日間で<<1>>件"
+WritCreater.strings['deconstructSuccess']			= "Writ Crafter: <<1>>を解体した"
+WritCreater.strings['potion']						= "薬"
+WritCreater.strings['poison']						= "毒"
 
 
 
@@ -256,8 +305,6 @@ WritCreater.optionStrings["delay"]										= "アイテム取り込みディレ
 WritCreater.optionStrings["delay tooltip"]								= "銀行からアイテムを取り込むときの待ち時間（ミリ秒）"
 WritCreater.optionStrings["style stone menu"]							= "使用するスタイル素材"
 WritCreater.optionStrings["style stone menu tooltip"]					= "アドオンでどのスタイル素材を使用するか選択します"
-WritCreater.optionStrings["send data"]									= "Send Writ Data"
-WritCreater.optionStrings["send data tooltip"]							= "Send information on the rewards received from your writ boxes. No other information is sent."
 WritCreater.optionStrings["exit when done"]								= "クラフトウィンドウを自動的に閉じる"
 WritCreater.optionStrings["exit when done tooltip"]						= "すべてのクラフトが完了したら、自動的にクラフトウィンドウを閉じます"
 WritCreater.optionStrings["automatic complete"]							= "クエストダイアログの自動化"
@@ -283,7 +330,7 @@ WritCreater.optionStrings["autoloot behaviour tooltip"]					= "令状の報酬�
 WritCreater.optionStrings["autoloot behaviour choices"]					= {"ゲームプレイメニュー内の設定に従う", "自動取得する", "自動取得しない"}
 WritCreater.optionStrings["container delay"]							= "報酬コンテナの取り出しディレイ"
 WritCreater.optionStrings["container delay tooltip"]					= "報酬コンテナを受け取ってから中身を自動取得するまでの待ち時間"
-WritCreater.optionStrings["hide when done"]								= "Hide when done"
+WritCreater.optionStrings["hide when done"]								= "作成後に閉じる"
 WritCreater.optionStrings["hide when done tooltip"]						= "すべてのアイテムがクラフトされたら自動的にアドオンのウィンドウを閉じます"
 WritCreater.optionStrings['reticleColour']								= "レティクルの色を変える"
 WritCreater.optionStrings['reticleColourTooltip']						= "依頼を受けている場合に完了か未完了かで、クラフト台のレティクルの色を変えます"
@@ -293,18 +340,13 @@ WritCreater.optionStrings['despawnBanker']								= "助手の頭取の解放 (�
 WritCreater.optionStrings['despawnBankerTooltip']						= "銀行からアイテムを引き出した後で、助手の頭取を自動的に解放します"
 WritCreater.optionStrings['despawnBankerDeposit']						= "助手の頭取の解放 (預け入れ)"
 WritCreater.optionStrings['despawnBankerDepositTooltip']				= "銀行にアイテムを預け入れた後で、助手の頭取を自動的に解放します"
-WritCreater.optionStrings['dailyResetWarn']								= "Writ Reset Warning"
-WritCreater.optionStrings['dailyResetWarnTooltip']						= "その日の令状がリセットされる前に警告を表示します"
-WritCreater.optionStrings['dailyResetWarnTime']							= "リセットの何分前に表示"
-WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "デイリーリセットの何分前にワーニングを表示するか"
-WritCreater.optionStrings['dailyResetWarnType']							= "デイリーリセットのワーニング表示"
-WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "デイリーリセットが起ころうとしたときにどの種類のワーニングを表示するか"
-WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "なし","画面中央に告知", "画面右上に表示", "チャット欄に表示", "ポップアップ", "すべて"}
+WritCreater.optionStrings['dailyResetWarnTime']							= "リセットの何分前に通知"
+WritCreater.optionStrings['dailyResetWarnTimeTooltip']					= "デイリーリセットの何分前に注意喚起の通知をするか"
+WritCreater.optionStrings['dailyResetWarnType']							= "デイリーリセットの通知方法"
+WritCreater.optionStrings['dailyResetWarnTypeTooltip']					= "デイリーリセットが起ころうとしたときにどのように通知するか"
+WritCreater.optionStrings['dailyResetWarnTypeChoices']					={ "なし","画面中央に通知", "画面右上に表示", "チャット欄に表示", "ポップアップ", "すべて"}
 WritCreater.optionStrings['stealingProtection']							= "盗み行為防止"
 WritCreater.optionStrings['stealingProtectionTooltip']					= "ジャーナルに令状クエストを持っている間、あなたが誤って盗むのを防ぎます"
-WritCreater.optionStrings['jewelryWritDestroy']							= "Destroy Jewelry Sealed Writs"
-WritCreater.optionStrings['jewelryWritDestroyTooltip']					= "Destroy looted Jewelry Sealed writs. WARNING: There is no prompt!"
-WritCreater.optionStrings['jewelryWritDestroyWarning']					= "WARNING: There is no prompt when destroying jewelry writs! Enable at your own risk!"
 WritCreater.optionStrings['noDELETEConfirmJewelry']						= "宝飾のマスター依頼を破壊する操作の簡略化"
 WritCreater.optionStrings['noDELETEConfirmJewelryTooltip']				= "宝飾のマスター依頼（密封された宝飾依頼）を破壊するときの確認ダイアログに DELETE の文字を自動で入力します"
 WritCreater.optionStrings['suppressQuestAnnouncements']					= "令状クエストのアナウンス表示の抑制"
@@ -325,16 +367,16 @@ WritCreater.optionStrings["allRewardTooltip"]							= "全てのクラフト職�
 
 WritCreater.optionStrings['sameForALlCrafts']							= "全クラフト職制で同じオプションを使用する"
 WritCreater.optionStrings['sameForALlCraftsTooltip']					= "全クラフト職制について、このタイプの報酬に同じオプションを使用する"
-WritCreater.optionStrings['1Reward']									= "Blacksmithing"
-WritCreater.optionStrings['2Reward']									= "Use for all"
-WritCreater.optionStrings['3Reward']									= "Use for all"
-WritCreater.optionStrings['4Reward']									= "Use for all"
-WritCreater.optionStrings['5Reward']									= "Use for all"
-WritCreater.optionStrings['6Reward']									= "Use for all"
-WritCreater.optionStrings['7Reward']									= "Use for all"
+WritCreater.optionStrings['1Reward']									= "鍛冶"
+WritCreater.optionStrings['2Reward']									= "全てに使用"
+WritCreater.optionStrings['3Reward']									= "全てに使用"
+WritCreater.optionStrings['4Reward']									= "全てに使用"
+WritCreater.optionStrings['5Reward']									= "全てに使用"
+WritCreater.optionStrings['6Reward']									= "全てに使用"
+WritCreater.optionStrings['7Reward']									= "全てに使用"
 
-WritCreater.optionStrings["matsReward"]									= "Mat Rewards"
-WritCreater.optionStrings["matsRewardTooltip"]							= "What to do with crafting material rewards"
+WritCreater.optionStrings["matsReward"]									= "素材の報酬"
+WritCreater.optionStrings["matsRewardTooltip"]							= "クラフト素材の報酬をどうするか"
 WritCreater.optionStrings["surveyReward"]								= "調査報告の報酬"
 WritCreater.optionStrings["surveyRewardTooltip"]						= "調査報告の報酬をどうするか"
 WritCreater.optionStrings["masterReward"]								= "マスター依頼の報酬"
@@ -353,6 +395,10 @@ WritCreater.optionStrings["recipeReward"]								= "レシピ"
 WritCreater.optionStrings["recipeRewardTooltip"]						= "レシピの報酬をどうするか"
 WritCreater.optionStrings["fragmentReward"]								= "サイジックのアンブロージアの断片"
 WritCreater.optionStrings["fragmentRewardTooltip"]						= "サイジックのアンブロージアのレシピの断片の報酬をどうするか"
+WritCreater.optionStrings["currencyReward"]								= "ゴールド"
+WritCreater.optionStrings["currencyRewardTooltip"]						= "クエスト報酬のゴールドをどうするか"
+WritCreater.optionStrings["goldMatReward"]								= "金色素材(ESO Plus会員以外)"
+WritCreater.optionStrings["goldMatRewardTooltip"]						= "金色素材の報酬をどうするか。ESO PLUS会員のときは無視されます"
 
 
 WritCreater.optionStrings["writRewards submenu"]						= "依頼書の報酬の取り扱い"
@@ -371,11 +417,11 @@ WritCreater.optionStrings["scan for unopened"]							= "ログイン時にコン
 WritCreater.optionStrings["scan for unopened tooltip"]					= "ログイン時にバッグをスキャンして、クラフト依頼の未開封の報酬コンテナを探し、開封を試みます"
 
 WritCreater.optionStrings["smart style slot save"]						= "スタイル素材を少ない順に使用"
-WritCreater.optionStrings["smart style slot save tooltip"]				= "ESO Plus会員ではないとき、スタイル素材のより小さなスタックから使用することで、使用されるスロットを最小限に抑えることを試みます"
+WritCreater.optionStrings["smart style slot save tooltip"]				= "ESO PLUS会員ではないとき、スタイル素材のより小さなスタックから使用することで、使用されるスロットを最小限に抑えることを試みます"
 WritCreater.optionStrings["abandon quest for item"]						= "<<1>>を納品する令状"
 WritCreater.optionStrings["abandon quest for item tooltip"]				= "これをオフにすると、<<1>>を納品する令状を自動的に放棄します。<<1>>を必要とするアイテムをクラフトが必要なクエストは放棄されません"
-WritCreater.optionStrings["status bar submenu"]							= "ステータスバー オプション"
-WritCreater.optionStrings["status bar submenu tooltip"]					= "ステータスバー オプション"
+WritCreater.optionStrings["status bar submenu"]							= "ステータスバー"
+WritCreater.optionStrings["status bar submenu tooltip"]					= "令状クエストステータスバーのオプション"
 WritCreater.optionStrings['showStatusBar']								= "クエストステータスバーの表示"
 WritCreater.optionStrings['showStatusBarTooltip']						= "クエストステータスバーを表示するか"
 WritCreater.optionStrings['statusBarIcons']								= "アイコンを使う"
@@ -388,6 +434,27 @@ WritCreater.optionStrings['incompleteColour']							= "未完了クエストの�
 WritCreater.optionStrings['completeColour']								= "完了クエストの色"
 WritCreater.optionStrings['smartMultiplier']							= "スマートマルチクラフト（3日分の一括クラフト）"
 WritCreater.optionStrings['smartMultiplierTooltip']						= "これをオンにすると, 3日間の令状クエストの全サイクルのアイテムをまとめてクラフトします。令状に必要なアイテムを既に持っているかをチェックし、個々のアイテムのクラフト要否はアドオンが判断します。これをオフにすると、単純にその日の令状クエストのアイテムだけをクラフトします。"
+WritCreater.optionStrings['craftHousePort']								= "クラフトハウスに移動"
+WritCreater.optionStrings['craftHousePortTooltip'] 						= "一般公開されているクラフトハウスにリコールする"
+WritCreater.optionStrings['craftHousePortButton']						= "移動"
+WritCreater.optionStrings['reportBug']									= "バグ報告"
+WritCreater.optionStrings['reportBugTooltip']							= "コンソール版のWrit Crafterアドオンに関する不具合を報告するには、スレッドを開いてください。不具合がまだ報告されていない問題なのか事前に確認してください"
+WritCreater.optionStrings['openUrlButtonText']							= "URLを開く"
+WritCreater.optionStrings['donate']										= "寄付"
+WritCreater.optionStrings['donateTooltip']								= "Paypalで、作者Dolgubonに寄付する"
+WritCreater.optionStrings['writStats']									= "報酬の統計分析"
+WritCreater.optionStrings['writStatsTooltip']							= "アドオンがインストールされた状態で実施された令状クエストの過去の報酬統計を見る"
+WritCreater.optionStrings['writStatsButton']							= "ウィンドウを開く"
+WritCreater.optionStrings['queueWrits']									= "全マスター依頼の登録"
+WritCreater.optionStrings['queueWritsTooltip']							= "所持品の中のマスター依頼をすべてキューに入れる"
+WritCreater.optionStrings['queueWritsButton']							= "キュー"
+WritCreater.optionStrings['mainSettings']								= "メイン設定"
+WritCreater.optionStrings['statusBarHorizontal']						= "水平位置"
+WritCreater.optionStrings['statusBarHorizontalTooltip']					= "ステータスバーの水平位置"
+WritCreater.optionStrings['statusBarVertical']							= "垂直位置"
+WritCreater.optionStrings['statusBarVerticalTooltip']					= "ステータスバーの垂直位置"
+WritCreater.optionStrings['keepItemWritFormat']							= "<<1>>を保持"
+WritCreater.optionStrings["npcStyleStoneReminder"]						= "注意：基本種族のスタイル石は、クラフトNPCのベンダーから1個15Gで購入可"
 
 
 --[[
