@@ -116,7 +116,8 @@ local function queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, i
 	local patternIndex = WritCreater.LLCInteractionMaster.GetItemTemplateIdPatternIndex(itemTemplateId)
 	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
 	-- (setId, trait, pattern, station,level, isCP, quality,style,  potencyId, essenceId , aspectId)
-	local expectedItemLink = WritCreater.LLCInteractionMaster.getItemLinkFromParticulars(setIndex, itemTraitType+1, patternIndex, station, 150, true, itemQuality, itemStyleId)
+	
+	local expectedItemLink = WritCreater.LLCInteractionMaster:getItemLinkFromParticulars(patternIndex,true, 150, itemStyleId, itemTraitType+1, station, setIndex, itemQuality )
 	-- if DoesItemLinkFulfillJournalQuestCondition(expectedItemLink, journalIndex, 1, 1, true) then
 		-- Add to queue
 	-- d(patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)

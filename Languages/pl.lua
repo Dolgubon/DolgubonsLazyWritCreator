@@ -629,46 +629,81 @@ end
 WritCreater.cheeseyLocalizations
 =
 {
-	['menuName'] = "Rytuał",
-	['endeavorName'] = "Starania o Rytuał",
+	-- Note for translation: Anything on the same line after two -- should not be translated
+	['menuName'] = "|cFFBF00Pyrite Pursuit|r",
+	['initialDescription'] = "Why not just /read the pamphlet first?",
+	['readDescription'] = "After discovering that his head crafter was using a Crafting Helper Add-on To Generate Processed Trash, the Lord of the Creatives is looking for a new lead crafter. Try your hand at getting the job!",
+	['endeavorName'] = "Pyrite Pursuits",-- Note for translation: Pyrite, aka Fool's Gold. Play on Fool = Crazy =  Sheogorath, Fool in April Fools, and Golden Pursuits, bc that's where this lives
+	['completionShout'] = "<<1>>/<<2>> |cFFBF00Pyrite Pursuit|r Completed!", -- e.g. 1/6 pyrite pursuit completed!
 	['tasks']={
-		{original="Znalazłeś dziwną broszurę... Może powinieneś ją przeczytać /read",name="You read some instructions on a ritual for luck", completion = "You learned how to do a ritual for luck!",
-			description="Użyj emotki /read"},
+		-------------------------
+		-- Note for translations:
+		-- The list contains some wordplay on various daedric artefacts or other jokes. If they don't translate well (good chance) feel free to just do literal translations.
+		-- Robber's Jack: Sounds like Wabbajack. Satisfied by creating a Jack from one of: the Redistributor set, the Daedric trickery set, or the Daring corsair set
+		-- Amulet of Blings: Rhymes with Amulet of Kings. Satisfied by creating an electrum necklace
+		-- Totally real ebony blade: Refers to the ebony blade (Mephala artefact, from crypt of hearts). Satisfied by, you guessed it, an ebony blade
+		-- Staff of Magnus Gift: Gift is crossed out. Refers to the Staff of Magnus. Satisfied by a staff from the Magnus Gift set
+		-- Cheesecake is a lie: Refers to 'the cake is a lie' and Sheogorath liking cheese. Satisfied by making a cheesecake
+		-- Lord of the creatives, trickster, lord of the dranged, fourth corner (of the house of troubles), lord of the never there, and Dam Dog (Mad God backwards) are all names for sheogorath. 
+		-- Translations can use any nickname for him, Uncle Sheo, or even just do Sheogorath if you can't find/don't know any
 
-		{original="???", name = "Obtain an innocent goat's guts", completion = "You monster! Anything for luck, I guess",
-			description="Wygrzeb wnętrzności z martwej kozy. Nie musisz być tym, który ją zabił... ale to najprostszy sposób"},
+		-- Original: Shown prior to the completion of the first task
+		-- Name: Shown in the pursuits window
+		-- placehold: shown in place of name after completion (if present)
+		-- completion: Shown as a popup when task is complete
+		-- Description: Long form description. Should explain exactly what needs to be done. Shown as a tooltip on PC
+		-- completedDescription: description after completion
+		-------------------------
+		{original="You found a pamphlet titled 'Help Wanted'... Maybe you should /read it",name="/Read the pamphlet you found",placehold="You found a Help Wanted pamphlet from the Lord of the Creatives", completion = "Seems like the Lord of the Creatives is hiring?",
+			description="You found a pamphlet labelled 'Help Wanted'. You can use the /read emote to read it", completedDescription="You read the pamphlet"},
 
-		{original="???", name = "Head to the ritual site, Arananga", completion = "You made it! It seems like a very industrious place",
-			description="Nie wiesz, gdzie jest Arananga? Może to 'obdarzona' stacja rzemiosła..."},
+		{original="???", name = "Craft a Robber Jack", completion = "It might not transform anyone into cheese, but it'll still transform your look!",
+			description="The Trickster likes to transform things. Transform yourself into a robber by crafting a jack from the Daring Corsair set", 
+			completedDescription="Maybe in time, the Robbajack will become just as powerful as the Wabbajack."}, -- requires 3 traits
 
-		{original="???", name = "Destroy the goat guts", completion = "You 'burnt' the sacrifice",
-			description="Zniszcz przedmiot |H1:item:42870:30:1:0:0:0:0:0:0:0:0:0:0:0:16:0:0:0:1:0:0|h|h you looted"},
+		{original="???", name = "Craft the Amulet of Blings", completion = "This necklace would probably look fabulous on you! If only you could see it when you wear it",
+			description="The Lord of the Deranged is rich! Show him you can make use of his riches by making an Electrum Necklace",
+		completedDescription="Despite being made of real metal, it seems to disappear when you wear it... a sign of power, maybe?"},
 
-		{original="???", name = "Praise RNGesus in chat", completion = "You feel strangely lucky, but maybe it's just a feeling...",
-			description="Nie możesz powiedzieć, co tak naprawdę powiedział, ale to najlepsze przypuszczenie"},
-				-- Or Nocturnal, or Fortuna, Tyche as easter eggs?
+		{original="???", name = "Craft the Ebony Blade", completion = "Wasn't this supposed to steal your soul or something? Maybe you made it wrong",
+			description="The Fourth Corner would love to replicate the Ebony Blade's ability to turn its users insane. Show that you can help by making a bladed Ebony weapon",
+		completedDescription="The Ebony Blade. Such an unassuming name for such a... Actually, this blade is pretty mundane, so the name fits perfectly."},
 
-		-- {original="???", name = "Complete the ritual", completion = "Maybe you'll be just a little bit luckier... And Writ Crafter has a new skin!",
-		-- description="Sheogorath will be very pleased if you complete them all!"},
+		{original="???", name = "Craft a Staff of Magnus |L0:0:0:40%%:20%%:|lGift|l", completion = "The power of Magnus |L0:0:0:40%%:20%%:|lGift|l is yours!",
+		description="The Lord of the Never-There's lead crafter needs to be able to create |L0:0:0:50%%:10%%:|lpowerful|l staves. Create a staff from the Magnus' Gift set",
+		completedDescription="Unfortunately, ignoring that pesky |L0:0:0:50%%:10%%:|lgift|l in the name didn't make it anymore powerful"}, -- requires 4 traits
+
+		{original="???", name = "Bake 1 Cheesecake is a lie", completion = "CHEEEEEESEcake.. It definitely seems real enough",
+		description="Dam Dogs love to eat cheesecake! A lead crafter would need to be able to bake the BEST type of cake",completedDescription="You crafted a cheesecake and you're pretty sure it's real"},
 	},
-	["completePrevious"] = "W pierwszej kolejności powinieneś wykonać",
-	['allComplete'] = "Ukończyłeś Rytuał!",
-	['allCompleteSubheading'] = "Nawet jeśli RNGesus nie będzie ci sprzyjał w przyszłym roku, przynajmniej Zlecenia rzemieślnika mają nowy wygląd!",
-	["goatContextTextText"] = "Koza",
+	["unknownMonumentalTask"] = "Read the pamphlet to reveal the task",
+	['claimRewardHeader'] = "Hope you had fun doing some |cFFBF00Pyrite Pursuits|r!",
+	['claimRewardSubheading'] = "Check out Writ Crafter's new look next time you do writs!",
+
+	-- Note for translation: Crafting Helper Add-on To Generate Processed Trash = CHAT GPT. For translations, could also use/reference AI, Automation, etc.
 	["bookText"] = 
 [[
-This ritual  |L0:0:0:45%%:8%%:ignore|lwill|l might give you great luck. Make sure to follow these steps exactly!
-1. Obtain some guts from a |L0:0:0:45%%:8%%:ignore|lsheep|l goat
-2. Go to |L0:0:0:45%%:8%%:ignore|lOblivion|l Arananga
-3. Burn the guts
-4. Praise [the name here is illegible]
+After discovering that his head crafter was using a Crafting Helper Add-on To Generate Processed Trash, the Lord of the Creatives is looking for a new lead crafter! (He still has a head crafter, but they're kinda useless without a body)
 
-- Sincerely,
-|L0:0:0:45%%:8%%:ignore|lSheogorath|l Not Sheogorath]],
-["bookTitle"] = "Rytuał na szczęście",
-["outOfRange"] = "Nie jesteś już w obszarze Rytuału!",
-["closeEnough"] = "Wystarczająco blisko",
-["praiseHint "] = "Może musisz powiedzieć coś o RNGesus?",
+To apply, please craft the following:
+1 Robber Jack
+1 Amulet of Blings
+1 Totally real Ebony Blade
+1 Staff of Magnus |L0:0:0:40%%:20%%:|lGift|l
+1 Cheesecake is a lie
+]],
+	["bookTitle"] = "Help Wanted",
+	["superAmazingCraftSounds"] = { 
+		-- Translation notes: These are displayed randomly when crafting around the screen
+		{"CLANG","CLING","CLINK","CLUNK","PING"}, -- Blacksmithing sounds
+		{"SNIP","RUSTLE"}, -- Clothing sounds
+		{"ALAKAZAM","ABRACADABRA","HOCUS POCUS","PRESTO"}, -- Enchanting sounds
+		{"SPLISH","SPLASH","PLOP","SLOSH"}, -- Alchemy sounds
+		{"SIZZLE","POP","BUBBLE"}, -- Cooking sounds
+		{"BUZZ","THUD","CRACK","WHACK"}, -- Woodworking sounds
+		{"TING","PLINK","PING"}, -- Jewelry sounds
+	},
+	["extraSlash"] = nil, -- if your language has a translation for /read, put it here. 
 }
 --/esoui/art/icons/pet_041.dds
 --/esoui/art/icons/pet_042.dds

@@ -308,6 +308,12 @@ local function goToTranslationSite()
 	RequestOpenUnsafeURL(WritCreater.needTranslations)
 end
 
+local function toggleGamepad()
+	local currentSetting = GetSetting(SETTING_TYPE_GAMEPAD, GAMEPAD_SETTING_INPUT_PREFERRED_MODE)
+	SetSetting(SETTING_TYPE_GAMEPAD, GAMEPAD_SETTING_INPUT_PREFERRED_MODE, (currentSetting+1)%2) -- This sets the gamepad mode to ON
+end
+
+
 --------------------------------------------------
 -- TIME TO RESET
 SLASH_COMMANDS['/dailyreset'] = dailyReset
@@ -351,6 +357,7 @@ if GetDisplayName() == "@Dolgubon" then
 	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
 	SLASH_COMMANDS['/findwrit'] = findWrits
 	SLASH_COMMANDS['/quit'] = Quit
+	SLASH_COMMANDS['/gamepad'] = toggleGamepad
 
 	IsEnlightenedAvailableForCharacter = function() return false end
 end

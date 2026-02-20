@@ -185,7 +185,7 @@ local function checkMasterWritCraftable(bag, slot)
 	-- it is not meant to be used like this
 	-- but whatever. It works.
 	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
-	local expectedItemLink = WritCreater.LLCInteractionMaster.getItemLinkFromParticulars(setIndex, itemTraitType + 1, patternIndex, station, 150, true, itemQuality, itemStyleId)
+	local expectedItemLink = WritCreater.LLCInteractionMaster:getItemLinkFromParticulars(patternIndex, true, 150, itemStyleId, itemTraitType + 1, station, setIndex, itemQuality)
 	local request = WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, false, reference)
 	local secondLink = WritCreater.LLCInteractionMaster.getItemLinkFromRequest(request)
 	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)

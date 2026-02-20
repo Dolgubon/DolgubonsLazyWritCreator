@@ -145,14 +145,17 @@ local function styleCompiler()
 end
 local function isCheeseOn()
 	local enableNames = {
-		-- ["@Dolgubon"]=UI_PLATFORM_PC,
+		["@Dolgubon"]=UI_PLATFORM_PC,
+		["@Dolgubonn"]=UI_PLATFORM_PC,
 		-- ["@mithra62"]=1,
-		-- ["@Gitaelia"]=1,
+		["@Gitaelia"]=UI_PLATFORM_PC,
 		-- ["@PacoHasPants"]=1,
 		-- ["@Architecture"]=1,
 		-- ["@K3VLOL99"]=1,
+		["@Kelinmiriel"] = UI_PLATFORM_PC,
+		["@StorybookTerror"] = UI_PLATFORM_PC,
 		["@J3zdaz"] =UI_PLATFORM_XBOX,
-		
+
 	}
 	local platform = GetUIPlatform()
         
@@ -171,17 +174,20 @@ end
 --  ZO_TimedActivitiesKeyboardListActivityHeader
 -- WritCreater.savedVarsAccountWide.unlockedCheese
 -- WritCreater.savedVarsAccountWide.cheeseCompletedTwice
-if isCheeseOn() then
-	local isConsolePeasant = IsConsoleUI() -- kidding, you guys are fine :) But you'll likely never read this, sooooo
+if isCheeseOn() and WritCreater.cheeseyLocalizations and WritCreater.cheeseyLocalizations.superAmazingCraftSounds then
+	WritCreater.cheeseyLocalizations.numFunThings = #WritCreater.cheeseyLocalizations.tasks
+	local isConsolePeasant = IsConsoleUI() -- kidding, you guys are fine :) But you'll likely never read this, since 99.99% of console players won't download the source soooo....
 	local cheesyActivityTypeIndex = 2
-	while TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex] do 
+	-- PROMOTIONAL_EVENT_MANAGER.activeCampaignDataList[#PROMOTIONAL_EVENT_MANAGER.activeCampaignDataList+1] = 
+	while PROMOTIONAL_EVENT_MANAGER.activeCampaignDataList[cheesyActivityTypeIndex] do 
 		cheesyActivityTypeIndex = cheesyActivityTypeIndex + 1 
 	end
 	local function refreshTimedActivities()
 		if not IsConsoleUI() then
-			TIMED_ACTIVITIES_KEYBOARD:Refresh()
+			PROMOTIONAL_EVENTS_KEYBOARD:RefreshCampaignList()
 		end
-		TIMED_ACTIVITIES_GAMEPAD:Refresh()
+		-- PROMOTIONAL_EVENTS_GAMEPAD:RefreshCampaignList(true)
+		-- PROMOTIONAL_EVENTS_GAMEPAD:RefreshAll()
 	end
 	-- Localization
 	local il8n = WritCreater.cheeseyLocalizations
@@ -193,7 +199,7 @@ if isCheeseOn() then
 			GROUP_MENU_KEYBOARD.nodeList[4].children[cheesyActivityTypeIndex] = 
 			{
 	            priority = CATEGORY_PRIORITY + 20,
-	            name = "Pyrite Endeavors",
+	            name = il8n.endeavorName,
 	            categoryFragment = self.sceneFragment,
 	            onTreeEntrySelected = onCheesyEndeavorsSelected,
 	            isPromotionalEvent = true,
@@ -205,10 +211,10 @@ if isCheeseOn() then
 	end
 
 	function ZO_TimedActivities_Gamepad:InitializeActivityFinderCategory()
-	    TIMED_ACTIVITIES_GAMEPAD_FRAGMENT = self.sceneFragment
+	    PROMOTIONAL_EVENTS_GAMEPAD_FRAGMENT = self.sceneFragment
 	    self.scene:AddFragment(self.sceneFragment)
 
-	    local primaryCurrencyType = TIMED_ACTIVITIES_MANAGER.GetPrimaryTimedActivitiesCurrencyType()
+	    local primaryCurrencyType = PROMOTIONAL_EVENT_MANAGER.GetPrimaryTimedActivitiesCurrencyType()
 	    self.categoryData =
 	    {
 	        gamepadData =
@@ -226,34 +232,167 @@ if isCheeseOn() then
 	    local gamepadData = self.categoryData.gamepadData
 	    ZO_ACTIVITY_FINDER_ROOT_GAMEPAD:AddCategory(gamepadData, gamepadData.priority)
 	end
+	local campaignData
 
-	local entryData = ZO_GamepadEntryData:New(il8n.menuName)
-    entryData:SetDataSource({activityType = cheesyActivityTypeIndex})
-    TIMED_ACTIVITIES_GAMEPAD.categoryList:AddEntry("ZO_GamepadItemEntryTemplate", entryData)
-    TIMED_ACTIVITIES_GAMEPAD.categoryList:Commit()
+
+    local function firePromotionalEvents(eventToFire,...)
+    	for k, v in pairs(PROMOTIONAL_EVENT_MANAGER.callbackRegistry[eventToFire]) do
+			-- pcall(function() v[1](...) end) -- Head in sand. Should be mostly fine, though
+			v[1](...)
+		end
+    end
+	-- local entryData = ZO_GamepadEntryData:New(il8n.menuName)
+    -- entryData:SetDataSource({activityType = cheesyActivityTypeIndex})
+    -- PROMOTIONAL_EVENTS_GAMEPAD.categoryList:AddEntry("ZO_GamepadItemEntryTemplate", entryData)
+    -- PROMOTIONAL_EVENTS_GAMEPAD.categoryList:Commit()
+    local activityKeyList = {"readInstructions", "robbajack","blingybling","totallyRealBlade","staffMagnus","lie"}
+    local function claimReward()
+    	if WritCreater.savedVarsAccountWide.applicationProgress.applicationCompletion == #activityKeyList and not WritCreater.savedVarsAccountWide.applicationProgress.rewardClaimed  then 
+			WritCreater.savedVarsAccountWide.applicationProgress.rewardClaimed = true
+			WritCreater.savedVarsAccountWide.skin = "fabulous"
+		    WritCreater.savedVarsAccountWide.unlockedFabulousness = true
+		    WritCreater.savedVarsAccountWide.cheeseCompleted2026 = true
+		    WritCreater.toggleFabulousFrontLift(true) 
+		    local finalMessageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT)
+	    	finalMessageParams:SetText(il8n.claimRewardHeader, il8n.claimRewardSubheading)
+	    	CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(finalMessageParams)
+	    	PlaySound(SOUNDS.ENDEAVOR_COMPLETED)
+			campaignData.areAllRewardsClaimed = nil
+			campaignData.isAnyRewardClaimable = nil
+	    	SCENE_MANAGER:Show('hudui')
+		end
+		firePromotionalEvents("RewardsClaimed",campaignData, reward, true)
+		local PROMOTIONAL_EVENT_REWARD = 22
+		PLAYER_TO_PLAYER:RemoveFromIncomingQueue(PROMOTIONAL_EVENT_REWARD)
+    end
+
+    local function funcReplace (returnValue)
+    	return function() return returnValue end
+    end
+    ---12473
+    local activityCounter = 1
+    local function generateIndividualActivityTable(campaignData, activityKey,activityIndex)
+    	local activityData = ZO_PromotionalEventActivityData:New(campaignData, activityIndex)
+    	-- activityData.activityIndex = activityInfo
+    	activityData.showMonumentalTasks = function() return WritCreater.savedVarsAccountWide.applicationProgress.readInstructions~=0 or activityKey == "readInstructions" end
+    	activityData.GetDisplayName = function() return activityData.showMonumentalTasks() and il8n["tasks"][activityData.activityIndex].name or "????" end
+    	activityData.GetDescription = function() 
+    		if WritCreater.savedVarsAccountWide.applicationProgress[activityKey] == 1 then 
+    			return il8n['tasks'][activityData.activityIndex].completedDescription
+    		else
+    			return activityData.showMonumentalTasks() and il8n["tasks"][activityData.activityIndex].description or il8n.unknownMonumentalTask 
+    		end
+    	end
+    	activityData.GetCompletionThreshold = function() return 1 end
+    	activityData.GetProgress = function () return WritCreater.savedVarsAccountWide.applicationProgress[activityKey] end
+    	-- activityData.GetRewardData = function () return il8n["rewardName"] end
+    	activityData.IsComplete = function () return WritCreater.savedVarsAccountWide.applicationProgress[activityKey] == 1 end
+    	activityData.IsLocked = function () return activityKey~="readInstructions" and WritCreater.savedVarsAccountWide.applicationProgress.readInstructions==0 end
+    	activityData.IsRewardClaimed = function () return end
+    	activityData.activityIndex = activityIndex
+    	activityData.GetActivityIndex = funcReplace(activityIndex)
+    	return activityData
+    end
+    local activityCache
+    if GetDisplayName() == "@Dolgubon" then
+    	prom = PROMOTIONAL_EVENT_MANAGER
+    end
+
+	
+	ZO_PostHook(PROMOTIONAL_EVENT_MANAGER, "RefreshCampaignData", function(self)
+		-- declared local earlier
+		campaignData = ZO_PromotionalEventCampaignData:New(StringToId64("1212387216"))
+		campaignData.GetKeyString = funcReplace("1212387216")
+		campaignData.MatchesKeyWithCampaign = function(campaignData) return campaignData:GetKeyString() == "1212387216" end
+		campaignData.campaignId = StringToId64("1212387216")
+		campaignData.GetDisplayName = funcReplace(il8n.menuName)
+		campaignData.ShouldCampaignBeVisible = function () return true end
+		campaignData.GetCapstoneRewardThreshold = function() return #activityKeyList end
+		campaignData.GetNumActivitiesCompleted = function () return WritCreater.savedVarsAccountWide.applicationProgress.applicationCompletion end
+		campaignData.GetNumActivities = function () return #activityKeyList end
+		campaignData.numActivities = #activityKeyList
+		campaignData.GetDescription = function() return WritCreater.savedVarsAccountWide.applicationProgress.readInstructions == 1 and il8n.readDescription or il8n.initialDescription end
+		activityCache=activityCache or 
+		{
+			generateIndividualActivityTable(campaignData, activityKeyList[1], 1),
+			generateIndividualActivityTable(campaignData, activityKeyList[2], 2),
+			generateIndividualActivityTable(campaignData, activityKeyList[3], 3),
+			generateIndividualActivityTable(campaignData, activityKeyList[4], 4),
+			generateIndividualActivityTable(campaignData, activityKeyList[5], 5),
+			generateIndividualActivityTable(campaignData, activityKeyList[6], 6),
+		}
+		campaignData.activityInfo = activityCache
+		campaignData.activities = campaignData.activityInfo
+		campaignData.GetActivities = function() return activityCache end
+		campaignData.GetActivityData = function(index) return activityCache[index] end
+		-- campaignData.GetRewardData
+		local reward = ZO_RewardData:New(-10, "")
+		reward.GetRawName = function() return "HI" end
+		reward.GetFormattedName = function() return "HI2" end
+		-- reward.GetGamepadIcon
+		reward.GetKeyboardIcon = function() return "/esoui/art/miscellaneous/help_icon.dds" end -- "/esoui/art/icons/u26_unknown_antiquity_questionmark.dds" end -- /esoui/art/miscellaneous/help_icon.dds
+		reward.GetGamepadIcon = function() return "/esoui/art/miscellaneous/help_icon.dds" end -- "/esoui/art/icons/u26_unknown_antiquity_questionmark.dds" end -- /esoui/art/miscellaneous/help_icon.dds
+		reward.TryClaimReward = claimReward
+		campaignData.capstoneRewardId = -10
+		campaignData.IsAnyRewardClaimable = function() return WritCreater.savedVarsAccountWide and 
+			(not WritCreater.savedVarsAccountWide.applicationProgress.rewardClaimed and  WritCreater.savedVarsAccountWide.applicationProgress.applicationCompletion == #activityKeyList) or false end
+		--OnRewardsClaimed
+		--CanClaimReward
+		-- AreAllRewardsClaimed
+		campaignData.GetRewardData = function()
+			return reward
+		end
+		campaignData.HasBeenSeen = function() return WritCreater.savedVarsAccountWide and WritCreater.savedVarsAccountWide.applicationProgress.hasSeenMostAwesomePursuitEver or true end
+		campaignData.SetSeen  = function() WritCreater.savedVarsAccountWide.applicationProgress.hasSeenMostAwesomePursuitEver = true end
+		campaignData.AreAllRewardsClaimed = function() return WritCreater.savedVarsAccountWide and WritCreater.savedVarsAccountWide.applicationProgress.rewardClaimed or true end
+		campaignData.IsRewardClaimed = function() return WritCreater.savedVarsAccountWide and WritCreater.savedVarsAccountWide.applicationProgress.rewardClaimed or false end
+		campaignData.GetSecondsRemaining = function() return (GetTimestampForStartOfDate(2026,4,2, true)- GetTimeStamp()) % 86400 end
+		campaignData.OnRewardsClaimed = function() end
+		campaignData.CanClaimReward = function() return WritCreater.savedVarsAccountWide and
+			(not WritCreater.savedVarsAccountWide.applicationProgress.rewardClaimed and  WritCreater.savedVarsAccountWide.applicationProgress.applicationCompletion == #activityKeyList) or false end
+		campaignData.TryClaimAllAvailableRewards = claimReward
+		campaignData.TryClaimReward = campaignData.TryClaimAllAvailableRewards
+		WritCreater.campaignData = campaignData
+		table.insert(self.activeCampaignDataList, campaignData)
+	end )
+	local originalCampaignDataByKey = PROMOTIONAL_EVENT_MANAGER.GetCampaignDataByKey
+	PROMOTIONAL_EVENT_MANAGER.GetCampaignDataByKey= function(self, campaignKey) if campaignKey == StringToId64("1212387216") then return  WritCreater.campaignData end return originalCampaignDataByKey(self, campaignKey) end
+	SLASH_COMMANDS['/noclaim'] = function() WritCreater.savedVarsAccountWide.applicationProgress.rewardClaimed = false firePromotionalEvents("CampaignsUpdated") end
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."RefoolinatePursuit", EVENT_PLAYER_ACTIVATED, function()
+		firePromotionalEvents("CampaignsUpdated")
+		PROMOTIONAL_EVENT_MANAGER:RefreshCampaignData()
+		zo_callLater(function() refreshTimedActivities() end,200)
+	end)
 
 	local function onCheesyEndeavorsSelected()
-	    TIMED_ACTIVITIES_KEYBOARD:SetCurrentActivityType(cheesyActivityTypeIndex)
+	    PROMOTIONAL_EVENTS_KEYBOARD:SetCurrentActivityType(cheesyActivityTypeIndex)
 	end
 	if not isConsolePeasant then
+		-- PROMOTIONAL_EVENT_MANAGER:GetCampaignDataByIndex(i)
+		local timedActivityIndex = 2
+		for i = 1, #GROUP_MENU_KEYBOARD.nodeList do
+			if GROUP_MENU_KEYBOARD.nodeList[i]['disabledIcon'] == "EsoUI/Art/LFG/LFG_indexIcon_PromotionalEvents_disabled.dds" then
+				timedActivityIndex = i
+			end
+		end
+		local promotionalEventNode = GROUP_MENU_KEYBOARD.nodeList[timedActivityIndex]
+		promotionalEventNode.visible = function() return true end
+		promotionalEventNode.name = il8n.endeavorName
 		GROUP_MENU_KEYBOARD.navigationTree:Reset()
-		table.insert(GROUP_MENU_KEYBOARD.nodeList[4]["children"] , {
-			priority = ZO_ACTIVITY_FINDER_SORT_PRIORITY.TIMED_ACTIVITIES + cheesyActivityTypeIndex * 10 + 10,
-			name = il8n.menuName,
-			categoryFragment = TIMED_ACTIVITIES_KEYBOARD.sceneFragment,
-			onTreeEntrySelected = onCheesyEndeavorsSelected,
-		})
 		GROUP_MENU_KEYBOARD:AddCategoryTreeNodes(GROUP_MENU_KEYBOARD.nodeList)
 		GROUP_MENU_KEYBOARD.navigationTree:Commit()
 	end
+-- If we don't do this, players logging in won't see the glorious pyrite pursuits the first time they open them
+local initial = true
+EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_CHAT_GPT", EVENT_PLAYER_ACTIVATED, function(event)
+	if not initial then return end
+	initial = false
+zo_callLater(function()
+	PROMOTIONAL_EVENT_MANAGER:RefreshCampaignData()
+	firePromotionalEvents("CampaignsUpdated")
+end, 500)
+	EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."_CHAT_GPT", EVENT_PLAYER_ACTIVATED ) end)
 
-
-	TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex] = {completed = 0, limit = 5}
-	-- Group up and wipe 5 times
-	-- Say "I love cheese!" in zone chat
-	-- Pay a visit to Sheogorath
-	-- Make a new friend
-	-- 'Rewards': negative cheese wheels. Or sanity
 
 
 	local standardReward =
@@ -274,10 +413,12 @@ if isCheeseOn() then
 	local timedActivityData = 
 	{
 		{timedActivityId = 1000, index = 9, maxProgress = 1, reward = {standardReward}, svkey="readInstructions"},
-		{timedActivityId = 1001, index = 9, maxProgress = 1, reward = {standardReward}, svkey="lootGut"},
-		{timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="shootingOnLocation"},  -- in a movie sense
-		{timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="gutDestruction"},
-		{timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="rngesus"}, -- AKA Cheeses of Tamriel
+		{timedActivityId = 1001, index = 9, maxProgress = 1, reward = {standardReward}, svkey="robbajack"},
+		{timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="blingybling"},
+		-- {timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="evilWorm"},
+		{timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="totallyRealBlade"},
+		{timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="staffMagnus"},
+		{timedActivityId = 1003, index = 9, maxProgress = 1, reward = {standardReward}, svkey="lie"},
 	}
 	
 
@@ -290,420 +431,188 @@ if isCheeseOn() then
 	end
 
 	local activityDataObjects = {}
-	local function addTimedActivity(k, v)
-		local newData = ZO_TimedActivityData:New(2000 + k)
-		newData.GetType = function(...) return cheesyActivityTypeIndex end
-		newData.GetName = function(...) 
-			if WritCreater.savedVarsAccountWide.luckyProgress["readInstructions"] == 0 then
-				return v.original 
-			else
-				if WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion+1<k and k~= #timedActivityData then
-					return v.completePrevious
-				end
-				return v.name
-			end 
-		end
-		newData.GetDescription = function(...) return v.description end
-		newData.GetMaxProgress = function(...) return v.maxProgress end
-		newData.GetProgress = function (...) return WritCreater.savedVarsAccountWide.luckyProgress[v.svkey] or 0 end
-		newData.GetRewardList = function(...) if WritCreater.savedVarsAccountWide.luckyProgress["readInstructions"] == 0 then return originalReward else return v.reward end  end
-		newData.timedActivityId = 1000 + k
-		table.insert(TIMED_ACTIVITIES_MANAGER.activitiesData, newData)
-		activityDataObjects[1000 + k] = newData
-	end
-	local function addNewTimedActivities()
-			-- addTimedActivity(1, timedActivityData[1])
-		for i=1, WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"]+1 do
-			if timedActivityData[i] then
-				addTimedActivity(i, timedActivityData[i])
-			end
-		end
-			-- addTimedActivity(k, v)
-	end
-	local originalNewTimedActivityData = ZO_TimedActivityData.New
-	ZO_TimedActivityData.New = function(self, activityIndex, ...)
-		if activityIndex > 1000 then
-			return activityDataObjects[activityIndex] or originalNewTimedActivityData(self, activityIndex)
-		else
-			return originalNewTimedActivityData(self, activityIndex)
-		end
+	local function pamphletRead()
 	end
 	local function isCheeseActivity(item)
 		return item:GetType() == cheesyActivityTypeIndex
 	end
-	function TIMED_ACTIVITIES_GAMEPAD:Refresh()
-		TIMED_ACTIVITIES_GAMEPAD.headerData["data3HeaderText"] = il8n.endeavorName
-		TIMED_ACTIVITIES_GAMEPAD.headerData["data3Text"] = function() return WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"].."/5" end
-	    local currentActivityType = self:GetCurrentActivityType()
-	    local activityTypeFilters
-	    if currentActivityType == TIMED_ACTIVITY_TYPE_DAILY then
-	        activityTypeFilters = { ZO_TimedActivityData.IsDailyActivity }
-	    elseif currentActivityType == TIMED_ACTIVITY_TYPE_WEEKLY then
-	        activityTypeFilters = { ZO_TimedActivityData.IsWeeklyActivity }
-	    elseif currentActivityType == cheesyActivityTypeIndex then
-	    	
-	        activityTypeFilters = { isCheeseActivity }
-	    end
-
-	    local activitiesList = {}
-	    for index, activityData in TIMED_ACTIVITIES_MANAGER:ActivitiesIterator(activityTypeFilters) do
-	        table.insert(activitiesList, activityData)
-	    end
-	    
-	    self.activitiesList:RefreshList(currentActivityType, activitiesList)
-	    self:RefreshAvailability()
-	    self:RefreshCurrentActivityInfo()
-	    ZO_GamepadGenericHeader_RefreshData(self.header, self.headerData)
-	end
-	local gpadActivitiesList = TIMED_ACTIVITIES_GAMEPAD.activitiesList
+	local gpadActivitiesList = PROMOTIONAL_EVENTS_GAMEPAD.activitiesList
 	
-	function TIMED_ACTIVITIES_GAMEPAD.activitiesList:RefreshList(currentActivityType, activitiesList)
-
-	    self.isAtActivityLimit = TIMED_ACTIVITIES_MANAGER:IsAtTimedActivityTypeLimit(currentActivityType)
-
-	    local listControl = self.listControl
-	    ZO_ScrollList_Clear(listControl)
-
-	    local listData = ZO_ScrollList_GetDataList(listControl)
-	    for index, activityData in ipairs(activitiesList) do
-	        local entryData = ZO_EntryData:New(activityData)
-	        local activityName = activityData:GetName()
-	        local numActivityNameLines = ZO_LabelUtils_GetNumLines(activityName, "ZoFontGamepad45", ZO_TIMED_ACTIVITY_DATA_ROW_NAME_WIDTH_GAMEPAD)
-
-	        local dataType = 1
-	        if numActivityNameLines == 2 then
-	            dataType = 2
-	        elseif numActivityNameLines == 3 then
-	            dataType = 3
-	        elseif numActivityNameLines == 4 then
-	            dataType = 4
-	        elseif numActivityNameLines == 5 then
-	            dataType = 5
-	        end
-
-	        table.insert(listData, ZO_ScrollList_CreateDataEntry(dataType, entryData))
-	    end
-
-	    self:CommitScrollList()
-	    local isListEmpty = not ZO_ScrollList_HasVisibleData(listControl)
-	    listControl:SetHidden(isListEmpty)
-	end
-
-	function gpadActivitiesList:OnSelectionChanged(oldData, newData)
-		
-	    ZO_SortFilterList.OnSelectionChanged(self, oldData, newData)
-	    -- d(newData)
-	    -- self.listControl.selectedDataIndex = self.listControl.selectedDataIndex + 1
-	    if newData then
-	        local activityIndex = newData:GetIndex()
-	        self:ShowActivityTooltip(activityIndex)
-	    else
-	        self:ClearActivityTooltip()
-	    end
-	end
-
-	local originalMasterList = TIMED_ACTIVITIES_MANAGER.RefreshMasterList
-	TIMED_ACTIVITIES_MANAGER.RefreshMasterList = function(...)
-		originalMasterList(...)
-		addNewTimedActivities()
-	end
-	TIMED_ACTIVITIES_MANAGER.availableActivityTypes[cheesyActivityTypeIndex] = true
-	local originalManagerTiming = TIMED_ACTIVITIES_MANAGER.GetTimedActivityTypeTimeRemainingSeconds
-	TIMED_ACTIVITIES_MANAGER.GetTimedActivityTypeTimeRemainingSeconds = function(self, activityType,...)
-		if activityType == cheesyActivityTypeIndex then
-			return (1648879200 - GetTimeStamp()) % 86400
-		else
-			return originalManagerTiming(self, activityType, ...)
+	local function cheeseEndeavorCompleted(subHeading, activityIndex)
+		if activityIndex == 1 then
+			pamphletRead()
 		end
-	end
-	if not  isConsolePeasant then
-		local originalKeyboardRefresh = ZO_TimedActivities_Keyboard.Refresh
-		function ZO_TimedActivities_Keyboard:Refresh()
-			if self:GetCurrentActivityType() ~= cheesyActivityTypeIndex then
-				return originalKeyboardRefresh(self)
-			end
-			if self:GetCurrentActivityType() == nil then return end
-		    ZO_ClearNumericallyIndexedTable(self.activitiesData)
-		    TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex].completed = WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"]
-
-		    local currentActivityType = self:GetCurrentActivityType()
-		    local activityTypeFilters
-		    if currentActivityType == TIMED_ACTIVITY_TYPE_DAILY then
-		        activityTypeFilters = { ZO_TimedActivityData.IsDailyActivity }
-		    elseif currentActivityType == TIMED_ACTIVITY_TYPE_WEEKLY then
-		        activityTypeFilters = { ZO_TimedActivityData.IsWeeklyActivity }
-		    elseif currentActivityType == cheesyActivityTypeIndex then
-		        activityTypeFilters = { isCheeseActivity }
-		    end
-
-		    for index, activityData in TIMED_ACTIVITIES_MANAGER:ActivitiesIterator(activityTypeFilters) do
-		        table.insert(self.activitiesData, activityData)
-		    end
-
-		    self.activityRewardPool:ReleaseAllObjects()
-		    self.activityRowPool:ReleaseAllObjects()
-		    self.nextActivityAnchorTo = nil
-
-		    self.isAtActivityLimit = TIMED_ACTIVITIES_MANAGER:IsAtTimedActivityTypeLimit(currentActivityType)
-
-		    for index, activityData in ipairs(self.activitiesData) do
-		        self:AddActivityRow(activityData)
-		    end
-		    self:RefreshAvailability()
-
-		    self:RefreshCurrentActivityInfo()
-		end
-	end
-	local function cheeseEndeavorCompleted(subHeading, nextActivity)
-		if nextActivity then
-			addTimedActivity(nextActivity, timedActivityData[nextActivity])
-		end
-		TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex].completed = TIMED_ACTIVITIES_MANAGER.activityTypeLimitData[cheesyActivityTypeIndex].completed + 1
-		WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"] = WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"] + 1
+		WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] = WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] + 1
 		pcall(refreshTimedActivities)
 		local activityTypeName = "CHEESY ENDEAVOR" --GetString("SI_TIMEDACTIVITYTYPE", 2)
-	    -- local _, maxNumActivities = TIMED_ACTIVITIES_MANAGER:GetTimedActivityTypeLimitInfo(2)
-	    local messageTitle = zo_strformat(SI_TIMED_ACTIVITY_TYPE_COMPLETED_CSA,  WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"], #timedActivityData, il8n.menuName)
+	    -- local _, maxNumActivities = PROMOTIONAL_EVENT_MANAGER:GetTimedActivityTypeLimitInfo(2)
+	    local messageTitle = zo_strformat(il8n.completionShout,  WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"], #timedActivityData)
 	    -- local messageTitle = zo_strformat(SI_TIMED_ACTIVITY_TYPE_COMPLETED_CSA, 6, #timedActivityData, "Cheesy")
 	    local messageSubheading = subHeading
-	     if  WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"] < #timedActivityData then
+	     if  WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] < #timedActivityData then
 	    	messageSubheading = subHeading
 	    end
 
 	    local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT)
 	    messageParams:SetText(messageTitle, messageSubheading)
+	    messageParams:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_CRAFTING_RESULTS)
 	    CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
+	    CENTER_SCREEN_ANNOUNCE:DisplayMessage(messageParams)
 
-		if WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"] == #timedActivityData  then
-	    	WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"] = 5
-	    	local finalMessageTitle = il8n.allComplete
-	    	local finalSubheading = il8n.allCompleteSubheading
-	    	local finalMessageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT)
-		    finalMessageParams:SetText(finalMessageTitle, finalSubheading)
-		    -- zo_callLater( function()
-		    	CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(finalMessageParams)
-		    -- end, 1500 )
-
-		    WritCreater.savedVarsAccountWide.skin = "goat"
-		    WritCreater.savedVarsAccountWide.unlockedGoat = true
-		    WritCreater.savedVarsAccountWide.cheeseCompleted2025 = true
-		    WritCreater.applyGoatSkin()
+		if WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] == #timedActivityData  then
+	    	WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] = WritCreater.cheeseyLocalizations.numFunThings
+	    	PROMOTIONAL_EVENT_MANAGER:OnActivityProgressUpdated(StringToId64("1212387216"))
+	    	firePromotionalEvents("ActivityProgressUpdated", activityCache[activityIndex], 0, 1, true)
 	    end
 	    PlaySound(SOUNDS.ENDEAVOR_COMPLETED)
 	end
-	local alterLocation = {
-		[108] = {"Arangara", 244113, 3108, 299793, 1003081},
-		["zoneindex"] = 18,
-		["zoneId"] = 108,
-	}
 
-	local function calculateDistance()
-		local watchedZones=	alterLocation
-		local zoneIndex = GetUnitZoneIndex("player")
-		local zoneId = GetZoneId(zoneIndex)
-		if not watchedZones[zoneId] then
-			return
-		end
-		if not watchedZones[zoneId][2] then return end
-		-- Pretty sure that means we're in a tracked zone so let's calculate!
-		local _,x,z, y = GetUnitWorldPosition("player")
-		x = watchedZones[zoneId][2] - x
-		y = watchedZones[zoneId][4] - y
-		z = watchedZones[zoneId][3] - z
-		if z < -1500 or (x>4000 or x <-4000) or (y> 4000 or y < -4000) then
-			return
-		end
-		local dist = x*x + y*y + z*z
-		
-		return dist<(watchedZones[zoneId][5] or 0)
-	end
-	local function distanceUpdate()
-		if WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion~=2 or WritCreater.savedVarsAccountWide.luckyProgress.shootingOnLocation ~= 0 then
-			return
-		end
-		local watchedZones=	alterLocation
-		if calculateDistance() then
-			WritCreater.savedVarsAccountWide.luckyProgress["shootingOnLocation"] = 1
-			cheeseEndeavorCompleted(timedActivityData[3].completion, 4)
-		end
-	end
-
-	EVENT_MANAGER:RegisterForUpdate("AranangaThere", 300, distanceUpdate)
-	WritCreater.calculateDistance = function() calculateDistance() end
-
-	-- listeners
-	-- Chese profession
-	local function alternateListener(eventCode,  channelType, fromName, text, isCustomerService, fromDisplayName)
-
-		if isCheeseOn() and WritCreater and WritCreater.savedVarsAccountWide and WritCreater.savedVarsAccountWide.luckyProgress and WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion == 4
-			and WritCreater.savedVarsAccountWide.luckyProgress["rngesus"] == 0 and (fromDisplayName == GetDisplayName() or channelType == 4) then
-			text = text:lower()
-			text = text:gsub(" ", "")
-			text = text:gsub("!", "")
-			text = text:gsub("%.", "")
-			text = text:gsub("'", "")
-			text = text:gsub("ä", "a")
-			local dist = calculateDistance()
-			if string.find(text, "rngesus") and dist then
-				WritCreater.savedVarsAccountWide.luckyProgress["rngesus"] = 1
-				cheeseEndeavorCompleted(timedActivityData[5].completion)
-			elseif string.find(text, "rngesus") then
-				ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,il8n.outOfRange)
-			elseif dist then
-				ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,il8n.praiseHint)
-			end
-			if string.find(text, "nocturnal") or string.find(text, "fortuna") or string.find(text, "tyche") and dist then --Little easter egg I guess
-				WritCreater.savedVarsAccountWide.luckyProgress["rngesus"] = 1
-				cheeseEndeavorCompleted(timedActivityData[5].completion)
-				ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.NONE ,il8n.closeEnough)
-			end
-		end
-	end
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."cheeeeese",EVENT_CHAT_MESSAGE_CHANNEL, alternateListener)
-	-- Music
-	--5, 6, 7
-	-- /script local a = PlayEmoteByIndex PlayEmoteByIndex = function(...) d(...) a(...) end
 	local terribleMusicEmotes = 
 	{
 		[10] = '/read',
-
-
-
-
-
-
 	}
 	-- /playtinyviolin, /festivebellring
 	local originalEmoteFunction = PlayEmoteByIndex
 	PlayEmoteByIndex = function(index, ...)
 		originalEmoteFunction(index, ...)
-		if WritCreater.savedVarsAccountWide.luckyProgress['readInstructions'] == 0 and terribleMusicEmotes[index] then
-			-- if GetDisplayName() ~= "@Dolgubon" then
-				WritCreater.savedVarsAccountWide.luckyProgress['readInstructions'] = 1
-				cheeseEndeavorCompleted(timedActivityData[1].completion, 2)
-			-- end
-			LORE_READER:Show(il8n.bookTitle, il8n.bookText, BOOK_MEDIUM_SCROLL, true)
-			-- ,				"Goats and guts and idk what this does. Actually it does nothing. Literally nothing. idk why zos had this param when they called it but they did. And because it does nothing I can ramble. Should probably stop tho")
+		if WritCreater.savedVarsAccountWide.applicationProgress['readInstructions'] == 0 and terribleMusicEmotes[index] then
+			WritCreater.savedVarsAccountWide.applicationProgress['readInstructions'] = 1
+			cheeseEndeavorCompleted(timedActivityData[1].completion, 1)
+			LORE_READER:Show(il8n.bookTitle, il8n.bookText, BOOK_MEDIUM_NOTE, true)
 		end
 	end
 	if il8n.extraSlash then
 		SLASH_COMMANDS[il8n.extraSlash] = function() PlayEmoteByIndex(10) end
 	end
-	local setup = false
-	-- local function setupCheesyMusic()
-	-- 	if setup then return end
-	-- 	setup = true
-	-- 	for k, v in pairs(terribleMusicEmotes) do
-	-- 		local originalMusic = SLASH_COMMANDS[v]
-	-- 		SLASH_COMMANDS[v] = function(...) originalMusic(...) 
-	-- 			if WritCreater.savedVarsAccountWide.cheesyProgress['music'] == 0 then
-	-- 				WritCreater.savedVarsAccountWide.cheesyProgress['music'] = 1
-	-- 				cheeseEndeavorCompleted(timedActivityData[3].completion)
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end
-	local extraGoatyGoatContextTextText = {
-		["Коза"] = 1,
-		["Cabra"] = 1,
-		["cabra^f"] = 1,
-		["山羊"] = 1,
-		["山羊^n"] = 1,
-	}
-	local goatFlag = false
-	local function setGoatFlag(text)
-		if text==il8n.goatContextTextText or text == il8n.extraGoatyContextTextText or extraGoatyGoatContextTextText[text] then
-			goatFlag = true
-		else
-			goatFlag = false
-		end
-	end
-	local originalContextTextTextText = ZO_ReticleContainerInteractContext.SetText
-	ZO_ReticleContainerInteractContext.SetText = function(self, text)
-		setGoatFlag(text)
-		originalContextTextTextText(self, text)
-	end
-	local function handleLootRecieved(_,_,name,_,_,_,ownLoot)
-		if WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"] == 1 and goatFlag and ownLoot and GetItemLinkItemId(name) == 42870 then
-			WritCreater.savedVarsAccountWide.luckyProgress["lootGut"] = 1
-			cheeseEndeavorCompleted(timedActivityData[2].completion, 3)
-		else
-		end
-	end
-	EVENT_MANAGER:RegisterForEvent("GoatSacrifice", EVENT_LOOT_RECEIVED, handleLootRecieved)
-	local originalLootAllGuts = LootAll
-	local originalLootSomeGuts = LootItemById
-	LootAll = function(...) local target = GetLootTargetInfo() setGoatFlag(target) originalLootAllGuts(...) end
-	LootItemById = function(...) local target = GetLootTargetInfo() setGoatFlag(target) originalLootSomeGuts(...) end
 
-	local function cheesyScholar(_,_,_,_,_,  bookId)
-		-- if bookId == 1145 then
-		-- 	if WritCreater.savedVarsAccountWide.luckyProgress['cheeseNerd'] == 0 then
-		-- 	-- WritCreater.savedVarsAccountWide.luckyProgress['cheeseNerd'] = 1
-		-- 	-- cheeseEndeavorCompleted(timedActivityData[5].completion)
-		-- 	end
-		-- end
-	end
-	local originalCheatyCheeseBook = ZO_LoreLibrary_ReadBook
-	ZO_LoreLibrary_ReadBook = function(categoryIndex, collectionIndex, bookIndex,...)
-		if WritCreater.savedVarsAccountWide.luckyProgress['cheeseNerd'] == 0 and categoryIndex == 3 and collectionIndex == 9 and bookIndex == 46  then
-			-- ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR , il8n["cheatyCheeseBook"])
-		else
-			originalCheatyCheeseBook(categoryIndex, collectionIndex, bookIndex,...)
+
+	local listOfBestCakesEver = -- if you don't like cheesecake you're a monster
+	{
+		[28330]=true, [42807]=true, [33870]=true
+	}
+	local magnusPrize = 48
+	local daringTheft = 468
+	local swiperIds = 
+	{
+		26,39, 53,
+		[26] = 1,
+		[39] = 1,
+		[53] = 1,
+	}
+-- 	"readInstructions"},
+-- "robbajack"},
+-- "blingybling"},
+-- "totallyRealBlade"},
+-- "staffMagnus"},
+-- "lie"},
+	local function cheeseTracking(event, bag, slot, isNew, _, reason)
+		local isCrafted = IsItemLinkCrafted(GetItemLink(bag, slot))
+		local itemId = GetItemId(bag, slot)
+		if WritCreater.savedVarsAccountWide.applicationProgress["lie"]==0 and listOfBestCakesEver[itemId] and isCrafted then
+			WritCreater.savedVarsAccountWide.applicationProgress["lie"] = 1
+			cheeseEndeavorCompleted(timedActivityData[6].completion, 6)
+			return 
+		end
+		local _,_,_,_,_,itemSetId = GetItemLinkSetInfo(GetItemLink(bag, slot))
+		local isBigStick = GetItemEquipmentFilterType(bag, slot) == EQUIPMENT_FILTER_TYPE_DESTRO_STAFF or GetItemEquipmentFilterType(bag, slot) == EQUIPMENT_FILTER_TYPE_RESTO_STAFF
+		
+		if WritCreater.savedVarsAccountWide.applicationProgress["staffMagnus"] == 0 and itemSetId == magnusPrize and isBigStick and isCrafted then
+			cheeseEndeavorCompleted(timedActivityData[5].completion, 5)
+			WritCreater.savedVarsAccountWide.applicationProgress["staffMagnus"] = 1
+			return
+		end
+		local isJacked = GetItemEquipType(bag, slot)==EQUIP_TYPE_CHEST and GetItemArmorType(bag, slot)==ARMORTYPE_MEDIUM
+		if WritCreater.savedVarsAccountWide.applicationProgress["robbajack"] == 0 and isJacked and itemSetId == daringTheft and isCrafted then
+			cheeseEndeavorCompleted(timedActivityData[2].completion, 2)
+			WritCreater.savedVarsAccountWide.applicationProgress["robbajack"] = 1
+			return
+		end
+		local level = GetItemLevel(bag, slot)
+		local isCP = GetItemRequiredChampionPoints(bag, slot)
+		
+		local harmType = GetItemWeaponType(bag, slot)
+		local stabbyStabStabs = {[WEAPONTYPE_SWORD]=true, [WEAPONTYPE_TWO_HANDED_SWORD]=true, [WEAPONTYPE_DAGGER]=true}
+		if WritCreater.savedVarsAccountWide.applicationProgress["totallyRealBlade"] == 0 and level >45 and isCrafted and stabbyStabStabs[harmType] and itemSetId == 0 and isCP==0 then
+			cheeseEndeavorCompleted(timedActivityData[4].completion, 4)
+			WritCreater.savedVarsAccountWide.applicationProgress["totallyRealBlade"] = 1
+			return
+		end
+		local equipSlotMachine = GetItemEquipType(bag, slot)
+		local amountOfActuallyInnocentCP = GetItemRequiredChampionPoints(bag, slot)
+		if WritCreater.savedVarsAccountWide.applicationProgress["blingybling"] == 0 and amountOfActuallyInnocentCP>79 and amountOfActuallyInnocentCP <151 and isCrafted and EQUIP_TYPE_NECK == equipSlotMachine then
+			cheeseEndeavorCompleted(timedActivityData[3].completion, 3)
+			WritCreater.savedVarsAccountWide.applicationProgress["blingybling"] = 1
+			return
 		end
 	end
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."cheeseScholar", EVENT_SHOW_BOOK, cheesyScholar)
+	local function randomColour()
+		-- Choose one of brg to be 0.8, then one of the other to get a random value between 0 and 0.8
+		-- This will give us a bright, random colour, but not too bright
+		local brg = {0.2,0.2,0.2}
+		local random1 = math.random(1,3) -- which one is maxxed?
+		local random2 = math.random(1,2) -- which of the remaining two should be different?
+		local random3 = math.random()*0.9 -- what should the value of the last one be
+		brg[random1] = 0.9
+		brg[(random1+random2-1)%3+1] = random3 
+		return unpack(brg)
+	end
+	local function updateSynasthesia()
+		local sounds =il8n.superAmazingCraftSounds[GetCraftingInteractionType()]
+		if sounds == nil then return end
+		local labelToUpdate
+		if #DolgubonsFabulousSynasthesia.inactiveLabels < 2 then
+			labelToUpdate = 1
+		else
+			labelToUpdate= math.random(1,#DolgubonsFabulousSynasthesia.inactiveLabels)
+		end
+		local label = table.remove(DolgubonsFabulousSynasthesia.inactiveLabels, labelToUpdate)
+		table.insert(DolgubonsFabulousSynasthesia.activeLabels, label)
+
+
+		label:SetText(sounds[math.random(1,#sounds)])
+		label:SetColor(randomColour())
+		label:ClearTransformRotation()
+		local rotationFactor = 0.7
+		label:AddTransformRotation(math.random()*rotationFactor*math.random(-1,1), math.random()*rotationFactor*math.random(-1,1), math.random()*rotationFactor*math.random(-1,1)) -- rotation is in radians
+		label:ClearAnchors()
+		local yValue=math.random(-1*GuiRoot:GetHeight()/2+200, GuiRoot:GetHeight()/2-200)
+		local xValue=math.random(-1*GuiRoot:GetWidth()/2+200, GuiRoot:GetWidth()/2-200)
+		label:SetAnchor(CENTER, GuiRoot, CENTER, xValue, yValue)
+		label:SetHidden(false)
+		label:SetAlpha(1)
+		local disney = ZO_AlphaAnimation:New(label)
+		local movieLength = 2900--4700-WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"]*300
+		disney:FadeOut(200,movieLength)
+		zo_callLater(function() ZO_RemoveFirstElementFromNumericallyIndexedTable(DolgubonsFabulousSynasthesia.activeLabels,label) table.insert(DolgubonsFabulousSynasthesia.inactiveLabels, label) end, movieLength+210)
+	end
+
+	WritCreater.updateSynasthesia = updateSynasthesia
+	local function startSynasthesia(event, station)
+		if station ==0 or station >7 or WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] == 0 then
+			return
+		end
+		local interval = 3850-WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"]*500
+		EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."_SeeingThings", interval,updateSynasthesia)
+	end
+
+	local function stopSynasthesia()
+		DolgubonsFabulousSynasthesia.activeLabels = {}
+		DolgubonsFabulousSynasthesia.inactiveLabels = DolgubonsFabulousSynasthesia.labels
+		EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."_SeeingThings")
+		for _,label in pairs(DolgubonsFabulousSynasthesia.labels) do
+			label:SetHidden(true)
+		end
+	end
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_SeeingThings", EVENT_CRAFTING_STATION_INTERACT,startSynasthesia)
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_SeeingThings", EVENT_END_CRAFTING_STATION_INTERACT, stopSynasthesia)
+
+
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_TotallyNotChatGPT",EVENT_INVENTORY_SINGLE_SLOT_UPDATE, cheeseTracking)
+	EVENT_MANAGER:AddFilterForEvent(WritCreater.name.."_TotallyNotChatGPT",EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM	, true)
+
 
 	-----------------------------------
 	
-
-
---ITEM_SOUND_CATEGORY_FOOD
-	local requestedCheeseMonster = false
-	local function cheeseMonsterConfirmed(eventCode, sound)
-		--- 38 is the sound cheese makes Must be squeaky right?
-		local inArea = calculateDistance()
-		if requestedCheeseMonster and sound == 39 and WritCreater.savedVarsAccountWide.luckyProgress['gutDestruction'] == 0 and WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion==3 and inArea then
-			WritCreater.savedVarsAccountWide.luckyProgress['gutDestruction'] = 1
-			cheeseEndeavorCompleted(timedActivityData[4].completion, 5)
-		elseif requestedCheeseMonster and sound == 39 and WritCreater.savedVarsAccountWide.luckyProgress['gutDestruction'] == 0 and WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion==3 and not inArea then
-			ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,il8n.outOfRange)
-		end
-		requestedCheeseMonster = false
-		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."cheeseMonsterConfirmed", EVENT_INVENTORY_ITEM_DESTROYED)
-		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."notACheeseMonster", EVENT_INVENTORY_ITEM_DESTROYED)
-	end
-	local function notACheeseMonster(eventCode)
-		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."cheeseMonsterConfirmed", EVENT_INVENTORY_ITEM_DESTROYED)
-		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."notACheeseMonster", EVENT_INVENTORY_ITEM_DESTROYED)
-		requestedCheeseMonster = false
-	end
-	
-	local function cheeseMonster( eventCode,  bagId,  slotIndex,  itemCount,  name,  needsConfirm)
-		local itemId = GetItemId(bagId, slotIndex)
-		if WritCreater.savedVarsAccountWide.luckyProgress['gutDestruction'] == 0 and itemId == 42870 and WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion==3 then
-			requestedCheeseMonster = true
-			EVENT_MANAGER:RegisterForEvent(WritCreater.name.."cheeseMonsterConfirmed", EVENT_INVENTORY_ITEM_DESTROYED, cheeseMonsterConfirmed)
-			-- EVENT_MANAGER:RegisterForEvent(WritCreater.name.."notACheeseMonster", EVENT_INVENTORY_ITEM_DESTROYED, notACheeseMonster)
-		else
-			requestedCheeseMonster = false
-		end
-	end
-	local originalDestroyItem = DestroyItem
-	DestroyItem = function(bag,slot,...)
-		local inArea = calculateDistance()
-		local itemId = GetItemId(bagId, slotIndex)
-		if WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion==3 and WritCreater.savedVarsAccountWide.luckyProgress['gutDestruction'] == 0 and itemId == 42870 and inArea then
-			WritCreater.savedVarsAccountWide.luckyProgress['gutDestruction'] = 1
-			cheeseEndeavorCompleted(timedActivityData[4].completion, 5)
-		elseif WritCreater.savedVarsAccountWide.luckyProgress.luckCompletion==3 and WritCreater.savedVarsAccountWide.luckyProgress['gutDestruction'] == 0 and itemId == 42870 and not inArea then
-			ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,il8n.outOfRange)
-		end
-		originalDestroyItem(bag, slot, ...)
-	end
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."CheeseMonster", EVENT_MOUSE_REQUEST_DESTROY_ITEM , cheeseMonster)
-	CALLBACK_MANAGER:RegisterCallback("AllDialogsHidden" , function() zo_callLater(function()requestedCheeseMonster = false end, 400) end)
-
 
 
 	-- /esraj /lute /drum /flute   /trumpetsolo /keyharp /panflute  /qunan /ragnarthered /sukun
@@ -715,46 +624,28 @@ if isCheeseOn() then
 		local numComplete = tonumber(text) or 2
 		d("resetting to # "..numComplete)
 		for i = 1, #timedActivityData do
-			WritCreater.savedVarsAccountWide.luckyProgress[timedActivityData[i].svkey] = 0
+			WritCreater.savedVarsAccountWide.applicationProgress[timedActivityData[i].svkey] = 0
 		end
 		for i = 1, numComplete do
-			WritCreater.savedVarsAccountWide.luckyProgress[timedActivityData[i].svkey] = 1
+			WritCreater.savedVarsAccountWide.applicationProgress[timedActivityData[i].svkey] = 1
 		end
-		-- for k, v in pairs (WritCreater.savedVarsAccountWide.luckyProgress) do 
-		-- 	WritCreater.savedVarsAccountWide.luckyProgress[k] = 1
-		-- end 
-		-- WritCreater.savedVarsAccountWide.luckyProgress["cheeseProfession"] = 0
-		WritCreater.savedVarsAccountWide.luckyProgress["luckCompletion"] = numComplete
+		WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] = numComplete
+		if numComplete < #timedActivityData then
+			WritCreater.savedVarsAccountWide.skin = "default"
+			WritCreater.savedVarsAccountWide.unlockedFabulousness = false
+		end
 		if not isConsolePeasant then
 			pcall(refreshTimedActivities)
 		end
 	end
 	SLASH_COMMANDS['/resetcheeseprogresscomplete'] = function() 
-		for k, v in pairs (WritCreater.savedVarsAccountWide.luckyProgress) do 
-			WritCreater.savedVarsAccountWide.luckyProgress[k] = 0
+		for k, v in pairs (WritCreater.savedVarsAccountWide.applicationProgress) do 
+			WritCreater.savedVarsAccountWide.applicationProgress[k] = 0
 		end 
 		if not isConsolePeasant then
 			pcall(refreshTimedActivities)
 		end
 	end
-		-- local sheoStrings = 
-	-- {
-	-- 	en = "Sheogorath",
-	-- 	de = "Sheogorath",
-	-- 	fr = "Shéogorath",
-	-- jp = "シェオゴラス",
-	-- }
-	-- -- EVENT_MANAGER:RegisterForEvent(WritCreater.name.."cheesyMusic", EVENT_PLAYER_ACTIVATED, setupCheesyMusic)
-	-- -- Handles the dialogue where we actually complete the quest
-	-- local function isItUncleSheo(eventCode, journalIndex)
-	-- 	if WritCreater.savedVarsAccountWide.luckyProgress['sheoVisit'] == 0 and zo_plainstrfind( ZO_InteractWindowTargetAreaTitle:GetText() ,sheoStrings[GetCVar("language.2")]) then
-	-- 		--d("complete")
-	-- 		WritCreater.savedVarsAccountWide.luckyProgress['sheoVisit'] = 1
-	-- 		cheeseEndeavorCompleted(timedActivityData[2].completion)
-	-- 		return 
-	-- 	end
-	-- end
-	-- EVENT_MANAGER:RegisterForEvent(WritCreater.name.."FunWithSheo", EVENT_CHATTER_BEGIN, isItUncleSheo)
 end
 
 
@@ -895,11 +786,7 @@ function WritCreater.Options() --Sentimental
 
 			
 	}
-	if GetDisplayName() == "@J3zdaz" then
-		WritCreater.savedVarsAccountWide.skin = "goat"
-		WritCreater.savedVarsAccountWide.unlockedGoat = true
-	end
-	if WritCreater.savedVarsAccountWide.unlockedCheese or WritCreater.savedVarsAccountWide.unlockedGoat then
+	if WritCreater.savedVarsAccountWide.unlockedCheese or WritCreater.savedVarsAccountWide.unlockedGoat or WritCreater.savedVarsAccountWide.unlockedFabulousness then
 		local skinOptions = {"default"}
 		local skinChoices = {WritCreater.optionStrings["defaultSkin"]}
 		if WritCreater.savedVarsAccountWide.unlockedCheese then 
@@ -909,6 +796,10 @@ function WritCreater.Options() --Sentimental
 		if WritCreater.savedVarsAccountWide.unlockedGoat then 
 			table.insert(skinOptions, "goat") 
 			table.insert(skinChoices, WritCreater.optionStrings["goatSkin"])
+		end
+		if WritCreater.savedVarsAccountWide.unlockedFabulousness then
+			table.insert(skinOptions, "fabulous") 
+			table.insert(skinChoices, WritCreater.optionStrings["fabulousSkin"])
 		end
 		table.insert(options, 4,
 		{
@@ -927,6 +818,7 @@ function WritCreater.Options() --Sentimental
 			getFunc = function() return WritCreater.savedVarsAccountWide.skin end,
 			setFunc = function(value) 
 				WritCreater.savedVarsAccountWide.skin  = value
+				WritCreater.applySkin(value)
 			end
 		}
 		)

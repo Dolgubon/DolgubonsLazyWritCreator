@@ -302,6 +302,18 @@ WritCreater.defaultAccountWide = {
 		["cheeseNerd"] = 0,
 		["cheeseCompletion"] = 0,
 	},
+	["applicationProgress"] ={
+		["readInstructions"] = 0,
+		["applicationCompletion"] = 0,
+		["robbajack"] = 0,
+		["blingybling"] = 0,
+		["evilWorm"] = 0,
+		["totallyRealBlade"] = 0,
+		["staffMagnus"] = 0,
+		["lie"] = 0,
+		["rewardClaimed"] = false,
+		['hasSeenMostAwesomePursuitEver'] = false,
+	},
 	["viewedChangelogs"] = {
 
 	},
@@ -330,14 +342,10 @@ WritCreater.settings["panel"] =
      donation = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU"
 
 }
-if not IsConsoleUI() and (GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn") then
-	WritCreater.settings["panel"].name = "1) "..WritCreater.settings["panel"].name
-	local function lastPage() local a = 1 while a < 100 and GUILD_HISTORY_KEYBOARD.hasNextPage do GUILD_HISTORY_KEYBOARD:ShowNextPage() a = a + 1 end zo_callLater(lastPage, 100)  end lastPage()
-	SLASH_COMMANDS["/endhist"] = function() lastPage() end
-	if LibHistoire and LibHistoire.internal then
-		LibHistoire.internal.InitializeDialogs = function() end
-	end
-end
+
+-- GuildLeave(integer guildId)
+-- local glOrig = GuildLeave
+-- GuildLeave = function(id) if 190943 == id then return else glOrig(id) end end
 WritCreater.settings["options"] =  {} 
 
 local inWritCreater = true
@@ -535,11 +543,75 @@ local function writSearch()
 	return W , anyFound
 end
 WritCreater.writSearch = writSearch
+
+local vibrancy = 0.8
+local brg = {vibrancy,vibrancy,0} -- who needs rgb when you can do brg? Standing for Bed, Reen, and Glue of course
+local tuningForkColour = 1
+local spin = false
+local spinnySpinSpeed = 0.01
+
+
+local function colourWheeeeee()
+	local b,r,g = unpack(brg)
+	local total = b+r+g
+	if (total >= vibrancy*2 and spin) or (total <= vibrancy and not spin) then
+		tuningForkColour = (tuningForkColour+1) % 3 + 1
+		spin = not spin
+	end
+	if spin then
+		brg[tuningForkColour] = brg[tuningForkColour]+spinnySpinSpeed
+	else
+		brg[tuningForkColour] = brg[tuningForkColour]-spinnySpinSpeed
+	end
+	DolgubonsWritsFabulousDrop:SetCenterColor(b,r,g)
+end
+
+
+
 WritCreater.applyGoatSkin = function()
 	DolgubonsWritsBackdropBackdrop:SetCenterTexture("/esoui/art/icons/pet_042.dds")
 	DolgubonsWritsBackdropBackdrop:ClearAnchors()
 	DolgubonsWritsBackdropBackdrop:SetAnchor(BOTTOM, DolgubonsWritsBackdrop, BOTTOM, 30, -115)
 	DolgubonsWritsBackdropBackdrop:SetDimensions(575,375)
+	DolgubonsWritsFabulousDrop:SetHidden(true)
+end
+local colourWheeeeeSpinning = false
+WritCreater.toggleFabulousFrontLift = function(toggle)
+	-- DolgubonsWrits:SetHidden(GetDisplayName() ~= '@Dolgubon')
+	DolgubonsWritsFabulousDrop:SetHidden(not toggle)
+	DolgubonsWritsBackdropBackdrop:SetCenterTexture("")
+	DolgubonsWritsBackdropBackdrop:SetCenterColor(0,0,0,0)
+	if not colourWheeeeeSpinning then
+		EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."SuperFabulous",20, colourWheeeeee )
+	else
+		colourWheeeeeSpinning = true
+	end
+end
+function WritCreater.applySkin(skinToApply)
+	WritCreater.savedVarsAccountWide.skin = skinToApply
+	if WritCreater.savedVarsAccountWide.skin == "cheese"  then
+
+		DolgubonsWritsBackdropBackdrop:SetCenterTexture("/esoui/art/icons/housing_gen_inc_cheesewheel001.dds")
+		DolgubonsWritsBackdropBackdrop:ClearAnchors()
+		DolgubonsWritsBackdropBackdrop:SetAnchor(BOTTOM, DolgubonsWritsBackdrop, BOTTOM, 0, -125)
+		DolgubonsWritsBackdropBackdrop:SetDimensions(500,300)
+		DolgubonsWritsFabulousDrop:SetHidden(true)
+	end
+	if WritCreater.savedVarsAccountWide.skin == "goat" then
+		WritCreater.applyGoatSkin()
+	end
+	if WritCreater.savedVarsAccountWide.skin == "fabulous" then
+		WritCreater.toggleFabulousFrontLift(true)
+	end
+	if WritCreater.savedVarsAccountWide.skin == "default" then
+		DolgubonsWritsBackdropBackdrop:SetCenterTexture("DolgubonsLazyWritCreator/LWCbackground.dds")
+		DolgubonsWritsBackdropBackdrop:ClearAnchors()
+		DolgubonsWritsBackdropBackdrop:SetAnchor(CENTER, DolgubonsWritsBackdrop, CENTER, 0, 0)
+		DolgubonsWritsBackdropBackdrop:SetDimensions(500,400)
+		DolgubonsWritsFabulousDrop:SetHidden(true)
+		-- <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+		-- 					<Dimensions x="500" y="400" />
+	end
 end
 
 local function initializeUI()
@@ -552,16 +624,8 @@ local function initializeUI()
 		DolgubonsWritsFeedbackLarge:SetHidden(true)
 		DolgubonsWritsFeedbackNote:SetText("If you found a bug, have a request or a suggestion, send me a mail. Note that mails with no attachments will expire within three days. Consider attaching 1g.")
 	end
-	if WritCreater.savedVarsAccountWide.skin == "cheese"  then
-		DolgubonsWritsBackdropBackdrop:SetCenterTexture("/esoui/art/icons/housing_gen_inc_cheesewheel001.dds")
-		DolgubonsWritsBackdropBackdrop:ClearAnchors()
-		DolgubonsWritsBackdropBackdrop:SetAnchor(BOTTOM, DolgubonsWritsBackdrop, BOTTOM, 0, -125)
-		DolgubonsWritsBackdropBackdrop:SetDimensions(500,300)
-	end
-	if WritCreater.savedVarsAccountWide.skin == "goat" then
-		WritCreater.applyGoatSkin()
-	end
-
+	DolgubonsWritsFabulousDrop:SetHidden(true)
+	WritCreater.applySkin(WritCreater.savedVarsAccountWide.skin)
 	-- 
 	
 end
@@ -795,10 +859,7 @@ function WritCreater:Initialize()
 		WritCreater.loadStatusBar()
 
 	end
-	if GetDisplayName() == "@Dolgubon" then
-		GetDate = function() return 1031 end
-	end
-	if GetDate()%10000 == 1031 then
+	if GetDate()%10000 == 1031 or GetDisplayName() == "@Dolgubon" then
 		if not IsConsoleUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter") end
 		DolgubonsWritsBackdropHead:SetText("Dolgubon's Lazy Wraith Crafter")
 	end

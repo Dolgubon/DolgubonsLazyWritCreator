@@ -124,8 +124,6 @@ local function moveItem( amountRequired, bag, slot, secondTry)
 		end
 		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0) , math.max(0,remainingInBank - amountRequired )))
 	else
-		
-
 		return false
 	end
 	return true
@@ -155,12 +153,12 @@ local function filterMatches(matches)
 	local traits = 4
 	if #matches== 0 then
 		specialDebug("WC Debug No potential matches")-- no translate
-		return nil, nil
+		return nil, nil, 0
 	elseif #matches==1 then
 		specialDebug("WC Debug Only one potential match. Item wins by default")-- no translate
-		return matches[1][1], matches[1][2]
+		return matches[1][1], matches[1][2] ,1
 	else
-		specialDebug("WC Debug Multiple matches. Longest item will be withdrawn")-- no translate
+		specialDebug("WC Debug Multiple matches. If potion, item with fewest traits will be withdrawn")-- no translate
 		local longest = 0
 		local position = 0
 		for i = 1, #matches do
@@ -171,20 +169,18 @@ local function filterMatches(matches)
 			end
 		end
 		specialDebug("WC Debug "..GetItemLink(matches[position][1], matches[position][2]).." had the longest name and will now be withdrawn")-- no translate
-		return matches[position][1], matches[position][2]
+		return matches[position][1], matches[position][2], position
 	end
-
 end
+
+
+
 local bagList = {BAG_BANK, BAG_SUBSCRIBER_BANK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 local houseBagList =  {BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 		BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}
 local function potionGrabRefactored(questCondition, amountRequired, validItemTypes, quest, stepindex, conditionindex)
 	specialDebug("WC Debug Beggining Bank Withdrawal Sequence")-- no translate
-	specialDebug("Attempting to find items for "..questCondition)-- no translate
-	specialDebug(" We need ".. amountRequired)-- no translate
-	specialDebug("Valid itemTypes are the table keys of the following table:")-- no translate
-	specialDebug(validItemTypes )
 	local potentialMatches = {}
 	local storageIncluded = false
 	local bags = bagList
@@ -194,32 +190,30 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 	for i = 1, #bags do
 		local bagId = bags[i]
 		specialDebug("Searching bag number "..bagId)-- no translate
-		specialDebug("Bag has a size of "..GetBagSize(bagId))-- no translate
 		for i=0, GetBagSize(bagId) do -- check the rest of the bank
-			if i < 5 and GetItemName(bagId, i)~="" then specialDebug("Checking item in slot "..i.." which has name "..GetItemName(bagId, i).." and itemType "..GetItemType(bagId, i)) end -- no translate
 			if isPotentialMatch(validItemTypes, bagId, i, quest, stepindex, conditionindex) then 
 				-- Add to match list
 				table.insert(potentialMatches, {bagId, i})
 			end
 		end
 	end
-	local bag, slot = filterMatches(potentialMatches)
-	if bag and slot then
-		local stackSize = GetSlotStackSize(bag, slot)
-		if stackSize < amountRequired then
-			specialDebug("WC Debug User does not have enough items for quest in the bank. Moving what is there, and checking again after")-- no translate
-			queue[#queue + 1]  = function() return potionGrabRefactored(questCondition, amountRequired -stackSize, validItemTypes ) end 
-		else
-			specialDebug("WC Debug User has enough items for quest. Withdrawing items")-- no translate
-			if not moveItem(amountRequired, bag, slot) then
-				return false
+	local wasMoveSuccess = false
+	while amountRequired > 0 and #potentialMatches >0 do
+		local bag, slot,index = filterMatches(potentialMatches)
+		if bag and slot then
+			local stackSize = GetSlotStackSize(bag, slot)
+			if moveItem(amountRequired, bag, slot) then
+				wasMoveSuccess = true
 			end
-			return true
+			if stackSize < amountRequired then
+				table.remove(potentialMatches, index)
+			end
+			amountRequired = amountRequired - stackSize
+		else
+			-- No item was found. Would love to do an error message but would need to filter out delivery, glyphs, etc. in other languages
 		end
-
-	else
-		-- No item was found. Would love to do an error message but would need to filter out delivery, glyphs, etc. in other languages
 	end
+	return wasMoveSuccess
 end
 
 local function exceptions(condition)

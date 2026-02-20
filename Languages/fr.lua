@@ -454,44 +454,68 @@ end
 WritCreater.cheeseyLocalizations
 =
 {
-	['menuName'] = "|cFFBF00Rituel|r",
-	['endeavorName'] = "Rituel volontés",
+	['menuName'] = "|cFFBF00Poursuite de Pyrite|r",
+	['initialDescription'] = "Pourquoi ne pas simplement /lire la brochure d'abord ?",
+	['readDescription'] = "Après avoir découvert que son maître artisan utilisait un addon d'aide à l'artisanat pour générer des déchets traités, le Seigneur des Créatifs recherche un nouveau chef artisan. Tentez votre chance !",
+	['endeavorName'] = "Poursuites de Pyrite",-- Pyrite, aka Fool's Gold. Play on Fool = Crazy =  Sheogorath, Fool in April Fools, and Golden Pursuits, bc that's where this lives
+	['rewardName'] = "-1 Santé mentale",
+	['completionShout'] = "<<1>>/<<2>> |cFFBF00Poursuite de Pyrite|r Terminée!", -- e.g. 1/6 pyrite pursuit completed!
 	['tasks']={
-		{original = "Vous avez trouvé un feuillet étrange... Peut-être que vous devriez la /lire", name="Vous avez lu des instructions sur un rituel pour la chance", 
-			completion = "Vous avez appris à faire un rituel pour la chance!",
-			description="Utiliser /lire l'emote"},
-		{name = "Obtenez les tripes d'une chèvre innocente", completion = "Espèce de monstre! Tout pour la chance, je suppose",
-			description="Ramasser les tripes d'une chèvre morte. Vous n'avez pas à être celui qui tue... mais c'est le moyen le plus simple"},
-		{original="???", name = "Dirigez-vous vers le site rituel, Arananga", completion = "Vous avez réussi! Cela semble être un endroit très industrieux",
-			description="Vous ne savez pas où se trouve Arananga ? C'est peut-être une station d'artisanat 'surdouée'..."},
+		-- Lord of the creatives, trickster, lord of the dranged, fourth corner, lord of the never there, and Dam Dog (Mad God backwards) are all names for sheogorath. 
+		-- Translations can use any nickname for him, Uncle Sheo, or just do Sheogorath if you can't find/don't know any
 
-		{original="???", name = "Détruisez les tripes de chèvre", completion = "Vous avez 'brûlé' le sacrifice",
-			description="Détruisez le |H1:item:42870:30:1:0:0:0:0:0:0:0:0:0:0:0:16:0:0:0:1:0:0|h|h vous ramassez"},
+		-- Original: Shown prior to the completion of the first task
+		-- Name: Shown in the pursuits window
+		-- placehold: shown in place of name after completion (if present)
+		-- completion: Shown as a popup when task is complete
+		-- Description: Long form description. Should explain exactly what needs to be done. Shown as a tooltip on PC
+		-- completedDescription: description after completion
+   {original="Vous avez trouvé une brochure intitulée « On recherche du personnel »… Peut-être devriez-vous la lire ",name="/Lire la brochure que vous avez trouvée",placehold="Vous avez trouvé une brochure « On recherche du personnel » de la part du Seigneur des Créatifs", completion = "On dirait que le Seigneur des Créatifs recrute ?", description="Vous avez trouvé une brochure intitulée « On recherche du personnel ». Vous pouvez utiliser l'émote /lire pour la lire", completedDescription="Vous avez lu la brochure"},
 
-		{original="???", name = "Félicitez RNGesus dans le chat", completion = "Vous vous sentez étrangement chanceux, mais peut-être que ce n'est qu'un sentiment...",
-			description="Vous ne pouvez pas vraiment dire ce qu'il a réellement dit, mais c'est votre meilleure supposition"},
+  {original="???", name = "Fabriquez un Robbajack (pourpoint de voleur)", completion = "Ça ne transformera peut-être personne en fromage, mais ça changera quand même votre look !", description="Le Farceur aime transformer les choses. Transformez-vous en voleur en fabriquant un pourpoint à partir de l'ensemble Corsaire Audacieux", completedDescription="Peut-être qu'avec le temps, le Robbajack deviendra aussi puissant que le Wabbajack."}, -- requires 3 traits
+
+  {original="???", name = "Fabriquez l'Amulette des Bigleux", completion = "Ce collier vous irait à merveille ! Si seulement vous pouviez le voir quand vous le portez",  description="Le Seigneur des Dérangés est riche ! Montrez-lui que vous savez utiliser ses richesses en fabriquant un Collier d'Électrum", completedDescription="Bien qu'il soit fait de métal véritable, il semble disparaître quand on le porte... un signe de pouvoir, peut-être ?"},
+
+  {original="???", name = "Fabriquez la Lame d'Ébène", completion = "N'était-ce pas censé voler votre âme ou quelque chose comme ça ? Peut-être l'avez-vous mal fabriquée", description="Le Quatrième Coin aimerait reproduire la capacité de la Lame d'Ébène à rendre ses utilisateurs fous. Prouvez que vous pouvez l'aider en fabriquant une arme en ébène", completedDescription="La Lame d'Ébène. Un nom si banal pour une telle... En fait, cette lame est plutôt ordinaire, donc le nom lui convient parfaitement."},
+
+  {original="???", name = "Fabriquez un bâton de |L0:0:0:40%%:20%%:|lPrésent|l de Magnus ", completion = "Le pouvoir du |L0:0:0:40%%:20%%:|lPrésent|l de Magnus est à vous !", description="Le maître artisan du Seigneur de l'Impossible doit pouvoir créer des bâtons |L0:0:0:50%%:10%%:|lpuissants|l. Créez un bâton à partir de l'ensemble Présent de Magnus.", completedDescription="Malheureusement, ignorer ce fichu |L0:0:0:40%%:20%%:|lPrésent|l dans le nom ne l'a pas rendu plus puissant."}, -- requires 4 traits
+
+
+  {original="???", name = "Cuisiner un gâteau au fromage est un mensonge", completion = "Gâteau au FROMAAAAAGE... Il a l'air tellement vrai", description="Les chiens adorent le gâteau au fromage ! Un chef artisan doit être capable de préparer le MEILLEUR gâteau",completedDescription="Vous avez créé un gâteau au fromage et vous êtes presque sûr qu'il est vrai"},
 	},
-	['allComplete'] = "Vous avez terminé le rituel!",
-	['allCompleteSubheading'] = "Même si RNGesus ne vous favorise pas l'année prochaine, au moins Writ Crafter a un nouveau look!",
-	["goatContextTextText"] = "chèvre^f",
-	["extraGoatyContextTextText"] = "Chèvre",
+	["unknownMonumentalTask"] = "Lisez la brochure pour découvrir la tâche",
+	['claimRewardHeader'] = "J'espère que vous avez pris du plaisir à faire ces |cFFBF00Poursuites de Pyrite|r!",
+	['claimRewardSubheading'] = "Découvrez le nouveau look de Writ Crafter la prochaine fois que vous ferez des commandes !",
+
+	-- Note for translations: The list contains some wordplay on various daedric artefacts or other jokes
+	-- Robber's Jack: Sounds like Wabbajack. Satisfied by creating a Jack from one of: the Redistributor set, the Daedric trickery set, or the Daring corsair set
+	-- Amulet of Blings: Rhymes with Amulet of Kings. Satisfied by creating an electrum necklace
+	-- Totally real ebony blade: Refers to the ebony blade (Mephala artefact, from crypt of hearts). Satisfied by, you guessed it, an ebony blade
+	-- Staff of Magnus Gift: Gift is crossed out. Refers to the Staff of Magnus. Satisfied by a staff from the Magnus Gift set
+	-- Cheesecake is a lie: Refers to 'the cake is a lie' and Sheogorath liking cheese. Satisfied by making a cheesecake
 	["bookText"] = 
 [[
-Ce rituel |L0:0:0:45%%:8%%:ignore|lpeut|Je pourrais vous porter chance. Assurez-vous de suivre ces étapes à la lettre!
-1. Obtenir des tripes |L0:0:0:45%%:8%%:ignore|ld'un mouton|l d'une chèvre
-2. Allez à |L0:0:0:45%%:8%%:ignore|lOblivion|l Arananga
-3. Brûlez les tripes
-4. Louanger [vous ne pouvez pas dire ce qui est écrit ici]
+Après avoir découvert que son artisan en chef utilisait un addon d'aide à l'artisanat pour générer des déchets traités, le Seigneur des Créatifs recherche un nouvel artisan en chef ! (Il a toujours un artisan en chef, mais il est maintenant plutôt inutile sans son corps.)
 
-- Sincèrement,
-|L0:0:0:45%%:8%%:ignore|lSheogorath|l Pas Shéogorath]],
-["bookTitle"] = "Un rituel pour la chance",
-["outOfRange"] = "Vous n'êtes plus dans la zone rituelle !",
-["closeEnough"] = "Assez proche",
-["praiseHint "] = "Peut-être avez-vous besoin de dire quelque chose à propos de RNGesus ?",
-["extraSlash"] = "/lire",
+Pour postuler, veillez fabriquer les objets de cette liste:
+1 Robbajack
+1 Amulette des Bigleux
+1 Lame d'Ébène vraiment vraie
+1 Bâton de |L0:0:0:40%%:20%%:|lPrésent|l de Magnus 
+1 Gâteau au fromage est un mensonge
+]],
+	["bookTitle"] = "Aide recherchée",
+	["superAmazingCraftSounds"] = { -- displayed randomly when crafting
+		{"CLANG","CLING","CLINK","MARTELLE","PING"}, -- Blacksmithing
+		{"SHWITT","FFFFFT"}, -- Clothing
+		{"ALAKAZAM","ABRACADABRA","HOCUS POCUS","GERARD MAJAX", "GARCIMORE"}, -- Enchanting
+		{"SPLISH","SPLASH","PLOP","GLOUB"}, -- Alchemy
+		{"TCHAK","POP","BLOUB"}, -- Cooking
+		{"ZZZZ","GRINCE","CRAQUE","PLANCHE"}, -- Woodworking
+		{"TING","CLANG","CHCLING"}, -- Jewelry
+	},
+	["extraSlash"] = "/lire", -- if your language has a translation for /read, put it here
 }
-
 
 WritCreater.lang = "fr"
 

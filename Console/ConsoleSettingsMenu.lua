@@ -129,9 +129,11 @@ function WritCreater.initializeSettingsMenu()
             end,
         },
         {
+
             type = LHA.ST_SECTION,
             label = WritCreater.optionStrings['mainSettings'], 
         },
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["skin"]] or {},
         -- {
         --     type = "divider",
         --     height = 15,
@@ -425,6 +427,7 @@ function WritCreater.initializeSettingsMenu()
             label = WritCreater.optionStrings["repairRewards"],
         },
         WritCreater.lamConvertedOptions["repairReward"],
+        WritCreater.lamConvertedOptions["fragmentReward"],
         WritCreater.lamConvertedOptions["soulGemReward"],
         WritCreater.lamConvertedOptions["glyphReward"],
         WritCreater.lamConvertedOptions["currencyReward"],

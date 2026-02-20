@@ -353,47 +353,81 @@ end
 
 WritCreater.cheeseyLocalizations
 =
-{
-	--German, by Baertram, 2023-03-09
-	['menuName'] = "|cFFBF00Ritual|r",
-	['endeavorName'] = "Ritual Bestrebungen",
+{ -- DE / German by Baertram 20260214
+	['menuName'] = "|cFFBF00Pyrit-Vorhaben|r",
+	['initialDescription'] = "Wie wäre es denn, wenn du einfach zuerst die Broschüre /liest?",
+	['readDescription'] = "Nachdem der Herr der Kreativen herausgefunden hat, dass sein Oberhandwerker ein Handwerks-Helfer Add-On verwendet hat, um Müll zu erzeugen, sucht er nun einen neuen Oberhandwerker. Versuche dein Glück und bewirb dich!",
+	['endeavorName'] = "Pyrit-Vorhaben", -- Pyrite, aka Fool's Gold. Play on Fool = Crazy =  Sheogorath, Fool in April Fools, and Golden Pursuits, bc that's where this lives
+	['rewardName'] = "-1 Wahnsinn",
+	['completionShout'] = "<<1>>/<<2>> |cFFBF00Pyrit-Vorhaben|r abgeschlossen!", -- z. B. 1/6 Pyrit-Vorhaben abgeschlossen!
 	['tasks']={
-		{original="Du hast eine seltsame Broschüre gefunden ... Vielleicht solltest du sie /lesen",name="Du hast einige Anweisungen zu einem Glücksritual gelesen", completion = "Du hast gelernt wie das Glücksritual durchgeführt wird!",
-			description="Verwende das /lesen Emote"},
 
-		{original="???", name = "Beschaffe die Eingeweide einer unschuldigen Ziege", completion = "Du Monster! Alles ist für's Glück erlaubt, denke ich...",
-			description="Loote Eingeweide von einer toten Ziege. Du musst nicht derjenige sein, der sie tötet ... aber das ist der einfachste Weg"},
+		-- Lord of the creatives, trickster, lord of the dranged, fourth corner, lord of the never there, and Dam Dog (Mad God backwards) are all names for sheogorath.
+		-- Translations can use any nickname for him, Uncle Sheo, or just do Sheogorath if you can't find/don't know any
 
-		{original="???", name = "Begib dich zum Ritualort, Arananga", completion = "Du hast es geschafft! Es scheint ein sehr strebsamer Ort zu sein",
-			description="Nicht sicher, wo Arananga liegt? Vielleicht ist es eine 'begabte' Handwerksstation ..."},
+		-- Original: Shown prior to the completion of the first task
+		-- Name: Shown in the pursuits window
+		-- placehold: shown in place of name after completion (if present)
+		-- completion: Shown as a popup when task is complete
+		-- Description: Long form description. Should explain exactly what needs to be done. Shown as a tooltip on PC
+		-- completedDescription: description after completion
+		{original="Du hast eine Broschüre mit dem Titel 'Hilfe gesucht' gefunden ... Vielleicht solltest du sie lesen",name="/Lies die gefundene Broschüre",placehold="Du hast eine Broschüre mit dem Titel 'Hilfe gesucht' vom Herrn der Kreativen gefunden", completion = "Scheint, als ob der Herr der Kreativen Leute sucht?",
+		 description="Du hast eine Broschüre mit der Aufschrift 'Hilfe gesucht' gefunden. Du kannst die Emote /lies verwenden, um sie zu lesen", completedDescription="Du hast die Broschüre gelesen"},
 
-		{original="???", name = "Zerstöre die Eingeweide der Ziege", completion = "Du hast das Opfer \'verbrannt\'.",
-			description="Zerstöre die |H1:item:42870:30:1:0:0:0:0:0:0:0:0:0:0:0:16:0:0:0:1:0:0|h|h welche du gelooted hast"},
+		{original="???", name = "Stelle einen RäuberJack her", completion = "Er verwandelt vielleicht niemanden in Käse, aber er verändert trotzdem deinen Look!",
+		 description="Der Trickster verwandelt gerne Dinge. Verwandle dich in einen Räuber, indem du eine Jack(e) aus dem Set 'Kühner Korsar' herstellst.",
+		 completedDescription="Vielleicht wird der Robbajack mit der Zeit genauso mächtig wie der Wabbajack."}, -- benötigt 3 Eigenschaften
 
-		{original="???", name = "Loben Sie RNGesus im Chat", completion = "Du fühlst dich seltsam glücklich, aber vielleicht ist es nur ein Gefühl...",
-			description="Sie können nicht wirklich sagen, was es tatsächlich gesagt hat, aber es ist Ihre beste Vermutung"},
+		{original="???", name = "Stelle das Amulett des Blings her", completion = "Diese Halskette würde dir bestimmt fabelhaft stehen! Wenn du sie nur sehen könntest, wenn du sie trägst.",
+		 description="Der Herr der Verrückten ist reich! Zeig ihm, dass du seinen Reichtum nutzen kannst, indem du eine Elektrum-Halskette herstellst.",
+		 completedDescription="Obwohl sie aus echtem Metall besteht, scheint sie zu verschwinden, wenn du sie trägst ... ein Zeichen der Macht, vielleicht?"},
 
-		-- {original="???", name = "Complete the ritual", completion = "Maybe you'll be just a little bit luckier... And Writ Crafter has a new skin!",
-		-- description="Sheogorath will be very pleased if you complete them all!"},
+		{original="???", name = "Stelle die Ebenklinge her", completion = "Sollte die Klinge nicht deine Seele stehlen oder so? Vielleicht hast du sie falsch hergestellt.",
+		 description="Die Vierte Säule würde die Fähigkeit der Ebenklinge, ihre Benutzer in den Wahnsinn zu treiben, nur allzu gerne nachahmen. Zeig, dass du helfen kannst, indem du eine Klingenwaffe aus Ebenerz herstellst.",
+		 completedDescription="Die Ebenklinge. So ein unscheinbarer Name für so eine ... Eigentlich ist diese Klinge ziemlich gewöhnlich, also passt der Name perfekt."},
+
+		{original="???", name = "Stelle einen Stab von Magnus |L0:0:0:40%%:20%%:|lGabet|l", completion = "Die Macht von Magnus |L0:0:0:40%%:20%%:|lGabe|l gehört dir!",
+		 description="Der leitende Handwerker des Herrn des Nimmerda muss in der Lage sein, |L0:0:0:50%%:10%%:|lmächtige|l Stäbe herzustellen. Stelle einen Stab aus dem Magnus-Gabe Set her.",
+		 completedDescription="Leider hat das Ignorieren des lästigen |L0:0:0:50%%:10%%:|lGabe|l im Namen ihn nicht särker gemacht."}, -- benötigt 4 Eigenschaften
+
+		{original="???", name = "Bake 1 Cheesecake is a lie", completion = "KÄÄÄÄÄÄSEkuchen.. Er sieht definitiv echt genug aus",
+		 description="Verdammte Hunde lieben es, Käsekuchen zu essen! Ein leitender Handwerker müsste den BESTEN Kuchen backen",completedDescription="Du hast einen Käsekuchen kreiert und bist dir ziemlich sicher, dass er echt ist."
+		},
 	},
-	["goatContextTextText"] = "Ziege^f",
-	["extraGoatyContextTextText"] = "Ziege",
-	["extraSlash"] = "/lesen",
-	['allComplete'] = "Du hast das Ritual vollendet!",
-	['allCompleteSubheading'] = "Auch wenn RNGesus Sie nächstes Jahr nicht bevorzugt, hat zumindest WritCrafter einen neuen Look!",
-	["bookText"] = 
-[[Dieses Ritual |L0:0:0:45%%:8%%:ignore|lwird|l könnte Ihnen viel Glück bringen. Achten Sie darauf, die folgenden Schritte genau zu befolgen!
-1. Beschaffe Eingeweide von |L0:0:0:45%%:8%%:ignore|leinem Schaf|l einer Ziege
-2. Suche den Ort |L0:0:0:45%%:8%%:ignore|lOblivion|l Arananga auf
-3. Verbrenne die Eingeweide
-4. Lobe [man kann nicht sagen, was hier geschrieben steht]
+	["unknownMonumentalTask"] = "Lies die Broschüre, um die Aufgabe zu enthüllen.",
+	['claimRewardHeader'] = "Hoffentlich hattest du Spaß bei deinen |cFFBF00Pyrite Vorhaben|r!",
+	['claimRewardSubheading'] = "Sieh dir das neue Design von Writ Crafter an, wenn du das nächste Mal Aufträge erledigst!",
 
-- Hochachtungsvoll,
-|L0:0:0:45%%:8%%:ignore|lSheogorath|l Nicht Sheogorath]],
-	["bookTitle"] = "Ein Ritual für Glück",
-	["outOfRange"] = "Du bist nicht mehr innerhalb des Ritual Bereiches!",
-	["closeEnough"] = "Du bist nah dran",
-	["praiseHint "] = "Vielleicht musst du etwas über RNGesus sagen?",
+		-- Note for translations: The list contains some wordplay on various daedric artefacts or other jokes
+		-- Robber's Jack: Sounds like Wabbajack. Satisfied by creating a Jack from one of: the Redistributor set, the Daedric trickery set, or the Daring corsair set
+		-- Amulet of Blings: Rhymes with Amulet of Kings. Satisfied by creating an electrum necklace
+		-- Totally real ebony blade: Refers to the ebony blade (Mephala artefact, from crypt of hearts). Satisfied by, you guessed it, an ebony blade
+		-- Staff of Magnus Gift: Gift is crossed out. Refers to the Staff of Magnus. Satisfied by a staff from the Magnus Gift set
+		-- Cheesecake is a lie: Refers to 'the cake is a lie' and Sheogorath liking cheese. Satisfied by making a cheesecake
+	["bookText"] =
+	[[
+	Nachdem er herausgefunden hat, dass sein Oberhandwerker ein Handwerks-Helfer Add-On verwendet hat, um Müll zu erzeugen, sucht er nun einen neuen Oberhandwerker. Versuche dein Glück und bewirb dich! (Er hat zwar noch einen Chefhandwerker, aber der ist ohne Körper dorch irgendwie ziemlich nutzlos.)
+
+	Um sich zu bewerben, fertige bitte Folgendes:
+	1 Räuber Jack
+	1 Amulett des Blings
+	1 Absolut echte Ebenklinge
+	1 Stab von Magnus |L0:0:0:40%%:20%%:|lGabe|l
+	1 Cheese'cake is a lie'
+	]],
+
+	["bookTitle"] = "Hilfe gesucht",
+
+	["superAmazingCraftSounds"] = { -- wird beim Herstellen zufällig angezeigt
+		{"KLANG","KLING","KLINK","KLUNK","DÄNGEL"}, -- Schmiedekunst
+		{"SCHNIPPEL","RASCHEL"}, -- Kleidung
+		{"ALAKAZAM","ABRACADABRA","HOCUS POCUS FIDIBUS"}, -- Verzauberung
+		{"SPLISCH","SPLASCH","PLOP","GLUCKS"}, -- Alchemie
+		{"KÖCHEL","BLUBB, BLUBB"}, -- Kochen
+		{"BZZZZ","SÄG","KNACK","WRRRRR"}, -- Holzbearbeitung
+		{"TING","BLING","PING"}, -- Schmuck
+	},
+	["extraSlash"] = "/lies", -- Falls Ihre Sprache eine Übersetzung für /read hat, fügen Sie sie hier ein.
 }
 
 

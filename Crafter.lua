@@ -784,7 +784,7 @@ local function enchantCrafting(quest,add)
 		local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
 		local acquireString = WritCreater.writCompleteStrings()["Acquire"] or "acquire"
 		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i],_,_,conditions["type"][i] = GetJournalQuestConditionInfo(quest, 1, i)
-
+		if conditions["cur"][i]>=conditions["max"][i] then conditions["text"][i] = "" end
 		if conditions["type"][i] == QUEST_CONDITION_TYPE_ADVANCE_COMPLETABLE_SIBLINGS and conditions["max"] == 0 then
 		-- Second hardcoded dliver is for backwards compatability with localizations that expect it
 		elseif string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
@@ -799,7 +799,7 @@ local function enchantCrafting(quest,add)
 			end
 		elseif conditions["text"][i] =="" then
 
-		elseif conditions["cur"][i] == conditions["max"][i] then
+		elseif conditions["cur"][i] == conditions["max"][i]  then
 			writCompleteUIHandle()
 			return
 		else
@@ -961,7 +961,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101048
+	local currentAPIVersionOfAddon = 101049
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("The game has loaded an old version of Writ Crafter from somewhere on your system. If you think you have updated, One Drive may be causing issues") 

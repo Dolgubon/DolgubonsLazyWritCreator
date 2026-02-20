@@ -36,7 +36,7 @@
 			<Dimensions x="700" y="150" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200" />
 			<Controls>
-				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop" hidden="true">
 					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
 					<Dimensions x="700" y="150" />
 					<Edge edgeSize="1" />
@@ -238,10 +238,59 @@
 				</Label>
 			</Controls>
 		</Button> -->
+		<Label name="DolgubonsSynasthesiaLabel" font="ZoFontGamepad61" color="FFFFFF" horizontalAlignment="CENTER" text="CLING" virtual="true" hidden="true">
+			<OnInitialized>
+				local parent = self:GetParent()
+				parent.labels = parent.labels or {}
+				parent.labels[#parent.labels+1] = self
+				parent.activeLabels = parent.activeLabels or {}
+				parent.activeLabels[#parent.activeLabels+1] = self
+				parent.inactiveLabels = parent.inactiveLabels or {}
+				parent.inactiveLabels[#parent.inactiveLabels+1] = self
+			</OnInitialized>
+		</Label>
+		<TopLevelControl name="DolgubonsFabulousSynasthesia" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+			<Dimensions x="470" y="200" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50" />
+			<Controls>
+				<Label name="$(parent)Label1" text="CLING" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="100" offsetX="100" />
+				</Label>
+				<Label name="$(parent)Label2" text="CLANG" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="300" offsetX="50" />
+				</Label>
+				<Label name="$(parent)Label3" text="CLINK" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="-320" offsetX="-240" />
+				</Label>
+				<Label name="$(parent)Label4" text="CLING" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="140" offsetX="-300" />
+				</Label>
+				<Label name="$(parent)Label5" text="CLING" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="260" offsetX="-200" />
+				</Label>
+				<Label name="$(parent)Label6" text="CLING" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="-50" offsetX="20" />
+				</Label>
+				<Label name="$(parent)Label7" text="CLING" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="-50" offsetX="20" />
+				</Label>
+				<Label name="$(parent)Label8" text="CLING" inherits="DolgubonsSynasthesiaLabel">
+					<Anchor relativePoint="CENTER" relativeTo="GuiRoot" offsetY="-50" offsetX="20" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
 		<TopLevelControl name="DolgubonsWrits" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
 			<Dimensions x="470" y="200" />
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50" />
 			<Controls>
+				<Backdrop name="$(parent)FabulousDrop" centerColor="FFFFFF" edgeColor="FFFFFF">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="25" offsetY="10" />
+					 <Edge file="esoui/art/miscellaneous/interactkeyframe_edge.dds" edgeFileWidth="128" edgeFileHeight="8"/>
+					<Dimensions x="420" y="175" />
+					<!-- <Center file="esoui/art/miscellaneous/interactkeyframe_center.dds"/> -->
+                    <Insets left="4" top="4" right="-4" bottom="-4"/>
+				</Backdrop>
+				
 				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000">
 					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="80" />
 					<Dimensions x="500" y="400" />
