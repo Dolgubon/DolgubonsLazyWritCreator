@@ -44,7 +44,7 @@ if expectedVersion and loadedVersion < expectedVersion then
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."IntegrityCheck", EVENT_PLAYER_ACTIVATED, function()
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."IntegrityCheck", EVENT_PLAYER_ACTIVATED)
 		-- Fallback message if the localization file is unavailable
-		zo_callLater(function() CHAT_ROUTER:AddSystemMessage("ERROR: Corrupted installation of Dolgubon's Lazy Writ Crafter detected; please uninstall and reinstall.") end , 1000)
+		zo_callLater(function() CHAT_ROUTER:AddSystemMessage("ERROR: Potentially corrupted installation of Dolgubon's Lazy Writ Crafter detected; please uninstall and reinstall.") end , 1000)
 	end)
 	-- return
 end
@@ -86,7 +86,7 @@ WritCreater.default =
 	["keepNewContainer"] = true,
 	["lootContainerOnReceipt"] = true,	
 	["lootOutput"] = false,
-	["containerDelay"] = 1,
+	["containerDelay"] = 30,
 	["hideWhenDone"] = false,
 	['changeReticle'] = true,
 	['reticleAntiSteal'] = true,
@@ -144,6 +144,7 @@ WritCreater.default =
 	["depositList"] = {},
 	["completeColour"] = {0.2,1,0.2},
 	["incompleteColour"] = {1,0,0},
+	['useMimic'] = false,
 }
 
 WritCreater.defaultAccountWide = {
@@ -314,6 +315,8 @@ WritCreater.defaultAccountWide = {
 		["rewardClaimed"] = false,
 		['hasSeenMostAwesomePursuitEver'] = false,
 	},
+	["craftedMasterWrits"] = {},
+	['junkedItems'] = {}, -- only used for console
 	["viewedChangelogs"] = {
 
 	},
@@ -587,7 +590,23 @@ WritCreater.toggleFabulousFrontLift = function(toggle)
 		colourWheeeeeSpinning = true
 	end
 end
+
+function WritCreater.applyWylieSkin()
+	--@Wylie_coyote
+	DolgubonsWritsBackdropBackdrop:SetCenterTexture("DolgubonsLazyWritCreator/BestPizza.dds")
+	DolgubonsWritsBackdropBackdrop:ClearAnchors()
+	DolgubonsWritsBackdropBackdrop:SetAnchor(BOTTOM, DolgubonsWritsBackdrop, BOTTOM, 30, -170)
+	DolgubonsWritsBackdropBackdrop:SetDimensions(475,230)
+	DolgubonsWritsBackdropBackdrop:SetHidden(false)
+	DolgubonsWritsFabulousDrop:SetHidden(true)
+end
+local year, month, date = GetDateElementsFromTimestamp(GetTimeStamp())
+
 function WritCreater.applySkin(skinToApply)
+	if (GetDisplayName() == "@Wylie_Coyote" and ((month > 4 and date > 1) or WritCreater.savedVarsAccountWide.unlockedFabulousness )) then
+		WritCreater.applyWylieSkin()
+		return
+	end
 	WritCreater.savedVarsAccountWide.skin = skinToApply
 	if WritCreater.savedVarsAccountWide.skin == "cheese"  then
 
@@ -613,6 +632,8 @@ function WritCreater.applySkin(skinToApply)
 		-- 					<Dimensions x="500" y="400" />
 	end
 end
+
+
 
 local function initializeUI()
 	WritCreater.initializeSettingsMenu()
@@ -672,6 +693,9 @@ local function initializeOtherStuff()
 		if newlyLoaded then
 			newlyLoaded = false
 			WritCreater.displayChangelog()
+			if IsConsoleUI() and not LibHarvensAddonSettings then
+				CHAT_ROUTER:AddSystemMessage("WARNING: LibHarvensAddonSettings not found. You will be |L0:0:0:90%%:10%%:|lunable to change the settings for Lazy Writ Crafter|l.")
+			end
 			WritCreater.scanAllQuests() 
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name, EVENT_PLAYER_ACTIVATED) 
 			if WritCreater:GetSettings().scanForUnopened then
@@ -735,20 +759,25 @@ local function initializeLibraries()
 		mandatoryRoadblockOut("You have an old version of LibLazyCrafting loaded. Please obtain the newest version of the library by downloading it from esoui or minion")
 	end
 
-	if WritCreater.savedVarsAccountWide.rightClick and not LibCustomMenu then
-		dismissableRoadblock("To use the master writ right click to craft option, you must have LIbCustomMenu turned on. The option has been turned off, and to re-enable it, you'll need to install and turn on LibCustomMenu", true)
-		DolgubonsWritsBackdropCraft:SetText("Close")
-	end
+	-- if WritCreater.savedVarsAccountWide.rightClick and not LibCustomMenu then
+	-- 	dismissableRoadblock("To use the master writ right click to craft option, you must have LIbCustomMenu turned on. The option has been turned off, and to re-enable it, you'll need to install and turn on LibCustomMenu", true)
+	-- 	DolgubonsWritsBackdropCraft:SetText("Close")
+	-- end
 	
 	WritCreater.LLCInteractionMaster = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Master", true, function(event, station, result)
+		local reference = result and result.reference
+		if reference and type(reference) == "string" then
+			WritCreater.savedVarsAccountWide.craftedMasterWrits[reference] = true
+		end
 		if event == LLC_CRAFT_SUCCESS then 
-	 	WritCreater.masterWritCompletion(event, station, result)end 
+		 	WritCreater.masterWritCompletion(event, station, result)
+		 end
 	 end)
 
 	WritCreater.savedVarsAccountWide["craftLog"] = WritCreater.savedVarsAccountWide["craftLog"]  or {}
 	WritCreater.LLCInteraction = LibLazyCrafting:AddRequestingAddon(WritCreater.name, true, function(event, station, result,...)
 		if event == LLC_CRAFT_SUCCESS then
-			WritCreater.writItemCompletion(event, station, result,...) 
+			WritCreater.writItemCompletion(event, station, result,...)
 		end end, nil, function()return WritCreater:GetSettings().styles end 
 		)
 	WritCreater.LLCInteractionDeconstruct = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Deconstruct", true, function(event, station, result)
@@ -759,12 +788,8 @@ local function initializeLibraries()
 		end
 	 end)
 
-	WritCreater.LLCInteractionMultiplicator = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Multiplicator", true, function(event, station, result,...)
-		if event == LLC_CRAFT_SUCCESS then
-			WritCreater.writItemCompletion(event, station, result,...) 
-		end
-	 end, nil , function()return WritCreater:GetSettings().styles end)
-	
+	WritCreater.initializeMulticraft()
+
 	local buttonInfo = 
 	{0,25000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url"
 		-- ,{"https://www.patreon.com/Dolgubon", "Patreon"}
@@ -794,6 +819,14 @@ local function initializeLibraries()
 	buttonInfo, 
 	feedbackString)
 	DolgubonsWritsFeedback2 = feedbackWindow2
+	local function permaHide(control) -- this is bad. Don't copy it.
+		control:SetHidden(true)
+		control.SetHidden = function() end
+	end
+	if IsConsoleUI() then
+		permaHide(showButton2)
+		permaHide(showButton)
+	end
 end
 
 local function initializeLocalization()
@@ -859,9 +892,14 @@ function WritCreater:Initialize()
 		WritCreater.loadStatusBar()
 
 	end
+	local year, month, date = GetDateElementsFromTimestamp(GetTimeStamp())
 	if GetDate()%10000 == 1031 or GetDisplayName() == "@Dolgubon" then
 		if not IsConsoleUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter") end
 		DolgubonsWritsBackdropHead:SetText("Dolgubon's Lazy Wraith Crafter")
+	end
+	if year == 2026 and month == 4 and date == 16 then
+		if not IsConsoleUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Lazy Writ Crafter's 10th Birthday!") end
+		DolgubonsWritsBackdropHead:SetText("Lazy Writ Crafter's 10th Birthday!")
 	end
 end
 

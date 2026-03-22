@@ -284,7 +284,7 @@
 			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="50" />
 			<Controls>
 				<Backdrop name="$(parent)FabulousDrop" centerColor="FFFFFF" edgeColor="FFFFFF">
-					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="25" offsetY="10" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="10" offsetY="10" />
 					 <Edge file="esoui/art/miscellaneous/interactkeyframe_edge.dds" edgeFileWidth="128" edgeFileHeight="8"/>
 					<Dimensions x="420" y="175" />
 					<!-- <Center file="esoui/art/miscellaneous/interactkeyframe_center.dds"/> -->
@@ -308,11 +308,11 @@
 						</Label>
 						<Label name="$(parent)Output" font="ZoFontGame" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" text="" mouseEnabled="true">
 							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="80" offsetX="10" />
-							<Dimensions x="450" />
+							<Dimensions x="430" />
 						</Label>
 						<Label name="$(parent)QuestOutput" font="ZoFontGame" text="" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP">
 							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="130" offsetX="10" />
-							<Dimensions x="450" />
+							<Dimensions x="430" />
 						</Label>
 						<Button name="$(parent)Craft" alpha="1" inherits="ZO_DefaultButton" text="Craft" clickSound="Book_Acquired" hidden="true">
 							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-205" />

@@ -369,12 +369,16 @@ function RewardsScroll:BuildMasterList()
 		headerAmount:ClearAnchors()
 		headerAmount:SetAnchor(TOP, headerName, BOTTOM, 80, 0)
 		local questGoldControl= GetControl(DolgubonsLazyWritStatsWindowBackdrop, "QuestGold")
-		local questGold
-		if  IsESOPlusSubscriber() then
-			questGold = WritCreater.savedVarsAccountWide.total*664
-		else
-			questGold = WritCreater.savedVarsAccountWide.total*604
+		if not WritCreater.savedVarsAccountWide.totalGold then
+			-- We never tracked the total amount of gold before, so initialize it with our best guess based on # of writs done
+			if IsESOPlusSubscriber() then
+				WritCreater.savedVarsAccountWide.totalGold = 725*WritCreater.savedVarsAccountWide.total 
+			else
+				WritCreater.savedVarsAccountWide.totalGold = 664*WritCreater.savedVarsAccountWide.total 
+			end
 		end
+		local questGold = WritCreater.savedVarsAccountWide.totalGold
+
 		questGoldControl:SetText("Quest Gold: "..formatNum(questGold).."g")
 		local itemValue = GetControl(DolgubonsLazyWritStatsWindowBackdrop, "ItemGold")
 		itemValue:SetText("Total Item Value: "..formatNum(totalValue).."g")
@@ -424,10 +428,54 @@ function WritCreater.changeStatView()
 	WritCreater.updateList()
 end
 WritCreater.updateList = updateList
+local myButtonGroup = {
+			alignment = KEYBIND_STRIP_ALIGN_LEFT,
+			{
+				name = "Change Display",
+				actionName = "Change View",
+				keybind = "UI_SHORTCUT_TERTIARY",
+				-- gamepadPreferredKeybind  = "UI_SHORTCUT_PRIMARY",,
+				order = 100,
+				callback = function(input, input2)
+					WritCreater.changeStatView()
+				end,
+			},
+		}
+local function removeChangeDisplayButton()
+	KEYBIND_STRIP:RemoveKeybindButtonGroup(myButtonGroup)
+end
 
+local function showChangeDisplayButton()
+	if not IsInGamepadPreferredMode() then
+		KEYBIND_STRIP:RemoveKeybindButtonGroup(myButtonGroup)
+	else
+		KEYBIND_STRIP:AddKeybindButtonGroup(myButtonGroup)
+	end
+end
+local writStatsScene
+SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, newState)
+	if not WritCreater or not WritCreater.writStatsScene then return end
+	if IsInGamepadPreferredMode() then
+			WritCreater.writStatsScene:AddFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT)
+			WritCreater.writStatsScene:AddFragment(UI_SHORTCUTS_ACTION_LAYER_FRAGMENT)
+			-- WritCreater.writStatsScene:AddFragment(ZO_GAMEPAD_DIALOG_DONT_END_IN_WORLD_INTERACTIONS_FRAGMENT_GROUP[8]) 
+			WritCreater.writStatsScene:RemoveFragment(KEYBIND_STRIP_FADE_FRAGMENT)
+	else
+		WritCreater.writStatsScene:AddFragment(KEYBIND_STRIP_FADE_FRAGMENT)
+		WritCreater.writStatsScene:RemoveFragment(KEYBIND_STRIP_GAMEPAD_FRAGMENT)
+			WritCreater.writStatsScene:RemoveFragment(UI_SHORTCUTS_ACTION_LAYER_FRAGMENT)
+		return
+	end
+	if scene ~= writStatsScene then return end
+	if newState == SCENE_SHOWING then
+			showChangeDisplayButton()
+	elseif (newState == SCENE_HIDING ) then
+			removeChangeDisplayButton()
+	end
+	 end)
 function WritCreater.initializeStatsScene()
 	if not WritCreater.writStatsScene  then
-		local writStatsScene = ZO_Scene:New("dlwcwritstats", SCENE_MANAGER)
+		writStatsScene = ZO_Scene:New("dlwcwritstats", SCENE_MANAGER)
 		WritCreater.writStatsScene = writStatsScene
 		WritCreater.writStatsScene:AddFragment(ZO_SimpleSceneFragment:New(DolgubonsLazyWritStatsWindow))
 		-- local myButtonGroup = {

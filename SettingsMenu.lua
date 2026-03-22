@@ -155,6 +155,8 @@ local function isCheeseOn()
 		["@Kelinmiriel"] = UI_PLATFORM_PC,
 		["@StorybookTerror"] = UI_PLATFORM_PC,
 		["@J3zdaz"] =UI_PLATFORM_XBOX,
+		["@ThePurpleDDragon"] = UI_PLATFORM_PC,
+		['@annathepiper'] = UI_PLATFORM_PC,
 
 	}
 	local platform = GetUIPlatform()
@@ -539,7 +541,7 @@ end, 500)
 		end
 		local equipSlotMachine = GetItemEquipType(bag, slot)
 		local amountOfActuallyInnocentCP = GetItemRequiredChampionPoints(bag, slot)
-		if WritCreater.savedVarsAccountWide.applicationProgress["blingybling"] == 0 and amountOfActuallyInnocentCP>79 and amountOfActuallyInnocentCP <151 and isCrafted and EQUIP_TYPE_NECK == equipSlotMachine then
+		if WritCreater.savedVarsAccountWide.applicationProgress["blingybling"] == 0 and amountOfActuallyInnocentCP>79 and amountOfActuallyInnocentCP <149 and isCrafted and EQUIP_TYPE_NECK == equipSlotMachine then
 			cheeseEndeavorCompleted(timedActivityData[3].completion, 3)
 			WritCreater.savedVarsAccountWide.applicationProgress["blingybling"] = 1
 			return
@@ -746,7 +748,24 @@ function WritCreater.Options() --Sentimental
 				if value  then
 					for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
 				else
-					d("Master Writ crafting queue cleared")
+					ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.QUEST_SHARED ,WritCreater.strings['masterWritQueueCleared'] )
+				end
+			end,
+		},
+		{
+			type = "dropdown",
+			name = WritCreater.optionStrings["mimicStoneUse"],
+			tooltip = WritCreater.optionStrings["mimicStoneUseTooltip"],
+			choices = WritCreater.optionStrings['mimicStoneUseChoices'],
+			choicesValues = {false, 1, 2, 3, 4},
+			getFunc = function() return WritCreater:GetSettings().useMimic end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().useMimic = value
+				WritCreater.LLCInteractionMaster:cancelItem()
+				ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.QUEST_SHARED ,WritCreater.strings['masterWritQueueCleared'] )
+				if WritCreater.savedVarsAccountWide.masterWrits then
+					for i = 1, 25 do WritCreater.MasterWritsQuestAdded(1, i,GetJournalQuestName(i)) end
+				else
 				end
 			end,
 		},
@@ -1629,6 +1648,7 @@ local function convertlamToHasTable(optionsTable, controlTable)
 end
 
 function WritCreater.generateHASConversions()
+	if not LibHarvensAddonSettings then return end
 	local optionsTable = WritCreater.Options()
 	WritCreater.lamConvertedOptions = {}
 	local controlTable = convertlamToHasTable(optionsTable)

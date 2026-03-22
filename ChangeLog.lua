@@ -16,36 +16,36 @@ QR codes for settings links (Console only)
 ]]
 
 },
-{4032,
-[[Bug Fixes
-- Fixed lua errors which fired when using the deconstruction assistants
-- Fixed a bug where the smart multiplier wouldn't properly detect level 1 crafted items
-]]
-},
+-- {
+-- 	4051,
+-- 	console=[[
+-- PSA: Ealier today, LibHarvenAddonSettings(LHAS), LibQRCode, and Tamriel Savings Co were subject to false copyright strikes and removed from the game.
+-- Any addon which used LHAS to create a settings menu will be unusable unless updated by the authors to not require it.
+-- Please do not badger authors to do so. Some may be unable to do these updates.
+
+-- Because of the removal, until LHAS has been restored to the game, you will be |L0:0:0:90%%:10%%:|lunable to change the settings for Lazy Writ Crafter|l.
+-- The settings you have previously set will be used, but you can use /resetwritcraftersettings to reset the settings.
+-- ]]
+-- }
+{4052,console=
+[[Added LibRadialMenu support. Using the radial menu, you can now craft sealed writs, port to a crafting house, or more!
+Improved the identification of unique sealed writs. You'll now be able to queue multiple identical sealed writs at the same time
+Queueing sealed writs will now also not re-queue previously crafted sealed writs.
+ |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t If you need to re-craft a previously crafted writ, (Why'd you decon it? You needed that!) you can re-queue it from the inventory.
+Writ Rewards set to be junked, will now be automatically sold when interacting with an NPC merchant.
+]]},
 {
-	4036,
-[[Added Psijic Recipe Fragments to supported writ reward handling
-Added the ability to craft set items for the 'A Crafty Business' Golden Pursuit. 
-|t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t When you interact with a grand master crafting station, you will see a prompt to craft the items. 
-|t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Will only craft the ones you still need, and will only show if you haven't finished the capstone reward
-|t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Note that it's very basic, so will only craft robes/axes/bow/ring
+	4053, console=
+[[LibRadialMenu is now optional
+Added a marker icon to the inventory for already crafted master writs
+Added a marker icon to the inventory for items marked as junk
+Added a setting option to use mimic stones for master writs, which is never use by default. The options are:
+ |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Never use
+ |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Always use
+ |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Use only if you don't have the style stone
+ |t12:12:EsoUI/Art/Miscellaneous/bullet.dds|t Use if the style stone's cost is more than 1k or 3k gold
 ]]
 },
-{
-	4038,
-[[Added gold to writ reward handling. You can set it to deposit all gold you get from writs into your bank. Only the actual quest gold will be deposited
-Fixed a bug where reward handling for the new unknown surveys was using the setting for the unknown master writs
-]],pc="Added a 'port to craft house' button to the settings menu (a few versions ago)"
-},
-{4039,
-[[Smart multiplier now supports enchanting
-Fixed a bug where unknown surveys and unknown master writs were combined in the loot statistics window
-Changed the background texture to use the old background texture
-]]
-},
-{4041,
-[[Added support for gold mats to the rewards handling
-]]}
 
 }-- ,pc =[[Added a port to crafting house button to the settings menu]]
 
@@ -71,13 +71,18 @@ function WritCreater.displayChangelog()
 	for i = 1, #changelog do
 		if not WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] then
 			WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] = true
-			local text = changelog[i][2]
+			local text = changelog[i][2] or ""
 			if IsConsoleUI() and changelog[i].console then
 				text = text..changelog[i].console
+				if not LibHarvensAddonSettings then
+					-- WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] = false
+				end
 			elseif not IsConsoleUI() and changelog[i].pc then
 				text = text..changelog[i].pc
 			end
-			displayText(text)
+			if text ~= "" then
+				displayText(text)
+			end
 			return
 		end
 	end

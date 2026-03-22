@@ -661,7 +661,7 @@ WritCreater.optionStrings["jubilee"]                                    = "Cajas
 WritCreater.optionStrings["jubilee tooltip"]                            = "Cajas de aniversario de botín automático"
 WritCreater.optionStrings["skin"]										= "Estilo de Writ Crafter"
 WritCreater.optionStrings["skinTooltip"]								= "El estilo de la interfaz de Writ Crafter"
-WritCreater.optionStrings["skinOptions"]								= {"Por Defecto", "Cheesy", "Goaty"}
+WritCreater.optionStrings["skinOptions"]								= {"Por Defecto", "Cheesy", "Goaty", "Fabulous"}
 WritCreater.optionStrings["goatSkin"]									= "Goaty"
 WritCreater.optionStrings["cheeseSkin"]									= "Cheesy"
 WritCreater.optionStrings["defaultSkin"]								= "Por Defecto"
@@ -696,15 +696,16 @@ ZO_CreateStringId("SI_BINDING_NAME_WRIT_CRAFTER_OPEN", "Muestra los stats de los
 WritCreater.lang = "es"
 WritCreater.langIsMasterWritSupported = true
 
+
 WritCreater.cheeseyLocalizations
 =
 {
     -- Note for translation: Anything on the same line after two -- should not be translated
     ['menuName'] = "|cFFBF00Pyrite Pursuit|r",
-    ['initialDescription'] = "Why not just /read the pamphlet first?",
-    ['readDescription'] = "After discovering that his head crafter was using a Crafting Helper Add-on To Generate Processed Trash, the Lord of the Creatives is looking for a new lead crafter. Try your hand at getting the job!",
-    ['endeavorName'] = "Pyrite Pursuits",-- Note for translation: Pyrite, aka Fool's Gold. Play on Fool = Crazy =  Sheogorath, Fool in April Fools, and Golden Pursuits, bc that's where this lives
-    ['completionShout'] = "<<1>>/<<2>> |cFFBF00Pyrite Pursuit|r Completed!", -- e.g. 1/6 pyrite pursuit completed!
+    ['initialDescription'] = "¿Por qué no lees (/lee) primero el folleto?",
+    ['readDescription'] = "Tras descubrir que su jefe de artesanos estaba utilizando un complemento de ayuda para la creación de objetos para generar basura procesada, ¡el Señor de los Artesanos está buscando un nuevo jefe de artesanos!. ¡Intenta conseguir el trabajo!",
+    ['endeavorName'] = "Búsquedas de pirita",-- Note for translation: Pyrite, aka Fool's Gold. Play on Fool = Crazy =  Sheogorath, Fool in April Fools, and Golden Pursuits, bc that's where this lives
+    ['completionShout'] = "<<1>>/<<2>> |cFFBF00Búsquedas de pirita|r Completada!", -- e.g. 1/6 pyrite pursuit completed!
     ['tasks']={
         -------------------------
         -- Note for translations:
@@ -724,54 +725,54 @@ WritCreater.cheeseyLocalizations
         -- Description: Long form description. Should explain exactly what needs to be done. Shown as a tooltip on PC
         -- completedDescription: description after completion
         -------------------------
-        {original="You found a pamphlet titled 'Help Wanted'... Maybe you should /read it",name="/Read the pamphlet you found",placehold="You found a Help Wanted pamphlet from the Lord of the Creatives", completion = "Seems like the Lord of the Creatives is hiring?",
-            description="You found a pamphlet labelled 'Help Wanted'. You can use the /read emote to read it", completedDescription="You read the pamphlet"},
+        {original="Has encontrado un folleto titulado «Se busca ayuda»... Quizás deberías leerlo",name="/Lee el folleto que encontraste",placehold="Has encontrado un folleto de «Se busca ayuda» del Señor de los Creativos", completion = "¿Parece que el Señor de los Creativos está contratando?",
+            description="Has encontrado un folleto con la etiqueta «Se busca ayuda». Puedes usar el emote /lee para leerlo", completedDescription="Leíste el folleto"},
 
-        {original="???", name = "Craft a Robber Jack", completion = "It might not transform anyone into cheese, but it'll still transform your look!",
-            description="The Trickster likes to transform things. Transform yourself into a robber by crafting a jack from the Daring Corsair set", 
-            completedDescription="Maybe in time, the Robbajack will become just as powerful as the Wabbajack."}, -- requires 3 traits
+        {original="???", name = "Crea un Robber Jack", completion = "Puede que no convierta a nadie en queso, ¡pero sí que transformará tu aspecto!",
+            description="Al Bromista le gusta transformar las cosas. Transfórmate en un ladrón creando un Jack del conjunto Corsario audaz", 
+            completedDescription="Quizás con el tiempo, el Robbajack llegue a ser tan poderoso como el Wabbajack."}, 
 
-        {original="???", name = "Craft the Amulet of Blings", completion = "This necklace would probably look fabulous on you! If only you could see it when you wear it",
-            description="The Lord of the Deranged is rich! Show him you can make use of his riches by making an Electrum Necklace",
-        completedDescription="Despite being made of real metal, it seems to disappear when you wear it... a sign of power, maybe?"},
+        {original="???", name = "Crea el amuleto de joyas.", completion = "¡Este collar te quedaría fabuloso! Ojalá pudieras verlo cuando lo llevas puesto",
+            description="¡El Señor de los Desquiciados es rico! Demuéstrale que puedes hacer uso de sus riquezas creando un collar de electrum",
+        completedDescription="A pesar de estar hecho de metal auténtico, parece desaparecer cuando lo llevas puesto... ¿quizás sea un signo de poder?"},
 
-        {original="???", name = "Craft the Ebony Blade", completion = "Wasn't this supposed to steal your soul or something? Maybe you made it wrong",
-            description="The Fourth Corner would love to replicate the Ebony Blade's ability to turn its users insane. Show that you can help by making a bladed Ebony weapon",
-        completedDescription="The Ebony Blade. Such an unassuming name for such a... Actually, this blade is pretty mundane, so the name fits perfectly."},
+        {original="???", name = "Fabrica la espada de ébano", completion = "¿No se suponía que esto te robaba el alma o algo así? Quizás hiciste algo mal",
+            description="A La Cuarta Esquina le encantaría replicar la capacidad de la Espada de Ébano para volver locos a sus usuarios. Demuestra que puedes ayudar creando un arma de ébano con forma de espada",
+        completedDescription="La Espada de Ébano. Un nombre tan modesto para algo tan... En realidad, esta espada es bastante corriente, así que el nombre le va como anillo al dedo."},
 
-        {original="???", name = "Craft a Staff of Magnus |L0:0:0:40%%:20%%:|lGift|l", completion = "The power of Magnus |L0:0:0:40%%:20%%:|lGift|l is yours!",
-        description="The Lord of the Never-There's lead crafter needs to be able to create |L0:0:0:50%%:10%%:|lpowerful|l staves. Create a staff from the Magnus' Gift set",
-        completedDescription="Unfortunately, ignoring that pesky |L0:0:0:50%%:10%%:|lgift|l in the name didn't make it anymore powerful"}, -- requires 4 traits
+        {original="???", name = "Fabrica un bastón |L0:0:0:40%%:20%%:|ldel Don|l de Magnus", completion = "El poder del bastón |L0:0:0:40%%:20%%:|ldel Don|l de Magnus es tuyo!",
+        description="El artesano en jefe del Señor de los Nunca-Están debe ser capaz de crear |L0:0:0:50%%:10%%:|lpoderosos|l bastones. Crea un bastón del conjunto del Don de Magnus.",
+        completedDescription="Por desgracia, ignorar ese molesto |L0:0:0:50%%:10%%:|lDon|l en el nombre no lo hizo más poderoso."},
 
-        {original="???", name = "Bake 1 Cheesecake is a lie", completion = "CHEEEEEESEcake.. It definitely seems real enough",
-        description="Dam Dogs love to eat cheesecake! A lead crafter would need to be able to bake the BEST type of cake",completedDescription="You crafted a cheesecake and you're pretty sure it's real"},
+        {original="???", name = "Hornear 1 pastel de queso es una mentira.", completion = "PASTEEEEL DE QUESO.. Definitivamente parece bastante real.",
+        description="¡A los malditos perros les encanta comer pastel de queso! Un artesano en jefe tendría que ser capaz de hornear el MEJOR tipo de pastel",completedDescription="Has hecho una tarta de queso y estás bastante seguro de que es real."},
     },
-    ["unknownMonumentalTask"] = "Read the pamphlet to reveal the task",
-    ['claimRewardHeader'] = "Hope you had fun doing some |cFFBF00Pyrite Pursuits|r!",
-    ['claimRewardSubheading'] = "Check out Writ Crafter's new look next time you do writs!",
+    ["unknownMonumentalTask"] = "Lee el folleto para descubrir la tarea",
+    ['claimRewardHeader'] = "¡Esperamos que te hayas divertido con las |cFFBF00misiones de pirita!|r",
+    ['claimRewardSubheading'] = '¡Echa un vistazo al nuevo aspecto del "Writ Crafter" la próxima vez que realices misiones!',
 
     -- Note for translation: Crafting Helper Add-on To Generate Processed Trash = CHAT GPT. For translations, could also use/reference AI, Automation, etc.
     ["bookText"] = 
 [[
-After discovering that his head crafter was using a Crafting Helper Add-on To Generate Processed Trash, the Lord of the Creatives is looking for a new lead crafter! (He still has a head crafter, but they're kinda useless without a body)
+Tras descubrir que su jefe de artesanos estaba utilizando un complemento de ayuda para la creación de objetos para generar basura procesada, ¡el Señor de los Artesanos está buscando un nuevo jefe de artesanos! (Todavía tiene un jefe de artesanos, pero es bastante inútil sin un cuerpo).
 
-To apply, please craft the following:
+Para presentar tu candidatura, crea lo siguiente:
 1 Robber Jack
-1 Amulet of Blings
-1 Totally real Ebony Blade
-1 Staff of Magnus |L0:0:0:40%%:20%%:|lGift|l
-1 Cheesecake is a lie
+1 Amuleto de joyas
+1 Espada de ébano totalmente real
+1 bastón |L0:0:0:40%%:20%%:|ldel Don|l de Magnus
+1 Pastel de queso es una mentira
 ]],
-    ["bookTitle"] = "Help Wanted",
+    ["bookTitle"] = "Se busca ayuda",
     ["superAmazingCraftSounds"] = { 
         -- Translation notes: These are displayed randomly when crafting around the screen
-        {"CLANG","CLING","CLINK","CLUNK","PING"}, -- Blacksmithing sounds
-        {"SNIP","RUSTLE"}, -- Clothing sounds
-        {"ALAKAZAM","ABRACADABRA","HOCUS POCUS","PRESTO"}, -- Enchanting sounds
-        {"SPLISH","SPLASH","PLOP","SLOSH"}, -- Alchemy sounds
-        {"SIZZLE","POP","BUBBLE"}, -- Cooking sounds
-        {"BUZZ","THUD","CRACK","WHACK"}, -- Woodworking sounds
-        {"TING","PLINK","PING"}, -- Jewelry sounds
+        {"CLANG", "CLING", "CLINK", "CLUNK", "PING"}, -- Sonidos de herrería.
+        {"SNIP", "RUSTLE"}, -- Sonidos de ropa.
+        {"ALAKAZAM", "ABRACADABRA", "HOCUS POCUS", "PRESTO"}, -- Sonidos de encantamiento.
+        {"SPLISH","SPLASH","PLOP","SLOSH"}, -- Sonidos de alquimia
+        {"SIZZLE","POP","BUBBLE"}, -- Sonidos de cocina
+        {"BUZZ","THUD","CRACK","WHACK"}, -- Sonidos de carpintería
+        {"TING","PLINK","PING"}, -- Sonidos de joyería
     },
-    ["extraSlash"] = nil, -- if your language has a translation for /read, put it here. 
+    ["extraSlash"] = "/lee", -- if your language has a translation for /read, put it here. 
 }

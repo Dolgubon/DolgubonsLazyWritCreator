@@ -28,8 +28,9 @@ WritCreater.settings["panel"] =
 }
 
 function WritCreater.initializeSettingsMenu()
-    WritCreater.generateHASConversions()
     local LHA = LibHarvensAddonSettings
+    if not LHA then return end
+    WritCreater.generateHASConversions()
     local options = {
         -- allowDefaults = true, --will allow users to reset the settings to default values
         allowRefresh = true, --if this is true, when one of settings is changed, all other settings will be checked for state change (disable/enable)
@@ -201,6 +202,7 @@ function WritCreater.initializeSettingsMenu()
                 end
             end,
         },
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings["mimicStoneUse"]],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings["jubilee"]],
         -- {
         --     type = LHA.ST_CHECKBOX,

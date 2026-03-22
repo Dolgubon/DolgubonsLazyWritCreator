@@ -156,6 +156,7 @@ local function shouldSaveStats(boxType)
 end
 
 local function shouldAutoLootContainerFromSettings()
+	if Unboxer and Unboxer.version ~= "2026.01.12" then return false end
 	local autoLoot
 	if WritCreater:GetSettings().ignoreAuto then
 		autoLoot = WritCreater:GetSettings().autoLoot
@@ -249,7 +250,7 @@ local function OnLootUpdated(event)
 					end
 				end
 				LootAll()
-				EndLooting() -- In case inventory is full. Not sure if it works, but worth a try
+				EndLooting() -- In case looting failed for whatever reason
 			else
 				-- GetLootItemInfo(number lootIndex)
 				-- do not loot the transmute if it would go over max
@@ -327,6 +328,7 @@ SLASH_COMMANDS['/transmuteboxtotal'] = function() -- I dunno if people use this?
 	d("Total transmutes for account : "..sum)
 end
 local function shouldOpenContainer(bag, slot)
+	if Unboxer and Unboxer.version ~= "2026.01.12" then return false end -- Unboxer is active, so leave the unboxing to them
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
 
 	if not shouldAutoLootContainerFromSettings() then return false end
@@ -363,6 +365,7 @@ local function openContainer(bag, slot)
 	end 
 	calledFromQuest = true
 	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."LootRescan", 100, scanBagForUnopenedContainers)
+	completeTimes = GetGameTimeMilliseconds()
 end
 
 local cooldownTimer = 300
@@ -383,7 +386,7 @@ local function prepareToInteract()
 			end
 		end
 	end
-	if GetTimeStamp() <completeTimes + WritCreater:GetSettings().containerDelay then
+	if GetGameTimeMilliseconds() <completeTimes + WritCreater:GetSettings().containerDelay + 1000 + GetLatency() then
 		--d("Delay, complete time "..completeTimes)
 		return true
 	end
@@ -582,7 +585,9 @@ local function slotUpdateHandler(event, bag, slot, isNew,_,reason,changeAmount,.
 					}
 				elseif action == 3 then
 					SetItemIsJunk(bag, slot, true)
+					WritCreater.savedVarsAccountWide.junkedItems[Id64ToString(GetItemUniqueId(bag, slot))] = true
 					d(zo_strformat(WritCreater.strings['lootingMarkJunk'], link))
+					WritCreater.savedVars.hasJunk = true
 				elseif action == 4 then
 					 DestroyItem(bag , slot)
 					 d(zo_strformat(WritCreater.strings['lootingDestroyItem'], link))
@@ -679,7 +684,19 @@ function WritCreater.LootHandlerInitialize()
 		end
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED)
 	end )
-	
+end
+
+local function sellJunk()
+	if WritCreater.savedVars.hasJunk then
+		SellAllJunk()
+		CHAT_ROUTER:AddSystemMessage(WritCreater.strings['junkSold'])
+		WritCreater.savedVars.hasJunk = false
+		WritCreater.savedVarsAccountWide.junkedItems = {}
+	end
+end
+
+if IsConsoleUI() then
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_OPEN_STORE, sellJunk) -- this could maybe go badly? Hopefully not!
 end
 
 --/script for k, v in pairs(SCENE_MANAGER:GetCurrentScene().callbackRegistry) do d(k) end

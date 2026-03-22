@@ -38,3 +38,6 @@ Crafter.lua
 bindings.xml
 MailHandler.lua
 StatusBar.lua
+
+LWCbackground.dds
+BestPizza.dds

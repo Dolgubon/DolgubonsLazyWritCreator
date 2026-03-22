@@ -433,7 +433,7 @@ local function findMasterWritReagents(materialId, effect1, effect2, effect3)
 end
 
 
-function WritCreater.alchemySealedWrit(bag, slot)
+function WritCreater.alchemySealedWrit(bag, slot, uniqueId)
 	local itemLink = GetItemLink(bag, slot)
 	local x = { ZO_LinkHandler_ParseLink(itemLink) }
 	local materialId = tonumber(x[10])
@@ -453,7 +453,7 @@ function WritCreater.alchemySealedWrit(bag, slot)
 		solvent = 75365
 		quantity = 1
 	end
-	queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, itemLink, GetItemLinkName(itemLink))
+	queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, uniqueId, GetItemLinkName(itemLink))
 	-- 
 end
 -- 395549

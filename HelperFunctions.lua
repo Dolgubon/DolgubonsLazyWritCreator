@@ -21,6 +21,9 @@ function WritCreater.showQRCode(url)
     if not DolgubonsLazyWritQRCode or not LibQRCode then
         RequestOpenUnsafeURL(url)
     end
+    if not LibQRCode then
+        return
+    end
     if url == nil then return end
     if not WritCreater.qrCodeScene then
         local qrCodeScene = ZO_Scene:New("dlwcqrCode", SCENE_MANAGER)
@@ -115,4 +118,30 @@ function WritCreater.outputMissingTranslations()
     for k , v in pairs(WritCreater.missingTranslations) do
         d(zo_strformat("[<<1>>] = <<2>>", k, v[2]))
     end
+end
+
+function WritCreater.getPrice(itemInfo)
+    local itemLink = itemInfo
+    if type(itemInfo ) == "number" then
+        itemLink = getItemLinkFromItemId(itemInfo)
+    end
+    if LibPrice then 
+        local price  = LibPrice.ItemLinkToPriceGold(itemLink)
+        if price then
+            return price
+        end
+    end
+    if MasterMerchant then
+        local itemStats = MasterMerchant:itemStats(itemLink, false)
+        if itemStats and itemStats.avgPrice then
+            return itemStats.avgPrice
+        end
+    end
+    if TamrielTradeCentrePrice then
+        local t = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+        if t and t.SuggestedPrice then
+            return t.SuggestedPrice
+        end
+    end
+    return GetItemLinkValue(itemLink)
 end

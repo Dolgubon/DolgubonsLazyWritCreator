@@ -68,7 +68,7 @@ if oldInteract then
 			end
 			if isCriminal then
 				local isStealthed = GetUnitStealthState("player")
-				if isStealthed == 3 or isStealthed == 5 then
+				if isStealthed >= 3 and isStealthed <= 5 then
 					return oldInteract(...)
 				else
 					ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.GENERAL_ALERT_ERROR ,WritCreater.strings['stealingProtection'] )

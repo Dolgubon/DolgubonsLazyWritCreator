@@ -123,11 +123,10 @@ local function moveItem( amountRequired, bag, slot, secondTry)
 			RequestMoveItem(bag, slot, BAG_BACKPACK,emptySlot,amount)
 		end
 		d(WritCreater.strings.withdrawItem(tostring(amountRequired), GetItemLink(bag, slot,0) , math.max(0,remainingInBank - amountRequired )))
+		return true
 	else
 		return false
 	end
-	return true
-
 end
 
 local function isPotentialMatch(validItemTypes, bag, slot, quest, stepindex, conditionindex)
@@ -202,10 +201,8 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 		local bag, slot,index = filterMatches(potentialMatches)
 		if bag and slot then
 			local stackSize = GetSlotStackSize(bag, slot)
-			if moveItem(amountRequired, bag, slot) then
-				wasMoveSuccess = true
-			end
-			if stackSize < amountRequired then
+			wasMoveSuccess = moveItem(amountRequired, bag, slot)
+			if stackSize < amountRequired then -- we need more. Continue
 				table.remove(potentialMatches, index)
 			end
 			amountRequired = amountRequired - stackSize
@@ -217,27 +214,25 @@ local function potionGrabRefactored(questCondition, amountRequired, validItemTyp
 end
 
 local function exceptions(condition)
-	
-	
 	return condition
 end
 
 
 local alchGrab = function() end
-local wasItemInQueue
+local wasItemMoved
 local function queueRun()
 	if queue[1] then
 		local result = queue[1]() 
 		if result == false then
-			wasItemInQueue = false
-		elseif result and wasItemInQueue ~= false then
-			wasItemInQueue = true
+			wasItemMoved = wasItemMoved or false
+		elseif result then
+			wasItemMoved = true
 		end
 		table.remove(queue, 1)
 		zo_callLater(queueRun, 10)
 		--queueRun()
 	else
-		if wasItemInQueue and  WritCreater:GetSettings().autoCloseBank then
+		if wasItemMoved and WritCreater:GetSettings().autoCloseBank then
 			local function recursiveCall() 
 				zo_callLater(
 					function() 
@@ -246,14 +241,16 @@ local function queueRun()
 								ZO_SharedInteraction:CloseChatterAndDismissAssistant()
 							end
 							SCENE_MANAGER:Show('hud')
-							recursiveCall()
+							wasItemMoved = nil
+							-- recursiveCall()
 						end
-					end , GetLatency()+50) 
-				end
+					end , 
+				GetLatency()+50) 
+			end
 			recursiveCall()
 		end
 		saidBankIsFull = false
-		wasItemInQueue = nil
+		wasItemMoved = nil
 		queue = {}
 		--emptySlots = {}
 	end

@@ -1,0 +1,84 @@
+The text before the colon (=) is an identifier for me; please do not translate it.
+e.g.
+
+exampleIdentifier = example untranslated text
+should become
+exampleIdentifier = example text translated
+
+<<t>> is placeholder text.
+
+== text between equal signs is an explanation for you; do not translate it ==
+
+newMasterWritSmithToCraft = <<t:5>>: Crafting a CP150 <<t:1>> with the <<t:2>> trait and <<t:3>> style at <<t:4>> quality
+masterWritQueueCleared = Master Writ crafting queue cleared
+multiplierCraftPrediction = Crafting <<2>> items for <<1[nothign/$d cycle/$d cycles]>> of writs
+alchemyNoCombo = Could not find a cheap enough known reagent combo. Try acquiring other types of alchemy items
+alchemyMissing = You are missing  <<list of items missing>>  to craft the cheapest combo
+alchemyLowPassive = You have selected to craft a full stack, but you do not have the craft multiplication passives active
+alchemyCraftReqs = Crafting will use <<t:4>> <<t:1>>, <<t:4>> <<t:2>>, and <<t:4>> <<t:3>>  == For example, Crafting will use 1 columbine, 1 blugloss, and 1 imp stool ==
+alchemyMasterReqs = <<t:1>>: Crafting a <<t:2>> using <<t:3>>, <<t:4>>, and <<t:5>>
+depositGold = Writ Crafter: Depositing <<1>> gold
+depositItemMissing = Writ Crafter: Could not find <<t:1>> to deposit. Item may have been destroyed or moved
+depositItem = Writ Crafter: Depositing <<t:1>>
+welcomeMessage = Thanks for installing Dolgubon's Lazy Writ Crafter! Please check out the settings to customize the behaviour of the addon
+keybindStripBlurb = Craft Writ Items
+pressToCraft = Press <<picture of the button>> to craft
+goldenPursuitCraft = Craft set items for unfinished golden pursuits? (May be unable to craft anything. Axe/Bow/Ring/Robe only, uses iron)
+fullInventory = Your inventory is full
+provisioningUnknownRecipe = You do not know the recipe for <<1>>
+provisioningCraft = Writ Crafter will craft <<1>>
+transmuteLooted = <<1>> Transmute Stone recieved (You have <<2>>)
+transmuteLimitApproach = You are approaching the transmute stone limit. If a box would put you over the transmute stone limit, Writ Crafter will not loot the stones.
+transmuteLimitHit = Looting these transmute stones would put you over the maximum, so <<1>> transmute stones were not looted
+lootingMarkJunk = Writ Crafter: Marked <<1>> as junk
+lootingDestroyItem = Writ Crafter: Destroyed <<1>> because you told it to in the settings menu
+lootingDeconItem = Writ Crafter: Queued <<1>> for deconstruction
+lootingDeposit = Writ Crafter: <<1>> items queued up for bank deposit
+mailComplete = Writ Crafter: Mail Looting complete
+mailNumLoot = Writ Crafter: <<1>> hireling mails found
+masterRecipeUnknown = <<t:1>>: Could not queue as you do not know the recipe for <<t:2>>
+masterEnchantCraft = <<t:1>>: Crafting <<t:2>>
+masterRecipeCraft = <<t:1>>: Crafting <<t:3>>x<<t:2>> == t:3 is the amount to make of the item, t:2 is the item link ==
+masterRecipeError = <<1>>: Could not queue for writ. You might not know the required recipe
+masterQueueNotFound = Could not determine how many items to craft. Try accepting the writ.
+masterQueueBlurb = Craft Writ
+masterQueueSummary = Writ Crafter queued <<1>> sealed writs
+abandonQuestBanItem = Writ Crafter abandoned the <<1>> because it requires <<2>> which was disallowed for use in the settings
+writBufferNotification = The writ Quest Buffer from Lazy Writ Crafter™ is preventing you from accepting this quest
+masterStopAcceptNoCraftSkill = Lazy Writ Crafter™ prevented you from accepting this writ because you cannot craft it
+statsWitsDone = Writs Done: <<1>> in the past <<2>> days
+deconstructSuccess = Writ Crafter: Deconstructed <<1>>
+alchemyChoices = Off , All Features , Skip Autocraft , 
+despawnBankerDeposit = Exit and Despawn Banker (Deposits)
+despawnBankerDepositTooltip = Automatically despawn the banker after depositing items
+craftMultiplierConsumables = Craft multiplier (alchemy and provisioning)
+craftMultiplierConsumablesTooltip = Single craft will do one crafting action, which may be multiplied due to passives. Full Stack will craft 100 of the required item, if you have the multiplier passives
+craftMultiplierConsumablesChoices = Single craft , Full Stack , 
+currencyReward = Gold Currency
+currencyRewardTooltip = What to do with quest reward gold
+goldMatReward = Gold Mats (Non ESO+ only)
+goldMatRewardTooltip = What to do with gold mats from writ rewards. Ignored for ESO+ subscribers
+incompleteColour = Incomplete quest colour
+completeColour = Complete quest colour
+smartMultiplier = Smart Multiplier
+smartMultiplierTooltip = If on, Writ Crafter will craft items for the full cycle of 3 days of writs. It will also check to see if you have any writ items already, and take that into consideration. If off, Writ Crafter will simply craft multiple items of the current day's writs
+craftHousePort = Port to crafting house
+craftHousePortTooltip = Port to a publicly available crafting house
+craftHousePortButton = Port
+reportBug = Report a bug
+reportBugTooltip = Open a thread to report bugs specifically with the console version of writ crafter. Please check to make sure the issue hasn't been reported yet.
+openUrlButtonText = Open URL
+donate = Donate
+donateTooltip = Donate to Dolgubon on Paypal
+writStats = Writ Stats
+writStatsTooltip = View historical writ reward statistics of writs done with the addon installed
+writStatsButton = Open window
+queueWrits = Queue all sealed writs
+queueWritsTooltip = Queue all sealed writs in your inventory
+queueWritsButton = Queue
+mainSettings = Main Settings
+statusBarHorizontal = Horizontal Position
+statusBarHorizontalTooltip = Horizontal position of the status bar
+statusBarVertical = Vertical Position
+statusBarVerticalTooltip = Vertical position of the status bar
+keepItemWritFormat = Keep <<1>>

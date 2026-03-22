@@ -25,7 +25,22 @@ end
 -- countSurveys counts how many surveys the user has in their bank and inventory
 -- Breaks it down further into types of surveys
 
+local unidentifiedSurveyLinks = 
+{
+	[219849] = CRAFTING_TYPE_BLACKSMITHING,
+	[219850] = CRAFTING_TYPE_CLOTHIER,
+	[219852] = CRAFTING_TYPE_ENCHANTING,
+	[219853] = CRAFTING_TYPE_ALCHEMY,
+	[219851] = CRAFTING_TYPE_WOODWORKING,
+	[219854] = CRAFTING_TYPE_JEWELRYCRAFTING,
+
+}
+
 local function determineSurveyType(bag, slot, names)
+	local itemId = GetItemId(bag, slot)
+	if unidentifiedSurveyLinks[itemId] then
+		return unidentifiedSurveyLinks[itemId]
+	end
 	local name = GetItemName(bag, slot)
 	for i = 1, 7 do
 
@@ -45,8 +60,10 @@ local bags = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,
 -- local bags = {BAG_BACKPACK}
 
 
+
+
 local function countSurveys()
-	local names = WritCreater.langWritNames()
+	local names = (WritCreater.surveyNames and WritCreater.surveyNames()) or WritCreater.langWritNames()
 	if WritCreater.lang == "fr" then
 		names[CRAFTING_TYPE_ALCHEMY] = "enchanteur"
 		names[CRAFTING_TYPE_ENCHANTING] = "alchimiste"
@@ -81,8 +98,8 @@ local function countSurveys()
 
     for j, bankNum in ipairs(bags) do
         for i = 1, GetBagSize(bankNum) do
-            local _,special =  GetItemType(bankNum, i)
-            if special ==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
+            local itemType,special =  GetItemType(bankNum, i)
+            if special == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT or (itemType == ITEMTYPE_CONTAINER_STACKABLE and GetItemFunctionalQuality(bankNum, i) == ITEM_FUNCTIONAL_QUALITY_ARCANE) then
             	if j > 3 then
             		storageIncluded = true
             	end
@@ -104,7 +121,6 @@ local function countSurveys()
                 	bagCounts["storage"][surveyType] = bagCounts["storage"][surveyType] + count
                 	total.storage = total.storage + count
                 end
-
             end
         end
     end
@@ -361,6 +377,10 @@ if GetDisplayName() == "@Dolgubon" then
 
 	IsEnlightenedAvailableForCharacter = function() return false end
 end
+if GetDisplayName() == "@annathepiper" then
+	SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
+	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
+end
 
 if WritCreater.needTranslations and GetTimeStamp()<1590361774 then
 	SLASH_COMMANDS['/writcraftertranslations'] = goToTranslationSite
@@ -368,6 +388,22 @@ end
 if GetDisplayName() == "@Dolgubon" then
 	SLASH_COMMANDS['/loothirelings'] = function() SLASH_COMMANDS['/dcsbar']("lootmail") end
 end
+
+
+local function registerLibRadialEntries()
+	EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."LibRadial", EVENT_PLAYER_ACTIVATED)
+	if LibRadialMenu then
+		-- LibRadialMenu stuff
+		LibRadialMenu:RegisterAddon(WritCreater.name, "Dolgubon's Lazy Writ Crafter")
+		LibRadialMenu:RegisterEntry(WritCreater.name, WritCreater.optionStrings['queueWrits'], "1queueWrits", "/esoui/art/icons/master_writ_provisioning.dds", function() WritCreater.queueAllSealedWrits(BAG_BACKPACK) end, WritCreater.optionStrings['queueWritsTooltip'])
+		LibRadialMenu:RegisterEntry(WritCreater.name, WritCreater.optionStrings.craftHousePort, "2craftHousePort", "/esoui/art/collections/primaryhouse.dds", function() WritCreater.portToCraftingHouse() end, WritCreater.optionStrings.craftHousePortTooltip)
+		LibRadialMenu:RegisterEntry(WritCreater.name, WritCreater.optionStrings['writStats'], "3statsWindow", "/esoui/art/campaign/campaignbrowser_medpop.dds", function() WritCreater.ShowStatsWindow(false) end, WritCreater.optionStrings['writStatsTooltip'])
+
+		LibRadialMenu:RegisterEntry(WritCreater.name, WritCreater.optionStrings['voucherCount'], "4voucherCount", GetCurrencyGamepadIcon(CURT_WRIT_VOUCHERS), countVouchers, WritCreater.optionStrings['voucherCountTooltip'])
+		LibRadialMenu:RegisterEntry(WritCreater.name, WritCreater.optionStrings['surveyCount'], "5surveyCount", "/esoui/art/icons/quest_scroll_001.dds", countSurveys, WritCreater.optionStrings['surveyCountTooltip'])
+	end
+end
+EVENT_MANAGER:RegisterForEvent(WritCreater.name.."LibRadial", EVENT_PLAYER_ACTIVATED, registerLibRadialEntries)
 
 -- local bags2 = {BAG_BANK, BAG_SUBSCRIBER_BANK,BAG_BACKPACK, BAG_HOUSE_BANK_EIGHT ,BAG_HOUSE_BANK_FIVE ,BAG_HOUSE_BANK_FOUR,
 -- 	BAG_HOUSE_BANK_ONE ,BAG_HOUSE_BANK_SEVEN ,BAG_HOUSE_BANK_SIX  ,BAG_HOUSE_BANK_THREE ,BAG_HOUSE_BANK_TWO ,}

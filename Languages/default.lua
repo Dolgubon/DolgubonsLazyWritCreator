@@ -149,10 +149,13 @@ function WritCreater.writCompleteStrings() -- Vital for translation
 	return strings
 end
 
-local function masterWritSmithCraft (link, trait, style, quality, writName)
+local function masterWritSmithCraft (link, trait, style, quality, writName, usedMimicStone)
 	-- local partialString = zo_strformat("Crafting a CP150 <<t:6>> <<t:1>> from <<t:2>> with the <<t:3>> trait and <<t:4>> style at <<t:5>> quality",pat,set,trait,style,qual,mat)
-	local partialString = zo_strformat("<<t:5>>: Crafting a CP150 <<t:1>> with the <<t:2>> trait and <<t:3>> style at <<t:4>> quality", link, trait, style, quality, writName)
-	return partialString
+	if usedMimicStone then
+		return zo_strformat("<<t:5>>: Crafting a CP150 <<t:1>> with the <<t:2>> trait and <<t:3>> style at <<t:4>> quality with a mimic stone", link, trait, style, quality, writName)
+	else
+		return zo_strformat("<<t:5>>: Crafting a CP150 <<t:1>> with the <<t:2>> trait and <<t:3>> style at <<t:4>> quality", link, trait, style, quality, writName)
+	end
 end
 
 WritCreater.missingTranslations = {}
@@ -257,6 +260,7 @@ WritCreater.strings['statsWitsDone']				= "Writs Done: <<1>> in the past <<2>> d
 WritCreater.strings['deconstructSuccess']			= "Writ Crafter: Deconstructed <<1>>"
 WritCreater.strings['potion']						= "potion"
 WritCreater.strings['poison']						= "poison"
+WritCreater.strings['junkSold']						= "Writ Crafter: Sold all Junk items"
 
 
 
@@ -397,7 +401,7 @@ WritCreater.optionStrings["jubilee"]									= "Loot Anniversary/Zenithar Boxes"
 WritCreater.optionStrings["jubilee tooltip"]							= "Auto Loots Anniversary and Zenithar Boxes"
 WritCreater.optionStrings["skin"]										= "Writ Crafter Skin"
 WritCreater.optionStrings["skinTooltip"]								= "The skin for the Writ Crafter UI"
-WritCreater.optionStrings["skinOptions"]								= {"Default", "Cheesy", "Goaty"}
+WritCreater.optionStrings["skinOptions"]								= {"Default", "Cheesy", "Goaty", "Fabulous"}
 WritCreater.optionStrings["goatSkin"]									= "Goaty"
 WritCreater.optionStrings["cheeseSkin"]									= "Cheesy"
 WritCreater.optionStrings["fabulousSkin"]								= "Fabulous"
@@ -426,7 +430,7 @@ WritCreater.optionStrings['smartMultiplier']							= "Smart Multiplier"
 WritCreater.optionStrings['smartMultiplierTooltip']						= "If on, Writ Crafter will craft items for the full cycle of 3 days of writs. It will also check to see if you have any writ items"..
 " already, and take that into consideration. If off, Writ Crafter will simply craft multiple items of the current day's writs"
 WritCreater.optionStrings['craftHousePort']								= "Port to crafting house"
-WritCreater.optionStrings['craftHousePortTooltip'] 						= "Port to a publicly available crafting house"
+WritCreater.optionStrings['craftHousePortTooltip'] 						= "Port to a publicly available crafting house. If you use this often, you can use LibRadialMenu to have a shortcut"
 WritCreater.optionStrings['craftHousePortButton']						= "Port"
 WritCreater.optionStrings['reportBug']									= "Report a bug"
 WritCreater.optionStrings['reportBugTooltip']							= "Open a thread to report bugs specifically with the console version of writ crafter. Please check to make sure the issue hasn't been reported yet."
@@ -434,10 +438,10 @@ WritCreater.optionStrings['openUrlButtonText']							= "Open URL"
 WritCreater.optionStrings['donate']										= "Donate"
 WritCreater.optionStrings['donateTooltip']								= "Donate to Dolgubon on Paypal"
 WritCreater.optionStrings['writStats']									= "Writ Stats"
-WritCreater.optionStrings['writStatsTooltip']							= "View historical writ reward statistics of writs done with the addon installed"
+WritCreater.optionStrings['writStatsTooltip']							= "View historical writ reward statistics of writs done with the addon installed. If you use this often, you can use LibRadialMenu to have a shortcut"
 WritCreater.optionStrings['writStatsButton']							= "Open window"
 WritCreater.optionStrings['queueWrits']									= "Queue all sealed writs"
-WritCreater.optionStrings['queueWritsTooltip']							= "Queue all sealed writs in your inventory"
+WritCreater.optionStrings['queueWritsTooltip']							= "Queue all sealed writs in your inventory. If you use this often, you can use LibRadialMenu to have a shortcut"
 WritCreater.optionStrings['queueWritsButton']							= "Queue"
 WritCreater.optionStrings['mainSettings']								= "Main Settings"
 WritCreater.optionStrings['statusBarHorizontal']						= "Horizontal Position"
@@ -446,7 +450,14 @@ WritCreater.optionStrings['statusBarVertical']							= "Vertical Position"
 WritCreater.optionStrings['statusBarVerticalTooltip']					= "Vertical position of the status bar"
 WritCreater.optionStrings['keepItemWritFormat']							= "Keep <<1>>"
 WritCreater.optionStrings["npcStyleStoneReminder"]						= "Reminder: You can purchase base racial style stones from any crafting NPC vendor for 15g each"
-
+WritCreater.optionStrings['voucherCount']								= "Count # of unearned Writ Vouchers"
+WritCreater.optionStrings['voucherCountTooltip']						= "Output the total number of writ vouchers of all sealed master writs in the player's inventory and bank"
+WritCreater.optionStrings['surveyCount']								= "Count # of surveys"
+WritCreater.optionStrings['surveyCountTooltip']							= "Outputs a breakdown of the number of surveys in the player's inventory and bank"
+WritCreater.optionStrings["mimicStoneUse"]								= "Mimic stones for master writs"
+WritCreater.optionStrings["mimicStoneUseTooltip"]						= "Defines the usage of mimic stones for master writs. Clears current master writ queue\nMimic stones will never be used for daily writs. (Buy for 15g ea. from NPC merchants)"
+WritCreater.optionStrings['mimicStoneUseChoices']						= {"Do not use" , "Always use", "Use if no style stones", "Use if price > 1k", "Use if price > 3k"}
+WritCreater.optionStrings['masterWritQueueCleared']						= "Master Writ crafting queue cleared"
 
 
 

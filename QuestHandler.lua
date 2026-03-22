@@ -76,6 +76,16 @@ end
 local questName
 local questGold
 
+local function GetQuestGold(journalIndex) -- From code65536, thanks!
+	for i = 1, GetJournalQuestNumRewards(journalIndex) do
+		local rtype, _, amount = GetJournalQuestRewardInfo(journalIndex, i)
+		if rtype == REWARD_TYPE_MONEY then
+			return amount
+		end
+	end
+	return 0
+end
+
 local function QuestCompleteDialogGoldListener(eventCode, journalIndex)
 	local writs = WritCreater.writSearch()
 	if not GetJournalQuestIsComplete(journalIndex) then return end
@@ -96,14 +106,29 @@ local function QuestCompleteDialogGoldListener(eventCode, journalIndex)
 	end
 	if not currentWritDialogue then return end
 	local rewardType, _, goldAmount = GetJournalQuestRewardInfo(journalIndex,1)
+	goldAmount = GetQuestGold(journalIndex)
     -- WritCreater.savedVars.goldToDeposit = WritCreater.savedVars.goldToDeposit + goldAmount
     questName = GetJournalQuestName(journalIndex)
     questGold = goldAmount
 end
 
 local function QuestConfirmCompleteGoldListener(eventCode, completedQuestName)
+	if questName ~= completedQuestName then 
+		questName = ""
+		questGold = 0
+		return
+	end
+	if not WritCreater.savedVarsAccountWide.totalGold then
+		-- We never tracked the total amount of gold before, so initialize it with our best guess based on # of writs done
+		if IsESOPlusSubscriber() then
+			WritCreater.savedVarsAccountWide.totalGold = 725*WritCreater.savedVarsAccountWide.total 
+		else
+			WritCreater.savedVarsAccountWide.totalGold = 664*WritCreater.savedVarsAccountWide.total 
+		end
+	end
+	WritCreater.savedVarsAccountWide.totalGold = WritCreater.savedVarsAccountWide.totalGold + (questGold or 0)
 	if questName == completedQuestName and WritCreater:GetSettings().rewardHandling["currency"].all == 2 then
-		WritCreater.savedVars.goldToDeposit = WritCreater.savedVars.goldToDeposit + questGold
+		WritCreater.savedVars.goldToDeposit = WritCreater.savedVars.goldToDeposit + (questGold or 0)
 		questName = ""
 		questGold = 0
 	else

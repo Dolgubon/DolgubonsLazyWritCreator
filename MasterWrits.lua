@@ -37,6 +37,48 @@ local d = function(...)
 end
 
 
+function WritCreater:SetItemStatusCrafted(itemSlot)
+	-- d(itemSlot)
+	-- PLAYER_INVENTORY:RefreshInventorySlot(1, itemSlot, BAG_BACKPACK)
+	local v = PLAYER_INVENTORY:GetBackpackItem(itemSlot)
+	
+	if v then
+		v.statusSortOrder = 0
+		v.isCrafted = true
+	end
+end
+
+
+
+
+-- These hooks mark any already crafted writs as deliverable
+if not IsConsoleUI() then
+	ZO_PostHook("ZO_UpdateStatusControlIcons",function(inventorySlot, slotData) 
+		local statusControl = inventorySlot:GetNamedChild("StatusTexture")
+		-- WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(GetItemUniqueId(1, 169))] = true
+		if WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(slotData.uniqueId)] then 
+			-- statusControl:ClearIcons()
+			statusControl:AddIcon("/esoui/art/miscellaneous/gamepad/gp_submit.dds")
+			statusControl:Show()
+			return true 
+		end end)
+end
+
+-- Secure to prevent the game from thinking we're using large amounts of memory
+SecurePostHook ("ZO_SharedGamepadEntry_OnSetup", function(control, data)
+	local statusIndicator = control.statusIndicator
+	if statusIndicator and  data and WritCreater.savedVarsAccountWide and not data.overrideStatusIndicatorIcons then
+		if WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(data.uniqueId)] then
+			statusIndicator:AddIcon("/esoui/art/miscellaneous/gamepad/gp_submit.dds", NO_TINT, "Master writ has been crafted and can be delivered")
+			statusIndicator:Show()
+		end
+		if WritCreater.savedVarsAccountWide.junkedItems[Id64ToString(data.uniqueId)] then
+			statusIndicator:AddIcon("/esoui/art/inventory/inventory_tabicon_trash_up.dds", NO_TINT, "Item has been marked as junk and will be sold to an NPC merchant")
+			statusIndicator:Show()
+		end
+	end
+ end )
+
 function DolgubonGlobalDebugOutput(...)
 	if GetDisplayName()=="@Dolgubon" and (DolgubonGlobalDebugToggle or localDebugToggle) then
 		d(...)
@@ -56,6 +98,9 @@ end
 
 local function dbug(...)
 	DolgubonGlobalDebugOutput(...)
+end
+
+local function generateItemReference()
 end
 
 --SLASH_COMMANDS['/senddebug'] = sendDebug
@@ -111,6 +156,34 @@ end
 --QuestID: 1
 
 -- Called when the player receives a new quest. Determines if the quest is a master writ, and if so, which craft and if it is a weapon or armour or glyph.
+WritCreater.MW_USE_MIMIC_ALWAYS = 1
+WritCreater.MW_USE_MIMIC_IF_NO_STONES = 2
+WritCreater.MW_USE_MIMIC_IF_EXPENSIVE_1k = 3
+WritCreater.MW_USE_MIMIC_IF_EXPENSIVE_3k = 4
+
+local function determineMimicUsage(itemStyleId)
+	if not WritCreater:GetSettings().useMimic then return false end
+	local styleLink = GetItemStyleMaterialLink(itemStyleId)
+	local bag, bank, craftBag = GetItemLinkStacks(styleLink)
+	local totalStack = bag + bank + craftBag
+	local price = LibPrice and LibPrice.ItemLinkToPriceGold(styleLink) or 0
+	if WritCreater:GetSettings().useMimic == WritCreater.MW_USE_MIMIC_ALWAYS then
+		return true
+	elseif WritCreater:GetSettings().useMimic == WritCreater.MW_USE_MIMIC_IF_NO_STONES then
+		if totalStack == 0 then
+			return true
+		end
+	elseif WritCreater:GetSettings().useMimic == WritCreater.MW_USE_MIMIC_IF_EXPENSIVE_1k then
+		if price > 1000 then
+			return true
+		end
+	elseif WritCreater:GetSettings().useMimic == WritCreater.MW_USE_MIMIC_IF_EXPENSIVE_3k then
+		if price > 3000 then
+			return true
+		end
+	end
+	return false
+end
 
 local function queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, name, reference)
 	local patternIndex = WritCreater.LLCInteractionMaster.GetItemTemplateIdPatternIndex(itemTemplateId)
@@ -120,9 +193,10 @@ local function queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, i
 	local expectedItemLink = WritCreater.LLCInteractionMaster:getItemLinkFromParticulars(patternIndex,true, 150, itemStyleId, itemTraitType+1, station, setIndex, itemQuality )
 	-- if DoesItemLinkFulfillJournalQuestCondition(expectedItemLink, journalIndex, 1, 1, true) then
 		-- Add to queue
-	-- d(patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)
+	-- d(patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)\
+	local shouldUseMimicStone = determineMimicUsage(itemStyleId)
 	WritCreater.LLCInteractionMaster:cancelItemByReference(reference)
-	local request = WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( patternIndex, true , 150, itemStyleId, itemTraitType+1, false, station, setIndex, itemQuality, true, reference)
+	local request = WritCreater.LLCInteractionMaster:CraftSmithingItemByLevel( patternIndex, true , 150, itemStyleId, itemTraitType+1, shouldUseMimicStone, station, setIndex, itemQuality, true, reference)
 	request.level = 150
 	request.isCP = true
 	-- end
@@ -134,7 +208,7 @@ local function queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, i
 		traitName,
 		styleName,
 		qualityName,
-		name ))
+		name, shouldUseMimicStone ))
 	-- else
 	-- 	d("Could not determine correct item to craft")
 	-- end
@@ -146,7 +220,7 @@ local function improvedMasterWritQuest(journalIndex, questName)
 		return
 	end
 	local _, _, station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId =  GetQuestConditionMasterWritInfo(journalIndex)
-	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, questName, itemTemplateId)
+	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, questName, journalIndex)
 end
 
 local function improvedRightClick(link, station, uniqueId)
@@ -166,7 +240,7 @@ local function improvedRightClick(link, station, uniqueId)
 	local itemTraitType = tonumber(x[14])
 	local itemStyleId = tonumber(x[15])
 	local name = GetItemLinkName(link)
-	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, name, link)
+	queueMasterWrit(station, itemQuality, itemTemplateId, setIndex, itemTraitType, itemStyleId, name, uniqueId)
 end
 
 local function improvedEnchantRightClick(link, station, uniqueId)
@@ -175,7 +249,7 @@ local function improvedEnchantRightClick(link, station, uniqueId)
 	local resultItemId = tonumber(x[10])
 	local levelId = tonumber(x[11])
 	local name = GetItemLinkName(link)
-	EnchantingMasterWrit(resultItemId, levelId, quality, link, name)
+	EnchantingMasterWrit(resultItemId, levelId, quality, uniqueId, name)
 end
 
 local function improvedEnchantJournal(journalIndex, name)
@@ -184,7 +258,7 @@ local function improvedEnchantJournal(journalIndex, name)
 		return
 	end
 	local itemId, levelId, station, quality = GetQuestConditionMasterWritInfo(journalIndex, 1,1)
-	EnchantingMasterWrit(itemId, levelId, quality, itemId, name)
+	EnchantingMasterWrit(itemId, levelId, quality, journalIndex, name)
 end
 
 local function provisioningJournal(journalIndex, name)
@@ -201,7 +275,7 @@ local function provisioningJournal(journalIndex, name)
 	end
 	local quantity = calculateRequiredProvisioningAmount(needed, itemId)
 	if quantity > 0 then
-		ProvisioningMasterWrit(itemId, quantity, itemId, name)
+		ProvisioningMasterWrit(itemId, quantity, journalIndex, name)
 	else
 
 		d(zo_strformat(WritCreater.strings['masterRecipeError'], name))
@@ -266,7 +340,7 @@ local function provisioningRightClick(link, station, uniqueId)
 		d(WritCreater.strings['masterQueueNotFound'])
 		return
 	end
-	ProvisioningMasterWrit(resultItemId, quantity, link, name)
+	ProvisioningMasterWrit(resultItemId, quantity, uniqueId, name)
 end
 
 
@@ -336,25 +410,40 @@ local exampleSealedWrits = {
     [GetItemLinkName("|H1:item:167172:5:1:0:0:0:117963:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h")] = CRAFTING_TYPE_IMPERIAL,
 }
 WritCreater.sealedWritNames = exampleSealedWrits
+local attemptedToQueueOnce = {
+
+}
 
 local function itemHandler(bag, slot, station)
 	if not station then
 		return
 	end
+	local uniqueId = Id64ToString(GetItemUniqueId(bag, slot))
+	if WritCreater.savedVarsAccountWide.craftedMasterWrits[uniqueId] then
+		if attemptedToQueueOnce[uniqueId] then
+			CHAT_ROUTER:AddSystemMessage("Clearing already crafted status of "..GetItemLink(bag, slot).." and re-queuing")
+			attemptedToQueueOnce[uniqueId] = nil
+			WritCreater.savedVarsAccountWide.craftedMasterWrits[uniqueId] = nil
+		else
+			attemptedToQueueOnce[uniqueId] = true
+			CHAT_ROUTER:AddSystemMessage(GetItemLink(bag, slot).." not added. It has already been crafted. Attempt to queue it from your inventory again to re-craft it")
+			return
+		end
+	end -- already crafted
 	if station == CRAFTING_TYPE_ENCHANTING then
 		local link = GetItemLink(bag, slot)
-		improvedEnchantRightClick(link, station)
+		improvedEnchantRightClick(link, station, uniqueId)
 		return
 	elseif station == CRAFTING_TYPE_ALCHEMY then
-		WritCreater.alchemySealedWrit(bag, slot)
+		WritCreater.alchemySealedWrit(bag, slot, uniqueId)
 	elseif station == CRAFTING_TYPE_PROVISIONING or station == CRAFTING_TYPE_WITCHES or station == CRAFTING_TYPE_NEWLIFE or station == CRAFTING_TYPE_DEEPWINTER or station == CRAFTING_TYPE_IMPERIAL then
-		provisioningRightClick(GetItemLink(bag, slot), station)
+		provisioningRightClick(GetItemLink(bag, slot), station, uniqueId)
 	elseif station and station >0 and station <8 then
-		improvedRightClick(GetItemLink(bag, slot), station)
+		improvedRightClick(GetItemLink(bag, slot), station, uniqueId)
 	else
 		return
 	end
-    trackedSealedWrits[#trackedSealedWrits + 1] = {bag, slot, GetItemUniqueId(bag, slot)}
+    trackedSealedWrits[#trackedSealedWrits + 1] = {bag, slot, uniqueId}
 end
 
 local function canCraftSealedWrit(link)
@@ -483,12 +572,14 @@ function WritCreater.InitializeRightClick()
 	end
 end
 
+
 function WritCreater.queueAllSealedWrits(bag)
 	outputCounter = 0
 	WritCreater.LLCInteractionMaster:cancelItem()
 	for i = 0, GetBagSize(bag) do
 		local itemType, specializedType = GetItemType(bag, i)
-		if itemType == ITEMTYPE_MASTER_WRIT then
+		local uniqueId = Id64ToString(GetItemUniqueId(bag, i))
+		if itemType == ITEMTYPE_MASTER_WRIT and not (WritCreater.savedVarsAccountWide.craftedMasterWrits[uniqueId]) then
 			local name = GetItemName(bag, i)
 			local stationType = exampleSealedWrits[name]
 			if stationType and not IsItemJunk(bag, i) then

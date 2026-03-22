@@ -27,6 +27,20 @@ function WritCreater.langWritNames() --Exacts!!!  I know for german alchemy writ
 	return names
 end
 
+function WritCreater.surveyNames() -- Used to do the string matching for survey types
+	local names = {
+	["G"] = "schrieb",
+	[CRAFTING_TYPE_ENCHANTING] = "Verzauber",
+	[CRAFTING_TYPE_BLACKSMITHING] = "Schmiede",
+	[CRAFTING_TYPE_CLOTHIER] = "Schneider",
+	[CRAFTING_TYPE_PROVISIONING] = "Versorger",
+	[CRAFTING_TYPE_WOODWORKING] = "Schreiner",
+	[CRAFTING_TYPE_ALCHEMY] = "Alchemie",
+	[CRAFTING_TYPE_JEWELRYCRAFTING] = "Schmuckmaterial",
+	}
+	return names
+end
+
 function WritCreater.writCompleteStrings()
 	local strings = {
 	["place"] = "Die Waren in die Kiste legen",
@@ -156,7 +170,7 @@ WritCreater.strings["lootReceived"]								= "<<1>> erhalten (Du hast <<2>>)"
 WritCreater.strings["lootReceivedM"]							= "<<1>> erhalten"
 WritCreater.strings["countSurveys"]								= "Du hast <<1>> Gutachten"
 WritCreater.strings["countVouchers"]							= "Du hast <<1>> offene Schriebscheine"
-WritCreater.strings["includesStorage"] 							= "Zähle <<1>> in deinen Lagertruhen mit" 
+WritCreater.strings["includesStorage"] 							= function(type) local a= {"Gutachten", "Meisterschrieb"} a = a[type] return zo_strformat("Zähle <<1>> in deinen Lagertruhen mit",  a) end
 WritCreater.strings["surveys"]									= "Handwerksgutachten"
 WritCreater.strings["sealedWrits"]								= "Versiegelte Schriebe"
 WritCreater.strings["missingLibraries"]							= "Dolgubon's Lazy Writ Crafter benötigt die folgenden Standalone-Libraries. Bitte installiere oder aktiviere diese Libraries: "
@@ -291,7 +305,7 @@ WritCreater.optionStrings['hireling behaviour tooltip']					= "Was sollte mit Mi
 WritCreater.optionStrings['hireling behaviour choices']					= { "Nichts", "Aufnehmen und löschen", "Nur aufnehmen"}
 WritCreater.optionStrings["skin"]										= "Writ Crafter Aussehen"
 WritCreater.optionStrings["skinTooltip"]								= "Das Aussehen der Writ Crafter Oberfläche"
-WritCreater.optionStrings["skinOptions"]								= {"Default", "Käsig", "Ziege"}
+WritCreater.optionStrings["skinOptions"]								= {"Default", "Käsig", "Ziege", "Fabulous"}
 WritCreater.optionStrings["goatSkin"]									= "Ziege"
 WritCreater.optionStrings["cheeseSkin"]									= "Käsig"
 WritCreater.optionStrings["defaultSkin"]								= "Default"

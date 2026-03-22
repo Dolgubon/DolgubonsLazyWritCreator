@@ -310,7 +310,7 @@ function WritCreater.preCraftMultiple(interactedStation)
                 local isCP, level, potencyItemID = getEnchantingLevel()
                 WritCreater.LLCInteractionMultiplicator:CraftEnchantingItemId(potencyItemID, craftInfo[3], 45850, WritCreater:GetSettings().autoCraft, reference, nil, requiredAmount)
             else
-			 local r = WritCreater.LLCInteractionMultiplicator:CraftSmithingItemByLevel(patternIndex, isChampion, level, LLC_FREE_STYLE_CHOICE, 1, false, station, INDEX_NO_SET, ITEM_FUNCTIONAL_QUALITY_NORMAL, WritCreater:GetSettings().autoCraft, itemId, nil, nil, nil, requiredAmount)
+                local r = WritCreater.LLCInteractionMultiplicator:CraftSmithingItemByLevel(patternIndex, isChampion, level, LLC_FREE_STYLE_CHOICE, 1, false, station, INDEX_NO_SET, ITEM_FUNCTIONAL_QUALITY_NORMAL, WritCreater:GetSettings().autoCraft, itemId, nil, nil, nil, requiredAmount)
             end
 		end
 	end
@@ -324,6 +324,16 @@ local function stationClosed(event, station)
     DolgubonsWrits:SetHidden(true)
 end
 
+function WritCreater.initializeMulticraft()
+    WritCreater.LLCInteractionMultiplicator = LibLazyCrafting:AddRequestingAddon(WritCreater.name.."Multiplicator", true, function(event, station, result,...)
+        if event == LLC_CRAFT_SUCCESS then
+            updateOut()
+            WritCreater.writItemCompletion(event, station, result,...) 
+    end
+    end, nil , function()return WritCreater:GetSettings().styles end)
+end
+
+
 -- EVENT_MANAGER:RegisterForEvent(WritCreater.name.."multiplier", EVENT_CRAFTING_STATION_INTERACT, WritCreater.craftCheck)
 EVENT_MANAGER:RegisterForEvent(WritCreater.name.."multiplier", EVENT_END_CRAFTING_STATION_INTERACT, stationClosed)
-EVENT_MANAGER:RegisterForEvent(WritCreater.name.."multiplier", EVENT_CRAFT_COMPLETED, updateOut)
+-- EVENT_MANAGER:RegisterForEvent(WritCreater.name.."multiplier", EVENT_CRAFT_COMPLETED, updateOut)
