@@ -52,6 +52,7 @@ for i = 1, GetNumValidItemStyles() do
 	end
 end
 
+
 function WritCreater:GetSettings()
 	if not self or not self.savedVars or not self.savedVarsAccountWide then
 		return false
@@ -145,7 +146,7 @@ local function styleCompiler()
 end
 local function isCheeseOn()
 	local enableNames = {
-		["@Dolgubon"]=UI_PLATFORM_PC,
+		-- ["@Dolgubon"]=UI_PLATFORM_PC,
 		["@Dolgubonn"]=UI_PLATFORM_PC,
 		-- ["@mithra62"]=1,
 		["@Gitaelia"]=UI_PLATFORM_PC,
@@ -547,67 +548,6 @@ end, 500)
 			return
 		end
 	end
-	local function randomColour()
-		-- Choose one of brg to be 0.8, then one of the other to get a random value between 0 and 0.8
-		-- This will give us a bright, random colour, but not too bright
-		local brg = {0.2,0.2,0.2}
-		local random1 = math.random(1,3) -- which one is maxxed?
-		local random2 = math.random(1,2) -- which of the remaining two should be different?
-		local random3 = math.random()*0.9 -- what should the value of the last one be
-		brg[random1] = 0.9
-		brg[(random1+random2-1)%3+1] = random3 
-		return unpack(brg)
-	end
-	local function updateSynasthesia()
-		local sounds =il8n.superAmazingCraftSounds[GetCraftingInteractionType()]
-		if sounds == nil then return end
-		local labelToUpdate
-		if #DolgubonsFabulousSynasthesia.inactiveLabels < 2 then
-			labelToUpdate = 1
-		else
-			labelToUpdate= math.random(1,#DolgubonsFabulousSynasthesia.inactiveLabels)
-		end
-		local label = table.remove(DolgubonsFabulousSynasthesia.inactiveLabels, labelToUpdate)
-		table.insert(DolgubonsFabulousSynasthesia.activeLabels, label)
-
-
-		label:SetText(sounds[math.random(1,#sounds)])
-		label:SetColor(randomColour())
-		label:ClearTransformRotation()
-		local rotationFactor = 0.7
-		label:AddTransformRotation(math.random()*rotationFactor*math.random(-1,1), math.random()*rotationFactor*math.random(-1,1), math.random()*rotationFactor*math.random(-1,1)) -- rotation is in radians
-		label:ClearAnchors()
-		local yValue=math.random(-1*GuiRoot:GetHeight()/2+200, GuiRoot:GetHeight()/2-200)
-		local xValue=math.random(-1*GuiRoot:GetWidth()/2+200, GuiRoot:GetWidth()/2-200)
-		label:SetAnchor(CENTER, GuiRoot, CENTER, xValue, yValue)
-		label:SetHidden(false)
-		label:SetAlpha(1)
-		local disney = ZO_AlphaAnimation:New(label)
-		local movieLength = 2900--4700-WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"]*300
-		disney:FadeOut(200,movieLength)
-		zo_callLater(function() ZO_RemoveFirstElementFromNumericallyIndexedTable(DolgubonsFabulousSynasthesia.activeLabels,label) table.insert(DolgubonsFabulousSynasthesia.inactiveLabels, label) end, movieLength+210)
-	end
-
-	WritCreater.updateSynasthesia = updateSynasthesia
-	local function startSynasthesia(event, station)
-		if station ==0 or station >7 or WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"] == 0 then
-			return
-		end
-		local interval = 3850-WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"]*500
-		EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."_SeeingThings", interval,updateSynasthesia)
-	end
-
-	local function stopSynasthesia()
-		DolgubonsFabulousSynasthesia.activeLabels = {}
-		DolgubonsFabulousSynasthesia.inactiveLabels = DolgubonsFabulousSynasthesia.labels
-		EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."_SeeingThings")
-		for _,label in pairs(DolgubonsFabulousSynasthesia.labels) do
-			label:SetHidden(true)
-		end
-	end
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_SeeingThings", EVENT_CRAFTING_STATION_INTERACT,startSynasthesia)
-	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_SeeingThings", EVENT_END_CRAFTING_STATION_INTERACT, stopSynasthesia)
-
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."_TotallyNotChatGPT",EVENT_INVENTORY_SINGLE_SLOT_UPDATE, cheeseTracking)
 	EVENT_MANAGER:AddFilterForEvent(WritCreater.name.."_TotallyNotChatGPT",EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM	, true)
@@ -827,6 +767,22 @@ function WritCreater.Options() --Sentimental
 			alpha = 0.5,
 			width = "full",
 		})
+		if WritCreater.savedVarsAccountWide.unlockedFabulousness then
+			table.insert(options, 4, 
+			{
+			type = "checkbox",
+			name = "Crafting Onomatopiea",
+			tooltip = "Turns on the crafting Onomatopiea from LWC 2026 April Fools",
+			choices = skinChoices,
+			choicesValues = skinOptions,
+			getFunc = function() return WritCreater.savedVarsAccountWide.craftSounds end,
+			setFunc = function(value) 
+				WritCreater.savedVarsAccountWide.craftSounds  = value
+				-- WritCreater.applySkin(value)
+			end
+		}
+		)
+		end
 		table.insert(options, 4, 
 			{
 			type = "dropdown",
@@ -841,6 +797,7 @@ function WritCreater.Options() --Sentimental
 			end
 		}
 		)
+		
 	end
 ----------------------------------------------------
 ----- TIMESAVERS SUBMENU

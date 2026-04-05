@@ -221,7 +221,7 @@
 							<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3" />
 							<Dimensions x="130" />
 							<OnClicked>
-								self:GetOwningWindow():SetHidden(true)
+								SCENE_MANAGER:Hide(WritCreater.writStatsScene:GetName())
 							</OnClicked>
 						</Button>
 					</Controls>
@@ -355,8 +355,7 @@
 					<FontColors normalColor="FFFFFF" mouseOverColor="d9d9d9" pressedColor="b3b3b3" />
 					<Dimensions x="90" />
 					<OnClicked>
-						WritCreater.updateList()
-						DolgubonsLazyWritStatsWindow:SetHidden(not DolgubonsLazyWritStatsWindow:IsHidden())
+						WritCreater.ShowStatsWindow()
 					</OnClicked>
 				</Button>
 			</Controls>

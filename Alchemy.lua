@@ -309,7 +309,9 @@ local function startAlchemy(journalIndex, craftingWrits)
 
 	local conditionText, curCount, maxCount = GetJournalQuestConditionInfo(journalIndex, QUEST_MAIN_STEP_INDEX, 1)
 	local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
-	local acquireString = string.lower(WritCreater.writCompleteStrings()["Acquire"]) or "acquire"
+	local requiredItemId,materialId = GetQuestConditionItemInfo(journalIndex,1,1)
+	local isCraftStep = materialId > 0
+	local isDummyStep = requiredItemId == 0
 	conditionText = myLower(conditionText)
 	if curCount >= maxCount or string.find(conditionText,deliverString) or string.find(conditionText,"deliver") then
 		WritCreater.writCompleteUIHandle()

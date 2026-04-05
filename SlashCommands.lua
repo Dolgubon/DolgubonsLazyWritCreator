@@ -209,7 +209,6 @@ local function outputStats(showChances)
 	if IsConsoleUI() and DolgubonsLazyWritStatsWindow:IsHidden() then
 		SCENE_MANAGER:Show("hud")
 	end
-
 	if not showChances  then
 		WritCreater.initializeStatsScene()
 		WritCreater.updateList()
@@ -268,6 +267,7 @@ local function resetStats()
 	WritCreater.savedVarsAccountWide["rewards"] = WritCreater.defaultAccountWide["rewards"]
 	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp()
 	WritCreater.savedVarsAccountWide.total = 0
+	WritCreater.savedVarsAccountWide.totalGold = 0
 	WritCreater.updateList()
 	d("Writ statistics reset.")
 end
@@ -364,13 +364,13 @@ SLASH_COMMANDS['/resetwritcraftersettings'] = WritCreater.resetSettings
 	-- Abandons all currently active writs.
 SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function
-if GetDisplayName() == "@Dolgubon" then
+if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
 	SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
 	-- SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
 	SLASH_COMMANDS['/dlwcstatwindowdebug'] = activateStatWindowDebug
 	SLASH_COMMANDS['/dlwcdebug'] = activateDebug
 	SLASH_COMMANDS['/listquest'] = function() for i = 1, 25 do local n = GetJournalQuestName(i) if n~="" then d(i..": "..n) end end end
-	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
+	SLASH_COMMANDS['/lang'] = function(newLang) newLang = newLang=="" and "en" or newLang SetCVar("language.2",newLang) end
 	SLASH_COMMANDS['/findwrit'] = findWrits
 	SLASH_COMMANDS['/quit'] = Quit
 	SLASH_COMMANDS['/gamepad'] = toggleGamepad
@@ -385,7 +385,7 @@ end
 if WritCreater.needTranslations and GetTimeStamp()<1590361774 then
 	SLASH_COMMANDS['/writcraftertranslations'] = goToTranslationSite
 end
-if GetDisplayName() == "@Dolgubon" then
+if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
 	SLASH_COMMANDS['/loothirelings'] = function() SLASH_COMMANDS['/dcsbar']("lootmail") end
 end
 

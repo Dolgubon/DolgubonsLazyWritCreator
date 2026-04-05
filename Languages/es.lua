@@ -101,7 +101,7 @@ function WritCreater.writCompleteStrings()
         ["masterSign"]      = "<Terminar el trabajo>",
         ["masterStart"]     = "<Aceptar el contrato>",
         ["Rolis Hlaalu"]    = "Rolis Hlaalu",
-        ["Deliver"]         = "Entregas"
+        ["Deliver"]         = "Entrega",
         --@formatter:on
     }
     return strings

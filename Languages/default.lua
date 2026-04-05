@@ -169,7 +169,7 @@ WritCreater.missingTranslationsOrder[#WritCreater.missingTranslationsOrder+1] = 
 ["__index"] = function(t, k) return stringIndexTable[tostring(t)][k] end,
 }
 
-WritCreater.strings = {}
+WritCreater.strings = WritCreater.strings or {}
 setmetatable(WritCreater.strings, findMissingTranslationsMetatable)
 
 WritCreater.strings["runeReq"] 						= function (essence, potency,taStack,essenceStack,potencyStack) 
@@ -265,7 +265,7 @@ WritCreater.strings['junkSold']						= "Writ Crafter: Sold all Junk items"
 
 
 
-WritCreater.optionStrings = {}
+WritCreater.optionStrings = WritCreater.optionStrings or {}
 
 setmetatable(WritCreater.optionStrings, findMissingTranslationsMetatable)
 

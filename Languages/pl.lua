@@ -409,15 +409,8 @@ WritCreater.strings['poison']						= "trucizna"
 
 
 
-WritCreater.optionStrings = {}
+WritCreater.optionStrings = WritCreater.optionStrings or {}
 -- Ustawienie metatabeli, aby obsługiwać brakujące tłumaczenia, jeśli zajdzie taka potrzeba
-local stringIndexTable = {}
-local findMissingTranslationsMetatable = 
-{
-	["__newindex"] = function(t,k,v) if not stringIndexTable[tostring(t)] then stringIndexTable[tostring(t)] = {} end stringIndexTable[tostring(t)][k] = v end,
-	["__index"] = function(t, k) return stringIndexTable[tostring(t)][k] end,
-}
-setmetatable(WritCreater.optionStrings, findMissingTranslationsMetatable)
 
 WritCreater.optionStrings.nowEditing                   = "Zmieniasz ustawienia dla: %s"
 WritCreater.optionStrings.accountWide                  = "Całego konta"

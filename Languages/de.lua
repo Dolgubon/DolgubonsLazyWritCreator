@@ -50,6 +50,7 @@ function WritCreater.writCompleteStrings()
 	["masterPlace"] = "Ich habe den ",
 	["Rolis Hlaalu"] = "Rolis Hlaalu",
 	["Deliver"] = "Beliefer"
+	-- Beschafft
 	}
 	return strings
 end

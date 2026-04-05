@@ -135,6 +135,7 @@ function WritCreater.initializeSettingsMenu()
             label = WritCreater.optionStrings['mainSettings'], 
         },
         WritCreater.lamConvertedOptions[WritCreater.optionStrings["skin"]] or {},
+        WritCreater.lamConvertedOptions["Crafting Onomatopiea"] or {},
         -- {
         --     type = "divider",
         --     height = 15,

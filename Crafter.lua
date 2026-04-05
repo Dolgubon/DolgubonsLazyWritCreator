@@ -769,7 +769,7 @@ local function enchantCrafting(quest,add)
 		ENCHANTING.aspectSound = SOUNDS["NONE"]
 		ENCHANTING.aspectLength = 0
 	end
-	local  numConditions = GetJournalQuestNumConditions(quest,1)
+	local numConditions = GetJournalQuestNumConditions(quest,1)
 	local conditions = 
 	{
 		["text"] = {},
@@ -781,17 +781,19 @@ local function enchantCrafting(quest,add)
 	}
 	local incomplete = false
 	for i = 1, numConditions do
-		local deliverString = string.lower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
-		local acquireString = WritCreater.writCompleteStrings()["Acquire"] or "acquire"
+		local deliverString = myLower(WritCreater.writCompleteStrings()["Deliver"]) or "deliver"
+		local requiredItemId,materialId = GetQuestConditionItemInfo(quest,1,i)
+		local isCraftStep = materialId > 0
+		local isDummyStep = requiredItemId == 0
 		conditions["text"][i], conditions["cur"][i], conditions["max"][i],_,conditions["complete"][i],_,_,conditions["type"][i] = GetJournalQuestConditionInfo(quest, 1, i)
-		if conditions["cur"][i]>=conditions["max"][i] then conditions["text"][i] = "" end
-		if conditions["type"][i] == QUEST_CONDITION_TYPE_ADVANCE_COMPLETABLE_SIBLINGS and conditions["max"] == 0 then
+		-- if conditions["cur"][i]>=conditions["max"][i] or not isCraftStep then conditions["text"][i] = "" end
+		if isDummyStep then
+		elseif conditions["type"][i] == QUEST_CONDITION_TYPE_ADVANCE_COMPLETABLE_SIBLINGS and conditions["max"] == 0 then
 		-- Second hardcoded dliver is for backwards compatability with localizations that expect it
 		elseif string.find(myLower(conditions["text"][i]),deliverString) or string.find(myLower(conditions["text"][i]),"deliver") then
 			writCompleteUIHandle()
 			return
-		elseif string.find(myLower(conditions["text"][i]),acquireString) or string.find(myLower(conditions["text"][i]),"acquire") then
-
+		elseif not isCraftStep then
 			conditions["text"][i] = false
 			if not incomplete then
 				writCompleteUIHandle()

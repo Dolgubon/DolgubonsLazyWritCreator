@@ -56,7 +56,9 @@ if not IsConsoleUI() then
 	ZO_PostHook("ZO_UpdateStatusControlIcons",function(inventorySlot, slotData) 
 		local statusControl = inventorySlot:GetNamedChild("StatusTexture")
 		-- WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(GetItemUniqueId(1, 169))] = true
-		if WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(slotData.uniqueId)] then 
+		if not slotData.uniqueId then return end
+		local isWritWorthyDone = WritWorthy and WritWorthy.savedChariables and WritWorthy.savedChariables.writ_unique_id[Id64ToString(slotData.uniqueId)] and WritWorthy.savedChariables.writ_unique_id[Id64ToString(slotData.uniqueId)].state == "completed"
+		if WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(slotData.uniqueId)] or isWritWorthyDone then 
 			-- statusControl:ClearIcons()
 			statusControl:AddIcon("/esoui/art/miscellaneous/gamepad/gp_submit.dds")
 			statusControl:Show()
@@ -68,7 +70,8 @@ end
 SecurePostHook ("ZO_SharedGamepadEntry_OnSetup", function(control, data)
 	local statusIndicator = control.statusIndicator
 	if statusIndicator and  data and WritCreater.savedVarsAccountWide and not data.overrideStatusIndicatorIcons then
-		if WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(data.uniqueId)] then
+		local isWritWorthyDone = WritWorthy and WritWorthy.savedChariables and WritWorthy.savedChariables.writ_unique_id[Id64ToString(data.uniqueId)] and WritWorthy.savedChariables.writ_unique_id[Id64ToString(data.uniqueId)].state == "completed"
+		if WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(data.uniqueId)] or isWritWorthyDone then
 			statusIndicator:AddIcon("/esoui/art/miscellaneous/gamepad/gp_submit.dds", NO_TINT, "Master writ has been crafted and can be delivered")
 			statusIndicator:Show()
 		end
