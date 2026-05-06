@@ -206,7 +206,7 @@ end
 local created = false
 local function outputStats(showChances)
 
-	if IsConsoleUI() and DolgubonsLazyWritStatsWindow:IsHidden() then
+	if ZO_IsConsoleOrGameCoreUI() and DolgubonsLazyWritStatsWindow:IsHidden() then
 		SCENE_MANAGER:Show("hud")
 	end
 	if not showChances  then
@@ -365,8 +365,8 @@ SLASH_COMMANDS['/resetwritcraftersettings'] = WritCreater.resetSettings
 SLASH_COMMANDS['/abandonwrits'] = abandonWrits
 	-- Outputs all the writ journal quest IDs. Mainly a debug function
 if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
-	SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
-	-- SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
+	SLASH_COMMANDS['/console'] = function()  local newVal = ZO_IsConsoleOrGameCoreUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
+	-- SLASH_COMMANDS['/console'] = function()  local newVal = ZO_IsConsoleOrGameCoreUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
 	SLASH_COMMANDS['/dlwcstatwindowdebug'] = activateStatWindowDebug
 	SLASH_COMMANDS['/dlwcdebug'] = activateDebug
 	SLASH_COMMANDS['/listquest'] = function() for i = 1, 25 do local n = GetJournalQuestName(i) if n~="" then d(i..": "..n) end end end
@@ -378,7 +378,7 @@ if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
 	IsEnlightenedAvailableForCharacter = function() return false end
 end
 if GetDisplayName() == "@annathepiper" then
-	SLASH_COMMANDS['/console'] = function()  local newVal = IsConsoleUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
+	SLASH_COMMANDS['/console'] = function()  local newVal = ZO_IsConsoleOrGameCoreUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
 	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
 end
 

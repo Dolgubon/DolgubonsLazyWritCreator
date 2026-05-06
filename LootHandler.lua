@@ -15,6 +15,8 @@ WritCreater = WritCreater or {}
 local lootedItemLinks = {}
 -- {itemLink, bag, slot}
 local pendingItemActions = {}
+local containerHasTransmute = {}
+local flavourTexts = {}
 local lastLootedBoxSlot = nil
 WritCreater.pendingItemActions = pendingItemActions
 -- if GetDisplayName() == "@Dolgubon" then
@@ -129,6 +131,7 @@ local function LootAllHook(boxType, itemLink, quantity) -- technically not a hoo
 		elseif specializedType ==SPECIALIZED_ITEMTYPE_TROPHY_RECIPE_FRAGMENT then
 			updateSavedVars(vars, "fragment", quantity)
 		elseif itemType ==ITEMTYPE_CONTAINER then
+			WritCreater.addShipmentToContainerCooldown()
 			updateSavedVars(vars, "material", quantity)
 		elseif itemType ==ITEMTYPE_TOOL then
 			updateSavedVars(vars, "repair", quantity)
@@ -201,6 +204,26 @@ local function shouldAutoLootContainerFromSettings()
 	return autoLoot
 end
 
+local function isContainerOpenable(bag, slot) -- by writ crafter loot handler
+	if containerHasTransmute[slot] then return false end
+
+	local uniqueId = Id64ToString(GetItemUniqueId(bag, slot))
+	if WritCreater:GetSettings().transmuteBlock[uniqueId] then
+		local maxTransmutes = GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT)
+		local currentTransmutes = GetCurrencyAmount(CURT_CHAOTIC_CREATIA,CURRENCY_LOCATION_ACCOUNT)
+		local transmuteSpace = maxTransmutes - currentTransmutes
+		if WritCreater:GetSettings().transmuteBlock[uniqueId] > transmuteSpace then
+			return false 
+		end
+	end
+
+	local itemType, specialItemType = GetItemType(bag, slot)
+	if itemType ~=ITEMTYPE_CONTAINER or specialItemType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then return false end
+
+	local flavour = GetItemLinkFlavorText(GetItemLink(bag, slot))
+	return flavourTexts[flavour]
+end
+
 local fatiguedLoot = 
 {
 
@@ -224,14 +247,20 @@ local function lootListener(boxCraft, boxSlot, lookForLoot, event, bag, slot, is
 	local itemId = GetItemId(bag, slot)
 	if lookForLoot[itemId] then
 		local itemLink = GetItemLink(bag, slot)
+		lootedItemLinks[GetItemLinkItemId(itemLink)] = true
+		lookForLoot[itemId] = nil
 		if shouldSaveStats(boxCraft) then
 			LootAllHook(boxCraft, itemLink, countChange)
+			rewardActionHandle(itemLink, bag, slot, countChange)
 		else
 			lootHookNoSave(boxCraft, itemLink, countChange)
 		end
-		lootedItemLinks[GetItemLinkItemId(itemLink)] = true
-		lookForLoot[itemId] = nil
-		rewardActionHandle(itemLink, bag, slot, countChange)
+		
+		
+	end
+	-- Did we get a new container? Did we exhaust one? Is inventory full?
+	if isContainerOpenable(bag, slot) or not isContainerOpenable(BAG_BACKPACK, boxSlot) or GetNumBagFreeSlots(1)==0 then
+		WritCreater.updateContainerCooldown()
 	end
 end
 
@@ -244,7 +273,6 @@ end
 local callFromSlotUpdated = false
 --If the box/loot item that is open is a writ container, loot it and open the inventory again
 local calledFromQuest = false
-local containerHasTransmute = {}
 local lastInteractedSlot = nil
 local function OnLootUpdated(event)
 	local ignoreAuto = WritCreater:GetSettings().ignoreAuto
@@ -306,7 +334,7 @@ local function OnLootUpdated(event)
 				if numLootTransmute > 0 then
 
 					d(zo_strformat(WritCreater.strings['transmuteLooted'] , numLootTransmute , (numTransmute + numLootTransmute)))
-					if GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) * 0.8 < numTransmute + numLootTransmute then
+					if GetMaxPossibleCurrency( 5 , CURRENCY_LOCATION_ACCOUNT) - 100 < numTransmute + numLootTransmute then
 						d(WritCreater.strings['transmuteLimitApproach'])
 					end
 				end
@@ -342,6 +370,11 @@ local flavours = {
 	[GetItemLinkFlavorText("|H1:item:138816:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward
 	[GetItemLinkFlavorText("|H1:item:147603:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Jewelry shipment reward type 2 (for German only)
 	[GetItemLinkFlavorText("|H1:item:142175:3:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- Shipment reward
+	[GetItemLinkFlavorText("|H1:item:58519:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- french boxes
+	[GetItemLinkFlavorText("|H1:item:59714:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- french boxes
+	[GetItemLinkFlavorText("|H1:item:58528:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- french boxes
+	[GetItemLinkFlavorText("|H1:item:57851:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- french boxes
+	[GetItemLinkFlavorText("|H1:item:58510:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")] = true, -- french boxes
 	
 }
 local eventBoxes = {
@@ -354,7 +387,7 @@ local eventBoxes = {
 }
 local anniversaryBoxie = GetItemLinkFlavorText("|H1:item:194428:124:1:0:0:0:2023:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
 local plunderSkulls = GetItemLinkFlavorText("|H1:item:153502:123:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h")
-local flavourTexts = {}
+
 setmetatable(flavourTexts, {__index = function(t, i)
 	if flavours[i] then return true end
 	if eventBoxes[i]then
@@ -391,8 +424,11 @@ SLASH_COMMANDS['/transmuteboxtotal'] = function() -- I dunno if people use this?
 	end
 	d("Total transmutes for account : "..sum)
 end
+
+
+
 local function shouldOpenContainer(bag, slot)
-	if Unboxer and Unboxer.version ~= "2026.01.12" then return false end -- Unboxer is active, so leave the unboxing to them
+	-- if Unboxer and Unboxer.version ~= "2026.01.12" then return false end -- Unboxer is active, so leave the unboxing to them
 	if not WritCreater:GetSettings().lootContainerOnReceipt then return false end
 
 	if not shouldAutoLootContainerFromSettings() then return false end
@@ -416,6 +452,16 @@ local function shouldOpenContainer(bag, slot)
 
 	local flavour = GetItemLinkFlavorText(GetItemLink(bag, slot))
 	return flavourTexts[flavour]
+end
+
+function WritCreater.countContainers()
+	local count = 0
+	for i = 1, GetBagSize(BAG_BACKPACK) do
+		if isContainerOpenable(BAG_BACKPACK, i) then
+			count = count + 1
+		end
+	end
+	return count
 end
 
 local function openContainer(bag, slot)
@@ -518,6 +564,16 @@ local function checkMatQuality(link)
 	end
 end
 
+local psijicFragmentFlavor = GetItemLinkFlavorText("|H1:item:64704:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+local function isPsijicFragment(link)
+	if GetItemLinkFunctionalQuality(link) == ITEM_FUNCTIONAL_QUALITY_ARTIFACT and GetItemLinkFlavorText(link)==psijicFragmentFlavor then
+		return "fragment"
+	else
+		return nil
+	end
+
+end
+
 local handledItemTypes = 
 {
 	[ITEMTYPE_MASTER_WRIT] = "master",
@@ -543,10 +599,27 @@ local handledItemTypes =
 	[ITEMTYPE_WOODWORKING_BOOSTER] = checkMatQuality,
 	[ITEMTYPE_ENCHANTING_RUNE_ASPECT] = checkMatQuality,
 }
+local stackableSurveyWritCraftTypes = {
+	-- surveys
+	[219853] = CRAFTING_TYPE_ALCHEMY,
+	[219849] = CRAFTING_TYPE_BLACKSMITHING,
+	[219850] = CRAFTING_TYPE_CLOTHIER,
+	[219852] = CRAFTING_TYPE_ENCHANTING,
+	[219854] = CRAFTING_TYPE_JEWELRYCRAFTING,
+	[219851] = CRAFTING_TYPE_WOODWORKING,
+	-- Master writs
+	[217922] = CRAFTING_TYPE_ALCHEMY,
+	[217917] = CRAFTING_TYPE_BLACKSMITHING,
+	[217918] = CRAFTING_TYPE_CLOTHIER,
+	[217920] = CRAFTING_TYPE_ENCHANTING,
+	[217923] = CRAFTING_TYPE_JEWELRYCRAFTING,
+	[217921] = CRAFTING_TYPE_PROVISIONING,
+	[217919] = CRAFTING_TYPE_WOODWORKING,
+}
 
 
 local function getItemLinkCraftType(link)
-	local craftType = WritCreater.getWritAndSurveyType(link)
+	local craftType = stackableSurveyWritCraftTypes[GetItemLinkItemId(link)] or WritCreater.getWritAndSurveyType(link)
 	if craftType then
 		return craftType
 	end
@@ -586,8 +659,8 @@ function rewardActionHandle(link, bag, slot, changeAmount)
 		end
 		if actionSourceName then
 			-- d("Passed first check")
-			local craftType
-			craftType = getItemLinkCraftType(link)
+			local craftType = getItemLinkCraftType(link)
+			
 			local actionSource = WritCreater:GetSettings().rewardHandling[actionSourceName]
 			local action
 
@@ -821,10 +894,18 @@ function WritCreater.LootHandlerInitialize()
 		end
 		local numDeposits = 0
 		for k, v in pairs(WritCreater.savedVars.depositList) do
-			numDeposits = numDeposits + 1
+			local bag = v.bag
+			local index = v.slot
+			local doesItemExistInSlot = Id64ToString(GetItemUniqueId(bag, index)) == v.uniqueId
+			if doesItemExistInSlot then
+				numDeposits = numDeposits + 1
+			else
+				WritCreater.savedVars.depositList[k] = nil
+			end
 		end
 		if numDeposits > 0 then
 			d(zo_strformat(WritCreater.strings['lootingDeposit'], numDeposits))
+			
 		end
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED)
 	end )
@@ -839,7 +920,7 @@ local function sellJunk()
 	end
 end
 
-if IsConsoleUI() then
+if ZO_IsConsoleOrGameCoreUI() then
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name,EVENT_OPEN_STORE, sellJunk) -- this could maybe go badly? Hopefully not!
 end
 
@@ -1027,13 +1108,19 @@ WritCreater.rewardBoxData = { --To get exact name strings of boxes
 	[194428] = {0,0} , -- Gold jubilee box|H1:item:121300:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h
 	
 
-["|H1:item:147616:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {10, CRAFTING_TYPE_CLOTHIER },
-["|H1:item:58510:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_WOODWORKING},
-["|H1:item:59705:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ALCHEMY},
-["|H1:item:58131:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {2, CRAFTING_TYPE_BLACKSMITHING},
-["|H1:item:59717:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {2, CRAFTING_TYPE_PROVISIONING},
-["|H1:item:57851:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_BLACKSMITHING},
-["|H1:item:58528:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ENCHANTING},
+	["|H1:item:147616:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {10, CRAFTING_TYPE_CLOTHIER },
+	["|H1:item:58510:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_WOODWORKING},
+	["|H1:item:59705:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ALCHEMY},
+	["|H1:item:58131:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {2, CRAFTING_TYPE_BLACKSMITHING},
+	["|H1:item:59717:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {2, CRAFTING_TYPE_PROVISIONING},
+	["|H1:item:57851:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_BLACKSMITHING},
+	["|H1:item:58528:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ENCHANTING},
+	["|H1:item:57851:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_BLACKSMITHING},
+	["|H1:item:58510:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_WOODWORKING},
+	["|H1:item:58528:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_ENCHANTING},
+	["|H1:item:59714:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_PROVISIONING},
+	["|H1:item:58519:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {1, CRAFTING_TYPE_CLOTHIER},
+	["|H1:item:147616:175:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"] = {10, CRAFTING_TYPE_CLOTHIER},
 }
 
 WritCreater.boxNames = {}
@@ -1042,7 +1129,11 @@ for boxId, boxRank in pairs (WritCreater.rewardBoxData) do
 		local name = GetItemLinkName(getItemLinkFromItemId(boxId))
 		WritCreater.boxNames[name] = boxRank
 	elseif type(boxId) == "string" then
-		WritCreater.boxNames[GetItemLinkName(boxId)] = boxRank
+		local boxName = GetItemLinkName(boxId)
+		WritCreater.boxNames[GetItemLinkName(boxName)] = boxRank
+		boxName = string.gsub(boxName, "%(","%%%(")
+		boxName = string.gsub(boxName, "%)","%%%)")
+		WritCreater.boxNames[boxName] = boxRank
 	end
 end
 local specialBoxes =
@@ -1091,6 +1182,9 @@ WritCreater.boxNames[gloriousZenitharBox] = {0, 0}
 			local itemId = GetItemId(bag, slot)
 			if WritCreater.rewardBoxData[itemId] then
 				lastLootedBoxSlot = slot
+				if WritCreater:GetSettings().lootContainerOnReceipt then
+					WritCreater.scanForUnopenedContainers()
+				end
 				-- d("OPENING SLOT "..slot)
 			end
 		end)

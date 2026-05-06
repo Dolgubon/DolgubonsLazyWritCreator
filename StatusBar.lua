@@ -1,7 +1,8 @@
 WritCreater = WritCreater or {}
 
 local StatusBar = DolgubonsLazyWritStatus
-
+local containerMaximum = 0
+local statusBackdrop = DolgubonsLazyWritStatusBackdrop
 
 
 SLASH_COMMANDS['/dstat'] =function() StatusBar:SetHidden(false) end
@@ -11,6 +12,14 @@ local function myLower(str)
 end
 
 local function toggleStatusWindow(override)
+	if containerMaximum > 0 and not WritCreater:GetSettings().showStatusBar then
+		StatusBar:SetHidden(false)
+		statusBackdrop:SetHidden(true)
+		DolgubonsLazyWritStatusContainer:SetHidden(false)
+	else
+		statusBackdrop:SetHidden(false)
+	end
+	--WritCreater:GetSettings().lootContainerOnReceipt
 	if override ~= nil then
 		StatusBar:SetHidden(override)
 		return
@@ -155,6 +164,9 @@ local function updateQuestStatus(event)
 	end
 	StatusBar:ClearAnchors()
 	StatusBar:SetAnchor(TOPRIGHT, GuiRoot, TOPLEFT, WritCreater:GetSettings().statusBarX, WritCreater:GetSettings().statusBarY)
+	if event == EVENT_QUEST_REMOVED or event == EVENT_PLAYER_ACTIVATED or containerMaximum > 0 then
+		WritCreater.updateContainerCooldown()
+	end
 end
 
 
@@ -172,7 +184,69 @@ local function inventorySlotFilter( eventCode,  bagId,  slotId,  isNewItem,  ite
 	return
 end
 
+local opened = 0
+local lastOpened = 0
 
+local function wipeContainer()
+	containerMaximum = 0
+	opened = 0
+	-- DolgubonsLazyWritStatusContainer:SetHidden(true)
+	
+	-- local movieLength = 2900--4700-WritCreater.savedVarsAccountWide.applicationProgress["applicationCompletion"]*300
+	
+end
+local animation
+function WritCreater.updateContainerCooldown()
+	if not WritCreater:GetSettings().showBoxCountdown then return end
+	animation = animation or ZO_AlphaAnimation:New(DolgubonsLazyWritStatusContainer)
+	if not WritCreater:GetSettings().lootContainerOnReceipt then
+		return
+	end
+	DolgubonsLazyWritStatusContainer:SetHidden(false)
+	local container = DolgubonsLazyWritStatusContainer
+	local cooldown = DolgubonsLazyWritStatusContainerCooldown
+	local label = DolgubonsLazyWritStatusContainerRemaining
+	
+	local numContainers = WritCreater.countContainers()
+	if numContainers + opened > containerMaximum then
+		containerMaximum = numContainers + opened
+	end
+	if numContainers == 0 then
+		containerMaximum = 0
+		opened = 0
+		-- DolgubonsLazyWritStatusContainer:SetHidden(true)
+		DolgubonsLazyWritStatusContainer:SetAlpha(0.7)
+		animation:FadeOut(1000,800)
+		cooldown:SetWidth(0)
+		return
+	end
+	if numContainers + opened < containerMaximum then
+		opened = containerMaximum - numContainers
+	end
+	if numContainers > 0 then
+		toggleStatusWindow(false)
+	end
+	label:SetText(zo_strformat(WritCreater.strings['boxLootRemaining'], numContainers, containerMaximum))
+	local width = label:GetTextWidth()+50
+	DolgubonsLazyWritStatusContainer:SetWidth(width)
+	
+	local cooldownWidth = width * (numContainers/containerMaximum)
+	cooldown:SetWidth(cooldownWidth)
+	local timeout = 2000
+	EVENT_MANAGER:UnregisterForUpdate(WritCreater.name.."wipeContainerProgress" ,timeout*4,wipeContainer)
+	EVENT_MANAGER:RegisterForUpdate(WritCreater.name.."wipeContainerProgress", timeout*4,wipeContainer)
+	DolgubonsLazyWritStatusContainer:SetAlpha(0.7)
+	animation:FadeOut(timeout,800)
+end
+
+function WritCreater.addShipmentToContainerCooldown()
+	-- Technically, this adds one to the opened when we loot a shipment rather than addong a shipment
+	-- but it should have the intended effect
+	opened = opened + 1
+end
+
+-- DolgubonsLazyWritStatus:SetHidden(false)
+-- DolgubonsLazyWritStatusContainer:SetHidden(false)
 WritCreater.updateQuestStatus = updateQuestStatus
 function WritCreater.loadStatusBar()
 	--EVENT_QUEST_COMPLETE

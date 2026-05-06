@@ -21,7 +21,7 @@ local function lootMails()
 				if currentWorkingMail == mailId and not IsReadMailInfoReady(mailId) then
 					RequestReadMail(mailId)
 				end 
-			end, math.max(GetLatency()+10, 100))
+			end, math.max(GetLatency()+10, 300))
 	end
 end
 
@@ -54,7 +54,7 @@ local function  findLootableMails()
 
 	if #hirelingMails > 0 then
 		d(zo_strformat(WritCreater.strings['mailNumLoot'], #hirelingMails))
-		zo_callLater(lootMails, 10)
+		zo_callLater(lootMails, math.max(GetLatency()+10, 300))
 	else
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."mailbox", EVENT_MAIL_READABLE)
 		-- d("No hireling mails found")
@@ -77,7 +77,7 @@ local function deleteLootedMail(mailId)
 
 	if hirelingMails[1] == mailId then
 		table.remove(hirelingMails, 1)
-		zo_callLater(lootMails, 250)
+		zo_callLater(lootMails, math.max(GetLatency()+10, 300))
 	end
 	-- table.remove(hirelingMails, mailId)
 	-- zo_callLater(lootMails, 40)
@@ -102,7 +102,7 @@ function lootReadMail(event, mailId)
 			-- d("Writ Crafter: Looting "..subject)
 			antiKick = antiKick + 1
 			ZO_MailInboxShared_TakeAll(mailId)
-			zo_callLater(function() deleteLootedMail(mailId) end, 250)
+			zo_callLater(function() deleteLootedMail(mailId) end, math.max(GetLatency()+10, 300))
 			return
 		elseif FindFirstEmptySlotInBag(BAG_BACKPACK) == nil and numAtt > 0 then
 			return

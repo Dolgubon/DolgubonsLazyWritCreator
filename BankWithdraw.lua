@@ -376,7 +376,7 @@ local function runProcessDeposits()
 	end
 	if depositedItem and numItems == 0 then
 		depositedItem = false
-		if WritCreater:GetSettings().despawnBankerDeposits then
+		if WritCreater:GetSettings().despawnBankerDeposits and (not(GetDisplayName() == "@Dolgubon") or not BankManagerRevived) then
 			ZO_SharedInteraction:CloseChatterAndDismissAssistant()
 			SCENE_MANAGER:Show('hud')
 		end
@@ -423,6 +423,14 @@ function WritCreater.setupAlchGrabEvents()
 	end
 
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.." Withdraw", EVENT_PLAYER_ACTIVATED, function() if GetCurrentZoneHouseId() >0 then  alchGrab() end end)
+	for k, v in pairs(WritCreater.savedVars.depositList) do
+		local bag = v.bag
+		local index = v.slot
+		local doesItemExistInSlot = Id64ToString(GetItemUniqueId(bag, index)) == v.uniqueId
+		if not doesItemExistInSlot then
+		end
+	end
+	-- WritCreater.savedVars.depositList
 	
 	--I use SCENE_MANAGER:IsShowing("bank")
 

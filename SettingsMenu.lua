@@ -99,7 +99,7 @@ end
 local optionStrings = WritCreater.optionStrings
 local function styleCompiler()
 	-- Console just gets basic styles for now
-	if IsConsoleUI() then
+	if ZO_IsConsoleOrGameCoreUI() then
 		return {}
 	end
 	local submenuTable = {}
@@ -158,13 +158,14 @@ local function isCheeseOn()
 		["@J3zdaz"] =UI_PLATFORM_XBOX,
 		["@ThePurpleDDragon"] = UI_PLATFORM_PC,
 		['@annathepiper'] = UI_PLATFORM_PC,
+		["@Burlimonster"] = UI_PLATFORM_PC,
 
 	}
 	local platform = GetUIPlatform()
         
 	if enableNames[GetDisplayName()] == UI_PLATFORM_XBOX then
 		local dateCheck = GetDate()%10000
-		if IsConsoleUI() and dateCheck <700 and dateCheck > 600 then
+		if ZO_IsConsoleOrGameCoreUI() and dateCheck <700 and dateCheck > 600 then
 			return true
 		end
 	elseif enableNames[GetDisplayName()] == platform then
@@ -179,14 +180,14 @@ end
 -- WritCreater.savedVarsAccountWide.cheeseCompletedTwice
 if isCheeseOn() and WritCreater.cheeseyLocalizations and WritCreater.cheeseyLocalizations.superAmazingCraftSounds then
 	WritCreater.cheeseyLocalizations.numFunThings = #WritCreater.cheeseyLocalizations.tasks
-	local isConsolePeasant = IsConsoleUI() -- kidding, you guys are fine :) But you'll likely never read this, since 99.99% of console players won't download the source soooo....
+	local isConsolePeasant = ZO_IsConsoleOrGameCoreUI() -- kidding, you guys are fine :) But you'll likely never read this, since 99.99% of console players won't download the source soooo....
 	local cheesyActivityTypeIndex = 2
 	-- PROMOTIONAL_EVENT_MANAGER.activeCampaignDataList[#PROMOTIONAL_EVENT_MANAGER.activeCampaignDataList+1] = 
 	while PROMOTIONAL_EVENT_MANAGER.activeCampaignDataList[cheesyActivityTypeIndex] do 
 		cheesyActivityTypeIndex = cheesyActivityTypeIndex + 1 
 	end
 	local function refreshTimedActivities()
-		if not IsConsoleUI() then
+		if not ZO_IsConsoleOrGameCoreUI() then
 			PROMOTIONAL_EVENTS_KEYBOARD:RefreshCampaignList()
 		end
 		-- PROMOTIONAL_EVENTS_GAMEPAD:RefreshCampaignList(true)
@@ -658,7 +659,7 @@ function WritCreater.Options() --Sentimental
 			name = WritCreater.optionStrings['dailyResetWarnType'],
 			tooltip = WritCreater.optionStrings['dailyResetWarnTypeTooltip'],
 			choices = WritCreater.optionStrings["dailyResetWarnTypeChoices"],
-			choicesValues =  IsConsoleUI() and {"none","announcement","alert","chat","all"} or {"none","announcement","alert","chat","window","all"},
+			choicesValues =  ZO_IsConsoleOrGameCoreUI() and {"none","announcement","alert","chat","all"} or {"none","announcement","alert","chat","window","all"},
 			getFunc = function() return WritCreater:GetSettings().dailyResetWarnType end,
 			setFunc = function(value) 
 				WritCreater:GetSettings().dailyResetWarnType = value 
@@ -771,8 +772,8 @@ function WritCreater.Options() --Sentimental
 			table.insert(options, 4, 
 			{
 			type = "checkbox",
-			name = "Crafting Onomatopiea",
-			tooltip = "Turns on the crafting Onomatopiea from LWC 2026 April Fools",
+			name = WritCreater.optionStrings["onomatopoeia"],
+			tooltip = WritCreater.optionStrings["onomatopoeiaTooltip"],
 			choices = skinChoices,
 			choicesValues = skinOptions,
 			getFunc = function() return WritCreater.savedVarsAccountWide.craftSounds end,
@@ -787,7 +788,7 @@ function WritCreater.Options() --Sentimental
 			{
 			type = "dropdown",
 			name = WritCreater.optionStrings["skin"],
-			tooltip =WritCreater.optionStrings["skinTooltip"],
+			tooltip = WritCreater.optionStrings["skinTooltip"],
 			choices = skinChoices,
 			choicesValues = skinOptions,
 			getFunc = function() return WritCreater.savedVarsAccountWide.skin end,
@@ -1003,7 +1004,7 @@ function WritCreater.Options() --Sentimental
 		},
 	}
 	local statusBarOptions = {
-	{
+		{
 			type = "checkbox",
 			name = WritCreater.optionStrings['showStatusBar'], 
 			getFunc = function() return WritCreater:GetSettings().showStatusBar end,
@@ -1012,6 +1013,15 @@ function WritCreater.Options() --Sentimental
 				WritCreater.toggleQuestStatusWindow()
 			end,
 			tooltip = WritCreater.optionStrings['showStatusBarTooltip'], 
+		} ,
+		{
+			type = "checkbox",
+			name = WritCreater.optionStrings['showBoxCountdown'], 
+			getFunc = function() return WritCreater:GetSettings().showBoxCountdown end,
+			setFunc = function(value) 
+				WritCreater:GetSettings().showBoxCountdown = value
+			end,
+			tooltip = WritCreater.optionStrings['showBoxCountdownTooltip'], 
 		} ,
 		{
 			type = "checkbox",
@@ -1614,7 +1624,7 @@ end
 
 function WritCreater.initializeSettingsMenu()
 	local LAM = LibAddonMenu2
-	if LAM and not IsConsoleUI() then
+	if LAM and not ZO_IsConsoleOrGameCoreUI() then
 		LAM:RegisterAddonPanel("DolgubonsWritCrafter", WritCreater.settings["panel"])
 		WritCreater.settings["options"] = WritCreater.Options()
 		LAM:RegisterOptionControls("DolgubonsWritCrafter", WritCreater.settings["options"])

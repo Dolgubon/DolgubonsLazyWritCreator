@@ -72,12 +72,12 @@ function WritCreater.displayChangelog()
 		if not WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] then
 			WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] = true
 			local text = changelog[i][2] or ""
-			if IsConsoleUI() and changelog[i].console then
+			if ZO_IsConsoleOrGameCoreUI() and changelog[i].console then
 				text = text..changelog[i].console
 				if not LibHarvensAddonSettings then
 					-- WritCreater.savedVarsAccountWide.viewedChangelogs[changelog[i][1]] = false
 				end
-			elseif not IsConsoleUI() and changelog[i].pc then
+			elseif not ZO_IsConsoleOrGameCoreUI() and changelog[i].pc then
 				text = text..changelog[i].pc
 			end
 			if text ~= "" then

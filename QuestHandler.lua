@@ -46,7 +46,7 @@ local function HandleQuestCompleteDialog(eventCode, journalIndex)
 		end
 	end
 	local titleUIToUse
-	if IsConsoleUI() then
+	if ZO_IsConsoleOrGameCoreUI() then
 		titleUIToUse = ZO_InteractWindow_GamepadTitle
 	else
 		titleUIToUse = ZO_InteractWindowTargetAreaTitle
@@ -96,7 +96,7 @@ local function QuestCompleteDialogGoldListener(eventCode, journalIndex)
 		end
 	end
 	local titleUIToUse
-	if IsConsoleUI() then
+	if ZO_IsConsoleOrGameCoreUI() then
 		titleUIToUse = ZO_InteractWindow_GamepadTitle
 	else
 		titleUIToUse = ZO_InteractWindowTargetAreaTitle
@@ -250,7 +250,7 @@ ZO_InventorySlot_SetUpdateCallback(slotActionHook)
 SecurePostHook("CalLSecureProtected", secureProtectedHook)
 
 local function gamepadInventoryHook(inventoryInfo, slotActions)
-	if not IsInGamepadPreferredMode() and not IsConsoleUI() then
+	if not IsInGamepadPreferredMode() and not ZO_IsConsoleOrGameCoreUI() then
 		return
 	end
 	if not inventoryInfo or not inventoryInfo.dataSource then
@@ -261,7 +261,7 @@ local function gamepadInventoryHook(inventoryInfo, slotActions)
 	checkMasterWritCraftable(bag, slot)
 end
 
-if IsConsoleUI() or IsInGamepadPreferredMode() then
+if ZO_IsConsoleOrGameCoreUI() or IsInGamepadPreferredMode() then
 	ZO_PreHook(_G, "ZO_InventorySlot_DiscoverSlotActionsFromActionList", gamepadInventoryHook)
 end
 
@@ -269,7 +269,7 @@ end
 -- Handles dialogue start. It will fire on any NPC dialogue, so we need to filter out a bit
 local function HandleChatterBegin(eventCode, optionCount)
 	local titleUIToUse
-	if IsConsoleUI() then
+	if ZO_IsConsoleOrGameCoreUI() then
 		titleUIToUse = ZO_InteractWindow_GamepadTitle
 	else
 		titleUIToUse = ZO_InteractWindowTargetAreaTitle

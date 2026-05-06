@@ -236,7 +236,7 @@ WritCreater.strings['goldenPursuitCraft']			= "Craft set items for unfinished go
 WritCreater.strings['fullInventory']				= "Your inventory is full"
 WritCreater.strings['provisioningUnknownRecipe']	= "You do not know the recipe for <<1>>"
 WritCreater.strings['provisioningCraft']			= "Writ Crafter will craft <<1>>"
-WritCreater.strings['transmuteLooted']				= "<<1>> Transmute Stone recieved (You have <<2>>)"
+WritCreater.strings['transmuteLooted']				= "<<1>> Transmute Stone received (You have <<2>>)"
 WritCreater.strings['transmuteLimitApproach']		= "You are approaching the transmute stone limit. If a box would put you over the transmute stone limit, Writ Crafter will not loot the stones."
 WritCreater.strings['transmuteLimitHit']			= "Looting these transmute stones would put you over the maximum, so <<1>> transmute stones were not looted"
 WritCreater.strings['lootingMarkJunk']				= "Writ Crafter: Marked <<1>> as junk"
@@ -261,6 +261,7 @@ WritCreater.strings['deconstructSuccess']			= "Writ Crafter: Deconstructed <<1>>
 WritCreater.strings['potion']						= "potion"
 WritCreater.strings['poison']						= "poison"
 WritCreater.strings['junkSold']						= "Writ Crafter: Sold all Junk items"
+WritCreater.strings['boxLootRemaining']				= "<<1>>/<<2>> boxes remaining"
 
 
 
@@ -458,6 +459,10 @@ WritCreater.optionStrings["mimicStoneUse"]								= "Mimic stones for master wri
 WritCreater.optionStrings["mimicStoneUseTooltip"]						= "Defines the usage of mimic stones for master writs. Clears current master writ queue\nMimic stones will never be used for daily writs. (Buy for 15g ea. from NPC merchants)"
 WritCreater.optionStrings['mimicStoneUseChoices']						= {"Do not use" , "Always use", "Use if no style stones", "Use if price > 1k", "Use if price > 3k"}
 WritCreater.optionStrings['masterWritQueueCleared']						= "Master Writ crafting queue cleared"
+WritCreater.optionStrings["onomatopoeia"]								= "Crafting Onomatopoeia"
+WritCreater.optionStrings["onomatopoeiaTooltip"]						= "Turns on the crafting onomatopoeia from LWC 2026 April Fools"
+WritCreater.optionStrings['showBoxCountdown']							= "Show Box Countdown"
+WritCreater.optionStrings['showBoxCountdownTooltip']					= "Show box countdown"
 
 
 

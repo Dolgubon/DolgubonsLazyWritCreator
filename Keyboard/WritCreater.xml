@@ -380,6 +380,24 @@
 						</Label>
 					</Controls>
 				</Backdrop>
+				<Backdrop name="$(parent)Container" centerColor="111111" edgeColor="00000000" inherits="ZO_InsetBackdrop" mouseEnabled="false" hidden="true">
+					<Dimensions x="280" y="28" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="10" />
+					<Edge edgeSize="1" />
+					<Controls>
+
+						<Label name="$(parent)Remaining" font="ZoFontHeader2" color="FFFF33" wrapMode="TRUNCATE" horizontalAlignment="CENTER"
+							verticalAlignment="CENTER" mouseEnabled="false" text="1/12 boxes (placeholder text)">
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-2" />
+
+						</Label>
+						<Backdrop name="$(parent)Cooldown" centerColor="ff6c6c" edgeColor="00000000" mouseEnabled="false">
+							<Dimensions x="80" y="24" />
+							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+							<Edge edgeSize="1" />
+						</Backdrop>
+					</Controls>
+				</Backdrop>
 			</Controls>
 		</TopLevelControl>
 	</Controls>

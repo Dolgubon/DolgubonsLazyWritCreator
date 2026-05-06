@@ -52,7 +52,7 @@ end
 
 
 -- These hooks mark any already crafted writs as deliverable
-if not IsConsoleUI() then
+if not ZO_IsConsoleOrGameCoreUI() then
 	ZO_PostHook("ZO_UpdateStatusControlIcons",function(inventorySlot, slotData) 
 		local statusControl = inventorySlot:GetNamedChild("StatusTexture")
 		-- WritCreater.savedVarsAccountWide.craftedMasterWrits[Id64ToString(GetItemUniqueId(1, 169))] = true
@@ -524,7 +524,7 @@ end
 
 
 local function gamepadInventoryHook(inventoryInfo, slotActions)
-	if not IsInGamepadPreferredMode() and not IsConsoleUI() then
+	if not IsInGamepadPreferredMode() and not ZO_IsConsoleOrGameCoreUI() then
 		return
 	end
 	if not inventoryInfo or not inventoryInfo.dataSource then
@@ -565,10 +565,10 @@ SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, newState)
 	 end)
 
 function WritCreater.InitializeRightClick()
-	if IsConsoleUI() or IsInGamepadPreferredMode() then
+	if ZO_IsConsoleOrGameCoreUI() or IsInGamepadPreferredMode() then
 		SecurePostHook(_G, "ZO_InventorySlot_DiscoverSlotActionsFromActionList", gamepadInventoryHook)
 	end
-	if not IsConsoleUI() then
+	if not ZO_IsConsoleOrGameCoreUI() then
 		-- zo_callLater(function()
 		-- SecurePostHook('ZO_InventorySlot_ShowContextMenu', function (rowControl)d("My hook") WritCreater.InventorySlot_ShowContextMenu(rowControl) end)end, 1000)
 		 -- SecurePostHook('ZO_InventorySlot_ShowContextMenu', function (rowControl)d("My hook") WritCreater.InventorySlot_ShowContextMenu(rowControl) end)
@@ -600,7 +600,7 @@ end
 function WritCreater.checkIfMasterWritWasStarted(...)
 	dbug("EVENT:SlotUpdated")
 end
-if not IsConsoleUI() then
+if not ZO_IsConsoleOrGameCoreUI() then
 	ZO_PreHook('ZO_InventorySlot_ShowContextMenu', function (rowControl) WritCreater.InventorySlot_ShowContextMenu(rowControl) end)
 end
 

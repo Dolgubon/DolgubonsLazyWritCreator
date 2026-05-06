@@ -300,6 +300,7 @@ function WritCreater.initializeSettingsMenu()
             label = WritCreater.optionStrings["status bar submenu"],
         },
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.showStatusBar],
+        WritCreater.lamConvertedOptions[WritCreater.optionStrings['showBoxCountdown']],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.statusBarInventory],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.statusBarIcons],
         WritCreater.lamConvertedOptions[WritCreater.optionStrings.transparentStatusBar],

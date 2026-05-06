@@ -40,7 +40,7 @@ end
 -- Make sure Minion didn't mess up the manifest - thanks Code!
 local loadedVersion, expectedVersion = GetAddOnVersion(WritCreater.name)
 WritCreater.expectedVersion = expectedVersion
-if expectedVersion and loadedVersion < expectedVersion and not IsConsoleUI() then
+if expectedVersion and loadedVersion < expectedVersion and not ZO_IsConsoleOrGameCoreUI() then
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."IntegrityCheck", EVENT_PLAYER_ACTIVATED, function()
 		EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."IntegrityCheck", EVENT_PLAYER_ACTIVATED)
 		-- Fallback message if the localization file is unavailable
@@ -145,6 +145,7 @@ WritCreater.default =
 	["completeColour"] = {0.2,1,0.2},
 	["incompleteColour"] = {1,0,0},
 	['useMimic'] = false,
+	['showBoxCountdown'] = true,
 }
 
 WritCreater.defaultAccountWide = {
@@ -521,7 +522,13 @@ local function writSearch()
 		local Qname=GetJournalQuestName(i)
 
 		local isEnding = IsJournalQuestStepEnding(i,1,1)
+		local _, _, zoneIndex = GetJournalQuestLocationInfo(i)
+		--QUEST_REPEAT_REPEATABLE
 		if itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY and (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING or GetJournalQuestType(i) == QUEST_TYPE_HOLIDAY_EVENT ) then
+			W[craftType] = i
+			anyFound = true
+		elseif itemId and craftType and craftType ~= 0 and GetJournalQuestRepeatType(i) == QUEST_REPEAT_REPEATABLE and GetJournalQuestType(i) == QUEST_TYPE_NONE and zoneIndex == 1074 then
+			-- Probably night market quest
 			W[craftType] = i
 			anyFound = true
 		elseif itemId and craftType and craftType ~=0 and GetJournalQuestRepeatType(i) == QUEST_REPEAT_NOT_REPEATABLE and GetJournalQuestType(i) == QUEST_TYPE_CRAFTING  then
@@ -546,6 +553,11 @@ local function writSearch()
 	return W , anyFound
 end
 WritCreater.writSearch = writSearch
+
+function WritCreater.isQuestNightMarket(questIndex)
+	local _, _, zoneIndex = GetJournalQuestLocationInfo(questIndex)
+	return zoneIndex == 1074
+end
 
 local vibrancy = 0.8
 local brg = {vibrancy,vibrancy,0} -- who needs rgb when you can do brg? Standing for Bed, Reen, and Glue of course
@@ -759,7 +771,7 @@ local function initializeOtherStuff()
 		if newlyLoaded then
 			newlyLoaded = false
 			WritCreater.displayChangelog()
-			if IsConsoleUI() and not LibHarvensAddonSettings then
+			if ZO_IsConsoleOrGameCoreUI() and not LibHarvensAddonSettings then
 				CHAT_ROUTER:AddSystemMessage("WARNING: LibHarvensAddonSettings not found. You will be |L0:0:0:90%%:10%%:|lunable to change the settings for Lazy Writ Crafter|l.")
 			end
 			WritCreater.scanAllQuests() 
@@ -816,7 +828,7 @@ local function initializeLibraries()
 		missingString = missingString.."LibLazyCrafting, "
 	end
 	LAM = LibAddonMenu2
-	if not LAM and not IsConsoleUI() then
+	if not LAM and not ZO_IsConsoleOrGameCoreUI() then
 		missing = true
 		missingString = missingString.."LibAddonMenu-2.0"
 	end
@@ -889,7 +901,7 @@ local function initializeLibraries()
 		control:SetHidden(true)
 		control.SetHidden = function() end
 	end
-	if IsConsoleUI() then
+	if ZO_IsConsoleOrGameCoreUI() then
 		permaHide(showButton2)
 		permaHide(showButton)
 	end
@@ -960,11 +972,11 @@ function WritCreater:Initialize()
 	end
 	local year, month, date = GetDateElementsFromTimestamp(GetTimeStamp())
 	if GetDate()%10000 == 1031 or GetDisplayName() == "@Dolgubon" then
-		if not IsConsoleUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter") end
+		if not ZO_IsConsoleOrGameCoreUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Dolgubon's Lazy Wraith Crafter") end
 		DolgubonsWritsBackdropHead:SetText("Dolgubon's Lazy Wraith Crafter")
 	end
 	if year == 2026 and month == 4 and date == 16 then
-		if not IsConsoleUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Lazy Writ Crafter's 10th Birthday!") end
+		if not ZO_IsConsoleOrGameCoreUI() then DolgubonsLazyWritResetWarnerBackdropTitle:SetText("Lazy Writ Crafter's 10th Birthday!") end
 		DolgubonsWritsBackdropHead:SetText("Lazy Writ Crafter's 10th Birthday!")
 	end
 end

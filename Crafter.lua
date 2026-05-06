@@ -909,7 +909,7 @@ local function singleProvisioningCondition(questIndex, craftLinks, autocraft, co
 		local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(foodId)
 		local factor = GetRecipeResultQuantity(recipeList,recipeIndex)
 		local quantity = 1
-		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(quest) ~= QUEST_TYPE_HOLIDAY_EVENT then
+		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(quest) == QUEST_TYPE_CRAFTING then
 			if factor == 4 then
 				quantity = 25
 			else
@@ -935,10 +935,20 @@ local function provisioningCrafting(questIndex, craftingWrits)
 	local craftLinks = {}
 	WritCreater.LLCInteraction:cancelItemByReference("dlwcProvisioning")
 	-- sometimes the conditions skip condition index 1, and it seems sometimes they don't.
-	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 1)
-	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 2)
-	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 3)
-	craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, 4)
+	for conditionIndex = 1, 4 do
+
+		craftLinks[#craftLinks+1] = singleProvisioningCondition(questIndex, craftLinks, craftingWrits, conditionIndex)
+		if #craftLinks>0 and (not craftLinks[#craftLinks].known) and WritCreater.isQuestNightMarket(questIndex) then
+			WritCreater.LLCInteraction:cancelItemByReference("dlwcProvisioning")
+			craftLinks[#craftLinks] = nil
+		end
+		if WritCreater.isQuestNightMarket(questIndex) and #craftLinks == 1 then
+			break
+		end
+		if #craftLinks == 2 then
+			break
+		end
+	end
 	if #craftLinks > 0 then
 		if not craftLinks[1].known or (craftLinks[2] and not craftLinks[2].known) then
 			outputUnknown(craftLinks)
