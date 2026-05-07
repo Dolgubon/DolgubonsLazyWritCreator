@@ -884,7 +884,7 @@ function WritCreater.LootHandlerInitialize()
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED,function() 
 
 		for k, v in pairs(WritCreater.savedVars.deconstructList) do
-			if v.timestamp and GetTimeStamp() - 60*60*24*30 > v.timestamp then
+			if v.timestamp and GetTimeStamp() - 60*60*24*60 > v.timestamp then
 				WritCreater.savedVars.deconstructList[k] = nil
 			elseif Id64ToString(GetItemUniqueId(v.bag, v.slot)) == v.uniqueId then
 				local link = GetItemLink(v.bag, v.slot)
@@ -1130,7 +1130,7 @@ for boxId, boxRank in pairs (WritCreater.rewardBoxData) do
 		WritCreater.boxNames[name] = boxRank
 	elseif type(boxId) == "string" then
 		local boxName = GetItemLinkName(boxId)
-		WritCreater.boxNames[GetItemLinkName(boxName)] = boxRank
+		WritCreater.boxNames[GetItemLinkName(boxId)] = boxRank
 		boxName = string.gsub(boxName, "%(","%%%(")
 		boxName = string.gsub(boxName, "%)","%%%)")
 		WritCreater.boxNames[boxName] = boxRank
