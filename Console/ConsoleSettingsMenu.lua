@@ -110,7 +110,7 @@ function WritCreater.initializeSettingsMenu()
             -- disable = function() return areSettingsDisabled end,
         },
         {
-            type = LHA.ST_SECTION,
+            type = LHA.ST_LABEL,
             label = function() 
                 local profile = WritCreater.optionStrings.accountWide
                 if WritCreater.savedVars.useCharacterSettings then
@@ -373,7 +373,7 @@ function WritCreater.initializeSettingsMenu()
             label = WritCreater.optionStrings["writRewards submenu"],
         },
         {
-            type = LHA.ST_SECTION,
+            type = LHA.ST_LABEL,
             label = WritCreater.optionStrings["masterReward"],
         },
         -- WritCreater.lamConvertedOptions["masterrewards1"],
@@ -387,7 +387,7 @@ function WritCreater.initializeSettingsMenu()
         -- WritCreater.lamConvertedOptions["masterrewards9"],
         -- WritCreater.lamConvertedOptions["masterrewards10"],
         {
-            type = LHA.ST_SECTION,
+            type = LHA.ST_LABEL,
             label = WritCreater.optionStrings["intricateReward"],
         },
         -- WritCreater.lamConvertedOptions["intricaterewards1"],
@@ -398,7 +398,7 @@ function WritCreater.initializeSettingsMenu()
         -- WritCreater.lamConvertedOptions["intricaterewards6"],
         -- WritCreater.lamConvertedOptions["intricaterewards7"],
         {
-            type = LHA.ST_SECTION,
+            type = LHA.ST_LABEL,
             label = WritCreater.optionStrings["ornateReward"],
         },
         -- WritCreater.lamConvertedOptions["ornaterewards1"],
@@ -409,7 +409,7 @@ function WritCreater.initializeSettingsMenu()
         -- WritCreater.lamConvertedOptions["ornaterewards6"],
         -- WritCreater.lamConvertedOptions["ornaterewards7"],
         {
-            type = LHA.ST_SECTION,
+            type = LHA.ST_LABEL,
             label = WritCreater.optionStrings["surveyReward"],
         },
         -- WritCreater.lamConvertedOptions["surveyrewards1"],
@@ -422,19 +422,34 @@ function WritCreater.initializeSettingsMenu()
         -- WritCreater.lamConvertedOptions["surveyrewards8"],
         -- WritCreater.lamConvertedOptions["surveyrewards9"],
         {
-            type = LHA.ST_SECTION,
+            type = LHA.ST_LABEL,
             label = WritCreater.optionStrings["goldMatReward"],
         },
         WritCreater.lamConvertedOptions["goldMatrewards2"],
-        {
-            type = LHA.ST_SECTION,
-            label = WritCreater.optionStrings["repairRewards"],
-        },
         WritCreater.lamConvertedOptions["repairReward"],
         WritCreater.lamConvertedOptions["fragmentReward"],
         WritCreater.lamConvertedOptions["soulGemReward"],
         WritCreater.lamConvertedOptions["glyphReward"],
         WritCreater.lamConvertedOptions["currencyReward"],
+         {
+            type = LHA.ST_SECTION,
+            label = WritCreater.optionStrings["style stone menu"],
+        },
+        WritCreater.lamConvertedOptions["STYLE1"],
+        WritCreater.lamConvertedOptions["STYLE2"],
+        WritCreater.lamConvertedOptions["STYLE3"],
+        WritCreater.lamConvertedOptions["STYLE4"],
+        WritCreater.lamConvertedOptions["STYLE5"],
+        WritCreater.lamConvertedOptions["STYLE6"],
+        WritCreater.lamConvertedOptions["STYLE7"],
+        WritCreater.lamConvertedOptions["STYLE8"],
+        WritCreater.lamConvertedOptions["STYLE9"],
+        WritCreater.lamConvertedOptions["STYLE34"],
+        WritCreater.lamConvertedOptions["STYLE17"],
+        WritCreater.lamConvertedOptions["STYLE19"],
+        WritCreater.lamConvertedOptions["STYLE15"],
+        WritCreater.lamConvertedOptions["STYLE20"],
+
 
     }
     local addAbandon = {

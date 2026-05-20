@@ -909,7 +909,7 @@ local function singleProvisioningCondition(questIndex, craftLinks, autocraft, co
 		local _, recipeList, recipeIndex = GetRecipeInfoFromItemId(foodId)
 		local factor = GetRecipeResultQuantity(recipeList,recipeIndex)
 		local quantity = 1
-		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(quest) == QUEST_TYPE_CRAFTING then
+		if WritCreater:GetSettings().consumableMultiplier == 25 and (GetJournalQuestType(questIndex) == QUEST_TYPE_CRAFTING) then
 			if factor == 4 then
 				quantity = 25
 			else

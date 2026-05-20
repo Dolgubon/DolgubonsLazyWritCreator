@@ -19,8 +19,6 @@ function RewardsScroll:New(control)
 	self.currentSortOrder = ZO_SORT_ORDER_UP
  	self.sortFunction = function(listEntry1, listEntry2) 
  		if listEntry1.data.craft==listEntry2.data.craft then
- 			d(listEntry1.data.amount)
- 			d(listEntry2.data.amount)
  			return (listEntry1.data.amount or -1)> (listEntry2.data.amount or -1)
  		end 
  		return listEntry1.data.craft> listEntry2.data.craft 

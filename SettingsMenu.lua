@@ -99,9 +99,9 @@ end
 local optionStrings = WritCreater.optionStrings
 local function styleCompiler()
 	-- Console just gets basic styles for now
-	if ZO_IsConsoleOrGameCoreUI() then
-		return {}
-	end
+	-- if ZO_IsConsoleOrGameCoreUI() then
+	-- 	return {}
+	-- end
 	local submenuTable = {}
 	local styleNames = WritCreater.styleNames
 	
@@ -133,6 +133,7 @@ local function styleCompiler()
 			type = "checkbox",
 			name = zo_strformat("<<1>> (<<2>> x<<3>>)", v[2], GetItemLinkName(v[3]), v[4]),
 			tooltip = optionStrings["style tooltip"](v[2], v[3]),
+			LHASName = "STYLE"..v[1], -- don't translate
 			getFunc = function() return WritCreater:GetSettings().styles[v[1]] end,
 			setFunc = function(value)
 				WritCreater:GetSettings().styles[v[1]] = value  --- DO NOT CHANGE THIS! If you have 'or nil' then the ZO_SavedVars will set it to true.

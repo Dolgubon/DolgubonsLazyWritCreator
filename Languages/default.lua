@@ -262,6 +262,7 @@ WritCreater.strings['potion']						= "potion"
 WritCreater.strings['poison']						= "poison"
 WritCreater.strings['junkSold']						= "Writ Crafter: Sold all Junk items"
 WritCreater.strings['boxLootRemaining']				= "<<1>>/<<2>> boxes remaining"
+WritCreater.strings['aethericCipherCongrats']		= "You just got an |H0:item:115028:1:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h!! Congratulations!"
 
 
 

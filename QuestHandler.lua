@@ -387,7 +387,15 @@ local function hookIndexEvent(event)
 		local questIndex = params[1]
 		if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
 			return 
-		end 
+		end
+		if GetDisplayName() == "@Dolgubon" then
+			local look = "Kill More Enemies in the Night Market"
+			local text = GetJournalQuestConditionInfo(questIndex, 1,1)
+			if text:find(look) then
+				d("Skip it????")
+				return function() return {} end
+			end
+		end
 		return originalAdded(...)
 	end
 end
@@ -396,6 +404,13 @@ local function OnQuestAdvanced(eventId, questIndex, questName, isPushed, isCompl
 	
 	if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then
 		return 
+	end
+	if GetDisplayName() == "@Dolgubon" then
+		local look = "Kill More Enemies in the Night Market"
+		local text, _ = GetJournalQuestConditionInfo(questIndex, stepIndex,1)
+		if text:find(look) then
+			return true
+		end
 	end
 
     if(not mainStepChanged) then

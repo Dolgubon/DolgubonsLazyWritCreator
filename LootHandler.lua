@@ -93,13 +93,14 @@ local function LootAllHook(boxType, itemLink, quantity) -- technically not a hoo
 		local itemType, specializedType = GetItemLinkItemType(itemLink) 
 		-- if it's gear
 		if name=="" then
-		elseif itemType==ITEMTYPE_ARMOR or itemType==ITEMTYPE_WEAPON or itemType==ITEMTYPE_TOOL then
+		elseif itemType==ITEMTYPE_ARMOR or itemType==ITEMTYPE_WEAPON then
 			local ornateTraits = 
 			{
 				[ITEM_TRAIT_TYPE_ARMOR_ORNATE] = true,
 				[ITEM_TRAIT_TYPE_JEWELRY_ORNATE] = true,
 				[ITEM_TRAIT_TYPE_WEAPON_ORNATE] = true,
 			}
+			-- d("Tracked a gear "..itemLink.. " for "..  boxType)
 			if ornateTraits[GetItemLinkTraitInfo(itemLink)] then
 				updateSavedVars(vars, "ornate", quantity)
 			else
@@ -118,7 +119,7 @@ local function LootAllHook(boxType, itemLink, quantity) -- technically not a hoo
 				updateSavedVars(vars["recipe"], "blue", quantity)
 			elseif quality == ITEM_FUNCTIONAL_QUALITY_ARTIFACT then
 				updateSavedVars(vars["recipe"], "purple", quantity)
-			elseif quality == ITEMITEM_FUNCTIONAL_QUALITY_NORMAL then
+			elseif quality == ITEM_FUNCTIONAL_QUALITY_NORMAL then
 				updateSavedVars(vars["recipe"], "white", quantity)
 			elseif quality == ITEM_FUNCTIONAL_QUALITY_LEGENDARY then
 				updateSavedVars(vars["recipe"], "gold", quantity)
@@ -167,6 +168,7 @@ end
 
 local function lootHookNoSave(boxType, itemLink, quantity)
 		--d(itemLink)
+	local itemId = GetItemLinkItemId(itemLink)
 	local quality = GetItemLinkFunctionalQuality(itemLink)
 	local itemType, specializedType = GetItemLinkItemType(itemLink)
 	local isSpecialBox = boxType == 0
@@ -174,6 +176,8 @@ local function lootHookNoSave(boxType, itemLink, quantity)
 		lootOutput(itemLink, nil, quantity, isSpecialBox)
 	elseif specializedType == SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE then
 		lootOutput(itemLink, nil, quantity, isSpecialBox)
+	elseif itemId == 115028 then
+		d(WritCreater.strings['aethericCipherCongrats'])
 	elseif quality>=ITEM_FUNCTIONAL_QUALITY_ARCANE then
 		lootOutput(itemLink, nil, quantity, isSpecialBox)
 	elseif itemId == 56863 or itemId == 56862 then
@@ -194,7 +198,7 @@ local function shouldSaveStats(boxType)
 end
 
 local function shouldAutoLootContainerFromSettings()
-	if Unboxer and Unboxer.version ~= "2026.01.12" then return false end
+	-- if Unboxer and Unboxer.version ~= "2026.01.12" then return false end
 	local autoLoot
 	if WritCreater:GetSettings().ignoreAuto then
 		autoLoot = WritCreater:GetSettings().autoLoot
@@ -245,6 +249,7 @@ local function lootListener(boxCraft, boxSlot, lookForLoot, event, bag, slot, is
 		return
 	end
 	local itemId = GetItemId(bag, slot)
+	boxCraft = lookForLoot[itemId] -- We can't trust the boxCraft parameter. But hassle to change
 	if lookForLoot[itemId] then
 		local itemLink = GetItemLink(bag, slot)
 		lootedItemLinks[GetItemLinkItemId(itemLink)] = true
@@ -289,12 +294,7 @@ local function OnLootUpdated(event)
 	if boxInfo then
 		local boxRank = boxInfo[1]
 		local boxCraft = boxInfo[2]
-		if boxCraft == 0 and boxCraft > 0 then 
-			local itemType = GetItemLinkItemType(GetLootItemLink(GetLootItemInfo(1),1))
-			if not (itemType == 36 or itemType == 38 or itemType == 40 or itemType ==64) then
-				return false
-			end
-		elseif boxCraft == 0 then
+		if boxCraft == 0 and boxRank == 0 then
 			if not WritCreater:GetSettings().lootJubileeBoxes then 
 				return false
 			end
@@ -311,11 +311,6 @@ local function OnLootUpdated(event)
 
 		
 
-		-- if shouldSaveStats(boxCraft) and not fatiguedLoot[boxCraft] and boxCraft~= 0 then
-
-			-- lookForLoot[itemId] = boxCraft
-			-- LootAllHook(boxCraft)
-		-- else
 		for j = 1, GetNumLootItems() do
 
 			local lootId, name, _, quantity = GetLootItemInfo(j)
@@ -515,36 +510,6 @@ end
 WritCreater.rewardList = {
 }
 
--- local function rewardHandler(bag, slot)
--- 	local itemType, specializedType = GetItemLinkItemType(itemLink) 
--- 	-- if it's gear
--- 	if name=="" then
--- 	elseif itemType==ITEMTYPE_ARMOR or itemType==ITEMTYPE_WEAPON then
--- 		if GetItemLinkTraitInfo(itemLink)==19 then
--- 			updateSavedVars(vars, "ornate", quantity)
--- 		else
--- 			updateSavedVars(vars, "intricate", quantity)
--- 		end
--- 	elseif CanItemLinkBeVirtual(itemLink) then 
--- 		updateSavedVars(vars, GetItemLinkItemId(itemLink), quantity)
--- 	elseif itemType==ITEMTYPE_RECIPE then 
--- 		updateSavedVars(vars["recipe"], "green", quantity)
--- 	elseif specializedType==SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT then
--- 		updateSavedVars(vars, "survey", quantity)
--- 	elseif specializedType ==SPECIALIZED_ITEMTYPE_TROPHY_RECIPE_FRAGMENT then
--- 		updateSavedVars(vars, "fragment", quantity)
--- 	elseif itemType ==ITEMTYPE_CONTAINER then
--- 		updateSavedVars(vars, "material", quantity)
--- 	elseif itemType ==ITEMTYPE_TOOL then
--- 		updateSavedVars(vars, "repair", quantity)
--- 	elseif itemType ==ITEMTYPE_GLYPH_JEWELRY or itemType ==ITEMTYPE_GLYPH_ARMOR or itemType ==ITEMTYPE_GLYPH_WEAPON then
--- 		updateSavedVars(vars, "glyph", quantity)
--- 	elseif itemType == ITEMTYPE_SOUL_GEM then 
--- 		updateSavedVars(vars, "soulGem", quantity)
--- 	elseif itemType == ITEMTYPE_MASTER_WRIT then
--- 		updateSavedVars(vars, "master", quantity)
--- 	end
--- end
 
 local function distinguishStackableContainers(link)
 	if GetItemLinkFunctionalQuality(link) == ITEM_FUNCTIONAL_QUALITY_ARCANE then

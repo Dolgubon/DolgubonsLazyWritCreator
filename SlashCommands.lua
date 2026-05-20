@@ -264,7 +264,8 @@ WritCreater.ShowStatsWindow = function() outputStats(false) end
 -- Resets the user's writ reward statistics
 
 local function resetStats() 
-	WritCreater.savedVarsAccountWide["rewards"] = WritCreater.defaultAccountWide["rewards"]
+	WritCreater.savedVarsAccountWide["rewards"] = ZO_DeepTableCopy( WritCreater.defaultAccountWide["rewards"], {})
+	WritCreater.rewardsScroll.data = WritCreater.savedVarsAccountWide["rewards"]
 	WritCreater.savedVarsAccountWide.timeSinceReset = GetTimeStamp()
 	WritCreater.savedVarsAccountWide.total = 0
 	WritCreater.savedVarsAccountWide.totalGold = 0
@@ -377,15 +378,18 @@ if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
 
 	IsEnlightenedAvailableForCharacter = function() return false end
 end
-if GetDisplayName() == "@annathepiper" then
-	SLASH_COMMANDS['/console'] = function()  local newVal = ZO_IsConsoleOrGameCoreUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
-	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
-end
+-- if GetDisplayName() == "@annathepiper" then
+-- 	SLASH_COMMANDS['/console'] = function()  local newVal = ZO_IsConsoleOrGameCoreUI()and "0" or "1" SetCVar("ForceConsoleFlow.2",newVal) end
+-- 	SLASH_COMMANDS['/lang'] = function(newLang) SetCVar("language.2",newLang) end
+-- end
 
 if WritCreater.needTranslations and GetTimeStamp()<1590361774 then
 	SLASH_COMMANDS['/writcraftertranslations'] = goToTranslationSite
 end
 if GetDisplayName() == "@Dolgubon" or GetDisplayName() == "@Dolgubonn" then
+	if LibHistoire then
+		LibHistoire.internal.InitializeDialogs = function() end
+	end
 	SLASH_COMMANDS['/loothirelings'] = function() SLASH_COMMANDS['/dcsbar']("lootmail") end
 end
 
