@@ -453,7 +453,9 @@ function WritCreater.countContainers()
 	local count = 0
 	for i = 1, GetBagSize(BAG_BACKPACK) do
 		if isContainerOpenable(BAG_BACKPACK, i) then
-			count = count + 1
+			if WritCreater.boxNames[GetItemName(BAG_BACKPACK, i)][2]>0 or WritCreater:GetSettings().lootJubileeBoxes then
+				count = count + 1
+			end
 		end
 	end
 	return count

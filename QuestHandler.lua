@@ -388,12 +388,14 @@ local function hookIndexEvent(event)
 		if WritCreater:GetSettings().suppressQuestAnnouncements and isQuestWritQuest(questIndex) then 
 			return 
 		end
-		if GetDisplayName() == "@Dolgubon" then
+		if GetDisplayName() == "@Dolgubon" and event == EVENT_QUEST_CONDITION_COUNTER_CHANGED then
 			local look = "Kill More Enemies in the Night Market"
 			local text = GetJournalQuestConditionInfo(questIndex, 1,1)
 			if text:find(look) then
-				d("Skip it????")
-				return function() return {} end
+				local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_SMALL_TEXT, nil)
+				messageParams:SetText("")
+				params[13] = true
+				return originalAdded(unpack(params))
 			end
 		end
 		return originalAdded(...)

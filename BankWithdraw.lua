@@ -333,7 +333,6 @@ end
 local depositedItem = false
 
 local function runProcessDeposits()
-	local _,bankStack = GetItemLinkStacks(itemLink)
 	local numItems = 0
 	for k, v in pairs(WritCreater.savedVars.depositList) do
 		local doesItemExistInSlot = Id64ToString(GetItemUniqueId(bag, index)) == v.uniqueId

@@ -538,15 +538,26 @@ local function writSearch()
 				W[craftType] = i
 				anyFound = true
 			end
-			-- If it's on the ending step, then the above can't find it. So we use the backup of the string matching
+			
 		elseif isEnding then
 			if (GetJournalQuestType(i) == QUEST_TYPE_CRAFTING or GetJournalQuestType(i) == QUEST_TYPE_HOLIDAY_EVENT ) and GetJournalQuestRepeatType(i)==QUEST_REPEAT_DAILY then
-				for j = 1, #WritCreater.writNames do 
-					if string.find(myLower(Qname),myLower(WritCreater.writNames[j])) then
-						W[j] = i
-						anyFound = true
+				local _, _, _, _, _, completed = GetJournalQuestInfo(i)
+				local rewardType, rewardName = GetJournalQuestRewardInfo(i, 2)
+				if WritCreater.boxNames[rewardName] then
+					local rewardCraftType = WritCreater.boxNames[rewardName][2]
+					if rewardCraftType >0 then
+						W[rewardCraftType] = i
+					end
+				else
+					-- If all that fails, we do a backup of using the writ names
+					for j = 1, #WritCreater.writNames do 
+						if string.find(myLower(Qname),myLower(WritCreater.writNames[j])) then
+							W[j] = i
+							anyFound = true
+						end
 					end
 				end
+				
 			end
 		end
 	end

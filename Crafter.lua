@@ -973,7 +973,7 @@ local showOnce= true
 local updateWarningShown = false
 local function craftCheck(eventcode, station)
 
-	local currentAPIVersionOfAddon = 101049
+	local currentAPIVersionOfAddon = 101050
 
 	if GetAPIVersion() > currentAPIVersionOfAddon and GetWorldName()~="PTS" and not updateWarningShown then 
 		d("The game has loaded an old version of Writ Crafter from somewhere on your system. If you think you have updated, One Drive may be causing issues") 
