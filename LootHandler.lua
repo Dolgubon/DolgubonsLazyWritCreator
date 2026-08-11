@@ -846,7 +846,21 @@ function WritCreater.LootHandlerInitialize()
 			-- PLAYER_INVENTORY.inventories[1].slots[1][149].brandNew = true 
 			EVENT_MANAGER:UnregisterForEvent(WritCreater.name.."AddNewStatusContainers", EVENT_PLAYER_ACTIVATED)
 			end )	
+
+	-- If this was initialized with keyboard but user switches to gamepad, or vice versa, we also need to hook the new mode
 	ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
+	local lootGamepadHooked = IsInGamepadPreferredMode()
+	local lootKeyboardHooked = not IsInGamepadPreferredMode()
+	EVENT_MANAGER:RegisterForEvent(WritCreater.name .. "GamepadChanged", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED,
+		function(_, gamepadPreferred)
+			if (gamepadPreferred and not lootGamepadHooked) then
+				ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
+				lootGamepadHooked = true
+			elseif (not gamepadPreferred and not lootKeyboardHooked) then
+				ZO_PreHook(SYSTEMS:GetObject("loot"), "UpdateLootWindow", OnLootUpdated)
+				lootKeyboardHooked = true
+			end
+		end)
 	
 	EVENT_MANAGER:RegisterForEvent(WritCreater.name.."Deconstruct", EVENT_PLAYER_ACTIVATED,function() 
 
