@@ -49,24 +49,30 @@ local prices = {
 	[30166] = 45,
 	[30154] = 36,
 	[30159] = 52,
+	-- new with update 51 - no idea what the prices will be, so we'll just price it out of algo for now
+	[224357] = 5000,
+	[224358] = 5000,
+	[224359] = 5000,
+	[224360] = 5000,
 }
+
 
 WritCreater.effectMap = {
   [1] = "Restore Health",
   [2] = "Ravage Health",
-  [3] = "Restore Magicka",
-  [4] = "Ravage Magicka",
+  [3] = "Restore Magicka", -- check
+  [4] = "Ravage Magicka", -- check
   [5] = "Restore Stamina",
   [6] = "Ravage Stamina",
   [7] = "Increase Spell Resist",
   [8] = "Breach",
   [9] = "Increase Armor",
   [10] = "Fracture",
-  [11] = "Increase Spell Power",
+  [11] = "Increase Power",
   [12] = "Cowardice",
   [13] = "Increase Weapon Power",
   [14] = "Maim",
-  [15] = "Spell Critical",
+  [15] = "Critical",
   [16] = "Uncertainty",
   [17] = "Weapon Critical",
   [18] = "Enervation",
@@ -86,42 +92,86 @@ WritCreater.effectMap = {
   [32] = "Timidity",
 }
 
+
+
+WritCreater.effectNumbers = {
+  ["Restore Health"] = 1,
+  ["Ravage Health"] = 2,
+  ["Restore Magicka"] = 3, -- checked U51
+  ["Ravage Magicka"] = 4, -- checked U51
+  ["Restore Stamina"] = 5,
+  ["Ravage Stamina"] = 6,
+  ["Increase Spell Resist"] = 7,
+  ["Breach"] = 8,
+  ["Increase Armor"] = 9,
+  ["Fracture"] = 10,
+  ["Increase Power"] = 11, -- checked U51
+  ["Cowardice"] = 12,
+  ["Critical"] = 15, -- Check U51
+  ["Uncertainty"] = 16,
+  ["Unstoppable"] = 19,
+  ["Entrapment"] = 20,
+  ["Detection"] = 21,
+  ["Invisible"] = 22,
+  ["Speed"] = 23,
+  ["Hindrance"] = 24,
+  ["Protection"] = 25,
+  ["Vulnerability"] = 26,
+  ["Lingering Health"] = 27,
+  ["Gradual Ravage Health"] = 28,
+  ["Vitality"] = 29,
+  ["Defile"] = 30,
+  ["Heroism"] = 31,
+  ["Timidity"] = 32,
+  ["Damage Shield"] = 33,
+  ["Heal Absorption"] = 34, -- checked U51
+  ["Force"] = 35, -- checked U51
+  ["Enervation"] = 36,
+  ["Mending"] = 37,
+  ["Vexation"] = 38,
+}
+
 local reagentInfo = {
-	[30148] = {[3]=-1,[11]=-1,[1]=1,[21]=-1,},
-	[30149] = {[9]=-1,[1]=-1,[13]=1,[5]=-1,},
+	[30148] = {[3]=-1,[33]=-1,[1]=1,[21]=-1,},
+	[150789] = {[31]=1,[25]=-1,[21]=-1,[29]=1,},
 	[30151] = {[1]=-1,[3]=-1,[5]=-1,[19]=-1,},
 	[30152] = {[7]=-1,[1]=-1,[11]=1,[3]=-1,},
-	[30153] = {[15]=1,[23]=1,[21]=-1,[19]=1,},
-	[30154] = {[11]=-1,[3]=-1,[7]=1,[21]=1,},
+	[30153] = {[35]=-1,[23]=1,[21]=-1,[19]=1,},
+	[30154] = {[35]=-1,[3]=-1,[7]=1,[21]=1,},
 	[150731] = {[27]=1,[5]=1,[31]=1,[29]=-1,},
-	[30156] = {[13]=-1,[5]=-1,[9]=1,[17]=-1,},
-	[77581] = {[9]=-1,[17]=-1,[21]=1,[29]=1,},
-	[30158] = {[11]=1,[3]=1,[7]=-1,[15]=1,},
-	[77583] = {[7]=-1,[9]=1,[25]=1,[29]=1,},
-	[77584] = {[23]=-1,[21]=-1,[27]=1,[29]=-1,},
-	[77585] = {[1]=1,[15]=-1,[27]=1,[29]=1,},
-	[30162] = {[13]=1,[5]=1,[9]=-1,[17]=1,},
-	[30163] = {[9]=1,[1]=1,[13]=-1,[5]=1,},
-	[30164] = {[1]=1,[3]=1,[5]=1,[19]=1,},
-	[30165] = {[1]=-1,[15]=-1,[17]=-1,[21]=-1,},
-	[30166] = {[1]=1,[15]=1,[17]=1,[19]=-1,},
-	[77591] = {[7]=1,[9]=1,[25]=1,[29]=-1,},
-	[77587] = {[5]=-1,[25]=-1,[27]=-1,[29]=1,},
-	[77590] = {[1]=-1,[25]=1,[27]=-1,[29]=-1,},
-	[150671] = {[3]=1,[17]=-1,[31]=1,[23]=1,},
-	[30160] = {[7]=1,[1]=1,[11]=-1,[3]=1,},
-	[77589] = {[3]=-1,[23]=1,[25]=-1,[27]=1,},
-	[139019] = {[27]=1,[23]=1,[29]=1,[25]=1,},
-	[150789] = {[31]=1,[25]=-1,[21]=-1,[29]=1,},
-	[139020] = {[7]=1,[23]=-1,[25]=-1,[29]=-1,},
-	[30155] = {[5]=-1,[13]=-1,[1]=1,[23]=-1,},
-	[30157] = {[5]=1,[13]=1,[1]=-1,[23]=1,},
+	[30156] = {[11]=-1,[5]=-1,[9]=1,[35]=-1,},
+	[77581] = {[9]=-1,[15]=-1,[21]=1,[37]=1,},
 	[150670] = {[31]=-1,[1]=-1,[3]=1,[25]=1,},
-	[30159] = {[17]=1,[23]=-1,[21]=1,[19]=1,},
-	[150672] = {[31]=-1,[15]=1,[27]=-1,[1]=1,},
+	[77583] = {[7]=-1,[9]=1,[25]=1,[29]=1,},
+	[150672] = {[31]=-1,[35]=1,[27]=-1,[1]=1,},
+	[77585] = {[1]=1,[33]=1,[27]=1,[29]=1,},
+	[30162] = {[11]=1,[5]=1,[9]=-1,[15]=1,},
+	[30163] = {[9]=1,[1]=1,[11]=-1,[5]=1,},
+	[30164] = {[1]=1,[3]=1,[5]=1,[19]=1,},
+	[30165] = {[1]=-1,[15]=-1,[21]=-1,[33]=-1,},
+	[30166] = {[1]=1,[15]=1,[19]=-1,[33]=1,},
+	[77591] = {[7]=1,[9]=1,[25]=1,[29]=-1,},
+	[224357] = {[31]=1,[11]=1,[37]=1,[33]=1,},
+	[224358] = {[29]=-1,[33]=-1,[11]=-1,[19]=-1,},
+	[224359] = {[31]=1,[5]=1,[35]=1,[21]=1,},
+	[224360] = {[37]=-1,[33]=-1,[29]=-1,[7]=-1,},
+	[30149] = {[9]=-1,[1]=-1,[35]=1,[5]=-1,},
+	[30158] = {[35]=1,[3]=1,[7]=-1,[15]=1,},
+	[77587] = {[5]=-1,[25]=-1,[27]=-1,[29]=1,},
 	[30161] = {[3]=1,[11]=1,[1]=-1,[21]=1,},
-	[150669] = {[31]=-1,[3]=-1,[5]=1,[21]=1,},
+	[77590] = {[1]=-1,[25]=1,[27]=-1,[29]=-1,},
+	[150671] = {[3]=1,[15]=-1,[31]=1,[23]=1,},
+	[30160] = {[7]=1,[1]=1,[37]=1,[3]=1,},
+	[139020] = {[7]=1,[23]=-1,[25]=-1,[29]=-1,},
+	[77584] = {[23]=-1,[21]=-1,[33]=1,[29]=-1,},
+	[77589] = {[37]=-1,[23]=1,[25]=-1,[27]=1,},
+	[30155] = {[5]=-1,[1]=1,[23]=-1,[11]=-1,},
+	[30157] = {[5]=1,[11]=1,[33]=-1,[23]=1,},
+	[30159] = {[15]=1,[23]=-1,[21]=1,[19]=1,},
+	[139019] = {[37]=1,[23]=1,[29]=1,[25]=1,},
+	[150669] = {[31]=-1,[3]=-1,[37]=-1,[21]=1,},
 }
+
 
 local function determinePotionResult(reagent1, reagent2, reagent3)
 	local reagents = {reagent1, reagent2, reagent3}
@@ -340,9 +390,9 @@ local function startAlchemy(journalIndex, craftingWrits)
 	--[[
  GetAlchemyResultingItemIdIfKnown(Bag solventBagId, integer solventSlotIndex, Bag reagent1BagId, integer reagent1SlotIndex, Bag reagent2BagId, integer reagent2SlotIndex, Bag:nilable reagent3BagId, integer:nilable reagent3SlotIndex, integer:nilable desiredEncodedTraits)
 Returns: integer:nilable resultingItemId
-Search on ESOUI Source Code GetAlchemyResultingItemInfo(Bag solventBagId, integer solventSlotIndex, Bag reagent1BagId, integer reagent1SlotIndex, Bag reagent2BagId, integer reagent2SlotIndex, Bag:nilable reagent3BagId, integer:nilable reagent3SlotIndex)
+GetAlchemyResultingItemInfo(Bag solventBagId, integer solventSlotIndex, Bag reagent1BagId, integer reagent1SlotIndex, Bag reagent2BagId, integer reagent2SlotIndex, Bag:nilable reagent3BagId, integer:nilable reagent3SlotIndex)
 Returns: string name, textureName icon, integer stack, integer sellPrice, bool meetsUsageRequirement, EquipType equipType, integer itemStyleId, ItemDisplayQuality displayQuality, ProspectiveAlchemyResult prospectiveAlchemyResult
-Search on ESOUI Source Code GetAlchemyResultingItemLink(Bag solventBagId, integer solventSlotIndex, Bag reagent1BagId, integer reagent1SlotIndex, Bag reagent2BagId, integer reagent2SlotIndex, Bag:nilable reagent3BagId, integer:nilable reagent3SlotIndex, LinkStyle linkStyle)
+GetAlchemyResultingItemLink(Bag solventBagId, integer solventSlotIndex, Bag reagent1BagId, integer reagent1SlotIndex, Bag reagent2BagId, integer reagent2SlotIndex, Bag:nilable reagent3BagId, integer:nilable reagent3SlotIndex, LinkStyle linkStyle)
 Returns: string link, ProspectiveAlchemyResult prospectiveAlchemyResult
 
 	]]
@@ -459,11 +509,12 @@ function WritCreater.alchemySealedWrit(bag, slot, uniqueId)
 	-- 
 end
 -- 395549
-local function decodeEffects(encodedTraits)
+function decodeEffects(encodedTraits)
 
 	local e1 = (math.floor(encodedTraits / 65536) % 64)
 	local e2 = (math.floor(encodedTraits / 256) % 64)
 	local e3 = (encodedTraits % 64)
+	d(e1, e2, e3)
 	return e1, e2, e3
 end
 
@@ -487,51 +538,67 @@ function WritCreater.alchemyMasterQuestAdded(journalIndex, name)
 	queueAlchemyMasterWrit(solvent, r1, r2, r3, quantity, journalIndex, name)
 end
 
+local function alchyScan() --- re-generates the effect map
 
+	local predicate = ZO_Alchemy_IsAlchemyItem
+	local list = PLAYER_INVENTORY:GenerateListOfVirtualStackedItems(INVENTORY_BACKPACK, predicate)
+	PLAYER_INVENTORY:GenerateListOfVirtualStackedItems(INVENTORY_BANK, predicate, list)
+	PLAYER_INVENTORY:GenerateListOfVirtualStackedItems(INVENTORY_CRAFT_BAG, predicate, list)
+	WritCreater.alchemyList = list
+	d("Starting")
+	WritCreater.reagentList = {}
+	for k, v in pairs(WritCreater.alchemyList) do
+		local itemType = GetItemType(v.bag, v.index)
+		if not IsAlchemySolvent(itemType) then
+			local link2 = GetItemLinkItemId(GetItemLink(v.bag, v.index))
+			WritCreater.reagentList[link2] = v
+			v.itemId = link2
+			v.link = GetItemLink(v.bag, v.index)
+			v.name = GetItemLinkName(v.link)
+		end
+	end
+	for k, v in pairs(WritCreater.reagentList) do
+		for i = 1, 4 do
+			v[i] = GetItemLinkReagentTraitInfo(k, i)
+		end
+		local info = {GetAlchemyItemTraits(v.bag, v.index)}
+		v[1] = {info[1], info[4]}
+		v[2] = {info[6], info[9]}
+		v[3] = {info[11], info[14]}
+		v[4] = {info[16], info[19]}
+		v["info"] = info
+		for i = 1, 4 do
+			v[i][3] = WritCreater.effectNumbers[v[i][1]]
+			v[i][4] = WritCreater.effectNumbers[v[i][2]]
+			if v[i][3] == nil then
+				d(v.link.." "..i.." "..v[i][1].." main effect has no number")
+			end
+			if v[i][4] == nil then
+				d(v.link.." ".. i.." "..v[i][2].." counter has no number")
+			end
+			-- local dif = v[i][3] - v[i][4]
+			-- if dif ~= 1 and dif ~= -1 then
+			-- 	d(dif)
+			-- end
 
+		end
+	end
+	for k, v in pairs(WritCreater.reagentList) do
+		local out = "["..k.."] = {"
+		for i = 1, 4 do
+			local dif = v[i][3] - v[i][4]
+			if dif == -1 then
+				out = out.."["..v[i][3].."]=1,"
+			else
+				out = out.."["..v[i][4].."]=-1,"
+			end
+		end
+		out = out.."},"
+		d(out)
+	end
+end
 
-
-	-- WritCreater.reagentList = {}
-	-- for k, v in pairs(WritCreater.alchemyList) do
-	-- 	local itemType = GetItemType(v.bag, v.index)
-	-- 	if not IsAlchemySolvent(itemType) then
-	-- 		local link2 = GetItemLinkItemId(GetItemLink(v.bag, v.index))
-	-- 		WritCreater.reagentList[link2] = v
-	-- 		v.link = link2
-	-- 	end
-	-- end
-	-- for k, v in pairs(WritCreater.reagentList) do
-	-- 	for i = 1, 4 do
-	-- 		-- v[i] = GetItemLinkReagentTraitInfo(k, i)
-	-- 	end
-	-- 	local info = {GetAlchemyItemTraits(v.bag, v.index)}
-	-- 	v[1] = {info[1], info[4]}
-	-- 	v[2] = {info[6], info[9]}
-	-- 	v[3] = {info[11], info[14]}
-	-- 	v[4] = {info[16], info[19]}
-	-- 	for i = 1, 4 do
-	-- 		v[i][3] = WritCreater.effectNumbers[v[i][1]]
-	-- 		v[i][4] = WritCreater.effectNumbers[v[i][2]]
-	-- 		local dif = v[i][3] - v[i][4]
-	-- 		if dif ~= 1 and dif ~= -1 then
-	-- 			d(dif)
-	-- 		end
-
-	-- 	end
-	-- end
-	-- for k, v in pairs(WritCreater.reagentList) do
-	-- 	local out = "["..k.."] = {"
-	-- 	for i = 1, 4 do
-	-- 		local dif = v[i][3] - v[i][4]
-	-- 		if dif == -1 then
-	-- 			out = out.."["..v[i][3].."]=1,"
-	-- 		else
-	-- 			out = out.."["..v[i][4].."]=-1,"
-	-- 		end
-	-- 	end
-	-- 	out = out.."},"
-	-- 	-- d(out)
-	-- end
+-- zo_callLater(alchyScan, 1000)
 
 -- local a = PLAYER_INVENTORY
 -- PLAYER_INVENTORY.b = GenerateListOfVirtualStackedItems
@@ -541,3 +608,6 @@ end
 -- a:b(INVENTORY_CRAFT_BAG, predicate, list)
 
 -- ALCHEMY.owner:UpdatePotentialQuestItems(list, self.alchemyQuestInfo)
+
+
+

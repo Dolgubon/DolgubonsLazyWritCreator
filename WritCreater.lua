@@ -880,7 +880,7 @@ local function initializeLibraries()
 	WritCreater.initializeMulticraft()
 
 	local buttonInfo = 
-	{0,25000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url"
+	{0,50000,100000, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7CZ3LW6E66NAU&source=url"
 		-- ,{"https://www.patreon.com/Dolgubon", "Patreon"}
 	}
 	-- if WritCreater.savedVarsAccountWide.total > 50000 then
