@@ -277,15 +277,15 @@ function WritCreater.alchemyWrit(solvent, reagents, requiredItemId, quantity, cr
 		-- DolgubonsWritsBackdropCraft:SetHidden(craftingWrits)
 		if WritCreater:GetSettings().consumableMultiplier == 25 and GetJournalQuestType(journalIndex) ~= QUEST_TYPE_HOLIDAY_EVENT then
 			if factor == 4 then
-				quantity = 25
+				quantity = 50
 			elseif factor == 16 then
-				quantity = 6
+				quantity = 25
 			else
 				d(WritCreater.strings['alchemyLowPassive'])
 			end
 		end
 		if GetJournalQuestType(journalIndex) == QUEST_TYPE_HOLIDAY_EVENT then
-			quantity= math.ceil(quantity/factor)
+			quantity = math.ceil(quantity/factor)
 		end
 		out(zo_strformat(WritCreater.strings['alchemyCraftReqs'], getItemLinkFromItemId(solvent.itemId), getItemLinkFromItemId(minCombo[1]), getItemLinkFromItemId(minCombo[2]), quantity))
 		DolgubonsWritsBackdropCraft:SetText(WritCreater.strings.craft)
